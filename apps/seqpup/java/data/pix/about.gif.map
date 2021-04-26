@@ -1,0 +1,27 @@
+#
+# SeqPup.about commands
+# Saturday, August 2, 1997 at 12:27 PM
+# Format: NCSA
+#
+
+
+default app:default 
+
+poly app:open.seq 407,52 347,52 347,26 377,26 378,6 403,19 403,25 408,25 407,52 
+note "Open sequence file"
+
+poly app:open.srsquery 408,97 408,115 348,115 348,87 379,87 383,76 395,68 406,73 412,84 408,97
+note "Sequence retrieval (SRS) from Internet servers"
+
+rect app:help 361,133 398,184
+note "show help document"
+
+rect version 135,219 208,235
+rect app:checkupdate 135,219 208,235
+note "check Internet server for updates to the program"
+
+rect mailto:seqpup@bio.indiana.edu 212,220 323,236
+note "E-mail comments on this application to the author"
+
+rect http://iubio.bio.indiana.edu/soft/molbio/java/source/ 359,195 397,239
+##note "open Internet location of program source"

@@ -1,0 +1,6 @@
+#!/bin/csh
+# addline: add blank line at end of file (fix for damn sunCC/cfront failures)
+
+foreach i ( $* )
+    cat $i oneline > $i.1
+end

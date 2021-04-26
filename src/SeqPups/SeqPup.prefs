@@ -1,0 +1,179 @@
+; SeqPup.prefs 
+; default preferences for application
+
+[version=5]
+; increase version # each time this is edited to get app to update
+; prefs.  You can add a new [version=6] section at the end and
+; any new values after that will replace version=5 values.
+
+[general]
+gOptionIsOn=1
+gShortFolder=0
+
+
+
+[windows]
+fgLockText=1
+fgUseColor=1
+fgWinRect=211 87 781 389
+gRichDocRect=10 34 500 404
+
+[fonts]
+gNameFontName=Times
+gNameFontSize=10
+gNameStyle=0
+gBaseFontName=Courier
+gBaseFontSize=10
+gBaseStyle=0
+gIndexFontName=Times
+gIndexFontSize=9
+gIndexStyle=0
+gSeqFontName=Courier
+gSeqFontSize=10
+gSeqStyle=2
+gTextFontName=Courier
+gTextFontSize=10
+
+[seqprint]
+gNameLeft=0
+gNameRight=1
+gIndexLeft=1
+gIndexRight=1
+gIndexTop=1
+gColored=0
+gShowComplement=1
+gThreeLetAA=0
+gShowAA1=1
+gShowAA2=1
+gShowAA3=1
+gShowCompAA1=1
+gShowCompAA2=1
+gShowCompAA3=1
+gOnlyORF=0
+gBasesPerLine=60
+
+[remap]
+gShowAllZymes=1
+gShowCutpoints=1
+gShowNoncutters=1
+gShowExcludedCutters=1
+gREMinCuts=1
+gREMaxCuts=999
+
+
+
+[version=6]
+; updates for release 0.4i, aug'95
+
+[seqdoc]
+gWriteMasks=1
+gMinCommonPercent=70
+fgStartDoc=1
+fgViewMode=0
+
+
+[version=11]
+;[version=50]
+; updates for release 0.5a, jan'96
+; !! NOTE: this [version=] flag DOESN'T REMOVE existing vars, just adds new or changes
+; try w/ 'var=' empty declaration?
+
+[paths]
+; can use UNIX standard path descriptions here. DCLAP converts to local OS
+; e.g., /root/path/to/somewhere   -- full path from a root disk
+; or,  relative/path/to/somewhere -- relative path from app folder
+; okay to use local OS conventions, but avoid "/" in path if not UNIX
+temp=
+tables=tables
+apps=apps
+help=help
+
+[data]
+codon=tables:codon.table
+renzyme=tables:renzyme.table
+color=tables:color.table
+
+[menus]
+menubar=file,edit,seq,inet,childapp,window
+file=File,New/N,Open.../O,Close/W,-,Save/S,Save As...,-,Print,Help/H,Quit/Q
+edit=Edit,Undo/U,-,Cut/X,Copy/C,Paste/V,Clear,-,Select All/A
+seq=Sequence
+inet=Internet
+childapp=ChildApp
+window=Windows
+
+[apps]
+clustal=ClustalW Multiple align...
+cap=CAP Contig assembly...
+fastdnaml=FastDNAml...
+lsadt=DeSoete LSADTree...
+drawtree=Draw unrooted Tree...
+drawgram=Draw Cladogram...
+;dnaml=Phylip DNAML...
+
+[drawgram]
+form=$apps:drawgram.html
+
+[drawtree]
+form=$apps:drawtree.html
+
+[lsadt]
+form=$apps:lsadt.html
+
+[clustal]
+form=$apps:clustalw.html
+desc
+path
+help
+cmd
+infile
+seqformat
+minseq
+outfile1
+outfile2
+
+[cap]
+form=$apps:cap2.html
+desc
+path
+help
+cmd
+infile
+seqformat
+minseq
+outfile1
+
+[fastdnaml]
+form=$apps:fastdnaml.html
+desc
+path
+help
+cmd
+infile
+seqformat
+minseq
+outfile1
+outfile2
+outfile3
+
+[dnaml]
+form=$apps:dnaml.html
+desc
+path
+help
+cmd
+infile
+stdin
+seqformat
+minseq
+outfile1
+outfile2
+;desc=A DNA max likelihood phylogeny estimator, from Phylip
+;path=$apps:dnaml
+;help=$apps:dnaml.doc
+;cmd=
+;stdin=$temp:dnaml.inseq
+;seqformat=phylip
+;minseq=2
+;outfile1=$apps:treefile	biotree/newick
+;outfile2=$apps:outfile	text/plain

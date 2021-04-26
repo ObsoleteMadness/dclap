@@ -1,0 +1,120 @@
+
+Fetching SeqPup
+
+You can obtain this software via Internet, using anonymous
+ftp, gopher or http to the IUBio server at
+iubio.bio.indiana.edu.  It is located in folder
+/molbio/seqpup.  Versions are available for Macintosh, MS
+Windows, and various XWindows/Unix systems.  Please check
+the Readme files at this archive for recent news.  Remember
+to use binary FTP to fetch the .zip and .gz binary files.
+
+Internet resource locators for this software are
+
+    <ftp://iubio.bio.indiana.edu/molbio/seqpup/>
+    <gopher://iubio.bio.indiana.edu/11/IUBio-Software+Data/molbio/seqpup/>
+   <http://iubio.bio.indiana.edu/1/IUBio-Software%2bData/molbio/seqpup/>
+
+Source code for this software is at
+    <ftp://iubio.bio.indiana.edu/util/dclap/source/>
+
+You will need to fetch one of the program archive files for
+your computer system, its associated child app archive, and
+fetch the essential and optional items from the "all-
+systems" folder.   For example, this would be
+
+  all-systems/ SeqPup.help, SeqPup.prefs, tables/*,  seqs/*
+
+plus one of these groups to match your computer system
+
+  mac/ seqpup-mac-68k.hqx and seqpup-mac-apps.hqx
+
+  mswin/ seqpup32.zip 
+  mswin/win16/seqpup16.zip and spapp1.zip 
+
+  unix/dec-alpha-osf/ SeqPup.gz and seqpup-apps.tar.gz 
+  unix/sgi-irix/ SeqPup.gz and seqpup-apps.tar.gz
+  unix/sun-sol2-sparc/ SeqPup.gz and seqpup-apps.tar.gz
+  unix/sun-sol2-i86/ SeqPup.gz and seqpup-apps.tar.gz
+  unix/sun-sunos4-sparc/ SeqPup-sunos-mostat.gz and seqpup-apps.tar.gz 
+
+
+The current software distribution comprises the following
+items.
+
+all-systems/    mac/            mswin-i86/      unix/
+
+all-systems/
+SeqPup.help         - help file (RTF format) essential
+SeqPup-help.text    - help file (plain text) optional
+SeqPup.prefs        - preferences file (plain text)
+                     essential
+
+tables/             - data files used by SeqPup, essential
+codon.table    dro.cod   hum.cod   renzyme.table
+color.table    eco.cod   rat.cod   tob.cod
+
+appsrc/        - source to applications called by SeqPup, optional
+ChildApp.c          captest.seq         fastDNAml.doc
+cap.src/       clustalw.doc        fastDNAml.infile
+cap2.doc       clustalw.src/       fastdnaml.src/
+
+seqs/               - test sequence files, optional
+23+28SrRNA.gb  captest.fasta       fastdnaml.phylip
+5srna.gb       dros.ig             testre.map6
+blue.seq       ecolac.seq          testreseq.gcg
+
+
+mac:           - Macintosh, files are in binhex format
+Readme
+seqpup-68k.hqx      - SeqPup for Mac with Motorola 68000 processor
+seqpup-ppc.hqx      - SeqPup for Mac with PowerPC processor
+seqpup-apps.hqx     - child apps for mac, both 68k and
+                     PPC (fat binaries)
+
+mswin:         - MS Windows, files are in ZIP archive binary
+                     format
+Readme
+seqpup32.zip        - SeqPup and child apps for MS Windows, 32-bit code
+win16/seqpup16.zip  - Seqpup for MS Windows, 16-bit code
+win16.spapp1.zip    - child apps for for mswin
+
+unix:               - Unix, files are in TAR, Gnu ZIP format
+dec-alpha-osf/      - DEC Alpha computer with OSF/1 Unix
+sgi-irix/           - Silicon Graphics Iris
+sun-sol2-i86/       - Sun Solaris 2 on Intel 80x86 processor
+sun-sunos4-sparc/   - Sun SunOS4 on SPARC processor (or Sol2)
+sun-sol2-sparc/     - Sun Solaris 2 on SPARC processor
+
+unix/dec-alpha-osf:
+               Readme     SeqPup.gz  seqpup-apps.tar.gz
+
+unix/sgi-irix:
+               Readme     SeqPup.gz  seqpup-apps.tar.gz
+
+unix/sun-sol2-i86:
+               Readme     SeqPup.gz  seqpup-apps.tar.gz
+
+unix/sun-sol2-sparc:
+               Readme     SeqPup.gz  seqpup-apps.tar.gz
+
+unix/sun-sunos4-sparc:
+Readme
+SeqPup-sunos-mostat.gz   - Motif libraries are included
+                     (will run on SunOS 4 or Solaris 2
+                     lacking Motif libraries)
+SeqPup-sunos-dyn.gz - Motif libraries are not included
+seqpup-apps.tar.gz       - child apps for SPARC
+
+Note: At this writing (Jan'96), the systems Sun-SunOS4 and
+MS-Win3/16bit are not well supported by development software
+that I now use (which supports more current operating
+systems).  These systems will continue to be supported, but
+due to time constrains on me, they now lag behind others in
+updates.
+
+Also, other operating systems will be supported depending on
+popularity and requests.  Linux OS on Intel86 will be
+supported when I can get hardware incompatibilities with it
+and my home Intel PC straightened out.  Let me know your
+favorite OS if not supported.

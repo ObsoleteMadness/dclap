@@ -1,0 +1,10 @@
+
+These versions of SeqPup are compiled for Microsoft Windows on an Intel 80x86
+cpu.  Files in win32-95-nt/ are for 32-bit MS Windows systems including
+MS Windows 95, MS Windows NT and MS Windows 3 with the Win32s addition.
+Files in win16-3/ are for the 16-bit MS Windows 3 system.
+
+The archive files in each folder should be sufficient to run SeqPup.
+These include child apps and data files.
+You may find more recent data files in the all-systems/ folder
+at a higher level.

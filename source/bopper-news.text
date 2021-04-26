@@ -1,0 +1,63 @@
+Bopper, a new Internet biocomputing office protocol for
+client-server data analysis.
+
+A goal of my work for some time has been to provide client-
+server interfaces to biocomputing software, to make typical
+command-line programs or those with weak user interfaces
+easier for the average biologist.   The Genetics Computer
+Group (GCG) suite is an example of software that could
+benefit from an improved user-interface through client-
+server methods.   Although the GCG suite of programs is very
+powerful in terms of all the analyses that can be done, it
+is also intimidating to the average biologist to learn to
+use this.   Many other programs written by bioscientists
+fall in this category also.
+
+I recently developed a new network protocol, and implemented
+it in a server and a client program, to improve biocomputing
+services.   It is based an existing protocol, POP for mail
+reading, and its server software.  This I modified to
+provide the details that seem needed for biocomputing data
+analyses.  The result is called BOP (biocomputing office
+protocol, an acronym that named itself), and bopper is the
+server software to enable this.  The first client software
+to use this is the new release of SeqPup.  It is a fairly
+simple protocol, and other biocomputing client software may
+wish to incorporate it.  The bopper source is
+available at <ftp://iubio.bio.indiana.edu/util/dclap/source/
+bopper.tar.gz>
+
+On the server computer, the BOP protocol is handled in
+essense as follows:
+- a client logs on to server with username and password
+- receive inputs from client as a command-line plus data
+  input file block
+- execute a program/process on server to analyze this data
+- return result files when the client requests, for each
+  process, storing several process results until called
+  for.
+
+BOP has advantages for biocomputing services over popular
+existing protocols like HTTP and SMTP (e-mail).  BOP is
+stateful, unlike HTTP, maintaining a connection for a long
+period of time if need be to allow a complex transaction
+between client and server, although it has a time-out
+option.  Also the client can to reconnect to server as
+desired and continue with transactions.  BOP uses passworded
+accounts on the server to track resource use; optionally
+anonymous connections are permitted.   BOP knows how to
+transfer multiple data files to and from the server.   BOP
+allows both interactive processing (like HTTP) and deferred
+processing (like stored e-mail), which permits the best user
+interactions for cases where data analyses may be either
+quick or slow.
+
+On the SeqPup client side, this protocol is implemented in a
+manner similar to the use of local external programs that
+SeqPup already handles. One writes an HTML Form to describe
+a dialog for selecting program options, and use sequence
+data as selected from the SeqPup editor windows. A few
+special variables for data inputs and outputs, server host,
+etc. are used.
+
+

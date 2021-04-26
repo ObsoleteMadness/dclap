@@ -1,0 +1,213 @@
+LOCUS       acarr58sst       162 bp
+DEFINITION  acarr58sst  162 bases  0x7aea01ef checksum
+ORIGIN      
+       1 aactcctaac aacGgAtatC TtGgtTCtcg cgagGatGAa GaacGcAGcg
+      51 AaatGcGata cgtagtgtga atcgcaggga tcagtgaatc atcgaatctt
+     101 tgaacgcaag ttgcgctctc gtggtttaac cccccgggag cacgttcgct
+     151 tgagtgccgc tt
+//
+LOCUS       amgrrbst       161 bp
+DEFINITION  amgrrbst  161 bases  0x8cfee32a checksum
+ORIGIN      
+       1 cgtccccgaa cggcGgAtca CTtGgcTCgt ggatcGatGA aGaccGcAGc
+      51 tAtctGcGcg tcgtcgtgta atccgcaggt tatacgaaca tcgaccagtc
+     101 gaacgcacat tgcggcctcg gtgacccgcg ggccccgggc cacgcctgtc
+     151 tgagggtcgt a
+//
+LOCUS       bmorrbst       167 bp
+DEFINITION  bmorrbst  167 bases  0xa6fcf60f checksum
+ORIGIN      
+       1 aaatgattac cctggacggt GgAtcaCTtG gcTCgcgggt cGatGAaGaa
+      51 cGcAGttAac tGcGcgtcat agtgtgaact gcaggacaca tttgaacatc
+     101 gacatttcga acgcacattg cggtccgtgg agacacatcc aggaccactc
+     151 ctgtctgagg gccggct
+//
+LOCUS       crerrbst       156 bp
+DEFINITION  crerrbst  156 bases  0x5d8cabb checksum
+ORIGIN      
+       1 aactctcaac aacGgAtatC TtGgcTCtcg gatcGatGAa GgacGcAGcg
+      51 AaatGcGata cgtagtgtga actgcagaaa tacgtgaact atcgaatccc
+     101 tgaacgtata ctgcgcccga ggccccggta gagcatgtct gccttagtgc
+     151 tgggtt
+//
+LOCUS       ddirr58sst       162 bp
+DEFINITION  ddirr58sst  162 bases  0x1e1a2c8f checksum
+ORIGIN      
+       1 ttaagcataa acggtGaAta cCTcGacTcC caaattGatG AaGaccGtAG
+      51 caAactGcGa taattcactt gaattgcagc ctactgggat agttgaaatg
+     101 ttgaacgcac atgatgacat cggtcctttc ggattaggtg ttatacttgg
+     151 gtgagagtgg tc
+//
+LOCUS       drorrbst       123 bp
+DEFINITION  drorrbst  123 bases  0x2614592a checksum
+ORIGIN      
+       1 aactctaagc ggtGgAtcaC TcGgcTCatg ggtcGatGAa GaacGcAGca
+      51 AactGtGcgt catcgtgtga actgcaggac acatgaacat cgacattttg
+     101 aacgcatatc gcagtccatg ctg
+//
+LOCUS       fsbrramfst       159 bp
+DEFINITION  fsbrramfst  159 bases  0xe2bc7eff checksum
+ORIGIN      
+       1 tgacaactct tagcggtGgA tcaCTcGgcT CgtgcgtcGa tGAaGaacGc
+      51 AGctAgctGc Gagaactaat gtgaattgca ggacacattg atcatcgaca
+     101 cttcgaacgc acattgcggc cccgggttcc tcccggggcc acgcccgccc
+     151 gagggtggc
+//
+LOCUS       fsbrrbtrst       162 bp
+DEFINITION  fsbrrbtrst  162 bases  0x4a446dfb checksum
+ORIGIN      
+       1 caactcttag cggtGgAtca CTcGgcTCgt gcgtcGatGA aGaacGcAGc
+      51 gctAgctGcG agaactaatg tgaattgcag gacacattga tcattgacac
+     101 ttcgaacgca ctttgcggcc ccaggggttc ctcctggggc tacgcctgtc
+     151 tgagtgtcgc tt
+//
+LOCUS       hsarrbst       156 bp
+DEFINITION  hsarrbst  156 bases  0x38e2af23 checksum
+ORIGIN      
+       1 caacttccaa cggtGgAccc CTcGgcTCgt gcatcGatGA aGaacGcAGc
+      51 aAactGcGat acgtagtgtg aattgcagaa ttcagtgaat catcgagtct
+     101 ttgaacgcaa atggcgcttc tggtctcacc aggagcacgt ctgtctgaga
+     151 gtttgc
+//
+LOCUS       humrrbst       159 bp
+DEFINITION  humrrbst  159 bases  0xd67693c6 checksum
+ORIGIN      
+       1 cgactcttag cggtGgAtca CTcGgcTCgt gcgtcGatGA aGaacGcAGc
+      51 gctAgctGcG agaattaatg tgaattgcag gacacattga tcatcgacac
+     101 ttcgaacgca cttgcggccc cgggttcctc ccggggctac gcctgtctga
+     151 gcgtcgctt
+//
+LOCUS       mnin58sst       157 bp
+DEFINITION  mnin58sst  157 bases  0x9ea2e010 checksum
+ORIGIN      
+       1 ataaccctca gcaacGgAta tCTtGgcTCt tgcaacGatG AaGaacGcAG
+      51 cgAaatGcGa tacgtagtgt gaattgcaga attccgcgaa tcatcgagtc
+     101 tttgaacgca agttgcgccc gaggctcgtc cgagggcatt tccgttagag
+     151 cgtcacc
+//
+LOCUS       musrrbst       158 bp
+DEFINITION  musrrbst  158 bases  0xaf5a5ed2 checksum
+ORIGIN      
+       1 cgactcttag cggtGgAtca CTcGgcTCgt gcgtcGatGA aGaacGcAGc
+      51 gctAgctGcG agaattaatg tgaattgcag gacacattga tcatcgacac
+     101 ttcgaacgca cttgcggccc cgggttcctc ccggggctac gcctgtctga
+     151 gcgtcgct
+//
+LOCUS       pcrrrbst       170 bp
+DEFINITION  pcrrrbst  170 bases  0xbd4d5c4 checksum
+ORIGIN      
+       1 aaaccattac cctggacggt GgAtcaCTtG gcTCgcgggt cGatGAaGaa
+      51 cGcAGttAac tGcGcgtcat agtgtgaact gxcaggacac atttgaacat
+     101 cgacatttcg aacgcacatt gcggtccgtg gagacacatc caggaccact
+     151 cctgtctgag ggccgattaa
+//
+LOCUS       ratrrbst       158 bp
+DEFINITION  ratrrbst  158 bases  0xaf5a5ed2 checksum
+ORIGIN      
+       1 cgactcttag cggtGgAtca CTcGgcTCgt gcgtcGatGA aGaacGcAGc
+      51 gctAgctGcG agaattaatg tgaattgcag gacacattga tcatcgacac
+     101 ttcgaacgca cttgcggccc cgggttcctc ccggggctac gcctgtctga
+     151 gcgtcgct
+//
+LOCUS       shrrrbst       162 bp
+DEFINITION  shrrrbst  162 bases  0xe52f71f0 checksum
+ORIGIN      
+       1 agaatgaccc tggaggatGg AtcaCTtGgc TCacattacG aaGAcGaacG
+      51 cAGctAgacG cGtgattcca tgcgaactgc aggacacatg gaacgtctat
+     101 attttgaacg caaattgcag tccagccttt gagcttggac tacgtctggc
+     151 tgagagacgg at
+//
+LOCUS       snlrrbst       157 bp
+DEFINITION  snlrrbst  157 bases  0xe56ae4a8 checksum
+ORIGIN      
+       1 taactttgtg cggtGgAtca CTcGgcTCgt gcgtcGatGA aGagcGcAGc
+      51 cAgctGcGtg aattaatgtg aattgcagaa cacattgaac atcgacatct
+     101 tgaacgcata tggcggcctc gggtccatcc cggggccacg cccgtctgag
+     151 ggtcggc
+//
+LOCUS       teyrrbst       154 bp
+DEFINITION  teyrrbst  154 bases  0xe14819e checksum
+ORIGIN      
+       1 agaaaacttt caacggtGgA tatCTtGgtT CccgtgacGa tGAaGaacGc
+      51 AGcgAaatGc Gatacgtaat gcgaattgca gaaccgcgag tcaacagatc
+     101 tttgaaagca agtggtggag gtgtaaaaac cttcatgttt gtattagtgt
+     151 ggca
+//
+LOCUS       tlarrbst       157 bp
+DEFINITION  tlarrbst  157 bases  0x14de17bf checksum
+ORIGIN      
+       1 aaactttcaa caatGgAtct CTtGgtTCcg gcatcGatGA aGaacGcAGc
+      51 gAaatGcGat aagtaatgtg aattgcagaa ttccgtgaat catcgaatct
+     101 ttgaacgcac attgcgccct ctggtattcc ggggggcatg cctgtccgag
+     151 cgtcatt
+//
+LOCUS       trbrrbst       63 bp
+DEFINITION  trbrrbst  63 bases  0x341437f8 checksum
+ORIGIN      
+       1 acgtgcgcga tGgAtgaCTt GgcTtCttat ttgGttGAaG aatGcAGcAa
+      51 agGcGacaag tgg
+//
+LOCUS       trfrrbcfst       172 bp
+DEFINITION  trfrrbcfst  172 bases  0xbbce8f3c checksum
+ORIGIN      
+       1 aacgtgtcgc gatGgAtgaC TtGgcTtCct atctcGttGA aGaacGcAGt
+      51 aAagtGcGat aagtggtatc aattgcagaa tcattcaatt accgaatctt
+     101 tgaacgcaaa cggcgcatgg gagaagctct tttgagtcat ccccgtgcat
+     151 gccatattct ccagtgtcga ac
+//
+LOCUS       vfarrbst       163 bp
+DEFINITION  vfarrbst  163 bases  0xf6d1277f checksum
+ORIGIN      
+       1 agaatgactc tcggcaacGg AtatCTaGgc TCttgcatcG atGAaGaacG
+      51 tAGcgAaatG cGatacttgg tgtgaattgc agaatcccgt gaaccatcga
+     101 gtctttgaac gcaagttgcc ccgatgccat taggttgagg gcacgtctgc
+     151 ctgggtgtca cat
+//
+LOCUS       vfarrs58sst       164 bp
+DEFINITION  vfarrs58sst  164 bases  0x83480e06 checksum
+ORIGIN      
+       1 agaatgactc tcggcaacGg AtatCTaGgc TCttgcatcG atGAaGaacG
+      51 tAGcgAaatG cGatacttgg tgtgaattgc agaatcccgt gaaccatcga
+     101 gtctttgaac gcaagttgcg cccgatgcca ttaggttgag ggcacgtctg
+     151 cctgggtgtc acat
+//
+LOCUS       whtrrbst       162 bp
+DEFINITION  whtrrbst  162 bases  0xe61d127e checksum
+ORIGIN      
+       1 cacacgactc tcggcaacGg AtatCTcGgc TCtcgcatcG atGAaGaacG
+      51 tAGcgAaatG cGatacctgg tgtgaattgc agaatcccgc gaaccatcga
+     101 gtctttgaac gcaagttgcg cccgagccac tcgccgaggg cacgcctgcc
+     151 tgggcgtcac gc
+//
+LOCUS       whtrrb1st       164 bp
+DEFINITION  whtrrb1st  164 bases  0x1d6ac936 checksum
+ORIGIN      
+       1 cacacgactc tcggcaacGg AtatCTcGgc TCtcgcatcG atGAaGaacG
+      51 tAGcgAaatG cGatacctgg tgtgaattgc agaatcccgc gaaccatcga
+     101 gtctttgaac gcaagttgcg cccgaggcca ctcggccgag ggcacgcctg
+     151 cctgggcgtc acgc
+//
+LOCUS       xebrrbbst       160 bp
+DEFINITION  xebrrbbst  160 bases  0xe523f6d3 checksum
+ORIGIN      
+       1 tcgactctta gcggtGgAtc aCTcGgcTCg tgcgtcGatG AaGaacGcAG
+      51 cgctAgctGc Gagaattagt gtgaattgca ggacacattg atcatcgaca
+     101 cttcgaacgc acttccggcc ccgggttcct cccggggcta cgcctgtctg
+     151 agggtcgctc
+//
+LOCUS       xelrrblst       160 bp
+DEFINITION  xelrrblst  160 bases  0x290d82d2 checksum
+ORIGIN      
+       1 tcgactctta gcggtGgAtc aCTcGgcTCg tgcgtcGatG AaGaacGcAG
+      51 cgctAgctGc Gagaattagt gtgaattgca ggacacattg atcatcgaca
+     101 cttcgaacgc acttccggcc ccgggttcct cccggggcca cgcctgtctg
+     151 agggtcgctc
+//
+LOCUS       yscrrbst       158 bp
+DEFINITION  yscrrbst  158 bases  0xdd51f322 checksum
+ORIGIN      
+       1 aaactttcaa caacGgAtct CTtGgtTCtc gcatcGatGA aGaacGcAGc
+      51 gAaatGcGat acgtaatgtg aattgcagaa ttccgtgaat catcgaatct
+     101 ttgaacgcac attgcgcccc ttggtattcc agggggcatg cctgtttgag
+     151 cgtcattt
+//

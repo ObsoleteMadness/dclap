@@ -1,0 +1,216 @@
+LOCUS       acarr58sst       183 bp
+DEFINITION  acarr58sst       183 bp, 183 bases, 64754A4D checksum.
+ORIGIN      
+       1  a-------ac tcctaacaac GgAtatCTtG gtT-Ctcgcg agGatGAaGa
+      51  acGcAGcg-- AaatGcGata cgtagtgtga atcgc-aggg atcagtgaat
+     101  catcgaatct ttgaacgcaa gttgcgctct cgtg--gttt aaccccccgg
+     151  gagc-acgtt cgcttgagtg cc--gctt-- ---
+//
+LOCUS       amgrrbst       183 bp
+DEFINITION  amgrrbst       183 bp, 183 bases, C886D2FB checksum.
+ORIGIN      
+       1  ----cgt--c cccgaacggc GgAtcaCTtG gcT-Cgtgga tcGatGAaGa
+      51  ccGcAGc--t AtctGcGcgt cgtcgtgtaa tccgc-aggt tatac--gaa
+     101  catcgaccag tcgaacgcac attgcggcct cggt--gacc cgcgggcccc
+     151  gggccacgcc tgtctgaggg tc--gt---- --a
+//
+LOCUS       bmorrbst       183 bp
+DEFINITION  bmorrbst       183 bp, 183 bases, 3E9C23D6 checksum.
+ORIGIN      
+       1  aaatgattac cctggacggt GgAtcaCTtG gcT-Cgcggg tcGatGAaGa
+      51  acGcAGt--t AactGcGcgt catagtgtga actgc-agga cacatttgaa
+     101  catcgacatt tcgaacgcac attgcggtc- cgtg--gaga caca--tcca
+     151  ggaccactcc tgtctgaggg cc--ggct-- ---
+//
+LOCUS       crerrbst       183 bp
+DEFINITION  crerrbst       183 bp, 183 bases, AC88A337 checksum.
+ORIGIN      
+       1  a-------ac tctcaacaac GgAtatCTtG gcT-Ctcgga tcGatGAaGg
+      51  acGcAGcg-- AaatGcGata cgtagtgtga actgc-agaa atacgtgaac
+     101  tatcgaatcc ctgaacgtat actgcgccc- -gag--gcc- --ccggt--a
+     151  gagc-atgtc tgccttagtg ct--gggt-- --t
+//
+LOCUS       ddirr58sst       183 bp
+DEFINITION  ddirr58sst       183 bp, 183 bases, 1E3D23B8 checksum.
+ORIGIN      
+       1  t-----taag cataaacggt GaAtacCTcG acTcC-caaa ttGatGAaGa
+      51  ccGtAGca-- AactGcGata attcacttga attgc-agcc tactg-ggat
+     101  agttgaaatg ttgaacgcac atgatgacat cggt---cct ttcggattag
+     151  gtgttatact tgggtgagag t--------g gtc
+//
+LOCUS       drorrbst       183 bp
+DEFINITION  drorrbst       183 bp, 183 bases, 75DC8824 checksum.
+ORIGIN      
+       1  a-------ac tctaagcggt GgAtcaCTcG gcT-Catggg tcGatGAaGa
+      51  acGcAGca-- AactGtGcgt catcgtgtga actgc-agga caca--tgaa
+     101  catcgacatt ttgaacgcat atcgcagtcc ---------- ----------
+     151  -----atgc- tg-------- ---------- ---
+//
+LOCUS       fsbrramfst       183 bp
+DEFINITION  fsbrramfst       183 bp, 183 bases, 6DA08418 checksum.
+ORIGIN      
+       1  tgaca---ac tcttagcggt GgAtcaCTcG gcT-Cgtgcg tcGatGAaGa
+      51  acGcAGc--t AgctGcGaga actaatgtga attgc-agga caca-ttgat
+     101  catcgacact tcgaacgcac attgcggccc c--g--ggtt cct---cccg
+     151  gggccacgcc cgcccgaggg tg--gc---- ---
+//
+LOCUS       fsbrrbtrst       183 bp
+DEFINITION  fsbrrbtrst       183 bp, 183 bases, B20D564C checksum.
+ORIGIN      
+       1  ---ca---ac tcttagcggt GgAtcaCTcG gcT-Cgtgcg tcGatGAaGa
+      51  acGcAGcgct AgctGcGaga actaatgtga attgc-agga caca-ttgat
+     101  cattgacact tcgaacgcac tttgcggccc cagg--ggtt cct---cctg
+     151  gggctacgcc tgtctgagtg tc--gctt-- ---
+//
+LOCUS       hsarrbst       183 bp
+DEFINITION  hsarrbst       183 bp, 183 bases, 3192D339 checksum.
+ORIGIN      
+       1  ------caac ttccaacggt GgAcccCTcG gcT-Cgtgca tcGatGAaGa
+      51  acGcAGca-- AactGcGata cgtagtgtga attgc-agaa ttcagtgaat
+     101  catcgagtct ttgaacgcaa atggcgcttc tg----gtct ----caccag
+     151  gagc-acgtc tgtctgagag tt----tg-- --c
+//
+LOCUS       humrrbst       183 bp
+DEFINITION  humrrbst       183 bp, 183 bases, 474A0C78 checksum.
+ORIGIN      
+       1  ---cg---ac tcttagcggt GgAtcaCTcG gcT-Cgtgcg tcGatGAaGa
+      51  acGcAGcgct AgctGcGaga attaatgtga attgc-agga caca-ttgat
+     101  catcgacact tcgaacgcac tt-gcggccc c--g--ggtt cct---cccg
+     151  gggctacgcc tgtctgagcg tc--gctt-- ---
+//
+LOCUS       mnin58sst       183 bp
+DEFINITION  mnin58sst       183 bp, 183 bases, DD94AEBE checksum.
+ORIGIN      
+       1  -----ataac cctcagcaac GgAtatCTtG gcT-Cttgca acGatGAaGa
+      51  acGcAGcg-- AaatGcGata cgtagtgtga attgc-agaa ttccgcgaat
+     101  catcgagtct ttgaacgcaa gttgcgccc- -gag--gc-- --tcgtccga
+     151  gggc-atttc cgttagagcg tc--ac-c-- ---
+//
+LOCUS       musrrbst       183 bp
+DEFINITION  musrrbst       183 bp, 183 bases, 6B675071 checksum.
+ORIGIN      
+       1  ---cg---ac tcttagcggt GgAtcaCTcG gcT-Cgtgcg tcGatGAaGa
+      51  acGcAGcgct AgctGcGaga attaatgtga attgc-agga caca-ttgat
+     101  catcgacact tcgaacgcac tt-gcggccc c--g--ggtt cct---cccg
+     151  gggctacgcc tgtctgagcg tc--gct--- ---
+//
+LOCUS       pcrrrbst       183 bp
+DEFINITION  pcrrrbst       183 bp, 183 bases, 41FFA1D4 checksum.
+ORIGIN      
+       1  aaaccattac cctggacggt GgAtcaCTtG gcT-Cgcggg tcGatGAaGa
+      51  acGcAGt--t AactGcGcgt catagtgtga actgxcagga cacatttgaa
+     101  catcgacatt tcgaacgcac attgcggtc- cgtg--gaga caca--tcca
+     151  ggaccactcc tgtctgaggg cc--gatt-- -aa
+//
+LOCUS       ratrrbst       183 bp
+DEFINITION  ratrrbst       183 bp, 183 bases, 6B675071 checksum.
+ORIGIN      
+       1  ---cg---ac tcttagcggt GgAtcaCTcG gcT-Cgtgcg tcGatGAaGa
+      51  acGcAGcgct AgctGcGaga attaatgtga attgc-agga caca-ttgat
+     101  catcgacact tcgaacgcac tt-gcggccc c--g--ggtt cct---cccg
+     151  gggctacgcc tgtctgagcg tc--gct--- ---
+//
+LOCUS       shrrrbst       183 bp
+DEFINITION  shrrrbst       183 bp, 183 bases, 81E4FC3F checksum.
+ORIGIN      
+       1  aga--atgac cctggaggat GgAtcaCTtG gcT-Cacatt acGaaGAcGa
+      51  acGcAGc--t AgacGcGtga ttccatgcga actgc-agga caca-tggaa
+     101  cgtctatatt ttgaacgcaa attgcagtcc ------agcc tttgagctt-
+     151  ggactacgtc tggctgagag ac--gg---- -at
+//
+LOCUS       snlrrbst       183 bp
+DEFINITION  snlrrbst       183 bp, 183 bases, 1CFD0CBC checksum.
+ORIGIN      
+       1  t---a---ac tttgtgcggt GgAtcaCTcG gcT-Cgtgcg tcGatGAaGa
+      51  gcGcAGc--c AgctGcGtga attaatgtga attgc-agaa caca-ttgaa
+     101  catcgacatc ttgaacgcat atggcggcct c--g--ggtc cat---cccg
+     151  gggccacgcc cgtctgaggg tc--gg-c-- ---
+//
+LOCUS       teyrrbst       183 bp
+DEFINITION  teyrrbst       183 bp, 183 bases, 1B7F204A checksum.
+ORIGIN      
+       1  aga--a-aac tttcaacggt GgAtatCTtG gtT-Cccgtg acGatGAaGa
+      51  acGcAGcg-- AaatGcGata cgtaatgcga attgc-agaa --ccgcgagt
+     101  caacagatct ttgaaagcaa gtggtg---- -gag--gtgt aaaaacctt-
+     151  ---c-atgtt tgtattagtg tg--gca--- ---
+//
+LOCUS       tlarrbst       183 bp
+DEFINITION  tlarrbst       183 bp, 183 bases, 660A87F0 checksum.
+ORIGIN      
+       1  aa------ac tttcaacaat GgAtctCTtG gtT-Ccggca tcGatGAaGa
+      51  acGcAGcg-- AaatGcGata agtaatgtga attgc-agaa ttccgtgaat
+     101  catcgaatct ttgaacgcac attgcgccc- -tct--ggt- attc--cggg
+     151  gggc-atgcc tgtccgagcg tc--att--- ---
+//
+LOCUS       trbrrbst       183 bp
+DEFINITION  trbrrbst       183 bp, 183 bases, 79AB7E52 checksum.
+ORIGIN      
+       1  --acg----- --tgcgcgat GgAtgaCTtG gcTtCttatt tgGttGAaGa
+      51  atGcAGc--- AaagGcGaca agtgg----- ---------- ----------
+     101  ---------- ---------- ---------- ---------- ----------
+     151  ---------- ---------- ---------- ---
+//
+LOCUS       trfrrbcfst       183 bp
+DEFINITION  trfrrbcfst       183 bp, 183 bases, 2311DF32 checksum.
+ORIGIN      
+       1  a-------ac gtgtcgcgat GgAtgaCTtG gcTtCctatc tcGttGAaGa
+      51  acGcAGta-- AagtGcGata agtggtatca attgc-agaa t-cattcaat
+     101  taccgaatct ttgaacgcaa acggcgcatg ggagaagctc ttttgagtca
+     151  tccccgtgca tgccatattc tccagtgtcg aac
+//
+LOCUS       vfarrbst       183 bp
+DEFINITION  vfarrbst       183 bp, 183 bases, C5C60804 checksum.
+ORIGIN      
+       1  aga--atgac tctcggcaac GgAtatCTaG gcT-Cttgca tcGatGAaGa
+      51  acGtAGcg-- AaatGcGata cttggtgtga attgc-agaa tcccgtgaac
+     101  catcgagtct ttgaacgcaa gttgc-ccc- -gat--gcc- attaggttga
+     151  gggc-acgtc tgcctgggtg tc--acat-- ---
+//
+LOCUS       vfarrs58sst       183 bp
+DEFINITION  vfarrs58sst       183 bp, 183 bases, 83640C8C checksum.
+ORIGIN      
+       1  aga--atgac tctcggcaac GgAtatCTaG gcT-Cttgca tcGatGAaGa
+      51  acGtAGcg-- AaatGcGata cttggtgtga attgc-agaa tcccgtgaac
+     101  catcgagtct ttgaacgcaa gttgcgccc- -gat--gcc- attaggttga
+     151  gggc-acgtc tgcctgggtg tc--acat-- ---
+//
+LOCUS       whtrrbst       183 bp
+DEFINITION  whtrrbst       183 bp, 183 bases, D531868B checksum.
+ORIGIN      
+       1  cac--acgac tctcggcaac GgAtatCTcG gcT-Ctcgca tcGatGAaGa
+      51  acGtAGcg-- AaatGcGata cctggtgtga attgc-agaa tcccgcgaac
+     101  catcgagtct ttgaacgcaa gttgcgccc- -gag---cc- actcg-ccga
+     151  gggc-acgcc tgcctgggcg tc--acgc-- ---
+//
+LOCUS       whtrrb1st       183 bp
+DEFINITION  whtrrb1st       183 bp, 183 bases, 4079116A checksum.
+ORIGIN      
+       1  cac--acgac tctcggcaac GgAtatCTcG gcT-Ctcgca tcGatGAaGa
+      51  acGtAGcg-- AaatGcGata cctggtgtga attgc-agaa tcccgcgaac
+     101  catcgagtct ttgaacgcaa gttgcgccc- -gag--gcc- actcggccga
+     151  gggc-acgcc tgcctgggcg tc--acgc-- ---
+//
+LOCUS       xebrrbbst       183 bp
+DEFINITION  xebrrbbst       183 bp, 183 bases, B6737B83 checksum.
+ORIGIN      
+       1  t--cg---ac tcttagcggt GgAtcaCTcG gcT-Cgtgcg tcGatGAaGa
+      51  acGcAGcgct AgctGcGaga attagtgtga attgc-agga caca-ttgat
+     101  catcgacact tcgaacgcac tt-ccggccc c--g--ggtt cct---cccg
+     151  gggctacgcc tgtctgaggg tc--gctc-- ---
+//
+LOCUS       xelrrblst       183 bp
+DEFINITION  xelrrblst       183 bp, 183 bases, C2DDFF3B checksum.
+ORIGIN      
+       1  t--cg---ac tcttagcggt GgAtcaCTcG gcT-Cgtgcg tcGatGAaGa
+      51  acGcAGcgct AgctGcGaga attagtgtga attgc-agga caca-ttgat
+     101  catcgacact tcgaacgcac tt-ccggccc c--g--ggtt cct---cccg
+     151  gggccacgcc tgtctgaggg tc--gctc-- ---
+//
+LOCUS       yscrrbst       183 bp
+DEFINITION  yscrrbst       183 bp, 183 bases, A5FAF2D6 checksum.
+ORIGIN      
+       1  aa------ac tttcaacaac GgAtctCTtG gtT-Ctcgca tcGatGAaGa
+      51  acGcAGcg-- AaatGcGata cgtaatgtga attgc-agaa ttccgtgaat
+     101  catcgaatct ttgaacgcac attgcgccc- -ctt--ggt- attc--cagg
+     151  gggc-atgcc tgtttgagcg tc--attt-- ---
+//

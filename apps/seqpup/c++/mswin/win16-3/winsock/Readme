@@ -1,0 +1,15 @@
+
+If you use MSWindows 3 and do NOT have a network connection to it,
+you may well need to add a winsock.dll to the c:\windows\ folder
+in order to allow SeqPup to run on your system.
+
+Use this *only* if SeqPup fails to run on your Windows 3 system,
+with a message something like 
+"Cannot find file or one or one of it's components..."
+
+FTP the winsock.dll here using Binary ftp. This winsock.dll is from the 
+winsock.zip, which is the Trumpet version.
+
+Put winsock.dll file in your c:\windows\ folder.  It may not be
+functional w/ SeqPup, but seqpup should then start up.
+

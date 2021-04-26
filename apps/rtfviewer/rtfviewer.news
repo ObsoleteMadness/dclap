@@ -1,0 +1,46 @@
+
+RTFViewer is a program that will display documents stored in Microsoft's 
+Rich Text Format (RTF), and it is usable on the common computer systems 
+including Macintosh, Motif/XWindows and MS-Windows.   This may be the 
+first freely available RTF viewing program for some of these platforms.
+
+RTF documents can include a variety of fonts including symbols, font 
+sizes and styles, super-scripting and sub-scripting, tabbing, paragraph 
+formatting, and pictures (in both vector and bitmap forms).  Executables 
+of the program are available via gopher or ftp at ftp.bio.indiana.edu: 
+/util/dclap/apps/rtfviewer.
+
+It is built on a cross-platform C toolkit from the Nat'l Center for 
+Biotechnology Information (NCBI), especially Jonathan Kans' Vibrant user 
+interface toolkit. This was combined with Paul Dubois' excellent RTF 
+parsing routines.   On top of this toolkit, the author built a C++ 
+application framework that is patterned after the MacApp framework from 
+Apple Computer. This framework is available freely to the public, as is 
+NCBI's toolkit and Paul Dubois RTF parser.  The home archive location 
+for DCLAP is {ftp,gopher} to ftp.bio.indiana.edu:/util/dclap.
+
+This initial release of RTFViewer lacks important features, and also it 
+includes several bugs.  There are application executables for Macintosh, 
+MS-Windows, and Sun Sparcstation, with a Silicon Graphics version 
+expected soon.  Source code is available, at the DCLAP home, to those 
+who wish to compile it on their own systems.
+
+Comments, bug reports and suggestions for new features may be addressed 
+via e-mail to    dclap@Bio.Indiana.Edu
+
+History
+June 1994, v 0.1.  first release to public, along with GopherPup v 0.2 
+that supports network RTF.
+
+This release of RTFViewer includes the core
+of RTF processing (fonts,styles,font-sizes,center/right/left just,
+paragraphing,tabbing).  It lacks various RTF features, esp. tables
+formats (but tabbing can substitute).  It currently includes
+picture support for Macintosh PICT format only (various MSWindows image
+formats are defined also for RTF), but that format allows
+documents to show both vector and pixmap pictures.
+
+There are some various bugs and drawbacks to this library --
+it is still young.  Among the more important here is that printing
+is not defined for X-Window systems...
+

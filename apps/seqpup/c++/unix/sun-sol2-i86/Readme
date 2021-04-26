@@ -1,0 +1,7 @@
+THis version of SeqPup is compiled for Sun SOlaris 2 on an Intel 80x86
+processor.  
+It requires a system that include Motif XWindow libraries, which
+come as part of Solaris 2.4 (in /usr/dt/lib), but are not standard
+parts of earlier Solaris.   If you do have motif, you may still need
+to tell the system where it is, with a statement like this:
+  setenv LD_LIBRARY_PATH /usr/dt/lib:/usr/lib:/usr/openwin/lib

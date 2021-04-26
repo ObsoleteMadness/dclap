@@ -1,0 +1,27 @@
+
+This is an application using the new support for Microsoft's
+Rich Text Format (RTF) built into applications based on the
+DCLAP programming platform.  This RTF support is developed based
+on Paul DuBois' RTF utilities, and NCBI's platform independent
+C library.
+
+Currently RTFViewer will display RTF documents when you use the
+File/Open command.  Macintosh, MSWindows and X/Motif windows
+versions are available.   Many commonly available commercial
+wordprocessors will read and write RTF format documents.
+
+The current RTF routines support embedded pictures, but as yet only
+in Macintosh PICT format.  MS Windows bitmap and metafile will be
+added later.  
+
+There are still various bugs in the program, including improper color
+map support of PICT images for X and MS Windows pixelmaps, no printing
+from X WIndows, miscellaneous failures to properly interpret RTF, lack
+of support for several of the RTF specified features (tables, indexing,
+...), etc.
+
+Bug reports are welcome at 'dclap@bio.indiana.edu'.  Source code is
+available at ftp.bio.indiana.edu:/util/dclap/src/...
+
+-- Don Gilbert,    7 June 94
+

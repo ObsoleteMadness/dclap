@@ -1,0 +1,1052 @@
+{\rtf1\mac\deff2 {\fonttbl{\f0\fswiss Chicago;}{\f2\froman New York;}{\f3\fswiss Geneva;}{\f4\fmodern Monaco;}{\f13\fnil Zapf Dingbats;}{\f14\fnil Bookman;}{\f16\fnil Palatino;}{\f18\fnil Zapf Chancery;}{\f19\fnil Souvenir;}{\f20\froman Times;}
+{\f21\fswiss Helvetica;}{\f22\fmodern Courier;}{\f23\ftech Symbol;}{\f26\fnil Lubalin Graph;}{\f33\fnil Avant Garde;}{\f34\fnil New Century Schlbk;}{\f156\fnil Garamond;}{\f2515\fnil MT Extra;}{\f32525\fnil VT100;}}{\colortbl\red0\green0\blue0;
+\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;\red255\green0\blue0;\red255\green255\blue0;\red255\green255\blue255;}{\stylesheet{\s243\tqc\tx4320\tqr\tx8640 \f20 \sbasedon0\snext243 footer;}{
+\s244\tqc\tx4320\tqr\tx8640 \f20 \sbasedon0\snext244 header;}{\f20 \sbasedon222\snext0 Normal;}{\s2\li360 \f22\fs20 \sbasedon0\snext2 program;}{\s3 \f20 \sbasedon0\snext3 doc;}{\s4 \b\f20\fs36\cf1 \sbasedon3\snext4 head1;}{\s5 \f20\fs28\cf1 
+\sbasedon3\snext5 head2;}{\s6 \i\f20\fs28 \sbasedon3\snext6 head3;}}{\info{\author Don Gilbert}}\widowctrl\ftnbj\fracwidth \sectd \sbknone\linemod0\linex0\cols1\endnhere {\header \pard\plain \s244\brdrb\brdrs \tqr\tx8640 \f20 {\fs20 SeqApp Help\tab }{
+\fs20 {\field{\*\fldinst date \\@ "MMMM d, yyyy"}}}{\fs20 \par 
+}}{\footer \pard\plain \s243\qc\tqc\tx4320\tqr\tx8640 \f20 - \chpgn  -\par 
+}\pard\plain \s3 \f20 {\fs20 \par 
+}\pard \s3 {\fs28\ul SeqPup}{\fs28\ul , }{\fs28\ul version 0.}{\fs28\ul 5}{\fs28\ul  development}{\fs28\ul  release}{\fs28\ul , January 1996}{\fs28\ul \par 
+}\pard\plain \f20 \par 
+\pard\plain \s4 \b\f20\fs36\cf1 {\plain \f20\fs36 Abstract\par 
+}\pard\plain \s3 \f20  \par 
+SeqPup is a biological sequence editor and analysis program usable on the common computer systems including Macintosh,  MS-Windows and X-Windows.  It includes links to network services and external analysis programs.\par 
+\par 
+Features include\par 
+\tab multiple sequence alignment editor\par 
+\tab single sequence editor \par 
+\tab read and write several sequence file formats \par 
+\tab easy hand alignment features including colored bases and sliding\par 
+\tab automatic multiple sequence alignment with ClustalW app\par 
+\tab automatic gel fragment alignment to contigs with CAP app\par 
+\pard \s3 \tab phylogenetic analysis of alignments with fastDNAml and LSADT apps\par 
+\pard \s3 \tab phylogenetic tree drawing with DrawTree and DrawGram Phylip apps\par 
+\tab consensus, reverse, complement, degap,  and distance/similarity operations \par 
+\pard \s3 \tab restriction maps\par 
+\pard \s3 \tab pretty print of alignments and sequences with boxed and shaded regions.\par 
+\tab translate dna to/from protein using various codon tables\par 
+\tab find strings and ORFs\par 
+\tab automatic preference saving\par 
+\tab internet send mail and sequence analysis services by email\par 
+\tab user-definable links to external analysis programs\par 
+\par 
+NOTICE:  This release is still unfinish, and has bugs. Please careful of trusting important work to it.  Yet it may be useful to some of you as is.   \par 
+\par 
+SeqPup is being written by Don Gilbert using DCLAP, a free, portable C++ class application framework, and founded on the NCBI Toolkit, especially it's Vibrant user-interface section written primarily by Jonathan Kans.   SeqApp/SeqPup was started in
+ 1990 as sequence editor/analysis platform on which analysis programs from other authors could be easily incorporated into a useable interface.  It was originally written with Apple Computer\rquote s MacApp application framework.\par 
+\par 
+\pard \s3 You can obtain this release thru anonymous ftp, gopher or http to iubio.bio.indiana.edu, in folder /molbio/seqpup.  Versions are available for Macintosh, MS Windows, and various Unix/XWindows systems.   The Internet locators to this software are
+  \par 
+\pard \s3 \par 
+\pard \s3\li360 <ftp://iubio.bio.indiana.edu/molbio/seqpup/>\par 
+<gopher://iubio.bio.indiana.edu/11/IUBio-Software+Data/molbio/seqpup/>\par 
+<http://iubio.bio.indiana.edu/1/IUBio-Software%2bData/molbio/seqpup/>\par 
+\pard \s3 \par 
+Source code for this software is at <ftp://iubio.bio.indiana.edu/util/dclap/source/>.\par 
+Comments, bug reports and suggestions for new features (see below) are very welcome and should be sent via e-mail to <mailto://SeqPup@Bio.Indiana.Edu/>.\par 
+\pard \s3 \par 
+Jan 96 - version 0.5b:  added configurable child-app parameters as HTML forms; fixed file path handling; added LSADT, DrawTree and DrawGram child apps; fixed save-file-in-place; better data table and child app handling;  added seq mask items ; 
+click-top-index-line to select columns; fix for GCG-MSF format ('-' to '.' translate);  several MS-Win32/NT/95 updates; Mac file bundle rez & finder-open; added seq-index display; added variable position grey coloring; added mswin/xwin sticky menubar; 
+fixed mswin mouse-shift commands;added mswin menu command keys; fixed mac/mswin text edit command keys; save pretty print in PICT format (mac), metafile (mswin - still buggy?)\par 
+\pard\plain \f20 \par 
+\pard\plain \s3 \f20 \par 
+\pard\plain \f20 \par 
+\par 
+\page \par 
+\par 
+\par 
+\pard\plain \s3\qc \f20 {\fs48 SeqPup }{\fs48 \par 
+}\pard \s3\qc {\fs28 version 0.}{\fs28 5}{\fs28  development}{\fs28  release}{\fs28 \par 
+}{\fs28 January 1995}{\fs28 \par 
+}\pard\plain \f20 \par 
+\par 
+\par 
+\pard\plain \s4 \b\f20\fs36\cf1 \'a6 SeqPup  Help\par 
+\pard\plain \s3 \f20  \par 
+SeqPup is a biological sequence editor and analysis program usable on the common computer systems including Macintosh, Motif/X-Windows and MS-Windows.  It includes links to network services and external analysis programs.\par 
+\par 
+This program  has already gone thru several changes since its start in September 1990.  I don't expect it to mature for another year or two, as my prime programming time is holidays and weekends.\par 
+\par 
+Comments, bug reports and suggestions for new features (see below) are very welcome and should be sent via e-mail to\par 
+       <mailto://SeqPup@Bio.Indiana.Edu/>\par 
+\par 
+\pard \s3 With any bug reports, I would appreciate as much detail as is reasonable without putting you off from making the report.  If you don\rquote t have time to send detailed descriptions of problems, please do send 
+comments and reports, even if all you say is "Good" or "Bad" or "Ugly".   \par 
+\par 
+\pard \s3 Please include mention of computer hardware, and operating system software, including version.  Describe how the problem may be repeated, if it is repeatable.  If it is sporadic or only seen once, please also describe actions leading up to it.  
+Include copies of data if relevant.\par 
+\par 
+If you need to use land mail, send to\par 
+\par 
+\tab Don Gilbert\par 
+\tab Biocomputing Office, Biology Department\par 
+\tab Indiana University, Bloomington, IN 47405\par 
+\tab \par 
+\pard \s3 \par 
+\pard \s3 \par 
+\pard\plain \s4 \b\f20\fs36\cf1 \'a6 Fetching\par 
+\pard\plain \s3 \f20  \par 
+\pard \s3 You can obtain this software via Internet, using anonymous ftp, gopher or http to the IUBio server at iubio.bio.indiana.edu.  It is located in folder /molbio/seqpup.  Versions are available for Macintosh, MS Windows, and various XWindows/Unix
+ systems.  Please check the Readme files at this archive for recent news.  Remember to use binary FTP to fetch the {\ul .zip }and {\ul .gz} binary files.\par 
+\par 
+Internet resource locators for this software are  \par 
+\par 
+    <ftp://iubio.bio.indiana.edu/molbio/seqpup/>\par 
+    <gopher://iubio.bio.indiana.edu/11/IUBio-Software+Data/molbio/seqpup/>\par 
+   <http://iubio.bio.indiana.edu/1/IUBio-Software%2bData/molbio/seqpup/>\par 
+\par 
+Source code for this software is at\par 
+    <ftp://iubio.bio.indiana.edu/util/dclap/source/>\par 
+\par 
+\pard \s3 You will need to fetch one of the program archive files for your computer system, its associated child app archive, and fetch the essential and optional items from the "all-systems" folder.   For example, this would be\par 
+\par 
+\tab all-systems/ SeqPup.help, SeqPup.prefs, tables/*,  seqs/*\par 
+plus\par 
+\tab mac/ seqpup-mac-68k.hqx and seqpup-mac-apps.hqx\par 
+or\par 
+\tab mswin-i86/ seqpup16.zip  and spapp1.zip\par 
+or\par 
+\tab unix/sun-sunos4-sparc/ SeqPup-sunos-mostat.gz and seqpup-apps.tar.gz\par 
+\par 
+\par 
+The current software distribution comprises the following items.  \par 
+\par 
+\pard \s3\fi-3060\li3060\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920 all-systems/    mac/            mswin-i86/      unix/\par 
+\par 
+all-systems/\par 
+SeqPup.help\tab \tab - help file (RTF format) {\b essential}\par 
+SeqPup-help.text  \tab - help file (plain text)\tab {\i optional}\par 
+SeqPup.prefs\tab \tab - preferences file (plain text) {\b essential}\par 
+\par 
+tables/\tab \tab \tab - data files used by SeqPup, {\b essential}\par 
+codon.table\tab dro.cod\tab hum.cod\tab renzyme.table\par 
+color.table\tab eco.cod\tab rat.cod\tab tob.cod\par 
+\tab \par 
+appsrc/\tab \tab - source to applications called by SeqPup, {\i optional}\par 
+ChildApp.c\tab \tab captest.seq\tab \tab fastDNAml.doc\par 
+cap.src/\tab \tab clustalw.doc\tab \tab fastDNAml.infile\par 
+cap2.doc\tab \tab clustalw.src/\tab \tab fastdnaml.src/\par 
+\par 
+seqs/\tab \tab \tab - test sequence files, {\i optional}\par 
+23+28SrRNA.gb\tab captest.fasta\tab \tab fastdnaml.phylip\par 
+5srna.gb\tab \tab dros.ig\tab \tab \tab testre.map6\par 
+blue.seq\tab \tab ecolac.seq\tab \tab testreseq.gcg\par 
+\par 
+\par 
+mac:\tab \tab \tab - Macintosh, files are in binhex format\par 
+Readme                  \par 
+seqpup-mac-68k.hqx      \tab - SeqPup for Mac with Motorola 68000 processor\par 
+seqpup-mac-ppc.hqx\tab \tab - SeqPup for Mac with PowerPC processor\par 
+seqpup-mac-apps.hqx\tab - child apps for mac, both 68k and PPC (fat binaries)\par 
+\par 
+mswin-i86:\tab \tab - MS Windows, files are in ZIP archive binary format\par 
+Readme          \par 
+seqpup16.zip   \tab \tab - Seqpup for MS Windows, 16-bit code\par 
+seqpup32.zip    \tab \tab - SeqPup for MS Windows, 32-bit code\par 
+spapp1.zip\tab \tab \tab - child apps for for mswin\par 
+\par 
+unix:\tab \tab \tab - Unix, files are in TAR, Gnu ZIP format\par 
+dec-alpha-osf/\tab \tab - DEC Alpha computer with OSF/1 Unix\par 
+sun-sol2-i86/\tab \tab \tab - Sun Solaris 2 on Intel 80x86 processor\par 
+sun-sunos4-sparc/\tab \tab - Sun SunOS4 on SPARC processor (or Sol2)\par 
+sun-sol2-sparc/\tab \tab - Sun Solaris 2 on SPARC processor\par 
+sgi-irix/\tab \tab \tab - Silicon Graphics Iris\par 
+\par 
+unix/dec-alpha-osf:\tab  \par 
+Readme                  SeqPup.gz               seqpup-apps.tar.gz\par 
+\par 
+unix/sgi-irix:\par 
+Readme                  SeqPup.gz               seqpup-apps.tar.gz\par 
+\par 
+unix/sun-sol2-i86:\par 
+Readme                  SeqPup.Z                seqpup-apps.tar.Z\par 
+\par 
+unix/sun-sol2-sparc:\par 
+Readme                  SeqPup.gz               seqpup-apps.tar.gz\par 
+\par 
+unix/sun-sunos4-sparc:\par 
+Readme\par 
+SeqPup-sunos-mostat.gz\tab - Motif libraries are included (will run on SunOS 4 or Solaris 2 lacking Motif libraries)\par 
+\pard \s3\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920 SeqPup-sunos-dyn.gz\tab - Motif libraries are not included\par 
+seqpup-apps.tar.gz\tab \tab - child apps for SPARC\par 
+\par 
+\par 
+\pard \s3 \par 
+\pard\plain \s4 \b\f20\fs36\cf1 \'a6 Installing\par 
+\pard\plain \s3 \f20  \par 
+SeqPup is distributed over the Internet in archive files.  The archive format used is commonly available on the computer system you use (HQX self-extracting for Macintosh, ZIP for MS Windows, and tar + Gnu ZIP for Unix).  
+There is one primary program, several document and data files, examples, and child application programs. \par 
+\par 
+The current organization of files used by the program is:\par 
+\pard \s3\fi-2160\li2160\tx360\tx620\tx2340\tx2880\tx3600\tx4320 \tab SeqPup\tab -- execuable, called "seqpup.exe" in MSDOS\par 
+\tab SeqPup.help\tab -- this document, in Microsoft RTF format\par 
+\tab SeqPup.prefs\tab -- settings for the program, in text format.\par 
+\par 
+\tab tables/\tab -- data files, required for Restriction maps, translate and some other functions.  These are standard bioinformatics data files available and updateable from various sources.\par 
+\tab \tab codon.table\tab -- table of codon preferences, in GCG format\par 
+\tab \tab renzyme.table\tab -- REBase data file, for restriction maps, in GCG format\par 
+\tab \tab color.table\tab -- table of color values for display of bases\par 
+\tab \tab hum.cod, tob.cod, eco.cod, and other codon preference tables that can substitute for codon.table at your preference\par 
+\par 
+\tab apps/\tab -- a selection of external analysis applications. \par 
+\tab \tab clustalw\tab -- multiple sequence alignment\par 
+\tab \tab cap2\tab -- contig alignment\par 
+\pard \s3\fi-2160\li2160\tx360\tx620\tx2340\tx2880\tx3600\tx4320 \tab \tab fastDNAml\tab -- phylogenetic analysis of sequences\par 
+\tab \tab lsadt\tab -- De Soete Least Squares phylogeny analysis\par 
+\tab \tab drawtree\tab -- draw unrooted tree, from Phylip\par 
+\pard \s3\fi-2160\li2160\tx360\tx620\tx2340\tx2880\tx3600\tx4320 \tab \tab drawgram\tab -- draw cladograms, from Phylip\par 
+\pard\plain \tx360\tx800\tx2340 \f20 \par 
+\pard\plain \s3\brdrt\brdrs \f20 {\i \par 
+Note for Sun systems:  }This program requires theMotif run-time libraries that are commonly found on other XWindow systems.
+  Motif is not standard on SunOS and is not part of Solaris until verson 2.4.  If you have Solaris 2.3 or earlier, or SunOS, and do not know that your system includes Motif, then you will need the version with statically bound Motif libraries (
+SeqPup-sunos-mostat.gz).  \par 
+\par 
+\pard \s3 If you have Solaris 2.4, or a version where Motif libraries are present, you may still need to configure the system to let SeqPup know where they are.  In a Solaris 2.4 system, where motif lives in /usr/dt/lib by default, this may be needed to 
+run successfully:\par 
+\pard\plain \s2\li360 \f22\fs20 setenv LD_LIBRARY_PATH  "$LD_LIBRARY_PATH":/usr/dt/lib\par 
+\par 
+\pard\plain \s3 \f20 If you get error messages with this saying something about an out-of-date library,\par 
+try instead putting the Motif /dt/lib in front:\par 
+\pard\plain \s2\li360 \f22\fs20 setenv LD_LIBRARY_PATH  /usr/dt/lib:"$LD_LIBRARY_PATH"\par 
+\pard\plain \s3 \f20 \par 
+\pard\plain \brdrb\brdrs \tx360\tx800\tx2340 \f20 \par 
+\pard \tx360\tx800\tx2340 \par 
+\pard\plain \s4 \b\f20\fs36\cf1 \par 
+\par 
+\pard\plain \s5 \f20\fs28\cf1 \'a6\'a6 Installing preferences\par 
+\pard\plain \tx360\tx800\tx2340 \f20 { }\par 
+\pard\plain \s3 \f20 In addition to these two folders and three SeqPup files, the program will automatically create a personal preferences file in you computer when you first run it.  These preferences come from the SeqPup.prefs file.   The preferences 
+file created on your system will be something like this\par 
+\pard \s3\tx720\tx5760 \tab System Folder:Preferences:seqpup.cnf\tab - MacOS  \par 
+\tab c:\\windows\\seqpup.ini\tab - MS Windows \par 
+\tab ~/.seqpuprc\tab - Unix\par 
+\pard \s3 \par 
+The program will save various configuration information to this file. You may edit this with a text editor.  You may delete it and a new one will be generated from the SeqPup.prefs file.  You may not edit it while the program is active
+ (any such changes are lost).  When the program is updated in the future, new preferences are added, using the label \par 
+\pard\plain \s2\li360 \f22\fs20 [version=123]\par 
+\pard\plain \s3 \f20 to indicate the version number.\par 
+\par 
+The preference file format is as follows:\par 
+\pard \s3\tx260 \tab - Logical sections are indicated in brackets [section].\par 
+\tab - Variables are denoted with a "name=value" format.\par 
+\tab - Line starting with ";" indicates a comment and will be ignored.\par 
+\pard \s3 \par 
+The current release of the program may require some fiddling to install correctly.  This\par 
+is a known problem, and will be corrected in future releases.   You will want to look at and probably edit the file "SeqPup.prefs".  \par 
+\par 
+The following sections are important in getting the program to work right, and may need to be edited.\par 
+\pard\plain \s2\li360 \f22\fs20 [paths]\par 
+temp=\par 
+tables=tables\par 
+apps=apps\par 
+\par 
+[data]\par 
+codon=tables:codon.table\par 
+renzyme=tables:renzyme.table\par 
+color=tables:color.table\par 
+\pard\plain \f20 \par 
+\pard\plain \s3 \f20 If you use this on a Unix system or an MS DOS system,  the current configuration should work if you start the program from its folder, e.g.,\par 
+\pard\plain \s2\li360 \f22\fs20    cd /path/to/seqpup/\par 
+\pard \s2\li360   ./SeqPup\par 
+\pard \s2\li360 \par 
+\pard\plain \f20 {A perhaps better way for Unix or MSDos systems is to set the environemntal variable called "SEQPUPHOME" to the path to SeqPup's folder, then you can run the program from any local directory (v.0.5 or 0.4k)\par 
+}\pard\plain \s2\li360 \f22\fs20 \tab setenv SEQPUPHOME  /path/to/seqpup/\par 
+\tab SeqPup\par 
+\pard\plain \f20 \par 
+\pard\plain \s3 \f20 But as is common on Unix, if you want to install this for use from any directory, you will currently need to edit the prefs file and put a fixed path to the SeqPup folders in it, as\par 
+\pard\plain \f20 \par 
+\pard\plain \s2\li360 \f22\fs20 [paths]\par 
+temp=/tmp\par 
+tables=/long/path/to/seqpup/tables\par 
+apps=/long/path/to/seqpup/apps\par 
+\pard\plain \f20 \par 
+\pard\plain \s3 \f20 If you run SeqPup first, then decide to change parts of the prefs file, you can have all users prefs be updated if you add the new prefs after a new version number.  This is the procedure:\par 
+a) add a higher version number at the end of the SeqPup.prefs file\par 
+\pard\plain \s2\li360 \f22\fs20 [version=6]\par 
+{\plain \f22 \par 
+}\pard\plain \s3 \f20 b) add changed preference sections and values after that.  You need not remove or edit the original values (I hope...).\par 
+\par 
+So for instance if the highest verson value in the prefs file is 5, then add this at the end of the SeqPup prefs to get all users preferences updated:\par 
+\pard\plain \f20 \par 
+\pard\plain \s2\li360 \f22\fs20 [version=6]\par 
+\par 
+[paths]\par 
+tables=/new/path/to/seqpup/tables\par 
+apps=/new/path/to/seqpup/apps\par 
+\pard\plain \f20 \par 
+\pard\plain \s3 \f20 {\i An important caveat with this}:  New distributions of SeqPup will use new version values to trigger preference updates.  If the new distribution has a lower version value than you have used, it won\rquote t trigger an update.
+\par 
+\par 
+Child applications are configured for use with the SeqPup.prefs file.  Please see below the section  {\b Child Tasks.}\par 
+\pard\plain \f20 \par 
+\par 
+\par 
+\pard\plain \s4 \b\f20\fs36\cf1 \'a6 Source code and DCLAP\par 
+\pard\plain \s3 \f20  \par 
+SeqPup is built on an object-oriented application framework, written in C++, called DCLAP.  This framework is designed to speed the development of easy to use, complex programs with a rich user-interface.  
+At this point, DCLAP is still an unfinished framework, lacking in documentation.  However, it is rich enough at this point to build complex programs like SeqPup.    \par 
+\par 
+\pard \s3\fi-1440\li1440\tx260\tx1160 DCLAP includes the following segments\par 
+\tab DClap/\tab -- basic application framework, including command, control, dialog, file, icon, list, menu, display panel, table view, mouse tracker, child application, window and view classes.\par 
+\tab Drtf/\tab -- rich text display handlers, including RTF, HTML document, PICT and GIF image format readers.\par 
+\tab DNet/\tab -- Internet connection tools, including TCP/IP, SMTP, Gopher and preliminary HTTP classes.\par 
+\tab DBio/\tab -- Biocomputing methods, included biosequence, restrict enzyme, sequence editor, seq. manipulator, seq. output classes. \par 
+\pard \s3 \par 
+New applications can be built to employ and reuse these classes fairly quickly.  Variations on the current methods are simple to add in the class derivation method of C++.   For instance, new document formats 
+can be added on the Drtf display objects, and new sequence manipulations can be added in the biosequence handlers, by building on current methods.\par 
+\par 
+DCLAP rests upon the NCBI toolkit, including the Vibrant GUI toolkit, which is designed for cross-platform functioning.  The successful genome data browser Entrez is written with the NCBI toolkit.  \par 
+\par 
+All of this source is available without charge for non-profit use (see copyright below).  The NCBI toolkit portion is further available for profit use, and such arrangements may be made for use of DCLAP.\par 
+\par 
+DCLAP will never compete with commercial programming frameworks, but it has the virtue of being freely available and redistributable, and includes support specifically for biocomputing applications.  If you are undertaking a biocomputing 
+project requiring a rich user interface, and wish it to run on multiple computer platforms, this may be a worthwhile choice, especially if you wish to redistribute your source code for the benefit of the scientific community.  \par 
+\par 
+The DCLAP developer archive is at  <ftp://iubio.bio.indiana.edu/util/dclap/>\par 
+Please contact Don Gilbert for further information on using this framework in other applications.\par 
+\par 
+\par 
+\pard \s3 \par 
+\pard\plain \s4 \b\f20\fs36\cf1 \'a6 Copyright\par 
+\pard\plain \s3 \f20  \par 
+This SeqPup program is Copyright (C) 1990-1995 by D.G. Gilbert.   \par 
+All Rights are reserved.\par 
+\par 
+gilbertd@bio.indiana.edu \par 
+Biology Dept., Indiana University, Bloomington, IN 47405 \par 
+\par 
+You may use this program for your personal use, to provide a non-profit service to others.\par 
+You may not use this program in a commercial product, nor to provide commercial service, nor may you sell this code without express written permission of the author.  \par 
+You may redistribute this program freely.   If you wish to redistribute it as part of a commercial collection or venture, you need to contact the author for permission. \par 
+ \par 
+The source code to this program is likewise copyrighted, and may be used, modified and redistributed in a free manner.  Commercial uses of it need prior permission of the author.  \par 
+\par 
+Any external applications that may distributed with SeqPup are copyrighted by their respective authors and subject to distribution provisions as described by those authors.  At present this includes ClustalW, by Des Higgins, CAP2 by  Xiaoqiu Huang, and 
+FastDNAml,  written by Joseph Felsenstein with modifications by  Gary Olsen, Hideo Matsuda and Ross Overbeek, is copyrighted by University of Washington and\par 
+Joseph Felsenstein.\par 
+\par 
+Distribution of external analysis applications with this program is done as a convenience for users, and in no way modifies the original copyright.  If there is a problem with this, instructions 
+to users for obtaining and installing external applications will be substituted.\par 
+\par 
+No warranty, express or implied, is provided with this software.  The author is trying to produce a good quality program, and will incorporate corrections to problems reported by users of it.\par 
+\pard\plain \f20 \par 
+\pard\plain \s3 \f20 \par 
+\pard\plain \s4 \b\f20\fs36\cf1 \'a6 Views\par 
+\pard\plain \s3 \f20  \par 
+There are four main types of views or displays in SeqPup:\par 
+\par 
+A multiple-sequence view which is the primary display when you open a sequence document; the single sequence editting view; various print views which result from an analysis, like the Restriction map; and dialog views where you control some function.
+\par 
+\par 
+Many of these views have dialog controls -- push buttons, check boxes, radio controls and edittable text items -- to let you fine-tune a view to fit your preference.  Many of these views also will remember your last preferences.\par 
+\par 
+When a view has editable text items, including the sequence entry views, most usual undo/cut/copy/paste features will work.  \par 
+\par 
+Two or more views of the same data are possible.  Some of these are
+ truly views of the same data -- changes made in one view are reflected in another. Other views are static pictures taken of the data at the time the  analysis was performed -- later changes to the data do not affect that picture.\par 
+\par 
+\pard\plain \s5 \f20\fs28\cf1 \'a6\'a6 Aligned multi-sequence view\par 
+\pard\plain \s3 \f20  \par 
+The main view into a sequence document is the multiple sequence editor window, which lists sequence names to the left and sequence bases as one line that can be scrolled thru.  Bases can be colored (now only nucleic colorings) or black.  Sequence ca
+n be editted here, especially to align them, and subranges and subgroupings can be selected for  further operations or analysis. Entire sequence(s) can be cut/copied/pasted by selecting the left name(s).  Mouse-down selects one. Shift-mouse down selects ma
+ny in group, Command-mouse down selects many unconnected. Double click name to open single sequence view.  Select name, then grab and move up or down to relocate.\par 
+\par 
+Select the lock/unlock button at the view top to lock/unlock text editting in the sequence line.  With lock on (no editting) you can use shift and command mouse to select a subrange of sequences to operate on.\par 
+\par 
+
+Bases can be slid to left and right, like beads on an abacus, when the edit lock is On (now default).  Select a base or group of bases (over one or several sequences), using mouse, shift+mouse, option+mouse, command+mouse.  Then grab selected bases with mo
+use (mouse up, then mouse down on selection), and slide to left or right.  Indels "-" or spacing on ends "." will be added and squeezed out as needed to slide the bases.  See also the "Degap" menu selection to remove all gaps thus entered from a sequence.
+\par 
+\par 
+\pard\plain \s5 \f20\fs28\cf1 \'a6\'a6 Single sequence view\par 
+\pard\plain \s3 \f20  \par 
+For entering/editting a single sequence, this view displays one sequence with more info and control.  Edit the name here (later other documentation). Bring out this view by double-clicking sequence name in align view, or choosing Edit from Sequence menu.
+\par 
+\par 
+\pard\plain \s5 \f20\fs28\cf1 \'a6\'a6 Print views\par 
+\pard\plain \s3 \f20  \par 
+Various analyses provide non-editable displays.  These are usually save-able as PICT format for editting in your favorite MacDraw program, or print-able.\par 
+\par 
+\par 
+\par 
+\pard\plain \s4 \b\f20\fs36\cf1 \'a6 Data files\par 
+\pard\plain \s3 \f20  \par 
+SeqPup uses plain TEXT type files for its primary sequence data.  These  files can be exchanged without modification with many other sequence analysis programs.  SeqPup
+ automatically determines the sequence format of a data file when openning it.  You have an choice of several formats to save it as.  As of this writing, the GenBank format is prefered (see bugs).\par 
+\par 
+The program looks in the folder "tables" for text files containing various data. At present these files include "codon.table", "renzyme.table" and "color.table".\par 
+\par 
+\pard \s3 There is a "SeqPup.prefs" file which stores various user options like window positions, mail address, child tasks.  This is described more in the Install and Child Apps sections.\par 
+\pard \s3 \par 
+Various temporary files are created for child tasks, generally in the :Apps: folder.  Currently you cannot run the Child Tasks portion of SeqPup from a locked file server because these temporary files need to be created where the c
+hild applications reside.  Otherwise, SeqPup should operate from a locked fileserver properly, and can be launched by several users at once.\par 
+\par 
+\par 
+\pard\plain \s5 \f20\fs28\cf1 \'a6\'a6 Restriction Enzyme Table\par 
+\pard\plain \s3 \f20  \par 
+The file called "renzyme.table" contains restriction enzyme data, as distributed in REBASE by R.Roberts.  The format used is identical to that used by GCG software.\par 
+\par 
+\pard\plain \f20 {\fs18 \tab \{ documentation ...\}\par 
+\tab \par 
+Commercial sources of restriction enzymes are abbreviated as follows:\par 
+\par 
+\tab \tab A\tab Amersham (12/91)\par 
+\tab \tab B\tab BRL (6/91)\par 
+\tab \tab ...\par 
+\tab \tab X\tab New York Biolabs (4/91)\par 
+ \tab \tab Y\tab P.C. Bio (9/91)\par 
+\par 
+..  \{< separates data\}\par 
+;AatI      3 AGG'CCT        0 !  Eco147I,StuI                      >OU\par 
+AatII      5 G_ACGT'C      -4 !                                    >EJLMNOPRSUVX\par 
+AccI       2 GT'mk_AC       2 !                                    >ABDEIJKLMNOPQRSUVXY\par 
+;AccII     2 CG'CG          0 !  Bsp50I,BstUI,MvnI,ThaI            >DEJKQVXY\par 
+;AccIII    1 T'CCGG_A       4 !  BseAI,BsiMI,Bsp13I,BspEI,Kpn2I,MroI  >DEJKQRVY\par 
+;Acc65I    1 G'GTAC_C       4 !  Asp718I,KpnI                      >DFNY\par 
+}\par 
+\pard\plain \s3 \f20 \par 
+\pard\plain \s5 \f20\fs28\cf1 \'a6\'a6 Codon Table\par 
+\pard\plain \s3 \f20  \par 
+The file called "codon.t
+able" in folder "Tables" is used for translation of nucleic to protein sequence, and for backtranslation.  This file may be replaced with a table of your choice in the following format (this format is identical to that used by GCG software codon tables).
+\par 
+\pard\plain \f20 \par 
+{\fs20 \tab \{ any documentation... \}\par 
+\par 
+AmAcid  Codon     Number    /1000     Fraction   ..   \{< data separator\}\par 
+Gly     GGG     1743.00      9.38      0.13\par 
+Gly     GGA     1290.00      6.94      0.09\par 
+...  \{ continue for 64 codons \}}{\par 
+\par 
+\par 
+}\par 
+\pard\plain \s4 \b\f20\fs36\cf1 \'a6 Features\par 
+\pard\plain \s3 \f20  \par 
+The following topics describe main features found in the SeqPup menus.\par 
+\par 
+\pard\plain \s5 \f20\fs28\cf1 \'a6\'a6 File \par 
+\pard\plain \s3 \f20  \par 
+{\b New} will create an align view of sequence data.  New Text will create a plain text document, which is the format of the sequence data files also.  \par 
+\par 
+{\b Open} will open an exising file.   The default choice will open a file of sequences into a new window.   You can choose "Sequence, append", or hold down the SHIFT key, to open a sequence file and append it to an existing alignment window.\par 
+\par 
+Other {\b Open} options include opening a plain text file, a file of phylogeny trees in Newick format (see  Phylip documentation), or a Gopher document.\par 
+\par 
+{\b Save}, Save as, Save a copy in, all will save the current document to disk files. Revert will restore the open align view to the last version saved to disk.\par 
+\par 
+{\b Save selection}, Saves only highlighted sequences to a new disk file.  Doesn\rquote t affect save status of current full alignment document.\par 
+\par 
+{\b Print} setup, print will print the current view.\par 
+\par 
+{\b Help} brings up a view to page thru the help file.\par 
+\par 
+{\b Preferences} will set some user preferences.  \par 
+\par 
+\pard\plain \s5 \f20\fs28\cf1 \'a6\'a6 Editing\par 
+\pard\plain \s3 \f20  \par 
+{\b Undo}, {\b cut}, {\b copy}, {\b paste}, {\b clear}, {\b select} {\b all} -- these standard mac commands will operate on text as well as on sequences in (hopefully) intuitive, usual ways.\par 
+\par 
+{\b Find}, Find same, Find "selection" will search for strings in text.\par 
+\par 
+{\b Replace}, replace same will replace target strings (not yet enabled).\par 
+\par 
+\par 
+\pard\plain \s5 \f20\fs28\cf1 \'a6\'a6 Sequence manipulations\par 
+\pard\plain \s3 \f20  \par 
+{\b New sequence} -- append a new, blank sequence to the sequence document.\par 
+\par 
+{\b Edit} -- open single sequence editting view for selected items.\par 
+\par 
+{\b Reverse}, {\b Complement}, {\b Rev-complement }-- Reverse, complement or reverse+complement a sequence. Works on one or more sequences, and the selected subrange.\par 
+\par 
+{\b Rna-Dna,Dna-Rna} -- Convert dna to rna (t->u) and vice versa.  Works on one or more sequences, and the selected subrange.\par 
+\par 
+{\b Degap} -- remove alignment gaps "~".   Works on one or more sequences, and the selected subrange. Gaps of "-" are locked and not affected by Degap.   Works on one or more sequences, and the selected subrange.\par 
+{\b \par 
+Lock Indel & Unlock Indel} -- Convert from unlocked gaps "~", to locked gaps "-"
+.  Unlocked gaps will disappear and appear as needed as you slide bases left and right.  Locked gaps are not affected by sliding nor by Degap.   Works on one or more sequences, and the selected subrange.\par 
+\par 
+{\b Consensus} -- generate a consensus sequence of the selected sequences.\par 
+\par 
+{\b Translate} -- translate to/from amino acid.  Relies on Codon.Table data.\par 
+\par 
+{\b Pretty print} -- a prettier view of a single or aligned sequences.  Use these views to print your sequences.  Printing from the editing display will not be supported fully, and may not print all of your sequence(s).\par 
+\par 
+{\b Restriction map} -- Restriction enzyme cut points of selected sequence.  Also protein translation options.\par 
+\par 
+{\b Dotty plot} -- provide a dot plot comparison of two sequences.  \par 
+\par 
+{\b Nucleic, amino codes} -- These provide both reminders of the base codes, and a way to select colors to assocate with each code (new in v 1.9a).  See below for some discussion of the two "aa-color" documents that now ship with SeqPup.  \par 
+\pard \s3 \par 
+\pard \s3 \par 
+\par 
+\pard\plain \s4 \b\f20\fs36\cf1 \'a6 Child Tasks\par 
+\pard\plain \s3 \f20  \par 
+\par 
+The "ChildApps" menu lets you link SeqPup with external sequence analysis programs that you or others may write.  SeqPup 
+can be configured to launch any other application, and to send it sequence data and command information.  When the child program is finished with its analysis, SeqPup can open and display results files from the child
+ in a variety of formats, including text, biosequence, PICT, RTF and GIF.  On Macs, the ChildApps menu requires System 7 to operate.\par 
+\pard \s3 \par 
+The general design of child applications is taken to be data analysis programs that have a simple command-line user-interface, and that take input data from a file or from the system "standard input" file (stdin), and that write outputs to files 
+and to two system standard files "standard output" (stdout) and "standard error" (stderr).  This is how many existing analyses programs work, and it is very straightforward to program this basic kind of user-interface.  \par 
+\par 
+The value of SeqPup joined with these kinds of programs is that the SeqPup can concentrate on providing an easy-to-use interface for biologists, and the analysis application can concentrate on data analyses, without having to add a lot of 
+software baggage to provide a more usable interface.\par 
+\par 
+A desired addition to SeqPup will be a dialog to configure new and current child tasks.  However, at present this needs to be done by using a text editor to change the SeqPup.prefs file.\par 
+\pard \s3 \par 
+\par 
+\pard\plain \s5 \f20\fs28\cf1 \'a6\'a6 Configuring child applications\par 
+\pard\plain \s3 \f20  \par 
+You can add new child apps by editing the text file SeqPup.prefs.  You will need to update the section [apps] with a new line for you new app, then install a new section, [newappname].  You will also need to increase the [version
+=#] value, as described above in the {\b Installation} section, for the program to take notice of your changes.\par 
+\par 
+The [apps] section contains a list of child app sections, and the menu title string.  E.g.,\par 
+\par 
+\pard\plain \s2\li360 \f22\fs20 [apps]\par 
+clustal=ClustalW Multiple align...\par 
+\pard\plain \s3 \f20 \par 
+The clustal= line says there is a child app section called clustal, and its menu title is "ClustalW Multiple align..."\par 
+\par 
+Version 0.5 adds the {\b form=path-to-html-form} method for configuring child apps.\par 
+Forms are the recommended replacement to the following methods.  This new feature needs documenting, but is still evolving.  It follows the HTML forms standard, though not all HTML specs are implemented at this release.   \par 
+\par 
+See the example HTML forms in the {\b apps} folder to find how these work.\par 
+\par 
+The following variable names have special meaning as Input tags of {\ul TYPE=hidden}:\par 
+\pard \s3\li360 infile, seqformat, minseq, \par 
+outfile1, outfile2, .. outfile{\i n}\par 
+stdin, stdout, stderr, stdcmdin \par 
+\par 
+\pard \s3 The HTML <FORM> tag is used to specify command-line action and method to execute the child application.  Currently {\ul Method=localexec} is the only method supported.  The {\ul Action="path-to-app  command-line"} 
+ statement can be as complex a statement as the operating system allows for executing programs.   Include variable names using a dollar ($) in front of the name.  In Unix, this can be a shell command (later refinements may add to this).\par 
+{\f22\fs20 \par 
+}\pard\plain \li360 \f20 {\f22\fs20 <FORM METHOD=localexec ACTION="$apps:clustalw \par 
+  /infile=$temp:clustal.inseq \par 
+  /outfile=$temp:clustal.outseq /output=gcg \par 
+  $align $tree $quick $boot $othercmd\par 
+">\par 
+}\pard {\f22\fs20 \par 
+}Various HTML {INPUT }and Select and {TEXTAREA }tags are supported for user input.  The NAME="varname" is the name of variable used within this form.  You can use any unique name that suits, and typically you put this varname into the FORM ACTION=
+statement, or the INPUT {\ul NAME=stdcmdin }value.  The VALUE="something" is the value of variable that will be passed on to child app.  Use the INPUT {\ul TYPE=submit} to produce a button to launch the application.   Here are some examples:\par 
+{\f22\fs20 \par 
+}\pard \li360 {\f22\fs20 Program options:<p>\par 
+<INPUT TYPE="checkbox" NAME="tree" VALUE="/TREE">calculate NJ tree<p>\par 
+<INPUT TYPE="checkbox" NAME="boot" VALUE="/BOOTSTRAP"> Bootstrap NJ tree.\par 
+<INPUT NAME="bootval" VALUE=1000 SIZE=6> (# boostraps)<p>\par 
+Other options: <p>\par 
+<TEXTAREA NAME="othercmd" COLS=40 ROWS=2></TEXTAREA><p>  \par 
+<INPUT TYPE=submit VALUE="Launch app"> \par 
+}\pard {\f22\fs20 \par 
+}Here are examples of the special {\ul TYPE=hidden} variables that SeqPup understands:\par 
+{\f22\fs20 \par 
+}\pard \li260 {\f22\fs20 <INPUT TYPE=hidden NAME=infile VALUE="$temp:clustal.inseq">\par 
+<INPUT TYPE=hidden NAME=seqformat VALUE="nbrf">\par 
+<INPUT TYPE=hidden NAME=minseq VALUE="2">\par 
+<INPUT TYPE=hidden NAME=outfile2 VALUE="$temp:clustal.outseq  biosequence/msf">\par 
+<INPUT TYPE=hidden NAME=outfile1 VALUE="$temp:clustal.dnd  biotree/newick">\par 
+}\pard {\f22\fs20 \par 
+\par 
+}The {\ul INPUT TYPE=hidden NAME=stdcmdin} is a special tag.  Use it when the application requires complex inpu
+ts from the standard input file.  This currently is used with Phylip programs.  It is free-form input of any text between double-quote (") symbols. Use line breaks where appropriate.  Include variables using a dollar ($) with variable name. \par 
+\par 
+A primitive IF-ELSE option is available with the dollar-question ($?varable) syntax.  This will let you test if a variable like a check-box is selected. If it is selected, text following, including o
+ther variables will be inserted.  If it isn't selected, additional text, or nothing, may be inserted.   The basic syntax for this is\par 
+\par 
+\pard \li360 {\f22\fs20 $?varname:true-value:false-value\par 
+}\pard {\f22\fs20 \par 
+Here is an example:\par 
+\par 
+}\pard \li360 {\f22\fs20 <INPUT TYPE=hidden NAME=stdcmdin VALUE="M\par 
+N\par 
+$horiz\par 
+$newstyle\par 
+$?newstyle:$stylekind:\par 
+$branchlength\par 
+Y\par 
+">\par 
+}\pard\plain \s3 \f20 \par 
+\par 
+\par 
+{\b NOTE}: The following descriptions still should work, but may be eliminated in future versions.\par 
+\par 
+Then the section for [clustal] includes these variables\par 
+\pard \s3\tx360 \tab desc= descriptive string, displayed in the launch dialog\par 
+\tab path= path to application, using variables defined in [paths] section\par 
+\tab help= path to help document,  ditto\par 
+\tab cmd= command line passed to application\par 
+\tab infile= path/name of input data file, using variables defined in [paths] section\par 
+\tab seqformat= format for sequence input data file\par 
+\tab minseq= minimum number of sequences required for application\par 
+\tab outfile1= first output file, and file format in pseudo-mime notation\par 
+\tab outfile2= second output file, and file format in pseudo-mime notation\par 
+\tab ... etc... for more output files.\par 
+\pard \s3 \par 
+All the lines which specify file paths should use the variables defined in the [path] section for an easy way to make these descriptions portable to othe
+r systems.  The [paths] section specifies variables for file paths then gives their complete specification on the local file system, e.g.,\par 
+\pard\plain \s2\li360 \f22\fs20 [paths]\par 
+temp=/tmp\par 
+apps=/long/path/to/seqpup/apps\par 
+\pard\plain \s3 \f20 \par 
+Then in an application variable use the syntax "$pathvar:" to insert the local path variable. For example, use\par 
+\pard\plain \s2\li360 \f22\fs20 help=$apps:clustalw.doc\par 
+\pard \s2\li360 \par 
+\pard\plain \s3 \f20 This will be translated by the program to\par 
+\pard\plain \s2\li360 \f22\fs20 help=/long/path/to/seqpup/apps/clustalw.doc\par 
+\pard\plain \s3 \f20 \par 
+If no path is specified, the default path will generally be, on Macintosh, where the program file was  when launched, and on Unix and MSDOS, where the command line was executed from.\par 
+\par 
+The command line variable "cmd" should specify files and other parameters that the child application needs to read.\par 
+\par 
+\pard \s3\tx360 The current selection of "seqformat" sequence input formats includes the following:    \par 
+\tab genbank, fasta, embl, nbrf, pir/codata, gcg, msf, phylip, paup/nexus, asn1.\par 
+\par 
+\pard \s3 The current selection of pseudo-mime notations known by SeqPup used to specify the return data formats includes biosequence formats, basic text and image formats:\par 
+\pard \s3\tx360 \tab biosequence/genbank, biosequence/fasta, etc.. for sequence formats\par 
+\tab biotree/newick\tab \tab - newick style phylogenetic tree, not yet displayable\par 
+\tab text/plain, text/rtf, text/html\tab - text file formats\par 
+\tab image/pict, image/gif\tab \tab - image file formats\par 
+\pard \s3 \par 
+Seqformat for the input file now is not in pseudo-mime format, but may change to that for consistency with output formats.  That would be "biosequence/fasta" instead of just "fasta".\par 
+\par 
+\pard\plain \f20 \par 
+\par 
+\pard\plain \s3 \f20 \par 
+\pard\plain \s4 \b\f20\fs36\cf1 \'a6 Internet\par 
+\pard\plain \s3 \f20  \par 
+The Internet features of SeqPup let you interchange ideas and data with people and biocomputing services around the world.  If your Mac is connected already to the Internet, you probably are familiar with electronic mail and some of its uses.  \par 
+\par 
+SeqPup
+ includes a selection of network access features in the developing area of networked biocomputing.  You will find access to me, at least to get comments and bug reports to me, very easy.  There is a feature to send and receive e-mail, as well as mail links
+ to customized e-mail services. These include searching for sequence similarity via BLAST and FastA programs on the Genbank/Intelligenetics computers, fetching sequences, data and software from Genbank and EMBL.\par 
+\par 
+There is now an feature call
+ed Gopher, which gives you access to a wide range of information services now developing on the Internet.  Gopher is something like Telnet or FTP (file transfer), but also different.  It includes some of the keyword searching features of WAIS (Wide Area In
+formation Services). There are currently several biology gopher services found around the globe. These include fast and up-to-date keyword searches of GenBank, EMBL, PIR and other important biology databanks.\par 
+\par 
+\par 
+\pard\plain \s5 \f20\fs28\cf1 \'a6\'a6 Internet requirements\par 
+\pard\plain \s3 \f20  \par 
+All features of this menu depend on a network link to the Internet, and \par 
+\tab Mac: MacTCP software from Apple Computer, or equivalent.  \par 
+  \tab MS Windows: WinSock.dll software from various vendors\par 
+\tab Unix: TCP should be standard software\par 
+\par 
+\par 
+If you have problems in general with SeqPup network functions, make sure that other TCP-based applications work on your computer before reporting the problem.  You may need to work with computer support people at your s
+ite to iron out general network problems.\par 
+\par 
+\par 
+\pard\plain \s5 \f20\fs28\cf1 \'a6\'a6 Mail Preferences\par 
+\pard\plain \s3 \f20  \par 
+The mail prefs dialog asks for your return e-mail address, and your preferred SMTP mail host. These addresses may be similar.  \par 
+\par 
+Return e-mail address:  This is where another person should send mail so it will reach you.  \par 
+\tab \tab Example:  Bob.Jones@Bio.Indiana.Edu   \par 
+\tab \tab \tab    or:  bjones@sunflower.bio.indiana.edu\par 
+\tab \par 
+SMTP Mail host:  This is the internet address of the computer thru which  SeqPup will send out mail to the rest of the world.\par 
+\tab \tab Example:  Sunflower.Bio.Indiana.Edu\par 
+\tab \tab \par 
+\par 
+\pard\plain \s5 \f20\fs28\cf1 \'a6\'a6 Send Mail\par 
+\pard\plain \s3 \f20  \par 
+Send an electronic mail message.  You must enter an address to send to, and have entered your return address in the mail preferences dialog.\par 
+\par 
+\pard \s3 \par 
+\pard \s3 \par 
+\pard\plain \s4 \b\f20\fs36\cf1 \'a6 Mail-based Search and Fetch\par 
+\pard\plain \s3 \f20  \par 
+Various network resources provide biocomputing services thru e-mail.  These include retreiving sequence entries from the various databanks (GenBank, E
+MBL, PIR), fetching help documents, and searching for sequences in the databanks that match your query sequences.\par 
+\par 
+\pard\plain \s5 \f20\fs28\cf1 \'a6\'a6 Sequence Searching\par 
+\pard\plain \s3 \f20  \par 
+Mail based servers for searching databanks against your query sequence include FastA and BLAST searches for nucleic or protein sequences at GenBank/IntelliGenetics, and protein searches at PIR.\par 
+\par 
+\par 
+\pard\plain \s5 \f20\fs28\cf1 \'a6\'a6 Gene Prediction\par 
+\pard\plain \s3 \f20  \par 
+There are, as of Feb 1992, two e-mail based services for analyzing nucleic acid sequences and predicting gene structure.  These services use a variety of analyses and combine them to provide their best "guess" at gene structure.\par 
+\par 
+Geneid is an Artificial Intelligence system for analyzing vertebrate genomic  DNA and prediction of exons and gene structure (1). A prototype is implemented as a fast, automatic email-response system. \par 
+\par 
+Grail is an interface to a system which will ultimately provide automated gene assembly from DNA sequence data.  Currently the system provides analysis of protein coding potential of a DNA sequence.  The coding recognition module (CRM) us
+es a multiple- sensor neural network approach  to identify coding exons than are at least 100 bases long. \par 
+\par 
+Both of these services ask that you register once before using them.\par 
+\par 
+\pard\plain \s5 \f20\fs28\cf1 \'a6\'a6 Sequence Fetching\par 
+\pard\plain \s3 \f20  \par 
+Mail based servers for fetching databank entries include services from GenBank/NCBI,  Univ. of Houston, PIR, and EMBL.\par 
+\par 
+\par 
+\pard\plain \s4 \b\f20\fs36\cf1 \'a6 Color Selections\par 
+\pard\plain \s3 \f20  \par 
+You can create your own color selection for alignment display by choosing the Nucleic codes or Amino codes dialogs from the Sequence menu.  These dialogs provide color "buttons"
+ for each base.  Click a button to get a color picker dialog where you can change the currently assigned color.   Your
+ selection can be saved to disk file as an amino color or a nucleic color document.  You can reload such a color scheme by clicking open this document, or by choosing it from the File "Open\'c9" dialog.\par 
+\par 
+A few early users of this new version provided two of the color amino selections that ship with SeqPup.  Here are their descriptions.\par 
+\pard\plain \f20 {\fs18 \par 
+\par 
+Date: Fri, 28 May 1993 20:07:26 -0500\par 
+From: ahouse@hydra.rose.brandeis.edu (Jeremy John Ahouse)\par 
+Subject: implemented aa colors for pre-rel seqApp\par 
+}\par 
+{\f22\fs18 Don Gilbert (& Phil Carl),\par 
+        I have implemented Phil Carl's(*) modest proposal.\par 
+Some of the suggestions were not possible, so I made changes.\par 
+\par 
+        Jeremy Ahouse\par 
+\par 
+Phil's suggestion is interspersed with my additions:\par 
+\par 
+Well, I have (as they say) a modest suggestion.  I suppose what people\par 
+are really seeking are 20 colors for 20 amino acids.  I have a preliminary\par 
+proposal based on classifying the amino acids into chemical groups and\par 
+finding what seems to me to be easy pneumonics for each group.  Thus\par 
+I would propose:\par 
+\par 
+\par 
+Red for acidic amino acids; Glu, Asp \par 
+(since red is a common danger signal and acids are dangerous\par 
+(well maybe not amino acids, but it's a start))\par 
+hue:        65500\par 
+saturation: 65000\par 
+brightness: 50000\par 
+\par 
+Blue for basic amino acids; Lys, Arg, His\par 
+(blue and basic both start with "b")\par 
+hue:        44000\par 
+saturation: 65000\par 
+brightness: 50000\par 
+\par 
+White for hydroxyl amino acids; Ser, Thr (as in whitewater) \par 
+(this was not possible so I chose a cool "whitewater" color)\par 
+hue:        33000\par 
+saturation: 65000\par 
+brightness: 50000\par 
+\par 
+Green for amide amino acids; Asn and Gln \par 
+(since glutamine and asparagine rhyme with green)\par 
+hue:        22000\par 
+saturation: 65000\par 
+brightness: 50000\par 
+\par 
+Yellow for sulphur amino acids; Cys, Met\par 
+(this one's obvious)\par 
+hue:        12000\par 
+saturation: 65000\par 
+brightness: 60000\par 
+\par 
+Black for hydrophobic amino acids; Ala, Val, Leu, Ile\par 
+(Black is the opposite of white and so if white is for hydrophilic\par 
+hydroxyl amino acids black is a natural for hydrophobic ones)\par 
+hue:        00000\par 
+saturation: 00000\par 
+brightness: 00000\par 
+\par 
+Orange for aromatic amino acids; Tyr, Phe, Trp \par 
+(since "orange" sounds a little like "aromatic" and \par 
+oranges are aromatic (if that suits you better))\par 
+hue:         7000\par 
+saturation: 65000\par 
+brightness: 60000\par 
+\par 
+Purple for proline; Pro\par 
+(since both have "prl" in them)\par 
+hue:        51000\par 
+saturation: 65000\par 
+brightness: 60000\par 
+\par 
+Grey for glycine; Gly\par 
+(since both start with "g" and grey is sort of blah-like glycine)\par 
+hue:        00000\par 
+saturation: 00000\par 
+brightness: 30000\par 
+\par 
+*Phil Carl\par 
+Assoc. Director\par 
+Program in Molecular Biology and Biotechnology\par 
+University of North Carolina, Chapel Hill}\par 
+\par 
+======================\par 
+\par 
+{\fs18 Date: Mon, 7 Jun 1993 15:50:09 +0200\par 
+From: Heikki.Lehvaslaiho@Helsinki.FI (Heikki Lehvaslaiho)\par 
+Subject: aa colors\par 
+}{\f22\fs18 \par 
+Hi,\par 
+\par 
+I am including a file with amino acid color codes that are used in Steven\par 
+Smith's GDE. This scheme was not mentioned in the Usernet discussion, but\par 
+I've grown accustomed to it. At least, it is no worse that any other of the\par 
+myriad possible coloring choices.\par 
+\par 
+If you haven't got other schemes in files yet, drop me a note and I'll see\par 
+what I can do. \par 
+\par 
+\par 
+GDE aa-colors:\par 
+                           2 4 - b i t                M a c\par 
+COLOR           AA      R       G       B       R       G       B\par 
+---------------------------------------------------------------------\par 
+Magenta         AGPST   255     000     255     65535   0       65535\par 
+Black           BDENQZ  000     000     000\par 
+Red             C       225     000     000     57600   0       0\par 
+Blue            FWY     000     000     255     0       65535   65535\par 
+Light blue      HKR     000     192     192     0       49344   49344\par 
+Green           ILMV    000     192     000     0       49344   0\par 
+Gray            JOUX    145     145     145     37265   37265   37265\par 
+\par 
+\par 
+        \tab -Heikki\par 
+\par 
+}\par 
+\par 
+\pard\plain \s4 \b\f20\fs36\cf1 \'a6 Bugs\par 
+\pard\plain \f20  \par 
+\pard\plain \s3\fi-440\li440\tx260\tx540\tx1160 \f20 v0.4 Known bugs and missing features:\par 
+\par 
+\pard \s3\fi-440\li440\tx260\tx540\tx1160 General:\par 
+\pard \s3\fi-440\li440\sb40\tx260\tx540\tx720\tx1160\tx1440\tx2240 \tab -  Single sequence editor (Sequence/Edit) is very slow for long sequences (6,000bases)\par 
+\tab -  Repeated copy/cut/paste of the alignment window entries might cause problems.  Copy of sequences between windows may lead to problems. Please let me know if you see this.\par 
+\pard \s3\fi-440\li440\sb40\tx260\tx540\tx720\tx1160\tx1440\tx2240 \tab - copy/cut/paste/undo and clipboard functions may not be working as smoothly in as many contexts yet as they should be.\par 
+\tab - Sequence menu items not yet ready :  Dot plot.\par 
+\tab - Sequence/translate when done on a subsequence selection, will now leave excess nucleic bases in selection?  \par 
+\tab - Edit menu items not ready yet: Show clipboard\par 
+\pard \s3\fi-440\li440\sb40\tx260\tx540\tx720\tx1160\tx1440\tx2240 \tab - Internet menu needs testing & reworking - I haven\rquote t tested any of the e-mail services listed since last year.\par 
+\pard \s3\fi-440\li440\sb40\tx260\tx540\tx720\tx1160\tx1440\tx2240 \tab - Nucleic codes picture shows PICT processing bug -- misplaced text, and an error in biology -- complement of W is W, not S, and complement of S is S, not W.\par 
+\pard \s3\fi-440\li440\sb40\tx260\tx540\tx720\tx1160\tx1440\tx2240 \tab -  Rich Text, PICT and GIF Image format displays all have various display glitches.  Documents in these formats will be displayed for the most part but some RT
+F or images may show mistakes. Some of this is platform-dependent.\par 
+\tab - The current release may require some fiddling to install correctly (see Installing). \par 
+\pard \s3\fi-440\li440\sb40\tx260\tx540\tx720\tx1160\tx1440\tx2240 \tab - improve management of child apps (in progress, e.g., html forms).\par 
+\tab - Windows menu should list current windows directly: toolkit needs menu handling basics added.\par 
+\tab - Replace-find function is not ready yet.\par 
+\tab - Option dialogs for selecting tables (codon, renzyme, color) should allow direct editing of table values.\par 
+\tab - Single edit window key checking beep works on name as well as sequence data.\par 
+\tab - Scroll bar is slightly misplaced in rich text window.\par 
+\tab - documentation (this file) is not complete yet.  Need more description and examples on how to use the methods.\par 
+\tab - fix child app results - repeated runs sometimes will reopen old output files! \par 
+\par 
+MS Windows specific:\par 
+\tab - Text editing in alignment window doesn\rquote t track properly when window is scrolled.\par 
+\tab - printing has not yet been tested from MS Windows (no printer on my mswin box).\par 
+\tab - select-all in align view highlights part of sequence lines when it should not.\par 
+\tab - About-app image doesn\rquote t display -- due to draw pict bug with non-256 color images.\par 
+\tab - rich text display is buggy (bombs on scroll of HELP doc !!)\par 
+\par 
+XWindows specific:\par 
+\tab - Text editing in the alignment window (unlock text) doesn\rquote t yet work -- the sequence disappears in edit mode.\par 
+\tab - command keys are not yet supported as on Mac and MSWin systems.\par 
+\tab - there is frequently an XText error message written to command line or console just before certain XWindow operations.  This doesn\rquote t seem to cause problems yet, and can hopefully be ignored until I trace and squash it.\par 
+\tab - fastdnaml  child app fails to return results after 1st run?\par 
+\tab - XWindows versions always crash/core dump when Quit is chosen.  This is an annoyance but doesn\rquote t seem to impair use.  I\rquote ll track it down.\par 
+\pard \s3\fi-440\li440\sb40\tx260\tx540\tx720\tx1160\tx1440\tx2240 \tab - application can get confused at times about which window is active and front most.  This is obvious when a function such as copy/paste acts in the wrong window.
+  Sometimes repeated selection of items in front window will un-confuse the app.\par 
+\pard \s3\fi-440\li440\sb40\tx260\tx540\tx720\tx1160\tx1440\tx2240 \tab - You will probably need to edit the SeqPup.prefs &/or ~/.seqpuprc file to put in fixed paths to tables/ and to apps/, and to change the paths to child app data files.\par 
+\pard \s3\fi-440\li440\sb40\tx260\tx540\tx720\tx1160\tx1440\tx2240 \tab - There is no printing for X Window systems.  This is not really my problem as much as it is the X Window design committee\rquote s problem.  Among{\b  over 25 pounds} of X Window 
+programming books I have, {\b\scaps there is no mention of how to develop software for printing from x windows applications. }  I doubt the XWin committee views this as important, but most software users I know like to print documents on occasion.  I
+\rquote ll handle this oversight sometime, but it won\rquote t be simple.  Macintosh and MS Windows both provide methods for printing.\par 
+\pard \s3\fi-440\li440\sb40\tx260\tx540\tx720\tx1160\tx1440\tx2240 \tab - About-app image doesn\rquote t display -- due to draw pict bug with non-256 color images.\par 
+\pard \s3\fi-440\li440\tx260\tx540\tx720\tx1160\tx1440\tx2240 \par 
+\pard \s3\fi-440\li440\tx260\tx540\tx720\tx1160\tx1440\tx2240 \par 
+\par 
+\pard\plain \f20 \par 
+\par 
+\pard\plain \s4 \b\f20\fs36\cf1 \'a6 Coming Features\par 
+\pard\plain \s3 \f20  \par 
+Here is a list of things which may be added to SeqPup in the future, depending on your interest.  Please send in your suggestions!  What do you want to see to make this a good biosequence editor and analysis program?\par 
+\par 
+Sequence documentation handling.  Currently no provisions for documentation per sequence.  This will at least change to a window for any comments and saving it into files (where file form
+at permits).  Possibly I will put effort into dealing with the features, references, etc., in a fashion along lines of Genbank/EMBL documentation structure &/or Authorin documentation. Your comments on the importance of this are desired.\par 
+\par 
+Feature table parsing -- pull out subsequences from Gen/EMBL feature info.\par 
+\par 
+Align, single sequence pretty print -- header, page numbering user prefs should be added.\par 
+\par 
+Restriction map -- Could use some speed-up.  Some would like graphic map (i.e., one line or circle w/ cut points per zyme).\par 
+\par 
+Simple protein analysis routines, better protein handling.  \par 
+\par 
+Methods to transparently use networked child tasks (e.g., on fast compute servers).   \par 
+\pard\plain \f20 \par 
+add other child apps - dna/prot distance + lsadt phylogeny analysis, \par 
+\tab \tab primer analysis, others ??\par 
+add user-configurable menus - read all menus from config file?\par 
+add disjoint selections to DTableView -- need for copy/paste among masks\par 
+  (using table selection as clipboard for masks)\par 
+add variable color display in alignment window, as aids to aligning:\par 
+  2. mask colors (e.g., stem & loop areas for RNA)\par 
+improve seq mask operations and usage\par 
+  - annotate masks, choose which are used for pretty print, which for\par 
+    align view\par 
+add color picker dialog for color tables\par 
+add editable data table interface\par 
+add name window pane resizer\par 
+\par 
+\par 
+\par 
+\par 
+\pard\plain \s4 \b\f20\fs36\cf1 \'a6 History\par 
+\pard\plain \f20  \par 
+\pard\plain \s3 \f20 SeqApp was started Sept. 1990 as MacApp sequence editor/analysis platform  on which analysis programs from other authors, typically command line  w/ weak user interfaces, could be easily incorporated into a useable Mac  interface.
+\par 
+\pard \s3 \par 
+{\ul Jan. 96: version 0.5 of SeqPup.}\par 
+\par 
+\pard\plain \fi-280\li360 \f20 fixed Save file in place -- now saves in proper folder, not in seqpup folder\par 
+improved seqpup folder path finding:\par 
+- MacOS: now should always find :tables:, :apps: if they exist w/in SeqPup folder, and prefs paths are relative  (e.g., apps=apps, tables=tables  in .prefs)\par 
+- UnixOS: now can 'setenv SEQPUPHOME  /path/to/seqpup/folder'\par 
+- MSDOS : ditto with 'setenv SEQPUPHOME c:\\path\\to\\seqpup'\par 
+  NOTE: must use "APPNAME"HOME, so if you change name of SeqPup to PeekUp, you need to change env var to PEEKUPHOME.\tab     \par 
+added click-top-index-line to mask sequence column (only when sequence mask mode 1..4 is selected in main window popup)\par 
+added mask-to-selection, selection-to-mask commands -- mask-to-selection is not yet useful because base DTableView selection methods need to be rewritten to allow disjoint selections.\par 
+added seq-index display -- lists base number that mouse pointer is at\par 
+added mac file bundle rez & finder-open, finder-print \par 
+added save of pretty print in PICT format (mac), metafile (mswin - still buggy?!)\par 
+added variable position grey coloring in align display\par 
+added mswin/xwin sticky menubar window\par 
+fixed mswin mouse-shift commands\par 
+added mswin menu command keys\par 
+fixed mac/mswin text edit command keys: cut/copy/paste\par 
+many updates to mswin version for micsoft win32/winnt/win95\par 
+updated fastdnaml child app to new version 1.1.1\par 
+added configurable child-app launch parameters\par 
+  -- dialogs in HTML.form format; needs more work, additions\par 
+added dna distance/similarity matrix function\par 
+added child apps: DeSoete's LSADT, Felsenstein's DrawTree & DrawGram\par 
+\par 
+\pard \par 
+\pard\plain \s3 \f20 \par 
+\par 
+\pard \s3 {\ul July 95:  Version 0.4 of SeqPup. } \par 
+\pard \s3 This includes most of the features of its ancestor SeqApp.  Alignment window: shift & slide sequences, copy/cut/paste/undo sequence entries among windows; Restriction maps and pretty print output; useable child apps for mac, mswin,  and unix. 
+\par 
+\par 
+v0.4 corrections:\par 
+\tab - File/Open for non-sequence data (text, rtf, etc.) has alternate open menu, to distinguish from sequence data.  Added sequence append-open.\par 
+\tab - Cut/copy/paste/undo for align-seq view now available\par 
+\tab - Sequence menu items that are now ready: Consensus, Pretty print, Restriction Map, nucleic & amino codes.  Some of these need further work (pretty, remap options).\par 
+\tab - Child apps usage improved, may need more work though.\par 
+\tab - The Mac/68K,  Mac/PPC, MSWin, Unix now do Child applications.\par 
+\tab - Include ClustalW, CAP, FastDNAml, child apps\par 
+\tab - Restriction map function is extensively revised and improved.\par 
+     - FindORF and Find string functions added\par 
+     - Printing for pretty print, r.e.map now functional on Mac (and maybe MSWin)\par 
+     \par 
+v0.4 Known bugs and missing features (see above Bugs section for fuller list):\par 
+\tab - Character editing (unlocked text) in the alignment (main) window is not working on Xwindow systems, and may be bugging in MSWindow and Mac systems.\par 
+\tab - Single sequence editor (Sequence/Edit) is very slow for long sequences (6,000bases)\par 
+\tab - Sequence menu items not yet ready :  Dot plot.\par 
+\tab - Child Apps fail in various ways on MSWindows and Unix systems.\par 
+        -- CAP seems most likely to succeed completely.  \par 
+        -- ClustalW and FastDNAml may be launched and run properly, but SeqPup will fail to automatically open their results files.\par 
+\tab - MSWindows and XWindows versions are less stable than Mac versions.\par 
+\tab - XWindows versions reliable crash/core dump when Quit is chosen.  This is an annoyance but doesn\rquote t seem to impair use.\par 
+\tab - Internet menu needs testing & reworking - I haven\rquote t tested any of the e-mail services listed since last year.\par 
+\tab - Nucleic codes picture shows PICT processing bug -- misplaced text, and an error in biology -- complement of W is W, not S, and complement of S is S, not W.\par 
+\tab -  Repeated copy/cut/paste of the alignment window entries might cause problems.  Please let me know if you see this.\par 
+\tab - There is no printing for X Window systems.  \par 
+\par 
+\pard \s3 {\ul 21 Mar 95: Second release of SeqPup, version 0.1. } \par 
+\pard \s3 This release has more parts of the SeqApp program put into it.  This includes some alignment 
+view manipulations, limited use of child applications,  some undo-able commands, choosing data tables for colors, codon and r.enzymes.  This release also includes much of the basics of GopherPup, including display of RTF, HTML, PICT, GIF document formats. 
+ However there is still some work to be done to let you open these w/o interpreting them as sequence data.\par 
+This release has just a Mac PowerPPC (SeqPup/PPC) and Mac 68000 processor (SeqPup/68K) versions.  When more of the basic bugs are worked out, I\rquote ll try Sun and MSWindows versions.  \par 
+\par 
+v0.1 Known bugs/missing features:\par 
+\tab - Use of character editing (unlocked text) in the alignment (main) window will lead to a crash after a few windows have been opened/closed or other manipulations performed.\par 
+\tab - File/Open for non-sequence data (text, rtf, etc.) may well mistakenly identify them as sequence data.  File/New is probably not doing anything useful, or bombing.\par 
+\tab - Single sequence editor (Sequence/Edit) is very slow for long sequences (6,000bases)\par 
+\tab - Single seq. editor may be failing in various ways (I\rquote ve not looked at it carefully yet).\par 
+\tab - No cut/copy/paste/undo for align-seq view yet (coming soon I hope).\par 
+\tab - Internet menu needs reworking - I haven\rquote t tested any of the e-mail services listed there since last year.\par 
+\tab - Sequence menu items not yet ready : Consensus, Pretty print, Restriction Map, Dot plot,  nucleic & amino codes.\par 
+\tab - Child apps usage needs more development to work smoothly.\par 
+\tab - The Mac/68K version fails when using Child applications.\par 
+\tab - Only the ClustalW child app is ready for distribution (may have FastDNAml, CAP, and DNAml soon -- let me know of programs you would like to see here).\par 
+\par 
+{\ul 1 Mar 94: First public release of SeqPup, version -1. } \par 
+It has plenty of bugs and missing features, including:\par 
+\tab \tab no Undo (this is a real bite to those used to it)\par 
+\tab \tab mostly no cut/copy/paste/clear\par 
+\tab \tab limited printing of documents or views\par 
+\tab \tab mostly no align-view manipulations (move,cut/copy,edit in place, shift, ...)\par 
+\tab \tab no pretty print views\par 
+\tab \tab no restriction maps\par 
+\tab \tab no dot plots\par 
+\tab \tab no ...\par 
+\tab \tab problems w/ window display & keeping track of active window (x,mswin)\par 
+I'll be adding back many of these features from the Macintosh SeqApp as time permits.{\f3 \par 
+}\par 
+\par 
+\pard \s3 {\ul SeqApp }{\ul 12+ June 93, version 1.9a157+ }\par 
+\pard \s3 a semi-major update, and time extension release with various enhancements and corrections.  These include\par 
+  -- lock/unlock indels (alignment gaps). Useful when sliding bases around\par 
+  during hand alignment, to keep alignment fixed in some sections.\par 
+  -- color amino (and nucleic) acids of your choice.  \par 
+  -- added support for more sequence file formats: MSF, PAUP, PIR.  SeqApp now relies on the current Readseq code for sequence reading & writing.\par 
+  -- save selection option to save subset of bases to file.\par 
+  -- addition the useful contig assembly program CAP, written by Xiaoqiu Huang.\par 
+  -- major revision of preference saving method (less buggy, I hope)\par 
+  -- major revision of the underlying application framework, due to moving from MacApp 2 to MacApp 3.\par 
+  -- fixed a bug that caused loss of data when alignment with a selection was saved to disk.\par 
+\par 
+5 Oct 92, version 1.8a152+ -- a semi-major update with various enhancements and corrections.  These include \par 
+- corrections to the main alignment display, \par 
+- improvements to the help system, \par 
+- major changes to the sequence print-out options, \par 
+-- including addition of a dotplot display (curtesy of DottyPlot), \par 
+-- a phylogeny tree display (curtesy of TreeDraw Deck & J. Felsenstein\rquote s DrawTree), \par 
+-- improved Pretty Print, which now has a single sequence form and a better aligned sequence form, \par 
+-- improved Restriction map display, \par 
+- addition and updating of several e-mail service links, \par 
+-- including Blast Search and Genbank Fetch via NCBI,\par 
+-- BLOCKS, Genmark, and Pythia services,\par 
+- updated Internet gopher client (equal to GopherApp),\par 
+- editable Child Tasks dialogs\par 
+- addition of links to Phylip applications as Child Tasks\par 
+- addition of Phylip interleaved format as sequence output option\par 
+\par 
+11 June 92, version 1.6a35 is primarily a bug fix release. Several of the  disasterous bugs have been squashed. This version now works on the Mac SE model, except for sendmail. No new features have been added. \par 
+\par 
+7Jun92, v. 1.5a?? -- fixed several of the causes of mysterious bombs  (mostly uninitialized handles), link b/n multiseq and 1-seq views is better now, folded in GopherApp updates, death date moved to Jan 93, \par 
+\par 
+25Mar92, v1.5a32 (or later).  First release to general public.  Includes Internet Gopher client.  Also released subset as GopherApp for non-biologists.\par 
+\par 
+4Mar92, v 1.4a38 -- added base sliding in align view. Bases now slide something like beads on an a
+bucus.  Select a section with mouse, then grab section and shift left or right. Gaps are inserted/removed as needed. For use as contig aligner, still needs equivalent of GCG GelOverlap to  automatically find contig/fragment overlaps.\par 
+\par 
+Also added "Degap" menu item, to remove "." and "-".  Fixed several small bugs including Align pretty print which again should display.\par 
+\par 
+2Mar92, v 1.4a19 -- fixed several annoying bugs, see SeqApp.Help, section on bugs for their resolution.  These include Complement/Reverse/Dn
+a2Rna/ Translation which should work now in align view; Consensus menu item; entering sequence in align window now doesn't freeze after 30+ bases; pearson/fasta format reading; ...\par 
+\par 
+10Feb92, v 1.4a6 -- fix for Mac System 6; add Internet service dialogs for Univ. Houston gene-server, Geneid @ BU, Grail @ ORNL; correct About Clustalv attribution.\par 
+\par 
+5Feb92, v 1.4a4 -- limited release to network resource managers, clustalv authors, testers.\par 
+\par 
+Vers 1.4, Dec91 - Feb92. Dropped multi-sequence picker window, made mul
+ti-align window  the primary view (no need for both; extra confusion for users).  added pretty print, restriction map, sequence conversions.   Generalized "call clustal" to Hypercard-like, System 7 aware menu  for calling external tasks. Fleshed out intern
+et e-mail objects, added help objects, window menu, nucleic/amino help windows. Many major/minor revisions to all aspects to clean out bugs.   Preliminary release to a limited set of testers (1.4a?)\par 
+\par 
+Vers. 1.3, Sept - Dec91. Modified clustalv for use as external app (commandline file, background task, ...). Added basic Internet e-mail routines call clustal routine (preliminary child task)  Many major/minor revisions to all aspects to clean out bugs.  
+\par 
+\par 
+Jun91-Aug91:  overwork at other tasks kept SeqApp on back burner.\par 
+\par 
+Mar91-Jun91: not much work on SeqApp, fleshed out TCP methods (UTCP, USMTP, UPOP).\par 
+\par 
+Feb 1991, vers 1.2? made available to Indiana University biologists and NCBI biocomputists.\par 
+\par 
+Vers. 1.1, Oct 1990, multiple sequence picker and multiple sequence alignement window, including colored bases, added to deal with alignment and common multi-sequence file formats.\par 
+\par 
+Version 1, Sep 1990. Single sequence edit window + TextEdit window,  from MacApp skeleton/example source + readseq.\par 
+\par 
+\par 
+\pard\plain \f20 \par 
+\par 
+}

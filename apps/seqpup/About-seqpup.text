@@ -1,0 +1,43 @@
+
+
+SeqPup, version 0.7, August 1997
+
+see the folder iubio:/molbio/seqpup/java/ for this new version
+see the folder iubio:/molbio/seqpup/c++/ for the older, but currently
+more complete version
+
+SeqPup is a biological sequence editor and analysis program.  It includes links
+to network services and external analysis programs.  It is usable on common
+computer systems, including Macintosh, MS-Windows and X-Windows.  
+
+Features include
+	multiple sequence alignment and single sequence editing
+	! read and write several sequence file formats 
+	*! sequence feature editing, and marking in prints
+	translate dna/amino, consensus, reverse/complement, distance and such functions 
+	pretty print of alignments and sequences with boxed and shaded regions
+	Internet sequence analysis:
+	  * fetch sequeces using SRS keyword search
+	  * NCBI-BLAST similarity search
+    (this version: * - new; ! - incomplete)
+
+NOTICE: This application is a work in progress; it has bugs. It may be useful
+to you as is, but it is still prone to problems.
+
+Find this software at
+  ftp://iubio.bio.indiana.edu/molbio/seqpup/ 
+  http://iubio.bio.indiana.edu/soft/molbio/seqpup/
+
+SeqPup is being written using DCLAP, a free and portable class application
+framework, now converted to the new Java language. This Java version will work 
+on any computer system that supports Java runtime version 1.0.2, including Macintosh, 
+MS Windows, and many Unix systems. 
+
+Java versions of other molecular biology applications of mine will
+soon be updated (maybe by 26 Aug 97):
+   loopDloop - an RNA secondary structure display editor
+   Phylodendron - a phylogenetic tree drawing application
+   FlyNapp - a FlyBase database network application
+
+Developers will find the source code for this application and others in the
+iubio:/molbio/java/source folders. 

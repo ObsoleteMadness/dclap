@@ -1,0 +1,110 @@
+
+;  TOIG of: Dro5s-T.Seq  check: 9487  from: 1  to: 120
+;  
+;  120	    Dros. melanogaster 5s rRna
+;     Dro5s-T.Seq  Length: 120  April 6, 1989  21:22  Check: 9487  ..
+dro5stseq
+GCCAACGACCAUACCACGCUGAAUACAUCGGUUCUCGUCCGAUCACCGAAAUUAAGCAGCGUCGCGGGCG
+GUUAGUACUUAGAUGGGGGACCGCUUGGGAACACCGCGUGUUGUUGGCCU1
+
+;  TOIG of: Dro5srna.Seq  check: 9487  from: 1  to: 120
+;  
+;  
+; LOCUS       DRORRA        120 bp ss-rRNA            RNA       04-SEP-1984
+; DEFINITION  D.melanogaster 5S rRNA.
+; ACCESSION   J01854
+; KEYWORDS    5S ribosomal RNA; ribosomal RNA.
+; SOURCE      Drosophila melanogaster (KC cell line, subline F6 [1], [2]) rRNA.
+;   ORGANISM  Drosophila melanogaster
+;             Eukaryota; Metazoa; Arthropoda; Insecta; Diptera.
+; REFERENCE   1  (bases 1 to 120)
+;   AUTHORS   Benhamou,J. and Jordan,B.R.
+;   TITLE     Nucleotide sequence of Drosophila melanogaster 5S RNA: Evidence for
+;             a general 5S RNA model
+;   JOURNAL   FEBS Lett 62, 146-149 (1976)
+;   STANDARD  full staff_review
+; REFERENCE   2  (bases 1 to 120)
+;   AUTHORS   Benhamou,J., Jourdan,R. and Jordan,B.R.
+;   TITLE     Sequence of Drosophila 5S RNA synthesized by cultured cells and by
+;             the insect at different developmental stages: Homogeneity of the
+;             product and homologies with other 5S RNAs at the level of primary
+;             and secondary structure
+;   JOURNAL   J Mol Evol 9, 279-298 (1977)
+;   STANDARD  full staff_review
+; COMMENT     [1] compares given sequence with 5S RNA sequences from chlorella
+;             and human. [2] notes that the sequence appears to be homogeneous
+;             both in the KC cell line and in the insect at different
+;             developmental stages.
+; 
+;             Feature table cross reference is made to Erdmann et al. 'Collection
+;             of published 5S and 5.8S ribosomal RNA sequences' in Nucl Acid Res
+;             11, r105-r133 (1983).
+; FEATURES       from  to/span     description
+;     rRNA          1      120     5S rRNA (NAR: 47)
+;     refnumbr      1        1     numbered 1 in [1], [2]
+;     revision     63       68     cgcggg in [2]; gggcgc in [1]
+; BASE COUNT       26 a     33 c     35 g     26 t
+; ORIGIN      5' end of mature 5S rRNA.
+; 
+;  Drorra.Structural  Length: 120  March 12, 1989  00:35  Check: 9487  ..
+dro5srnaseq
+GCCAACGACCAUACCACGCUGAAUACAUCGGUUCUCGUCCGAUCACCGAAAUUAAGCAGCGUCGCGGGCG
+GUUAGUACUUAGAUGGGGGACCGCUUGGGAACACCGCGUGUUGUUGGCCU1
+
+;  TOIG of: Droest6.Seq  check: 8008  from: 1  to: 1819
+;  
+;  
+; LOCUS       DROEST6      1819 bp ss-mRNA            INV       31-AUG-1987
+; DEFINITION  D.melanogaster esterase-6 mRNA, complete cds.
+; ACCESSION   M15961
+; KEYWORDS    carboxylic-ester hydrolase; esterase 6; serine hydrolase.
+; SOURCE      D.melanogaster (strain Oregon R) 3- to 5-day-old male, cDNA to
+;             mRNA, clone cDm233.
+;   ORGANISM  Drosophila melanogaster
+;             Eukaryota; Metazoa; Arthropoda; Insecta; Diptera.
+; REFERENCE   1  (bases 1 to 1819)
+;   AUTHORS   Oakeshott,J.G., Collet,C., Phillis,R.W., Nielsen,K.M.,
+;             Russell,R.J., Chambers,G.K., Ross,V. and Richmond,R.C.
+;   TITLE     Molecular cloning and characterization of esterase-6, a serine
+;             hydrolase of Drosophila
+;   JOURNAL   Proc Nat Acad Sci USA 84, 3359-3363 (1987)
+;   STANDARD  full staff_review
+; COMMENT     Draft entry and computer-readable sequence for [1] kindly provided
+;             by R.C.Richmond, 12-JUN-1987.
+; FEATURES       from  to/span     description
+;     pept         25     1671     esterase-6 precursor (EC 3.1.1.1)
+;     sigp         25       87     esterase-6 signal peptide
+;     matp         88     1668     esterase-6
+;     mRNA    <     1     1819     Est6 mRNA
+;     refnumbr      1        1     numbered 1 in [1]
+; BASE COUNT      495 a    375 c    467 g    482 t
+; ORIGIN      1 bp upstream of EcoRI site; chromosome BK9 region 69A1.
+; 
+; INVERTEBRATE:DROEST6  Length: 1819  January 9, 1989  16:48  Check: 8008  ..
+droest6seq
+GAATTCGCCGGAGTGAGGAGCAACATGAACTACGTGGGACTGGGACTTATCATTGTGCTGAGCTGCCTTT
+GGCTCGGTTCGAACGCGAGTGATACAGATGACCCTCTGTTGGTGCAGCTGCCCCAGGGCAAGCTACGTGG
+TCGCGATAATGGAAGCTACTACAGCTACGAATCGATTCCCTACGCCGAACCGCCCACTGGCGATCTACGA
+TTCGAGGCTCCAGAGCCGTACAAACAAAAGTGGTCGGATATATTCGATGCCACCAAAACCCCGGTGGCGT
+GCCTGCAGTGGGATCAGTTCACGCCTGGGGCCAACAAATTGGTAGGAGAGGAGGATTGCCTAACCGTCAG
+CGTCTACAAGCCGAAGAATAGCAAGAGGAATAGCTTTCCGGTGGTGGCCCACATTCACGGAGGTGCCTTT
+ATGTTCGGTGCAGCATGGCAAAATGGACACGAGAACGTGATGCGTGAGGGCAAATTCATTCTGGTGAAGA
+TAAGCTATCGCCTGGGGCCATTGGGTTTCGTGAGCACCGGCGATAGGGATCTTCCCGGAAACTATGGACT
+GAAAGATCAACGGCTGGCTCTCAAATGGATTAAGCAGAATATAGCCAGTTTTGGTGGAGAACCGCAGAAC
+GTACTGTTGGTTGGTCACTCCGCTGGAGGAGCTTCGGTCCATCTGCAGATGCTTCGTGAAGATTTCGGCC
+AGCTGGCCAGGGCGGCATTCTCGTTTAGTGGAAATGCTCTAGATCCATGGGTTATACAGAAGGGAGCAAG
+AGGACGAGCCTTTGAACTGGGACGCAACGTGGGATGTGAATCGGCTGAAGACTCGACCAGCCTGAAGAAA
+TGCCTAAAGTCAAAGCCAGCCAGTGAATTAGTCACCGCCGTCCGTAAATTCCTTATATTTTCCTATGTGC
+CCTTTGCTCCATTTAGTCCTGTATTGGAGCCATCGGATGCTCCAGACGCCATTATCACCCAGGATCCCAG
+GGATGTCATTAAGAGCGGAAAGTTCGGACAGGTTCCGTGGGCTGTTTCCTATGTCACAGAGGATGGTGGC
+TACAATGCCGCCTTGCTTTTGAAGGAACGGAAATCTGGAATAGTTATCGATGATCTAAACGAGCGTTGGC
+TTGAGTTGGCACCATATTTACTATTCTACCGGGACACGAAGACCAAAAAGGATATGGACGACTACTCGCG
+GAAAATTAAGCAGGAGTATATAGGCAATCAGAGATTTGACATCGAAAGCTATTCAGAATTGCAGCGGCTA
+TTCACGGATATTCTCTTCAAGAATAGCACGCAGGAGTCATTGGATCTTCATCGCAAATATGGAAAGAGTC
+CTGCCTACGCTTATGTCTATGACAATCCAGCCGAAAAAGGAATCGCACAGGTCCTGGCCAATCGAACCGA
+TTATGATTTTGGAACTGTACACGGTGACGACTACTTTTTGATATTCGAAAATTTCGTACGAGATGTGGAA
+ATGCGTCCGGATGAGCAGATAATTTCGAGAAATTTTATCAATATGCTGGCAGATTTTGCTTCGAGTGATA
+ATGGCTCTCTAAAATATGGTGAATGCGATTTCAAAGATAGTGTAGGTAGTGAGAAATTCCAATTATTAGC
+TATTTATATTGATGCTGCCAGAATAGGCAGCATGTGGAATTTCCGTAAGTTACATGAATAAAATCAAAAA
+TTTTTCGTTCTGTGTAATTTTTAATTATTTAATTATTCTCAACTGGCTTTAAATATCATTTGTACAAAAC
+GTGTTTGTCGCTTTATATTTTGGTTTTTGTTGTTTCTTTATAAAGAATAATAAACGTTTGTTTACCCGC1

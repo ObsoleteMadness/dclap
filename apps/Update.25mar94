@@ -1,0 +1,37 @@
+23 Mar 94
+
+  Updates to the DCLAP class application framework include:
+
+Automatic subview destruction at death of main view/window (plugs a big mem leak)
+
+Proper window destruction at close/free (plugs a big mem leak). This
+also clears out "phantom" window selections seen by users.
+
+Support for installation of default preference/resource files.
+
+Corrections & additions to DView, DWindow,  DPrefManager,
+DPanel, DFileManager, Dvibrant, DGopher group.
+
+
+  Updates to the GopherPup Internet information client include:
+
+Added external handler support for all gopher and gopher+
+types (e.g., user can configure viewers to display pictures, movies,
+sounds, documents). Also added default handlers and user configuration.
+
+Easy-to-use support for multiple view types in gopher+, and
+Fetch-to-file & fetch-to-display options.
+
+Tested, working transport of basic gopher types: documents, files,
+directories, notes, queries, and via handlers, images, movies, sounds.  
+This release still lacks full support for these types: 
+telnet/tn3270, cso, {html, mime, whois, finger, ftp, news, ...}
+
+Full, working support of ASK forms including the more complex features
+lacking in some other clients --
+  support of forms of unlimited size
+  support of binary (and text) file transfer from client to server
+  support of AskL, AskP, ChooseF, Ask, Note, Select
+
+User preference for brief or full gopher+ folder fetching.
+

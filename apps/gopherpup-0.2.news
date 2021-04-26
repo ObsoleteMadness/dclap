@@ -1,0 +1,75 @@
+GopherPup is an Internet information client program, usable
+on the common computer systems including Macintosh, Motif/X
+Windows and MS-Windows.  It provides an easy to use,
+Macintosh Finder-like doorway to the range of Internet
+Gopher services.
+
+Release 0.2 adds support for Microsoft's Rich Text Format
+(RTF) for display of fully formatted documents.  Formatting
+can include a variety of fonts including symbols, font sizes
+and styles, super-scripting and sub-scripting, tabbing,
+paragraph formatting, and pictures in both vector and bitmap
+forms.
+
+It also adds network hypertext links as an extension of
+Gopher+ protocol.  This permits documents to have hot-spots
+that link to other documents or information services on the
+network.
+
+The new support for networked hyper-rich-text in GopherPup
+makes it potentially quite useful for electronic publishing
+of scientific documents.  These features are not found in
+any other currently available, free network information
+client.
+
+This program supports Gopher+ methods, including ASK forms
+that make it possible to provide client-server dialogs for
+various information analyses, and supports multiple view
+formats, so that you can fetch versions of documents that
+most suit your computer system.
+
+GopherPup is available at IUBio in ftp.bio.indiana.edu:
+/util/gopher/gopherpup (via gopher or ftp).  An application
+for viewing RTF documents, without network functions, called
+RTFViewer is also released at this time (see
+/util/dclap/apps/rtfviewer).
+
+Also at this time IUBio archive is updated in places to
+include network hyper-rich-text documents, especially the
+FlyBase Drosophila databank.  It now includes a hyper-rich-
+text doorway, and a hyper-rich-text searchable database of
+Drosophila gene descriptions.  These are accessable at this
+time only with GopherPup.
+
+GopherPup is built on a cross-platform C toolkit from the
+Nat'l Center for Biotechnology Information (NCBI),
+especially Jonathan Kans' Vibrant user interface toolkit.
+On top of this toolkit, the author built a C++ application
+framework that is patterned after the MacApp framework from
+Apple Computer. This framework called DCLAP is available
+freely to the public, as is NCBI's toolkit.  The home
+archive location for DCLAP is {ftp,gopher} to
+ftp.bio.indiana.edu:/util/dclap.
+
+This initial release of GopherPup lacks several important
+features, and also it includes several bugs, making it
+likely to crash, and not yet suitable for extensive use.
+There are application executables for Macintosh, MS-Windows,
+and Sun Sparcstation, with a Silicon Graphics version
+expected soon.  Source code is available, at the DCLAP home,
+to those who wish to compile it on their own systems.
+
+Comments, bug reports and suggestions for new features may
+be addressed via e-mail to    GopherPup@Bio.Indiana.Edu
+                                                            
+                                               - Don Gilbert
+                                        Bloomington, Indiana
+
+History
+ 7 June 94, v 0.2.  Adds RichTextFormat, including PICT
+pictures, and network hypertext features.
+25 Jan 94, version -1 of GopherPup works on Mac and SunSparc-
+Motif, but still incomplete compared to GopherApp.
+ 9 Nov 93, v 2.1bx of GopherApp (alias GopherApp++).
+25 Mar 92, v 1.0 of GopherApp released to public.
+

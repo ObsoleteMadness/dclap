@@ -1,0 +1,208 @@
+// spup-updates.txt
+// seqpup v 0.6 + 0.5a updates
+
+fixed Save file in place -- now saves in proper folder, not in
+seqpup folder
+
+improved seqpup folder path finding 
+		- MacOS: now should always find :tables:, :apps: if they exist
+		  w/in SeqPup folder, and prefs paths are relative
+		  (e.g., apps=apps, tables=tables  in .prefs)
+	  - UnixOS: now can 'setenv SEQPUPHOME  /path/to/seqpup/folder'
+	  - MSDOS : ditto with 'setenv SEQPUPHOME c:\path\to\seqpup'
+	    NOTE: must use "APPNAME"HOME, so if you change name of SeqPup
+	    to PeekUp, you need to change env var to PEEKUPHOME.
+	    
+added click-top-index-line to select sequence columns
+  
+added mask-to-selection, selection-to-mask commands -- mask-to-
+  selection is not yet useful because base DTableView selection
+  methods need to be rewritten to allow disjoint selections.
+  
+added seq-index display -- lists base number that mouse pointer is at
+
+added mac file bundle rez & finder-open, finder-print 
+   -- needs double check
+
+added save of pretty print in PICT format (mac),
+   metafile (mswin - still buggy?!)
+
+added variable position grey coloring in align display
+
+added mswin/xwin sticky menubar window
+fixed mswin mouse-shift commands
+added mswin menu command keys
+fixed mac/mswin text edit command keys: cut/copy/paste
+
+many updates to mswin version for micsoft win32/winnt/win95
+
+updated fastdnaml app to version 1.1.1
+
+added configurable child-app launch parameters
+  -- dialogs in HTML.form format
+  -- needs more work
+
+added dna distance/similarity matrix function
+
+added child apps: DeSoete's LSADT, Felsenstein's DrawTree & DrawGram
+
+-- ?? vers. 0.6 --
+
+fixed bomb during cut/copy of pretty print view
+
+fixed - cut/clear last seq in list, can't select new last seq (can see it)
+
+fixed scroll of multi-align view w/ arrow when in Edit bases mode
+        leads to overlapped draw of bases.
+
+fixed crash & failure when use Find w/ Edit bases mode 
+
+fixed - mswin edits were truncated to 255 chars (vibtext)
+
+fixed various crash bugs - close, quit failures
+
+fixed child apps where repeated runs would reopen old output files
+
+added seqprint/pretty print save to file in text or pict format - 
+    see seqprint prefs dialog
+
+added background coloring and background alignment greyscale to align
+     view color options
+     
+added minimum ORF size preference (seq prefs dialog) to all orf finding
+
+improved tracking of changed data and automatic "Save document?" prompt
+  if dirty; added underlining names to show dirty seqs
+  
+added  "revert to saved file" menu choice
+
+added dialog to locate data files if not automatically found
+
+added editable data table interface, for data choosing dialogs (codons, colors, 
+  styles, etc).
+
+added preliminary sequence assembly doc and autoseq base calling child app
+
+improved BOP usage and autoseq data editing (v.0.6d)
+
+fixed another pathname space problem when calling child apps (Mac only, v0.6e)
+
+
+in progress
+------------
+
+added (0.6b) network "child-apps" - called now BOP - e.g., call apps on remote (Unix)
+computer w/ sequence inputs and get results returned, esp. w/ GCG and like
+useful apps
+  >> can do some of this; need persistence on client; bopper fixups?;
+     problems w/ tcp failures; need to handle gcg graphics!;
+  >> wrote "bopper" program for Unix servers to handle BOP client/server
+     Internet interactions with SeqPup.   Taken from popper, allows
+     server to offer biocomputing services to individual users w/ passworded
+     accounts on server.   See bopper distribution source at
+     //iubio.bio.indiana.edu/util/dclap/source/ 
+  
+added (0.6c) sequence assembly and handling of base calling child app (autoseq
+		from Reece Hart).  Very preliminary, but autoseq will read ABI and SCF
+		sequencer trace files, and convert to bases.  Seqpup will read the 
+		output of autoseq and display bases + traces, and bases can be copied/edited
+		into regular alignment set.  Yet to do (much...) -
+		better integration, output format (? same as autoseq's 5 files?) for
+		called bases + traces, ORF and other views for easy assembly of autoseq
+		sections; CAP/other autoasmbly?.
+		
+		
+added/improve (0.6a) max. sequence length to be handled, from kilobases to megabases
+  (target is 10MB sequences) -- ? use disk caching of seq. segments
+	 >> can now open a 2MB sequence (e.g., the H.flu genome), but still  
+	 >> can't do much  with it.
+
+added  (0.6a) disjoint selections to DTableView -- need for copy/paste among
+  masks (using table selection as clipboard for masks)
+  >> see seq selections when disjoint mask is front view -- not yet right
+  
+
+todo
+-----------
+
+add undo for edit text in aln window
+
+fix mswin/unix edit align text - when scrolled, esp. to far right, edit
+  text is offset right from real position.
+
+fix mswin rich text display (bombs on scroll of HELP doc!)
+	-- 32bit version only; 16bit version seems okay
+ -- ? unix also bombs on rtf display (HELP doc)
+ 
+fix child app - unix: fastdnaml fails to return results after 1st run?
+ 
+fix - linux only -- can't edit in multi-align view yet (can but edit
+   seq doesn't display...).  Other unices are okay here I think.
+   
+fix - unices won't take longs for draw point/rect values -- end up w/
+   displays offset or worse.  Mac/MSWin have been converted to long
+   x,y values
+   
+fix - unices don't display background color in multalign view
+
+add reduced magnification for align windows and pretty prints
+  (e.g., one base per pixel or less)
+  
+add consensus for aminos (only for nucs now)
+ --> fixed to skip amino seqs for now
+ 
+add direct button/link from pretty print doc to pretty option controls !
+  (easy to miss options like colored bases that are available!)
+
+add sequence documentation options (user additions + save current
+genbank/embl/etc docs)
+
+improve seq mask operations and usage
+  - annotate masks, choose which are used for pretty print, which for
+    align view
+  
+debug mswin save tableview picture as win metafile format (?)
+
+add dotplot
+
+add ORF maps, R.E. Maps, other items for sequence assembly validation?
+
+add/create new main app for base calling from API/other traces, and
+sequence assembly? - use autoseq.C (Reece Hart	(reece@ibc.wustl.edu)) 
+as ? extern-app or build into program? -- want to display traces +
+called bases and allow user to edit bases...
+
+>> integrate basecalling trace display, ORF & RE maps with align window
+>> for single seq, base-by-base graphic views ?
+
+add other child apps - primer analysis, others ??
+
+add user-configurable menus - read all menus from config file?
+
+add dialogs for configuring child-apps? (current html.form is now
+  a widespread syntax).
+  
+add variable color display in alignment window, as aids to aligning:
+  done/1. color change as alignment improves/worsens  
+  2. mask colors (e.g., stem & loop areas for RNA)
+  
+add color picker dialog for color table
+
+add rest. enzyme picker dialog for renzyme table
+
+add name window pane resizer
+
+add/enable background color options for align displays
+
+fix DAlnEditCommand to handle cut/copy/paste of selected block within
+    alignview (now only does full rows, selected alnindex)
+
+add seq Annotation/Feature handling (part of seq documentaion handling), and
+highlighting of bases by features.
+
+add basic HTTP/HTML forms processing for simple cli/server dialogs
+-- will want to hand off most result html docs to alt. viewer
+
+add user-configurable menus - read all menus from config file?
+add user-configurable dialogs - convert most to html forms?
+

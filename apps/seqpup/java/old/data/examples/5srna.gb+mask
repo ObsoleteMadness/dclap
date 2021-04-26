@@ -1,0 +1,432 @@
+LOCUS       acarr58sst       183 bp
+DEFINITION  acarr58sst  183 bases  64754A4D checksum
+ORIGIN      
+       1  a-------ac tcctaacaac GgAtatCTtG gtT-Ctcgcg agGatGAaGa
+      51  acGcAGcg-- AaatGcGata cgtagtgtga atcgc-aggg atcagtgaat
+     101  catcgaatct ttgaacgcaa gttgcgctct cgtg--gttt aaccccccgg
+     151  gagc-acgtt cgcttgagtg cc--gctt-- ---
+//
+LOCUS       acarr58sst#Mask       183 bp
+DEFINITION  acarr58sst#Mask  183 bases  5590A456 checksum
+ORIGIN      
+       1  IIIIIIIIHH HHIIHIHIII HHHHIIHHIH HIHIHIIHHI IIHHHHHHHH
+      51  HHHHHHHHIA @@A@@@@@A@ @A@@@@@@@@ @@A@@A@@AA AA@@A@AA@@
+     101  HHHHHHIIHH HHHHHHHHHI IHHHHHIIHI IHIHIIHIII IIIIIIHHII
+     151  HIHHIHHHII IHIIHHHHIH IHIIHHIIII III
+//
+LOCUS       amgrrbst       183 bp
+DEFINITION  amgrrbst  183 bases  C886D2FB checksum
+ORIGIN      
+       1  ----cgt--c cccgaacggc GgAtcaCTtG gcT-Cgtgga tcGatGAaGa
+      51  ccGcAGc--t AtctGcGcgt cgtcgtgtaa tccgc-aggt tatac--gaa
+     101  catcgaccag tcgaacgcac attgcggcct cggt--gacc cgcgggcccc
+     151  gggccacgcc tgtctgaggg tc--gt---- --a
+//
+LOCUS       amgrrbst#Mask       183 bp
+DEFINITION  amgrrbst#Mask  183 bases  26F58F9 checksum
+ORIGIN      
+       1  IIIIIIIIIH IHIIHIHHHI HHHHHHHHIH HHHIHIHHII HHHHHHHHHH
+      51  IHHHHHHIIA @A@@@@@AAA @A@A@@@@A@ AAA@@A@@AA A@A@AAA@@A
+     101  HHHHHHIIII HIHHHHHHHI IHHHHHIHHI IHIIIIHIII IIIIIIHHII
+     151  HHHHIHHHHH HHHHHHHHIH HHIIHIIIII III
+//
+LOCUS       bmorrbst       183 bp
+DEFINITION  bmorrbst  183 bases  3E9C23D6 checksum
+ORIGIN      
+       1  aaatgattac cctggacggt GgAtcaCTtG gcT-Cgcggg tcGatGAaGa
+      51  acGcAGt--t AactGcGcgt catagtgtga actgc-agga cacatttgaa
+     101  catcgacatt tcgaacgcac attgcggtc- cgtg--gaga caca--tcca
+     151  ggaccactcc tgtctgaggg cc--ggct-- ---
+//
+LOCUS       bmorrbst#Mask       183 bp
+DEFINITION  bmorrbst#Mask  183 bases  42F5738C checksum
+ORIGIN      
+       1  IIIIIIIIHH IHHIIIHHHH HHHHHHHHIH HHHIHIIHII HHHHHHHHHH
+      51  HHHHHHIIIA @@@@@@@AAA @A@@@@@@@@ @A@@@A@@A@ A@@@A@A@@A
+     101  HHHHHHIIIH HIHHHHHHHI IHHHHHIIHI IHIHIIHIII IIIIIIIHII
+     151  HHIHIHHIHH HHHHHHHHIH IHIIHIIIII III
+//
+LOCUS       crerrbst       183 bp
+DEFINITION  crerrbst  183 bases  AC88A337 checksum
+ORIGIN      
+       1  a-------ac tctcaacaac GgAtatCTtG gcT-Ctcgga tcGatGAaGg
+      51  acGcAGcg-- AaatGcGata cgtagtgtga actgc-agaa atacgtgaac
+     101  tatcgaatcc ctgaacgtat actgcgccc- -gag--gcc- --ccggt--a
+     151  gagc-atgtc tgccttagtg ct--gggt-- --t
+//
+LOCUS       crerrbst#Mask       183 bp
+DEFINITION  crerrbst#Mask  183 bases  A6397E24 checksum
+ORIGIN      
+       1  IIIIIIIIHH HHHIHIHIII HHHHIIHHIH HHHIHIIHII HHHHHHHHHI
+      51  HHHHHHHHIA @@A@@@@@A@ @A@@@@@@@@ @A@@@A@@A@ AAAAA@AA@A
+     101  IHHHHHIIHI IHHHHHHIHI IIHHHHIHHI IHIHIIHIII IIIIIIIIII
+     151  HIHHIHIHIH HHIHHIHHIH IIIIHIIIII III
+//
+LOCUS       ddirr58sst       183 bp
+DEFINITION  ddirr58sst  183 bases  1E3D23B8 checksum
+ORIGIN      
+       1  t-----taag cataaacggt GaAtacCTcG acTcC-caaa ttGatGAaGa
+      51  ccGtAGca-- AactGcGata attcacttga attgc-agcc tactg-ggat
+     101  agttgaaatg ttgaacgcac atgatgacat cggt---cct ttcggattag
+     151  gtgttatact tgggtgagag t--------g gtc
+//
+LOCUS       ddirr58sst#Mask       183 bp
+DEFINITION  ddirr58sst#Mask  183 bases  9A21A1D7 checksum
+ORIGIN      
+       1  IIIIIIIIHI IIHIHIHHHH HIHHIIHHIH IHHIHIIIII HIHHHHHHHH
+      51  IHHIHHHIIA @@@@@@@@A@ AA@AAAA@@@ @@@@@A@@AA A@@AAAA@@@
+     101  IIHIHHIIII HHHHHHHHHI IHIIIHIHII IHIIIIIIII IIIIIIIIII
+     151  HIHIIHIIHI HHIIHHHHIH HIIIIIIIII III
+//
+LOCUS       drorrbst       183 bp
+DEFINITION  drorrbst  183 bases  75DC8824 checksum
+ORIGIN      
+       1  a-------ac tctaagcggt GgAtcaCTcG gcT-Catggg tcGatGAaGa
+      51  acGcAGca-- AactGtGcgt catcgtgtga actgc-agga caca--tgaa
+     101  catcgacatt ttgaacgcat atcgcagtcc ---------- ----------
+     151  -----atgc- tg-------- ---------- ---
+//
+LOCUS       drorrbst#Mask       183 bp
+DEFINITION  drorrbst#Mask  183 bases  935ABAE0 checksum
+ORIGIN      
+       1  IIIIIIIIHH HHHIHHHHHH HHHHHHHHIH HHHIHIHHII HHHHHHHHHH
+      51  HHHHHHHIIA @@@@@A@AAA @A@A@@@@@@ @A@@@A@@A@ A@@@AAA@@A
+     101  HHHHHHIIIH HHHHHHHHHI IHIHHIIIHI IIIIIIIIII IIIIIIIIII
+     151  IIIIIHIHHI HHIIIIIIII IIIIIIIIII III
+//
+LOCUS       fsbrramfst       183 bp
+DEFINITION  fsbrramfst  183 bases  6DA08418 checksum
+ORIGIN      
+       1  tgaca---ac tcttagcggt GgAtcaCTcG gcT-Cgtgcg tcGatGAaGa
+      51  acGcAGc--t AgctGcGaga actaatgtga attgc-agga caca-ttgat
+     101  catcgacact tcgaacgcac attgcggccc c--g--ggtt cct---cccg
+     151  gggccacgcc cgcccgaggg tg--gc---- ---
+//
+LOCUS       fsbrramfst#Mask       183 bp
+DEFINITION  fsbrramfst#Mask  183 bases  BD00F714 checksum
+ORIGIN      
+       1  IIIIIIIIHH HHHIHHHHHH HHHHHHHHIH HHHIHIHHHI HHHHHHHHHH
+      51  HHHHHHHIIA @A@@@@@@A@ AA@@A@@@@@ @@@@@A@@A@ A@@@A@A@@@
+     101  HHHHHHIIHH HIHHHHHHHI IHHHHHIHHI IIIHIIHIII IIHIIIHHII
+     151  HHHHIHHHHH IHIHIHHHIH HIIIHHIIII III
+//
+LOCUS       fsbrrbtrst       183 bp
+DEFINITION  fsbrrbtrst  183 bases  B20D564C checksum
+ORIGIN      
+       1  ---ca---ac tcttagcggt GgAtcaCTcG gcT-Cgtgcg tcGatGAaGa
+      51  acGcAGcgct AgctGcGaga actaatgtga attgc-agga caca-ttgat
+     101  cattgacact tcgaacgcac tttgcggccc cagg--ggtt cct---cctg
+     151  gggctacgcc tgtctgagtg tc--gctt-- ---
+//
+LOCUS       fsbrrbtrst#Mask       183 bp
+DEFINITION  fsbrrbtrst#Mask  183 bases  B897DB27 checksum
+ORIGIN      
+       1  IIIIIIIIHH HHHIHHHHHH HHHHHHHHIH HHHIHIHHHI HHHHHHHHHH
+      51  HHHHHHHHIA @A@@@@@@A@ AA@@A@@@@@ @@@@@A@@A@ A@@@A@A@@@
+     101  HHHIHHIIHH HIHHHHHHHI IHHHHHIHHI IIIHIIHIII IIHIIIHHII
+     151  HHHHIHHHHH HHHHHHHHIH HHIIHHIIII III
+//
+LOCUS       hsarrbst       183 bp
+DEFINITION  hsarrbst  183 bases  3192D339 checksum
+ORIGIN      
+       1  ------caac ttccaacggt GgAcccCTcG gcT-Cgtgca tcGatGAaGa
+      51  acGcAGca-- AactGcGata cgtagtgtga attgc-agaa ttcagtgaat
+     101  catcgagtct ttgaacgcaa atggcgcttc tg----gtct ----caccag
+     151  gagc-acgtc tgtctgagag tt----tg-- --c
+//
+LOCUS       hsarrbst#Mask       183 bp
+DEFINITION  hsarrbst#Mask  183 bases  DBB88508 checksum
+ORIGIN      
+       1  IIIIIIIIHH HIIIHIHHHH HHHIHIHHIH HHHIHIHHHI HHHHHHHHHH
+      51  HHHHHHHIIA @@@@@@@@A@ @A@@@@@@@@ @@@@@A@@A@ AA@@A@AA@@
+     101  HHHHHHIIHH HHHHHHHHHI IHIHHHIIII IHIIIIHIII IIIIIIHHII
+     151  HIHHIHHHIH HHHHHHHHIH HIIIIIIIII III
+//
+LOCUS       humrrbst       183 bp
+DEFINITION  humrrbst  183 bases  474A0C78 checksum
+ORIGIN      
+       1  ---cg---ac tcttagcggt GgAtcaCTcG gcT-Cgtgcg tcGatGAaGa
+      51  acGcAGcgct AgctGcGaga attaatgtga attgc-agga caca-ttgat
+     101  catcgacact tcgaacgcac tt-gcggccc c--g--ggtt cct---cccg
+     151  gggctacgcc tgtctgagcg tc--gctt-- ---
+//
+LOCUS       humrrbst#Mask       183 bp
+DEFINITION  humrrbst#Mask  183 bases  D97D0E0D checksum
+ORIGIN      
+       1  IIIIIIIIHH HHHIHHHHHH HHHHHHHHIH HHHIHIHHHI HHHHHHHHHH
+      51  HHHHHHHHIA @A@@@@@@A@ AA@@A@@@@@ @@@@@A@@A@ A@@@A@A@@@
+     101  HHHHHHIIHH HIHHHHHHHI IHIHHHIHHI IIIHIIHIII IIHIIIHHII
+     151  HHHHIHHHHH HHHHHHHHIH HHIIHHIIII III
+//
+LOCUS       mnin58sst       183 bp
+DEFINITION  mnin58sst  183 bases  DD94AEBE checksum
+ORIGIN      
+       1  -----ataac cctcagcaac GgAtatCTtG gcT-Cttgca acGatGAaGa
+      51  acGcAGcg-- AaatGcGata cgtagtgtga attgc-agaa ttccgcgaat
+     101  catcgagtct ttgaacgcaa gttgcgccc- -gag--gc-- --tcgtccga
+     151  gggc-atttc cgttagagcg tc--ac-c-- ---
+//
+LOCUS       mnin58sst#Mask       183 bp
+DEFINITION  mnin58sst#Mask  183 bases  CA0FE38 checksum
+ORIGIN      
+       1  IIIIIIIIHH IHHIHHHIII HHHHIIHHIH HHHIHIHHHI IHHHHHHHHH
+      51  HHHHHHHHIA @@A@@@@@A@ @A@@@@@@@@ @@@@@A@@A@ AA@AAAAA@@
+     101  HHHHHHIIHH HHHHHHHHHI IHHHHHIHHI IHIHIIHIII IIHIIIHHII
+     151  HHHHIHIIIH IHHIIHHHIH HHIIIHIIII III
+//
+LOCUS       musrrbst       183 bp
+DEFINITION  musrrbst  183 bases  6B675071 checksum
+ORIGIN      
+       1  ---cg---ac tcttagcggt GgAtcaCTcG gcT-Cgtgcg tcGatGAaGa
+      51  acGcAGcgct AgctGcGaga attaatgtga attgc-agga caca-ttgat
+     101  catcgacact tcgaacgcac tt-gcggccc c--g--ggtt cct---cccg
+     151  gggctacgcc tgtctgagcg tc--gct--- ---
+//
+LOCUS       musrrbst#Mask       183 bp
+DEFINITION  musrrbst#Mask  183 bases  D97D0E0D checksum
+ORIGIN      
+       1  IIIIIIIIHH HHHIHHHHHH HHHHHHHHIH HHHIHIHHHI HHHHHHHHHH
+      51  HHHHHHHHIA @A@@@@@@A@ AA@@A@@@@@ @@@@@A@@A@ A@@@A@A@@@
+     101  HHHHHHIIHH HIHHHHHHHI IHIHHHIHHI IIIHIIHIII IIHIIIHHII
+     151  HHHHIHHHHH HHHHHHHHIH HHIIHHIIII III
+//
+LOCUS       pcrrrbst       183 bp
+DEFINITION  pcrrrbst  183 bases  41FFA1D4 checksum
+ORIGIN      
+       1  aaaccattac cctggacggt GgAtcaCTtG gcT-Cgcggg tcGatGAaGa
+      51  acGcAGt--t AactGcGcgt catagtgtga actgxcagga cacatttgaa
+     101  catcgacatt tcgaacgcac attgcggtc- cgtg--gaga caca--tcca
+     151  ggaccactcc tgtctgaggg cc--gatt-- -aa
+//
+LOCUS       pcrrrbst#Mask       183 bp
+DEFINITION  pcrrrbst#Mask  183 bases  B790724E checksum
+ORIGIN      
+       1  IIIIIIIIHH IHHIIIHHHH HHHHHHHHIH HHHIHIIHII HHHHHHHHHH
+      51  HHHHHHIIIA @@@@@@@AAA @A@@@@@@@@ @A@@AA@@A@ A@@@A@A@@A
+     101  HHHHHHIIIH HIHHHHHHHI IHHHHHIIHI IHIHIIHIII IIIIIIIHII
+     151  HHIHIHHIHH HHHHHHHHIH IHIIHIIIII III
+//
+LOCUS       ratrrbst       183 bp
+DEFINITION  ratrrbst  183 bases  6B675071 checksum
+ORIGIN      
+       1  ---cg---ac tcttagcggt GgAtcaCTcG gcT-Cgtgcg tcGatGAaGa
+      51  acGcAGcgct AgctGcGaga attaatgtga attgc-agga caca-ttgat
+     101  catcgacact tcgaacgcac tt-gcggccc c--g--ggtt cct---cccg
+     151  gggctacgcc tgtctgagcg tc--gct--- ---
+//
+LOCUS       ratrrbst#Mask       183 bp
+DEFINITION  ratrrbst#Mask  183 bases  D97D0E0D checksum
+ORIGIN      
+       1  IIIIIIIIHH HHHIHHHHHH HHHHHHHHIH HHHIHIHHHI HHHHHHHHHH
+      51  HHHHHHHHIA @A@@@@@@A@ AA@@A@@@@@ @@@@@A@@A@ A@@@A@A@@@
+     101  HHHHHHIIHH HIHHHHHHHI IHIHHHIHHI IIIHIIHIII IIHIIIHHII
+     151  HHHHIHHHHH HHHHHHHHIH HHIIHHIIII III
+//
+LOCUS       shrrrbst       183 bp
+DEFINITION  shrrrbst  183 bases  81E4FC3F checksum
+ORIGIN      
+       1  aga--atgac cctggaggat GgAtcaCTtG gcT-Cacatt acGaaGAcGa
+      51  acGcAGc--t AgacGcGtga ttccatgcga actgc-agga caca-tggaa
+     101  cgtctatatt ttgaacgcaa attgcagtcc ------agcc tttgagctt-
+     151  ggactacgtc tggctgagag ac--gg---- -at
+//
+LOCUS       shrrrbst#Mask       183 bp
+DEFINITION  shrrrbst#Mask  183 bases  8A781085 checksum
+ORIGIN      
+       1  IIIIIIIIHH IHHIIIIHIH HHHHHHHHIH HHHIHIIIII IHHHIHHIHH
+      51  HHHHHHHIIA @AAA@@@AA@ AAAAA@@A@@ @A@@@A@@A@ A@@@A@A@@A
+     101  HIHHIHIIIH HHHHHHHHHI IHHHHIIIHI IIIIIIIIII IIHIIIHIII
+     151  HHIHIHHHIH HHIHHHHHIH IHIIHIIIII III
+//
+LOCUS       snlrrbst       183 bp
+DEFINITION  snlrrbst  183 bases  1CFD0CBC checksum
+ORIGIN      
+       1  t---a---ac tttgtgcggt GgAtcaCTcG gcT-Cgtgcg tcGatGAaGa
+      51  gcGcAGc--c AgctGcGtga attaatgtga attgc-agaa caca-ttgaa
+     101  catcgacatc ttgaacgcat atggcggcct c--g--ggtc cat---cccg
+     151  gggccacgcc cgtctgaggg tc--gg-c-- ---
+//
+LOCUS       snlrrbst#Mask       183 bp
+DEFINITION  snlrrbst#Mask  183 bases  79F00D93 checksum
+ORIGIN      
+       1  IIIIIIIIHH HIHIIHHHHH HHHHHHHHIH HHHIHIHHHI HHHHHHHHHH
+      51  IHHHHHHIIA @A@@@@@AA@ AA@@A@@@@@ @@@@@A@@A@ A@@@A@A@@A
+     101  HHHHHHIIII HHHHHHHHHI IHIHHHIHHI IIIHIIHIII IIHIIIHHII
+     151  HHHHIHHHHH IHHHHHHHIH HHIIHIIIII III
+//
+LOCUS       teyrrbst       183 bp
+DEFINITION  teyrrbst  183 bases  1B7F204A checksum
+ORIGIN      
+       1  aga--a-aac tttcaacggt GgAtatCTtG gtT-Cccgtg acGatGAaGa
+      51  acGcAGcg-- AaatGcGata cgtaatgcga attgc-agaa --ccgcgagt
+     101  caacagatct ttgaaagcaa gtggtg---- -gag--gtgt aaaaacctt-
+     151  ---c-atgtt tgtattagtg tg--gca--- ---
+//
+LOCUS       teyrrbst#Mask       183 bp
+DEFINITION  teyrrbst#Mask  183 bases  1E981581 checksum
+ORIGIN      
+       1  IIIIIIIIHH HIHIHIHHHH HHHHIIHHIH HIHIHIIHII IHHHHHHHHH
+      51  HHHHHHHHIA @@A@@@@@A@ @A@@A@@A@@ @@@@@A@@A@ AA@AAAAAA@
+     101  HHIHIIIIHH HHHHHIHHHI IHIHIHIIII IHIHIIHIII IIIIIIHIII
+     151  IIIHIHIHII HHHIHIHHIH HIIIHHIIII III
+//
+LOCUS       tlarrbst       183 bp
+DEFINITION  tlarrbst  183 bases  660A87F0 checksum
+ORIGIN      
+       1  aa------ac tttcaacaat GgAtctCTtG gtT-Ccggca tcGatGAaGa
+      51  acGcAGcg-- AaatGcGata agtaatgtga attgc-agaa ttccgtgaat
+     101  catcgaatct ttgaacgcac attgcgccc- -tct--ggt- attc--cggg
+     151  gggc-atgcc tgtccgagcg tc--att--- ---
+//
+LOCUS       tlarrbst#Mask       183 bp
+DEFINITION  tlarrbst#Mask  183 bases  DB820FA6 checksum
+ORIGIN      
+       1  IIIIIIIIHH HIHIHIHIIH HHHHHIHHIH HIHIHIIHHI HHHHHHHHHH
+      51  HHHHHHHHIA @@A@@@@@A@ AA@@A@@@@@ @@@@@A@@A@ AA@AA@AA@@
+     101  HHHHHHIIHH HHHHHHHHHI IHHHHHIHHI IIIIIIHIII IIHIIIHIII
+     151  HHHHIHIHHH HHHHIHHHIH HHIIIIIIII III
+//
+LOCUS       trbrrbst       183 bp
+DEFINITION  trbrrbst  183 bases  79AB7E52 checksum
+ORIGIN      
+       1  --acg----- --tgcgcgat GgAtgaCTtG gcTtCttatt tgGttGAaGa
+      51  atGcAGc--- AaagGcGaca agtgg----- ---------- ----------
+     101  ---------- ---------- ---------- ---------- ----------
+     151  ---------- ---------- ---------- ---
+//
+LOCUS       trbrrbst#Mask       183 bp
+DEFINITION  trbrrbst#Mask  183 bases  9C424160 checksum
+ORIGIN      
+       1  IIIIIIIIII IIHIIHHHIH HHHHIHHHIH HHHIHIHIII HIHIHHHHHH
+      51  HIHHHHHIIA @@AA@@@@A@ AA@A@AAAAA AAAAAAAAAA AAAAAAAAAA
+     101  IIIIIIIIII IIIIIIIIII IIIIIIIIII IIIIIIIIII IIIIIIIIII
+     151  IIIIIIIIII IIIIIIIIII IIIIIIIIII III
+//
+LOCUS       trfrrbcfst       183 bp
+DEFINITION  trfrrbcfst  183 bases  2311DF32 checksum
+ORIGIN      
+       1  a-------ac gtgtcgcgat GgAtgaCTtG gcTtCctatc tcGttGAaGa
+      51  acGcAGta-- AagtGcGata agtggtatca attgc-agaa t-cattcaat
+     101  taccgaatct ttgaacgcaa acggcgcatg ggagaagctc ttttgagtca
+     151  tccccgtgca tgccatattc tccagtgtcg aac
+//
+LOCUS       trfrrbcfst#Mask       183 bp
+DEFINITION  trfrrbcfst#Mask  183 bases  4D98F5E8 checksum
+ORIGIN      
+       1  IIIIIIIIHH IIIIIHHHIH HHHHIHHHIH HHHIHIHIII HHHIHHHHHH
+      51  HHHHHHIIIA @@A@@@@@A@ AA@A@@A@A@ @@@@@A@@A@ AA@@A@AA@@
+     101  IHIHHHIIHH HHHHHHHHHI IIIHHHIIII IHIHIIHIII IIHIIIIIII
+     151  IIIHIIIHHI HHIHIIHIII HHIIHIIIII III
+//
+LOCUS       vfarrbst       183 bp
+DEFINITION  vfarrbst  183 bases  C5C60804 checksum
+ORIGIN      
+       1  aga--atgac tctcggcaac GgAtatCTaG gcT-Cttgca tcGatGAaGa
+      51  acGtAGcg-- AaatGcGata cttggtgtga attgc-agaa tcccgtgaac
+     101  catcgagtct ttgaacgcaa gttgc-ccc- -gat--gcc- attaggttga
+     151  gggc-acgtc tgcctgggtg tc--acat-- ---
+//
+LOCUS       vfarrbst#Mask       183 bp
+DEFINITION  vfarrbst#Mask  183 bases  F8B8993E checksum
+ORIGIN      
+       1  IIIIIIIIHH HHHIIHHIII HHHHIIHHIH HHHIHIHHHI HHHHHHHHHH
+      51  HHHIHHHHIA @@A@@@@@A@ @A@A@@@@@@ @@@@@A@@A@ AA@AA@AA@A
+     101  HHHHHHIIHH HHHHHHHHHI IHHHHIIHHI IHIIIIHIII IIHIIIIIII
+     151  HHHHIHHHIH HHIHHHIHIH HHIIIHIIII III
+//
+LOCUS       vfarrs58sst       183 bp
+DEFINITION  vfarrs58sst  183 bases  83640C8C checksum
+ORIGIN      
+       1  aga--atgac tctcggcaac GgAtatCTaG gcT-Cttgca tcGatGAaGa
+      51  acGtAGcg-- AaatGcGata cttggtgtga attgc-agaa tcccgtgaac
+     101  catcgagtct ttgaacgcaa gttgcgccc- -gat--gcc- attaggttga
+     151  gggc-acgtc tgcctgggtg tc--acat-- ---
+//
+LOCUS       vfarrs58sst#Mask       183 bp
+DEFINITION  vfarrs58sst#Mask  183 bases  B27F96AD checksum
+ORIGIN      
+       1  IIIIIIIIHH HHHIIHHIII HHHHIIHHIH HHHIHIHHHI HHHHHHHHHH
+      51  HHHIHHHHIA @@A@@@@@A@ @A@A@@@@@@ @@@@@A@@A@ AA@AA@AA@A
+     101  HHHHHHIIHH HHHHHHHHHI IHHHHHIHHI IHIIIIHIII IIHIIIIIII
+     151  HHHHIHHHIH HHIHHHIHIH HHIIIHIIII III
+//
+LOCUS       whtrrbst       183 bp
+DEFINITION  whtrrbst  183 bases  D531868B checksum
+ORIGIN      
+       1  cac--acgac tctcggcaac GgAtatCTcG gcT-Ctcgca tcGatGAaGa
+      51  acGtAGcg-- AaatGcGata cctggtgtga attgc-agaa tcccgcgaac
+     101  catcgagtct ttgaacgcaa gttgcgccc- -gag---cc- actcg-ccga
+     151  gggc-acgcc tgcctgggcg tc--acgc-- ---
+//
+LOCUS       whtrrbst#Mask       183 bp
+DEFINITION  whtrrbst#Mask  183 bases  6DFA8062 checksum
+ORIGIN      
+       1  IIIIIIIIHH HHHIIHHIII HHHHIIHHIH HHHIHIIHHI HHHHHHHHHH
+      51  HHHIHHHHIA @@A@@@@@A@ @A@A@@@@@@ @@@@@A@@A@ AA@AAAAA@A
+     101  HHHHHHIIHH HHHHHHHHHI IHHHHHIHHI IHIHIIIIII IIHIIIHHII
+     151  HHHHIHHHHH HHIHHHIHIH HHIIIHIIII III
+//
+LOCUS       whtrrb1st       183 bp
+DEFINITION  whtrrb1st  183 bases  4079116A checksum
+ORIGIN      
+       1  cac--acgac tctcggcaac GgAtatCTcG gcT-Ctcgca tcGatGAaGa
+      51  acGtAGcg-- AaatGcGata cctggtgtga attgc-agaa tcccgcgaac
+     101  catcgagtct ttgaacgcaa gttgcgccc- -gag--gcc- actcggccga
+     151  gggc-acgcc tgcctgggcg tc--acgc-- ---
+//
+LOCUS       whtrrb1st#Mask       183 bp
+DEFINITION  whtrrb1st#Mask  183 bases  4838B07 checksum
+ORIGIN      
+       1  IIIIIIIIHH HHHIIHHIII HHHHIIHHIH HHHIHIIHHI HHHHHHHHHH
+      51  HHHIHHHHIA @@A@@@@@A@ @A@A@@@@@@ @@@@@A@@A@ AA@AAAAA@A
+     101  HHHHHHIIHH HHHHHHHHHI IHHHHHIHHI IHIHIIHIII IIHIIIHHII
+     151  HHHHIHHHHH HHIHHHIHIH HHIIIHIIII III
+//
+LOCUS       xebrrbbst       183 bp
+DEFINITION  xebrrbbst  183 bases  B6737B83 checksum
+ORIGIN      
+       1  t--cg---ac tcttagcggt GgAtcaCTcG gcT-Cgtgcg tcGatGAaGa
+      51  acGcAGcgct AgctGcGaga attagtgtga attgc-agga caca-ttgat
+     101  catcgacact tcgaacgcac tt-ccggccc c--g--ggtt cct---cccg
+     151  gggctacgcc tgtctgaggg tc--gctc-- ---
+//
+LOCUS       xebrrbbst#Mask       183 bp
+DEFINITION  xebrrbbst#Mask  183 bases  D6D2F1FC checksum
+ORIGIN      
+       1  IIIIIIIIHH HHHIHHHHHH HHHHHHHHIH HHHIHIHHHI HHHHHHHHHH
+      51  HHHHHHHHIA @A@@@@@@A@ AA@@@@@@@@ @@@@@A@@A@ A@@@A@A@@@
+     101  HHHHHHIIHH HIHHHHHHHI IHIIHHIHHI IIIHIIHIII IIHIIIHHII
+     151  HHHHIHHHHH HHHHHHHHIH HHIIHHIIII III
+//
+LOCUS       xelrrblst       183 bp
+DEFINITION  xelrrblst  183 bases  C2DDFF3B checksum
+ORIGIN      
+       1  t--cg---ac tcttagcggt GgAtcaCTcG gcT-Cgtgcg tcGatGAaGa
+      51  acGcAGcgct AgctGcGaga attagtgtga attgc-agga caca-ttgat
+     101  catcgacact tcgaacgcac tt-ccggccc c--g--ggtt cct---cccg
+     151  gggccacgcc tgtctgaggg tc--gctc-- ---
+//
+LOCUS       xelrrblst#Mask       183 bp
+DEFINITION  xelrrblst#Mask  183 bases  D6D2F1FC checksum
+ORIGIN      
+       1  IIIIIIIIHH HHHIHHHHHH HHHHHHHHIH HHHIHIHHHI HHHHHHHHHH
+      51  HHHHHHHHIA @A@@@@@@A@ AA@@@@@@@@ @@@@@A@@A@ A@@@A@A@@@
+     101  HHHHHHIIHH HIHHHHHHHI IHIIHHIHHI IIIHIIHIII IIHIIIHHII
+     151  HHHHIHHHHH HHHHHHHHIH HHIIHHIIII III
+//
+LOCUS       yscrrbst       183 bp
+DEFINITION  yscrrbst  183 bases  A5FAF2D6 checksum
+ORIGIN      
+       1  aa------ac tttcaacaac GgAtctCTtG gtT-Ctcgca tcGatGAaGa
+      51  acGcAGcg-- AaatGcGata cgtaatgtga attgc-agaa ttccgtgaat
+     101  catcgaatct ttgaacgcac attgcgccc- -ctt--ggt- attc--cagg
+     151  gggc-atgcc tgtttgagcg tc--attt-- ---
+//
+LOCUS       yscrrbst#Mask       183 bp
+DEFINITION  yscrrbst#Mask  183 bases  C6C5016E checksum
+ORIGIN      
+       1  IIIIIIIIHH HIHIHIHIII HHHHHIHHIH HIHIHIIHHI HHHHHHHHHH
+      51  HHHHHHHHIA @@A@@@@@A@ @A@@A@@@@@ @@@@@A@@A@ AA@AA@AA@@
+     101  HHHHHHIIHH HHHHHHHHHI IHHHHHIHHI IIIIIIHIII IIHIIIHIII
+     151  HHHHIHIHHH HHHIHHHHIH HHIIIIIIII III
+//

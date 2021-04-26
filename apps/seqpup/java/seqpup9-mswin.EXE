@@ -1,0 +1,6 @@
+REM   -- SeqPup.bat - run SeqPup with java on MS-Windows --
+REM   ** Use this line for Java 1.2, but Java 1.1.8 jre works best **
+REM java -cp SeqPup.jar app
+
+jre -cp SeqPup.jar app
+

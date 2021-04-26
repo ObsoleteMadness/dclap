@@ -1,0 +1,52 @@
+; color table file for seqpup
+
+[nacolors]
+; nucleic acid colors
+; base=color value .. add color for each base desired in set [' '..'~']
+; color value is hex or decimal 2byte-red/2byte-green/2byte-blue
+; use '0x...' for hex format
+A=0xff0000  ; red
+C=0x0000ff	; blue
+G=0x1fc003	; green
+T=0xb0700f	; orange
+U=0xb0700f	; orange
+
+;0xff00ff	; magenta
+;0x000000	; black
+;0xff0000	; red
+;0x0000ff	; blue
+;0x00c0c0	; lt.blue
+;0x00c000	; green
+;0x090909	; gray
+
+[aacolors]
+; amino acid colors
+; base=color value ..add color for each base desired in set [' '..'~']
+A=0xff00ff	; magenta
+B=0x000000	; black
+C=0xff0000	; red
+D=0x000000	; black
+E=0x000000	; black
+F=0x0000ff	; blue
+G=0xff00ff	; magenta
+H=0x00c0c0	; lt.blue
+I=0x00c000	; green
+J=0x090909	; gray
+K=0x00c0c0	; lt.blue
+L=0x00c000	; green
+M=0x00c000	; green
+N=0x000000	; black
+O=0x090909	; gray
+P=0xff00ff	; magenta
+Q=0x000000	; black
+R=0x00c0c0	; lt.blue
+S=0xff00ff	; magenta
+T=0xff00ff	; magenta
+U=0x090909	; gray
+V=0x00c000	; green
+W=0x0000ff	; blue
+X=0x090909	; gray
+Y=0x0000ff	; blue
+Z=0x000000	; black
+ 
+

@@ -1,0 +1,102 @@
+<HTML>
+<!dclap [dnaml]>
+<!;child app calls using dialog forms>
+
+<title>DNAml phylogeny analysis</title>
+<b>DNAml</b>
+ - A DNA max likelihood phylogeny estimator, from Phylip<p>
+Written by Joseph Felsenstein.
+<HR>
+
+<FORM  METHOD=localexec  ACTION="$apps:dnaml">
+
+Program options:<p>
+
+<INPUT TYPE="checkbox" NAME="trans" VALUE="T">
+Change transition/transversion ratio:
+<INPUT NAME="transnum" VALUE="2.0" SIZE=6>
+<p>
+<INPUT TYPE="checkbox" NAME="freq" VALUE="F">
+Non-empirical base frequencies:<p>
+ - <INPUT NAME="basefreqs" VALUE="0.25 0.25 0.25 0.25" SIZE=15> 
+(for A, C, G, T/U)<p>
+
+<INPUT TYPE="checkbox" NAME="cat" VALUE="C">
+Select categories of substitution rates <p>
+ - No. categ.:<INPUT NAME="catnum" VALUE="2" SIZE=5>  <p>
+ - Rate for each cat.:<INPUT NAME="catrates" VALUE="0.5 0.7" SIZE=15> <p>
+ - Prob. for each cat.:<INPUT NAME="catprobs" VALUE="0.4 0.6" SIZE=15> 
+   (must add to 1.0)<p>
+
+<INPUT TYPE="checkbox" NAME="globe" VALUE="G">
+Global rearrangements<p>
+
+<!A HREF=file:///$apps:dnaml.doc  Help /A> 
+<INPUT TYPE=submit VALUE="Launch app"> 
+
+
+<INPUT TYPE=hidden NAME=infile VALUE="$apps:infile">
+<INPUT TYPE=hidden NAME=seqformat VALUE="phylip">
+<INPUT TYPE=hidden NAME=minseq VALUE="2">
+<INPUT TYPE=hidden NAME=outfile1 VALUE="$apps:treefile	biotree/newick">
+<INPUT TYPE=hidden NAME=outfile2 VALUE="$apps:outfile	 text/plain">
+<INPUT TYPE=hidden NAME=stdcmdin VALUE="$trans
+if ($trans) $transnum 
+$freq
+if ($freq) $basefreqs
+$cat
+if ($cat) $catnum
+if ($cat) $catrates
+if ($cat) $catprobs
+$globe
+$jumb
+if ($jumb) $jumbseed
+if ($jumb) $jumbnum
+$outg
+if ($outg) $outnum
+2
+Y
+">
+
+</FORM>
+</HTML>
+
+<! need a method to construct a stdin file for Phylip progs,
+   with user options, such as:
+---- stdin file to look like this ----
+T
+3
+F
+C
+9
+2 3 1 4 8 9 1 1 2 3 
+0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.2
+G
+J
+97
+10
+O
+3
+
+2
+Y
+------- translate to this $var syntax
+$trans
+if ($trans) $transnum 
+$freq
+if ($freq) $basefreqs
+$cat
+if ($cat) $catnum
+if ($cat) $catrates
+if ($cat) $catprobs
+$globe
+$jumb
+if ($jumb) $jumbseed
+if ($jumb) $jumbnum
+$outg
+if ($outg) $outnum
+2
+Y
+---------------
+>
+

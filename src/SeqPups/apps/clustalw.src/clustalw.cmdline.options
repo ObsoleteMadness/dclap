@@ -1,0 +1,98 @@
+
+
+
+ CLUSTAL W(1.4) Multiple Sequence Alignments
+
+
+                DATA (sequences)
+
+/INFILE=file.ext                             :input sequences.
+/PROFILE1=file.ext  and  /PROFILE2=file.ext  :profiles (old alignment).
+
+                VERBS (do things)
+
+/OPTIONS	    :list the command line parameters
+/HELP  or /CHECK    :outline the command line params.
+/ALIGN              :do full multiple alignment 
+/TREE               :calculate NJ tree.
+/BOOTSTRAP(=n)      :bootstrap a NJ tree (n= number of bootstraps; def. = 1000).
+
+                PARAMETERS (set things)
+
+***General settings:****
+/INTERACTIVE :read command line, then enter normal interactive menus
+/QUICKTREE   :use FAST algorithm for the alignment guide tree
+/NEWTREE=    :file for new guide tree
+/USETREE=    :file for old guide tree
+/NEGATIVE    :protein alignment with negative values in matrix
+/OUTFILE=    :sequence alignment file name
+/OUTPUT=     :GCG, GDE, PHYLIP or PIR
+/OUTORDER=   :INPUT or ALIGNED
+/CASE        :LOWER or UPPER (for GDE output only)
+
+***Fast Pairwise Alignments:***
+/KTUP=n      :word size                  /TOPDIAGS=n  :number of best diags.
+/WINDOW=n    :window around best diags.  /PAIRGAP=n   :gap penalty
+/SCORE       :PERCENT or ABSOLUTE
+
+***Slow Pairwise Alignments:***
+/PWMATRIX=   :BLOSUM, PAM, ID or filename
+/PWGAPOPEN=f :gap opening penalty        /PWGAPEXT=f  :gap opening penalty
+
+***Multiple Alignments:***
+/MATRIX=     :BLOSUM, PAM, ID or filename
+/GAPOPEN=f   :gap opening penalty        /GAPEXT=f    :gap extension penalty
+/ENDGAPS     :no end gap separation pen. /GAPDIST=n   :gap separation pen. range
+/NORGAP      :Residue specific gaps off  /NOHGAP      :hydrophilic gaps off
+/HGAPRESIDUES= :list hydrophilic res.    /MAXDIV=n    :% ident. for delay
+/TYPE=       :PROTEIN or DNA             /TRANSITIONS :transitions NOT weighted.
+
+***Trees:***                             /SEED=n    :seed number for bootstraps.
+/KIMURA      :use Kimura's correction.   /TOSSGAPS  :ignore positions with gaps.
+
+
+
+clustalw option list:-
+		/help 
+		/check 
+		/options 
+		/infile=filename 
+		/profile1=filename 
+		/profile2=filename 
+		/align 
+		/newtree=filename 
+		/usetree=filename 
+		/bootstrap 
+		/tree 
+		/quicktree 
+		/interactive 
+		/type=protein OR dna
+		/matrix=filename 
+		/negative 
+		/gapopen=f 
+		/gapext=f 
+		/endgaps 
+		/norgap 
+		/nohgap 
+		/hgapresidues=string 
+		/maxdiv=n 
+		/gapdist=n 
+		/pwmatrix=filename 
+		/pwgapopen=f 
+		/pwgapext=f 
+		/ktuple=n 
+		/window=n 
+		/pairgap=n 
+		/topdiags=n 
+		/score=percent OR absolute
+		/transitions 
+		/seed=n 
+		/kimura 
+		/tossgaps 
+		/debug=n 
+		/output=gcg OR gde OR pir OR phylip
+		/outputtree=nj OR phylip OR dist
+		/outfile=filename 
+		/outorder=input OR aligned
+		/case=lower OR upper
+

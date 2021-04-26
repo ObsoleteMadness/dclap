@@ -1,0 +1,50 @@
+
+===
+current release: version 0.8e, April 1998
+adds sequence feature table display and marking
+
+NOTE on Wintel version (sep98) - you need the "JDK" version of java,
+not the "JRE" version, to use the current seqpup. This will
+later be fixed to use jre also.
+===
+
+SeqPup, version 0.8, January 1998
+
+SeqPup is a biological sequence editor and analysis program.  It includes links
+to network services and external analysis programs.  It is usable on common
+computer systems that support the Java 1.1 runtime environment, including
+Macintosh, MS-Windows and X-Windows.  
+
+Features include
+  multiple sequence alignment and single sequence editing
+  read and write several sequence file formats 
+  sequence feature editing, manipulation and marking in prints
+  translate dna/protein, consensus, reverse/complement, and distance methods 
+  pretty print of alignments and sequences with boxed and shaded regions
+  Internet Sequence Retrieval System (SRS), and NCBI-BLAST searches 
+  * User-definable links to external analysis programs, including
+    ClustalW multiple alignment, CAP contig assembly, tacg restriction map
+  * Remote program client-server interface, using CORBA protocol 
+  ( * - new this version)
+
+The major addition to this second Java release are methods
+for calling external applications. This application is a 
+work in progress; it has bugs. It may be useful to you as is, but 
+it is still prone to problems. 
+
+Find this software at
+  ftp://iubio.bio.indiana.edu/molbio/seqpup/java/ 
+  http://iubio.bio.indiana.edu/soft/molbio/seqpup/java/
+
+SeqPup is written using a free and portable class application
+framework called DCLAP, now converted to the new Java language. 
+Developers will find the source code for this application and others 
+in the iubio:/molbio/java/source folder.  
+
+If you are an administrator of GCG software for your institution and
+would like to test an experimental version of the client-server
+interface to SeqPup with GCG at your site, please let me know.
+
+Comments, bug reports and suggestions are welcome and can be e-mailed to
+SeqPup@Bio.Indiana.Edu.
+

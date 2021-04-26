@@ -1,0 +1,103 @@
+#
+#Nicotiana tabacum (Tobacco)
+#
+#21 genes found in GenBank 63.
+#
+# Produced by J. Michael Cherry (cherry@frodo.mgh.harvard.edu) with the
+# GCG program CodonFrequency.
+#
+# Duplicates, pseudogenes, mutant and synthetic genes were not included.
+# Coding regions were specified using the Feature Table of each entry, #then
+# checked for accuracy. If more than one stop codon was found the sequence
+# was not included.
+#
+#Codon   AmAcid    Number    /1000     Fraction   ..
+ 
+GGG=     Gly       55.00      8.07      0.09
+GGA=     Gly      197.00     28.92      0.33
+GGT=     Gly      235.00     34.50      0.40
+GGC=     Gly      107.00     15.71      0.18
+ 
+GAG=     Glu      171.00     25.10      0.48
+GAA=     Glu      188.00     27.60      0.52
+GAT=     Asp      223.00     32.74      0.64
+GAC=     Asp      124.00     18.20      0.36
+ 
+GTG=     Val      110.00     16.15      0.24
+GTA=     Val       92.00     13.51      0.20
+GTT=     Val      178.00     26.13      0.39
+GTC=     Val       82.00     12.04      0.18
+ 
+GCG=     Ala       39.00      5.73      0.08
+GCA=     Ala      138.00     20.26      0.27
+GCT=     Ala      237.00     34.79      0.46
+GCC=     Ala      106.00     15.56      0.20
+ 
+AGG=     Arg       81.00     11.89      0.26
+AGA=     Arg      104.00     15.27      0.33
+AGT=     Ser       89.00     13.07      0.18
+AGC=     Ser       79.00     11.60      0.16
+ 
+AAG=     Lys      206.00     30.24      0.59
+AAA=     Lys      144.00     21.14      0.41
+AAT=     Asn      179.00     26.28      0.50
+AAC=     Asn      182.00     26.72      0.50
+ 
+atg=     Met      160.00     23.49      1.00
+ATA=     Ile       64.00      9.40      0.18
+ATT=     Ile      184.00     27.01      0.53
+ATC=     Ile       99.00     14.53      0.29
+ 
+ACG=     Thr       37.00      5.43      0.10
+ACA=     Thr      118.00     17.32      0.30
+ACT=     Thr      159.00     23.34      0.41
+ACC=     Thr       75.00     11.01      0.19
+ 
+TGG=     Trp      115.00     16.88      1.00
+TGA=     End       10.00      1.47      0.45
+TGT=     Cys       95.00     13.95      0.57
+TGC=     Cys       71.00     10.42      0.43
+ 
+TAG=     End        6.00      0.88      0.27
+TAA=     End        6.00      0.88      0.27
+TAT=     Tyr      120.00     17.62      0.53
+TAC=     Tyr      105.00     15.41      0.47
+ 
+TTG=     Leu      166.00     24.37      0.32
+TTA=     Leu       63.00      9.25      0.12
+TTT=     Phe      181.00     26.57      0.55
+TTC=     Phe      146.00     21.43      0.45
+ 
+TCG=     Ser       31.00      4.55      0.06
+TCA=     Ser       88.00     12.92      0.18
+TCT=     Ser      139.00     20.41      0.28
+TCC=     Ser       71.00     10.42      0.14
+ 
+CGG=     Arg       11.00      1.61      0.03
+CGA=     Arg       40.00      5.87      0.13
+CGT=     Arg       61.00      8.95      0.19
+CGC=     Arg       19.00      2.79      0.06
+ 
+CAG=     Gln       92.00     13.51      0.39
+CAA=     Gln      143.00     20.99      0.61
+CAT=     His       74.00     10.86      0.52
+CAC=     His       67.00      9.84      0.48
+ 
+CTG=     Leu       43.00      6.31      0.08
+CTA=     Leu       60.00      8.81      0.11
+CTT=     Leu      112.00     16.44      0.21
+CTC=     Leu       80.00     11.74      0.15
+ 
+CCG=     Pro       17.00      2.50      0.05
+CCA=     Pro      132.00     19.38      0.37
+CCT=     Pro      149.00     21.87      0.42
+CCC=     Pro       57.00      8.37      0.16
+
+#
+#
+#
+#
+#
+#
+#
+#

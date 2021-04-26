@@ -1,0 +1,132 @@
+Installing SeqPup
+ 
+SeqPup is distributed over the Internet in archive files.  The archive 
+format used is commonly available on the computer system you use (HQX 
+self-extracting for Macintosh, ZIP for MS Windows, and tar + Gnu ZIP for 
+Unix).  There is one primary program, several document and data files, 
+examples, and child application programs. 
+
+The current organization of files used by the program is:
+  SeqPup        -- execuable, called "seqpup.exe" in MSDOS
+  SeqPup.help   -- this document, in Microsoft RTF format
+  SeqPup.prefs  -- settings for the program, in text format.
+
+  tables/ -- data files, required for Restriction maps, 
+            translate and some other functions.  These are 
+            standard bioinformatics data files available and 
+            updateable from various sources.
+    codon.table   -- table of codon preferences, in GCG format
+    renzyme.table -- REBase data file, for restriction maps, in GCG 
+                     format
+    color.table   -- table of color values for display of bases
+    hum.cod, tob.cod, eco.cod, and other codon preference tables that 
+       can substitute for codon.table at your preference
+
+  apps/ -- a selection of external analysis applications. 
+    clustalw  -- multiple sequence alignment
+    cap2  -- contig alignment
+    fastDNAml -- phylogenetic analysis of sequences
+    lsadt     -- De Soete least squares phylogeny analysis
+    drawtree  -- draw unrooted tree, from Phylip
+    drawgram  -- draw cladogram, from Phylip
+
+
+Note for Sun systems:  This program requires the Motif run-time libraries 
+that are commonly found on other XWindow systems.  Motif is not standard 
+on SunOS and is not part of Solaris until verson 2.4.  If you have 
+Solaris 2.3 or earlier, or SunOS, and do not know that your system 
+includes Motif, then you will need the version with statically bound 
+Motif libraries (SeqPup-sunos-mostat.gz).  
+
+If you have Solaris 2.4, or a version where Motif libraries are present, 
+you may still need to configure the system to let SeqPup know where they 
+are.  In a Solaris 2.4 system, where motif lives in /usr/dt/lib by 
+default, this may be needed to run successfully:
+setenv LD_LIBRARY_PATH "$LD_LIBRARY_PATH":/usr/dt/lib
+
+
+
+
+Installing preferences
+ 
+In addition to these two folders and three SeqPup files, the program 
+will automatically create a personal preferences file in you computer 
+when you first run it.  These preferences come from the SeqPup.prefs 
+file.   The preferences file created on your system will be something 
+like this
+  System Folder:Preferences:seqpup.cnf  - MacOS  
+  c:\windows\seqpup.ini - MS Windows 
+  ~/.seqpuprc - Unix
+
+The program will save various configuration information to this file. 
+You may edit this with a text editor.  You may delete it and a new one 
+will be generated from the SeqPup.prefs file.  You may not edit it while 
+the program is active (any such changes are lost).  When the program is 
+updated in the future, new preferences are added, using the label 
+[version=123]
+to indicate the version number.
+
+The preference file format is as follows:
+  - Logical sections are indicated in brackets [section].
+  - Variables are denoted with a "name=value" format.
+  - Line starting with ";" indicates a comment and will be ignored.
+
+The current release of the program may require some fiddling to install 
+correctly.  This
+is a known problem, and will be corrected in future releases.   You will 
+want to look at and probably edit the file "SeqPup.prefs".  
+
+The following sections are important in getting the program to work 
+right, and may need to be edited.
+[paths]
+temp=
+tables=tables
+apps=apps
+
+[data]
+codon=tables:codon.table
+renzyme=tables:renzyme.table
+color=tables:color.table
+
+If you use this on a Unix system or an MS DOS system,  the current 
+configuration should work if you start the program from its folder, 
+e.g.,
+   cd /path/to/seqpup/
+  ./SeqPup
+
+But as is common on Unix, if you want to install this for use from any 
+directory, you will currently need to edit the prefs file and put a 
+fixed path to the SeqPup folders in it, as
+
+[paths]
+temp=/tmp
+tables=/long/path/to/seqpup/tables
+apps=/long/path/to/seqpup/apps
+
+If you run SeqPup first, then decide to change parts of the prefs file, 
+you can have all users prefs be updated if you add the new prefs after a 
+new version number.  This is the procedure:
+a) add a higher version number at the end of the SeqPup.prefs file
+[version=6]
+
+b) add changed preference sections and values after that.  You need not 
+remove or edit the original values (I hope...).
+
+So for instance if the highest verson value in the prefs file is 5, then 
+add this at the end of the SeqPup prefs to get all users preferences 
+updated:
+
+[version=6]
+
+[paths]
+tables=/new/path/to/seqpup/tables
+apps=/new/path/to/seqpup/apps
+
+An important caveat with this:  New distributions of SeqPup will use new 
+version values to trigger preference updates.  If the new distribution 
+has a lower version value than you have used, it won’t trigger an 
+update.
+
+Child applications are configured for use with the SeqPup.prefs file.  
+Please see below the section  Child Tasks.
+

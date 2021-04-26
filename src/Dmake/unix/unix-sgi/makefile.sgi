@@ -1,0 +1,206 @@
+#	makefile for dclap C++ library routines
+#
+## this one is for SGI Iris with SGI cc and CC 
+#
+# dgg note -- for motif link to work, remember to set 
+#  setenv LD_LIBRARY_PATH /usr/lib:/usr/openwin/lib
+
+# default flags for compiling and loading
+
+#------------------------ local setup ---------------
+#SUFFIXLCL = $(LCL)
+#SUFFIXLCL = sol
+SUFFIXLCL = sgi 
+CPFLAGS1 = -c  
+CFLAGS1 = -c -g -DDCLAP -O 
+LDFLAGS1 = -g -O
+CC = cc
+CPP = CC 
+RAN = echo #ranlib
+AR=ar
+# get rid of debug symbols
+STRIP= echo #strip
+
+# solaris needs /usr/ccs/lib/libgen.a for regcmp/regex weird call from Xlib
+## but damn libXm isn't finding libgen funcs ???????
+OTHERLIBS = -lm # -L/usr/ccs/lib -lgen
+
+OURLIBS = -ldnet  -lvibrant -ldclap -ldrich -lncbi 
+## SRV4 libs == Solaris libs
+##NETLIBS = -ldnet  -lsocket -lnsl
+#NETLIBS = -ldnet  
+NETLIBS = 
+
+
+# try static linked x libs
+# note: !static == shared motif libs == runs on Solaris2 & SunOs
+#       -static == static libs == fails on Solaris2 (some non-shared stdlib problem)
+STATIC=
+#STATIC= -static
+#STATIC= -B static
+
+VIBLIBS =  ${STATIC} -lXm  -lXt -lX11  #-lXmu
+VIBFLAG =  -DWIN_MOTIF 
+# solaris2 /w motif
+#VIBFLAG = -I/opt/IXIX11R5/include -I/opt/SUNWmotif/share/include -DWIN_MOTIF 
+
+#------------------------ end local setup ---------------
+
+
+SUFFIXENV = unx
+LIBNCBI = libncbi.a
+LIBVIB = libvibrant.a
+LIBDNET =  libdnet.a
+LIBDCLAP = libdclap.a
+LIBDRICH = libdrich.a
+
+INCPATH = ../include
+LIBPATH = ../lib   #-L/usr/ccs/lib 
+CFLAGS = $(CFLAGS1) -I$(INCPATH) $(VIBFLAG)
+CPFLAGS = $(CPFLAGS1) -I$(INCPATH) $(VIBFLAG)
+LDFLAGS = $(LDFLAGS1) -I$(INCPATH) -L$(LIBPATH) $(VIBFLAG)
+
+##
+## some things to make
+##
+
+# sources & objects
+
+# basic ncbi lib
+SRCNCBI = ncbibs.c ncbierr.c ncbienv.c ncbifile.c ncbiprop.c ncbimsg.c \
+	ncbimath.c ncbimem.c ncbimisc.c ncbistr.c ncbitime.c ncbisgml.c 
+OBJNCBI = ncbibs.o ncbierr.o ncbienv.o ncbifile.o ncbiprop.o ncbimsg.o \
+	ncbimath.o ncbimem.o ncbimisc.o ncbistr.o ncbisgml.o ncbitime.o 
+
+# ncbi vibrant lib
+SRCVIB =	vibbutns.c vibextra.c vibfiles.c vibgroup.c \
+	viblists.c vibmenus.c vibprmpt.c vibsbars.c vibslate.c vibtexts.c \
+	vibutils.c vibwndws.c ncbidraw.c drawing.c mapping.c picture.c viewer.c \
+	document.c table.c palette.c
+
+OBJVIB =	vibbutns.o vibextra.o vibfiles.o vibgroup.o \
+	viblists.o vibmenus.o vibprmpt.o vibsbars.o vibslate.o vibtexts.o \
+	vibutils.o vibwndws.o ncbidraw.o drawing.o mapping.o picture.o viewer.o \
+	document.o table.o palette.o
+
+# dclap primary lib
+SRCDCLAP =  \
+	DAboutBox.c++    DDialogText.c++  DObject.c++      DTaskCentral.c++ DView.c++ \
+	DApplication.c++ DChildApp.c++  DList.c++        DPanel.c++       DTaskMaster.c++  DViewCentral.c++ \
+	DControl.c++     DMenu.c++        DTask.c++        DUtil.c++        DWindow.c++	\
+	DIconLib.c++	DFile.c++	DTableView.c++	dgg.c 	Dvibrant.c
+
+OBJDCLAP = \
+	DAboutBox.o    DDialogText.o  DObject.o      DTaskCentral.o DView.o \
+	DApplication.o DChildApp.o  DList.o        DPanel.o       DTaskMaster.o  DViewCentral.o \
+	DControl.o     DMenu.o        DTask.o        DUtil.o        DWindow.o	\
+	DIconLib.o     DFile.o	DTableView.o	dgg.o 	Dvibrant.o
+
+# dclap rich text lib
+SRCDRICH = \
+  DDrawPICT.c++ DHTMLHandler.c++ DNetHTMLHandler.c++ DPICTHandler.c++ DRTFHandler.c++ \
+  DGIFHandler.c++ DRichHandler.c++ DRichProcess.c++ DRichViewNu.c++ reader.c
+
+OBJDRICH = \
+  DDrawPICT.o  DHTMLHandler.o DNetHTMLHandler.o  DPICTHandler.o   DRTFHandler.o \
+  DGIFHandler.o DRichHandler.o   DRichProcess.o  DRichViewNu.o reader.o
+
+# dclap network lib
+SRCDNET = \
+	DGopher.c++ DGoAskDoc.c++ DGoDoc.c++ DGoNetDoc.c++ DGoList.c++	DGoClasses.c++	DGoInit.c++ DGoPlus.c++	\
+	DGoPrefs.c++ DTCP.c++ DURL.c++ DSMTPclient.c++ DSendMailDialog.c++ dnettcp.c 
+OBJDNET = \
+	DGopher.o  DGoAskDoc.o  DGoDoc.o  DGoNetDoc.o DGoList.o	 DGoClasses.o	 DGoInit.o  DGoPlus.o	\
+	DGoPrefs.o  DTCP.o  DURL.o  DSMTPclient.o  DSendMailDialog.o  dnettcp.o 
+
+# application main programs
+
+SRCAPP = MyApp.c++
+SRCMAIL = MailHelp.c++
+SRCGOPHER = GopherPup.c++
+
+OBJAPP = MyApp.o
+OBJMAIL = MailHelp.o
+OBJGOPHER = GopherPup.o
+
+EXEAPP =  MyApp GopherPup 
+
+
+
+## All things to make
+##
+all : nocopy
+
+nocopy : sources  libs $(EXEAPP)
+
+libs	: $(LIBNCBI) $(LIBVIB) $(LIBDRICH) $(LIBDCLAP) $(LIBDNET) $(LIBDBIO)
+
+sources : $(SRCNCBI) $(SRCVIB) $(SRCDRICH) $(SRCDCLAP) $(SRCDNET) $(SRCDBIO) $(SRCAPP) $(SRCMAIL) $(SRCGOPHER)
+
+## To clean out the directory without removing make
+##
+clean :
+	- rm -f *.[acho]
+
+## Implicit actions
+##
+
+.c.o :
+	$(CC) $(CFLAGS) $<
+	
+# damn, I use .cp for C++ suffix, gcc wants .c++
+.c++.o :
+	$(CPP) $(CPFLAGS) $<
+
+## get all the source files
+##
+
+
+##  libraries
+##
+
+$(LIBNCBI) : $(OBJNCBI)
+	- rm -f $(LIBNCBI)
+	$(AR) cru $(LIBNCBI) $(OBJNCBI)
+	$(RAN) $(LIBNCBI)
+	- ln -s ../build/$(LIBNCBI) ../lib/$(LIBNCBI)
+
+$(LIBVIB) : $(OBJVIB)
+	- rm -f $(LIBVIB)
+	$(AR) cru $(LIBVIB) $(OBJVIB)
+	$(RAN) $(LIBVIB)
+	- ln -s ../build/$(LIBVIB) ../lib/$(LIBVIB)
+
+$(LIBDCLAP) : $(OBJDCLAP)
+	- rm -f $(LIBDCLAP)
+	$(AR) cru $(LIBDCLAP) $(OBJDCLAP)
+	$(RAN) $(LIBDCLAP)
+	- ln -s ../build/$(LIBDCLAP) ../lib/$(LIBDCLAP)
+
+$(LIBDRICH) : $(OBJDRICH)
+	- rm -f $(LIBDRICH)
+	$(AR) cru $(LIBDRICH) $(OBJDRICH)
+	$(RAN) $(LIBDRICH)
+	- ln -s ../build/$(LIBDRICH) ../lib/$(LIBDRICH)
+
+$(LIBDNET) : $(OBJDNET)
+	- rm -f $(LIBDNET)
+	$(AR) cru $(LIBDNET) $(OBJDNET)
+	$(RAN) $(LIBDNET)
+	- ln -s ../build/$(LIBDNET) ../lib/$(LIBDNET)
+
+
+# apps
+
+MyApp : $(OBJAPP)
+	$(CPP) -o MyApp $(LDFLAGS) $(OBJAPP) $(OURLIBS) $(NETLIBS) $(OTHERLIBS) $(VIBLIBS) 
+	$(STRIP) MyApp
+
+MailHelp : $(OBJMAIL)
+	$(CPP) -o Mailhelp $(LDFLAGS) $(OBJMAIL) $(OURLIBS) $(NETLIBS)  $(OTHERLIBS) $(VIBLIBS) 
+	$(STRIP)  Mailhelp
+
+GopherPup : $(OBJGOPHER)
+	$(CPP) -o GopherPup $(LDFLAGS) $(OBJGOPHER) $(OURLIBS) $(NETLIBS) $(OTHERLIBS) $(VIBLIBS)
+	$(STRIP)  GopherPup
+

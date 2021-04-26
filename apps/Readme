@@ -1,0 +1,28 @@
+
+This folder contains applications written with the DCLAP
+C++ class application framework.  This cross-platform
+framework allows the same program to be compiled for Macintosh,
+MS Windows, X-Windows-Motif and possibly others.
+
+In general, you want to fetch the binary archive files for
+any computer systems of interest to you PLUS any accessory
+documents, like help files, example data, which are not necessarily
+included with the binary archive file.
+
+Binaries for Macintosh generally have the suffix -mac.hqx (for standard
+mac binhex archive).
+
+Binaries for MS Windows generally have the suffix -mswin.zip, for
+standard ZIP archive.
+
+Binaries for XWindows will have some name relating the unix flavor.
+These may include
+   -sun-static.Z   -- a compressed binary for Sun Sparcstation with
+      SunOS 4.x, using static library linking to include Motif libs
+      (won't run on Solaris 2)
+   -sun-dyn.Z  -- compress binary for Sun Sparcstation.  Should run
+      on SunOS 4 and Solaris 2, but your system must include Motif libs.
+   -sgi.Z  -- compressed binary for Silicon Graphics MIPS/Irix platforms.
+
+Those who build binaries for other systems, please consider dropping off
+here for others.

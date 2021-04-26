@@ -1,0 +1,103 @@
+
+:corelib:   :Dbin:   :DClap:   :DNet:      :vibrant:          
+:DApp:      :DBio:   :Dmake:   :network:   Copyright.dclap    
+
+:corelib:
+ncbi.h         ncbilcl.aux    ncbilcl.msw     ncbimain.mac    ncbiprop.c    
+ncbibs.c       ncbilcl.bor    ncbilcl.nxt     ncbimain.msw    ncbiprop.h    
+ncbibs.h       ncbilcl.bwn    ncbilcl.r6k     ncbimain.unx    ncbisgml.c    
+ncbienv.c      ncbilcl.ccr    ncbilcl.sgi     ncbimain.vms    ncbisgml.h    
+ncbierr.c      ncbilcl.cpp    ncbilcl.sol     ncbimath.c      ncbistd.h     
+ncbierr.h      ncbilcl.cra    ncbilcl.sun     ncbimath.h      ncbistr.c     
+ncbifile.c     ncbilcl.cvx    ncbilcl.thc     ncbimem.c       ncbistr.h     
+ncbifile.h     ncbilcl.gcc    ncbilcl.ult     ncbimem.h       ncbitime.c    
+ncbilcl.370    ncbilcl.h      ncbilcl.vms     ncbimisc.c      ncbitime.h    
+ncbilcl.acc    ncbilcl.hp     ncbilib.inp     ncbimisc.h      ncbiwin.h     
+ncbilcl.alf    ncbilcl.mpw    ncbimain.dos    ncbimsg.c       README        
+ncbilcl.aov    ncbilcl.msc    ncbimain.h      ncbimsg.h       
+
+:DApp:
+GopherPup.cpp    GopherPup.Help     MailHelp.cpp    SeqPup.cpp    StripPS.cpp    
+GopherPup.go4    GopherPup.icons    MyApp.cpp       
+
+:Dbin:
+:GopherPup.f:    GOPHPUP.ZIP    MYAPP.ZIP     SeqPup         SeqPup.sea    
+:SeqPup-Help:    MyApp          SEQDOC.ZIP    SeqPup.Help    SEQPUP.ZIP    
+GopherPup.sea    MyApp.sea      
+
+:Dbin:GopherPup.f:
+GopherPup    GopherPup.go4    GopherPup.help    GopherPup.icons    
+
+:Dbin:SeqPup-Help:
+embl-blitz.help    embl-quicks.help     geneid.help    ncbi-blasts.help    ncbi-retreive.help    
+embl-fasta.help    fhcrc-blocks.help    grail.help     
+
+:DBio:
+DBio.h          DSeqCmds.h     DSeqEd.h        DSeqList.h       DSequence.h    
+DREnzyme.cpp    DSeqDoc.cpp    DSeqFile.cpp    DSeqMail.cpp     ureadseq.c     
+DREnzyme.h      DSeqDoc.h      DSeqFile.h      DSeqMail.h       ureadseq.h     
+DSeqCmds.cpp    DSeqEd.cpp     DSeqList.cpp    DSequence.cpp    
+
+:DClap:
+DAboutBox.cpp       DFile.cpp       DMenu.cpp         DTask.cpp           Dvibrant.h          
+DAboutBox.h         DFile.h         DMenu.h           DTask.h             DView.cpp           
+DApplication.cpp    dgg.c           DMethods.h        DTaskCentral.cpp    DView.h             
+DApplication.h      dgg.h           DObject.cpp       DTaskCentral.h      DViewCentral.cpp    
+DClap.h             DIconLib.cpp    DObject.h         DTaskMaster.cpp     DViewCentral.h      
+DControl.cpp        DIconLib.h      DPanel.cpp        DTaskMaster.h       DViewTypes.h        
+DControl.h          DId.h           DPanel.h          DUtil.cpp           DWindow.cpp         
+DDialogText.cpp     DList.cpp       DTableView.cpp    DUtil.h             DWindow.h           
+DDialogText.h       DList.h         DTableView.h      Dvibrant.c          SeqPup              
+
+:Dmake:
+:mac-thc:   :mswin-bor:   :unix-gcc:   
+
+:Dmake:mac-thc:
+GopherPup.proj    makeall.thc    MyApp.proj    SeqPup.proj    
+
+:Dmake:mswin-bor:
+DCLAPDIR.TXT    DCLAPIDE.ZIP    GOPHPUP.MAK    SEQPUP.MAK    
+
+:Dmake:unix-gcc:
+make.gopherpup    make.seqpup    rename    
+
+:DNet:
+DGoAskDoc.cpp     DGoDoc.h       DGopher.cpp     DGoPrefs.h             DSendMailDialog.h    
+DGoAskDoc.h       DGoInit.cpp    DGopher.h       DNet.h                 DSMTPclient.cpp      
+DGoClasses.cpp    DGoInit.h      DGoPlus.cpp     dnettcp.c              DSMTPclient.h        
+DGoClasses.h      DGoList.cpp    DGoPlus.h       dnettcp.h              DTCP.cpp             
+DGoDoc.cpp        DGoList.h      DGoPrefs.cpp    DSendMailDialog.cpp    DTCP.h               
+
+:network:
+:apple:   :ncsasock:   :nsclilib:   :WINSOCK:   
+
+:network:apple:
+AddressXlation.h    GetMyIPAddr.h          README    TCPPB.h    UDPPB.h    
+dnr.c               MacTCPCommonTypes.h    
+
+:network:ncsasock:
+a_ftp.h       netdb.c       s_fcntl.h     s_ttydev.h    sock_tcp.c    
+a_inet.h      netdb.h       s_file.h      s_types.h     sock_udp.c    
+a_namesr.h    neterrno.h    s_ioctl.h     s_uio.h       sock_utl.c    
+a_telnet.h    neti_in.h     s_param.h     s_unistd.h    socket.c      
+a_tftp.h      neti_tcp.h    s_socket.h    sock_ext.h    syslog.c      
+dprintf.c     rexec.c       s_time.h      sock_int.h    syslog.h      
+ma_types.h    rexec.h       s_timeb.h     sock_std.c    tcpglue.c     
+macsockd.h    s_compat.h    s_ttych.h     sock_str.h    unixlib.c     
+
+:network:nsclilib:
+ncbinet.h     ni_error.h    ni_list.c     ni_msg.c    ni_net.h      
+ni_defin.h    ni_lib.c      ni_list.h     ni_msg.h    ni_types.h    
+ni_error.c    ni_lib.h      ni_msg.asn    
+
+:network:WINSOCK:
+UNC-READ.TXT    winsock.def    WINSOCK.H    WINSOCK.TXT    
+
+:vibrant:
+document.c    ncbidraw.h    table.c       viblists.c    vibtexts.c    
+document.h    ncbiport.h    vibbutns.c    vibmenus.c    vibtypes.h    
+drawing.c     palette.c     vibdefns.h    vibprmpt.c    vibutils.c    
+drawingP.h    panels.h      vibextra.c    vibprocs.h    vibwndws.c    
+mapping.c     picture.c     vibfiles.c    vibrant.h     viewer.c      
+mappingP.h    picture.h     vibgroup.c    vibsbars.c    viewer.h      
+ncbidraw.c    pictureP.h    vibincld.h    vibslate.c    viewerP.h     

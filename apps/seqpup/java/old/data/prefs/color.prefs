@@ -1,0 +1,64 @@
+# prefs/color.prefs
+#
+# Base colors file for seqpup
+#
+# Text following a pound (#) or an exclamation (!) is a comment that is ignored
+##----------------------------
+
+
+# base=color value .. add color for each base desired in set [' '..'~']
+# color value is hex or decimal 2byte-red/2byte-green/2byte-blue
+# use '0x...' for hex format
+# put two values for each character, for distinct upper & lower case colors
+# e.g., 
+!nucleic.A=0xff0000  0xff8080 # red for A, lt. red for a
+
+#[nucleic]
+# nucleic acid colors
+nucleic.A=0xff0000  0xff4040 # red
+nucleic.C=0x0000ff	0x4040ff # blue
+nucleic.G=0x00c000	0x40c040 # green
+nucleic.T=0xa0702f	0xa0904f # orange
+nucleic.U=0xa0702f	0xa0904f # orange
+
+
+## some color values
+#0xff00ff	# magenta
+#0x000000	# black
+#0xff0000	# red
+#0x0000ff	# blue
+#0x00c0c0	# lt.blue
+#0x00c000	# green
+#0x090909	# gray
+
+#[amino]
+# amino acid colors
+# base=color value ..add color for each base desired in set [' '..'~']
+amino.A=0xff00ff	# magenta
+amino.B=0x000000	# black
+amino.C=0xff0000	# red
+amino.D=0x000000	# black
+amino.E=0x000000	# black
+amino.F=0x0000ff	# blue
+amino.G=0xff00ff	# magenta
+amino.H=0x00c0c0	# lt.blue
+amino.I=0x00c000	# green
+amino.J=0x090909	# gray
+amino.K=0x00c0c0	# lt.blue
+amino.L=0x00c000	# green
+amino.M=0x00c000	# green
+amino.N=0x000000	# black
+amino.O=0x090909	# gray
+amino.P=0xff00ff	# magenta
+amino.Q=0x000000	# black
+amino.R=0x00c0c0	# lt.blue
+amino.S=0xff00ff	# magenta
+amino.T=0xff00ff	# magenta
+amino.U=0x090909	# gray
+amino.V=0x00c000	# green
+amino.W=0x0000ff	# blue
+amino.X=0x090909	# gray
+amino.Y=0x0000ff	# blue
+amino.Z=0x000000	# black
+ 
+

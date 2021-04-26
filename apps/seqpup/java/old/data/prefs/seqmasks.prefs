@@ -1,0 +1,104 @@
+# prefs/seqmasks.prefs
+#
+# Sequence mask styles file for seqpup
+#
+# This table sets the styles used for pretty printing of sequences
+# These styles are linked to masks.  
+# Four mask and styles values are currently available.
+# Text following a pound (#) is a comment that is ignored
+# Lines starting with an exclamation (!) are ignored
+
+##----------------------------
+##[mask1]
+
+mask1.description=a test style 
+
+## style values=bold,italic,underline,box,uppercase/lowercase,invertcolor
+mask1.style=bold uppercase box
+
+## repeatchar -- use if you want mult-align repeated chars set to this
+mask1.repeatchar=. 
+
+## font selection 
+!mask1.fontname=Courier 
+!mask1.fontsize=9
+!mask1.fontcolor=0xff0000	# red
+mask1.backcolor=0x80e0e0	# lt.blue
+mask1.boxcolor= 0x0000ff	# blue
+
+## boxstyle values= dashed or dotted or solid or dark or medium or light
+mask1.boxstyle=dashed
+
+## fillpattern= use 2 hex-long values for this 8-byte pattern
+!mask1.fillpattern=0x88228822 0x88228822 
+!mask1.fillpattern=0xaa55aa55 0xaa55aa55 
+
+##----------------------------
+##[mask2]
+
+mask2.description= style for mask 2
+mask2.style=box,invert
+mask2.repeatchar=. 
+mask2.fontname=Helvetica 
+!mask2.fontsize=9
+!mask2.fontcolor=0x00ff00	# 
+mask2.backcolor=0xD8D8D8  #  
+mask2.boxcolor= 0xff00ff	# magenta
+mask2.boxstyle=solid
+
+##----------------------------
+##[mask3]
+
+mask3.description= style for mask 3
+mask3.style=uppercase box
+mask3.repeatchar=- 
+mask3.fontname=Courier 
+mask3.fontsize=9
+mask3.fontcolor=0x00c0c0	# lt.blue
+mask3.backcolor=0x090909  # black
+
+##----------------------------
+##[mask4]
+
+mask4.description= a style for the fourth mask
+mask4.style=lowercase box
+!mask4.repeatchar=. 
+mask4.fontname=Helvetica 
+mask4.fontsize=9
+mask4.fontcolor=0x0000ff	# blue  
+mask4.backcolor=0xbbbbbb  # gray
+mask4.boxstyle=solid
+mask4.boxcolor=0xff0000		# red
+
+
+##----------------------------
+##[features]
+
+feature.intron.description=intron feature style
+feature.intron.style=italic lowercase box
+feature.intron.fontcolor=0xff0000	 
+feature.intron.boxcolor=0x00ffff	 
+feature.intron.boxstyle=light
+
+feature.exon.description=exon feature style
+feature.exon.style=bold uppercase box
+feature.exon.fontcolor=0x00ff00	 
+feature.exon.boxcolor=0xffff00 
+feature.exon.boxstyle=light
+
+
+##----------------------------
+
+## some color codes (see also tables/color.table)
+#0x000000	= black
+#0xffffff	= white
+#0x1fc003	= green
+#0xb0700f	= orange
+#0xff00ff	= magenta
+#0xff0000	= red
+#0x0000ff	= blue
+#0x00c0c0	= lt.blue
+#0x00c000	= green
+#0x090909	= gray
+
+

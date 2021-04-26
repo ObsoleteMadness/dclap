@@ -1,0 +1,6 @@
+
+This version of SeqPup is compiled for Linux (ELF) on Intel x86 cpu.
+You will need the binary application (compressed as SeqPup.gz), the
+child applications and data in seqpup-apps.tar.gz, and possibly updated
+data in the seqpup-data.tar.gz archive.
+

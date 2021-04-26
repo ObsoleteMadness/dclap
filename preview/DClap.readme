@@ -1,0 +1,28 @@
+
+My holiday gift to the world is a bit delayed, but here is a peak
+at it:  
+  a C++ application library, built on NCBI's Vibrant and core
+  toolkit, for software developers.  Don's Class Application library
+  (DCLAP) will let me, and others if they want, write applications
+  in a relatively easy way, using this oop application library.
+  The applications will compile and run on any platforms that NCBI's
+  Vibrant toolkit supports, that currently being Macintosh, MS-Windows
+  and Motif-XWindows.
+
+MyApp-sparc-motif was compiled on my Sun Sparcstation, using a Motif
+library.  It requires, I believe, the shared motif run-time libraries
+on your Sparc system to work.
+
+MyApp.hqx was compiled for Macintoshes.
+
+I don't have an MS-Windows system (yet), so can't provide
+that version.
+
+Other-Bio-Gophers is a gopher doc that one of the demos can read.
+
+The source for this C++ library will be made available free to the
+public -- but it still needs much work.
+
+This tidbit is at ftp.bio.indiana.edu:/util/dclap/preview
+
+-- Don Gilbert

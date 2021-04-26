@@ -1,0 +1,513 @@
+From macelis@neb.com Fri Jun 30 19:10:50 1995
+Received: from neb.com (vent.neb.com) by sunflower.bio.indiana.edu
+	(4.1/9.7jsm) id AA19082; Fri, 30 Jun 95 19:10:44 EST
+Received: by neb.com (5.x/SMI-SVR4)
+	id AA14575; Fri, 30 Jun 1995 20:10:03 -0400
+Date: Fri, 30 Jun 1995 20:10:03 -0400
+From: macelis@neb.com
+Message-Id: <9507010010.AA14575@neb.com>
+Content-Type: text
+Apparently-To: Archive@Bio.Indiana.edu
+Status: R
+
+                                                                              
+REBASE version 507                                                gcg.507
+                                                                              
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+     <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>     
+                                                                              
+              Dr. Richard J. Roberts Restriction Enzyme Database              
+                 Copyright (c) New England BioLabs, Inc. 1995                 
+                           All rights reserved.                               
+                                                                              
+     <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>     
+<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+                                                                              
+Rich Roberts                                                      Jun 23 95
+                                                                              
+
+REBASE codes for commercial sources of restriction enzymes & methylases
+
+                A        Amersham Life Sciences-USB (4/95)
+                B        Life Technologies Inc, Gibco-BRL (4/95)
+                C        Minotech Molecular Biology Products (5/95)
+                D        Angewandte Gentechnologie Systeme (4/95)
+                E        Stratagene (4/95)
+                F        Fermentas MBI (4/95)
+                G        Appligene (4/95)
+                H        American Allied Biochemical, Inc. (4/95)
+                I        SibEnzyme Ltd. (6/95)
+                K        Takara Shuzo Co. Ltd. (4/95)
+                L        NBL Gene Sciences Limited (4/95)
+                M        Boehringer-Mannheim (5/95)
+                N        New England BioLabs (6/95)
+                O        Toyobo Biochemicals (4/95)
+                P        Pharmacia Biotech Inc. (4/95)
+                Q        CHIMERx (4/95)
+                R        Promega Corporation (4/95)
+                S        Sigma (4/95)
+
+..
+;AatI      3 AGG'CCT        0 !  Eco147I,Pme55I,StuI,SseBI         >O
+AatII      5 G_ACGT'C      -4 !                                    >ADEFKLMNOPRS
+AccI       2 GT'mk_AC       2 !                                    >ABDEGKLMNOPQRS
+;AccII     2 CG'CG          0 !  BstUI,MvnI,ThaI,Bsh1236I          >AKQ
+;AccIII    1 T'CCGG_A       4 !  BseAI,BsiMI,Bsp13I,BspEI,Kpn2I,MroI  >EKQR
+;Acc16I    3 TGC'GCA        0 !  AviII,FspI                        >DI
+;Acc65I    1 G'GTAC_C       4 !  Asp718I,KpnI                      >DFINR
+;Acc113I   3 AGT'ACT        0 !  Eco255I,ScaI                      >I
+;AccB1I    1 G'GyrC_C       4 !  BanI,Eco64I,BshNI                 >I
+;AccB7I    7 CCAn_nnn'nTGG  -3 !  PflMI,Van91I,Esp1396I             >IR
+AceIII    13 CAGCTCnnnnnnn'nnnn_   4 !                                    >
+AciI       1 C'CG_C         2 !                                    >N
+;AclI      2 AA'CG_TT       2 !  Psp1406I                          >
+;AclNI     1 A'CTAG_T       4 !  SpeI                              >I
+;AclWI     9 GGATCnnnn'n_   1 !  AlwI                              >I
+;AcsI      1 r'AATT_y       4 !  ApoI                              >DIM
+;AcyI      2 Gr'CG_yC       2 !  BbiII,BsaHI,Hin1I,Hsp92I,Msp17I   >MR
+;AfaI      2 GT'AC          0 !  Csp6I,RsaI                        >K
+;AfeI      3 AGC'GCT        0 !  Aor51HI,Eco47III                  >I
+AflII      1 C'TTAA_G       4 !  BfrI,BspTI,Vha464I,MspCI,Bst98I   >ABKNOS
+AflIII     1 A'CryG_T       4 !                                    >ABMN
+;AgeI      1 A'CCGG_T       4 !  PinAI                             >N
+;AhaIII    3 TTT'AAA        0 !  DraI                              >
+AhdI       6 GACnn_n'nnGTC  -1 !  Eam1105I,AspEI,EclHKI             >N
+AluI       2 AG'CT          0 !                                    >ABCDEFGHIKLMNOPQRS
+AlwI       9 GGATCnnnn'n_   1 !  AclWI                             >NS
+;Alw21I    5 G_wGCw'C      -4 !  AspHI,Bbv12I,BsiHKAI              >DF
+;Alw26I    6 GTCTCn'nnnn_   4 !  BsmAI                             >DFR
+;Alw44I    1 G'TGCA_C       4 !  ApaLI,VneI                        >FMOR
+AlwNI      6 CAG_nnn'CTG   -3 !                                    >ABNS
+;Ama87I    1 C'yCGr_G       4 !  AvaI,BcoI,BsoBI,Eco88I            >I
+;AocI      2 CC'TnA_GG      3 !  Bse21I,Bsu36I,CvnI,Eco81I         >M
+;Aor51HI   3 AGC'GCT        0 !  Eco47III,AfeI                     >AK
+ApaI       5 G_GGCC'C      -4 !  Bsp120I,PspOMI                    >ABEGIKLMNOPQRS
+ApaBI      8 GCA_nnnnn'TGC  -5 !                                    >
+ApaLI      1 G'TGCA_C       4 !  Alw44I,VneI                       >ADEKNS
+ApoI       1 r'AATT_y       4 !  AcsI                              >N
+AscI       2 GG'CGCG_CC     4 !                                    >N
+;AseI      2 AT'TA_AT       2 !  AsnI,VspI,PshBI                   >ANOP
+;AsnI      2 AT'TA_AT       2 !  AseI,VspI,PshBI                   >M
+;AspI      4 GACn'n_nGTC    1 !  Tth111I                           >MP
+;Asp700I   5 GAAnn'nnTTC    0 !  XmnI                              >M
+;Asp718I   1 G'GTAC_C       4 !  Acc65I,KpnI                       >MP
+;AspEI     6 GACnn_n'nnGTC  -1 !  AhdI,Eam1105I,EclHKI              >M
+;AspHI     5 G_wGCw'C      -4 !  Alw21I,Bbv12I,BsiHKAI             >M
+;AspLEI    3 G_CG'C        -2 !  CfoI,HhaI,Hin6I,HinP1I,HspAI      >I
+;AsuI      1 G'GnC_C        3 !  Cfr13I,Sau96I                     >S
+;AsuII     2 TT'CG_AA       2 !  Bpu14I,Bsp119I,BstBI,Csp45I,LspI,NspV,SfuI  >
+AvaI       1 C'yCGr_G       4 !  Ama87I,BcoI,BsoBI,Eco88I          >ABEGKLMNOPQRS
+AvaII      1 G'GwC_C        3 !  Bme18I,Eco47I,HgiEI,SinI          >ABEGKMNPQRS
+;AvaIII    3 ATGCAT         0 ? !  EcoT22I,Mph1103I,NsiI,Ppu10I,Zsp2I  >
+;AviII     3 TGC'GCA        0 !  FspI,Acc16I                       >M
+AvrII      1 C'CTAG_G       4 !  BlnI                              >N
+BaeI       5 ACnnnnGTAyC    0 ? !                                    >
+;BalI      3 TGG'CCA        0 !  MscI,MluNI                        >AKR
+BamHI      1 G'GATC_C       4 !  BstI                              >ABCDEFGHIKLMNOPQRS
+BanI       1 G'GyrC_C       4 !  AccB1I,Eco64I,BshNI               >AEMNOPRS
+BanII      5 G_rGCy'C      -4 !  Eco24I,FriOI                      >ABKLMNOPQRS
+;BanIII    2 AT'CG_AT       2 !  BscI,Bsp106I,BspDI,BspXI,Bsu15I,ClaI,BseCI,Bsa29I  >O
+;BbeI      5 G_GCGC'C      -4 !  EheI,KasI,NarI                    >AK
+;BbiII     2 Gr'CG_yC       2 !  AcyI,BsaHI,Hin1I,Hsp92I,Msp17I    >K
+;BbrPI     3 CAC'GTG        0 !  Eco72I,PmaCI,PmlI                 >MO
+BbsI       8 GAAGACnn'nnnn_   4 !  Bbv16II,BpuAI,BpiI                >N
+;BbuI      5 G_CATG'C      -4 !  PaeI,SphI                         >R
+BbvI      13 GCAGCnnnnnnnn'nnnn_   4 !  Bst71I                            >IN
+;BbvII     8 GAAGACnn'nnnn_   4 !  BbsI,Bbv16II,BpuAI,BpiI           >
+;Bbv12I    5 G_wGCw'C      -4 !  Alw21I,AspHI,BsiHKAI              >I
+;Bbv16II   8 GAAGACnn'nnnn_   4 !  BbsI,BpuAI,BpiI                   >I
+BccI       2 CCATC          0 ? !                                    >
+Bce83I    22 CTTGAGnnnnnnnnnnnnnn_nn'  -2 !                                    >
+BcefI     17 ACGGCnnnnnnnnnnnn'n_   1 !                                    >
+BcgI      24 GCAnnnnnnTCGnnnnnnnnnn_nn'  -2 !  BcgI                              >N
+BcgI      24 CGAnnnnnnTGCnnnnnnnnnn_nn'  -2 !  BcgI                              >N
+BclI       1 T'GATC_A       4 !  FbaI,Ksp22I                       >BCDEFGLMNOPRS
+;BcnI      2 CC's_GG        1 !  NciI                              >ADFK
+;BcoI      1 C'yCGr_G       4 !  Ama87I,AvaI,BsoBI,Eco88I          >A
+;BetI      1 w'CCGG_w       4 !  BsaWI                             >
+BfaI       1 C'TA_G         2 !  MaeI                              >N
+BfiI       3 ACTGGG         0 ? !                                    >
+;BfrI      1 C'TTAA_G       4 !  AflII,BspTI,Vha464I,MspCI,Bst98I  >MO
+BglI       7 GCCn_nnn'nGGC  -3 !                                    >ABCDEFGHIKLMNOPQRS
+BglII      1 A'GATC_T       4 !                                    >ABCDEFGHIKLMNOPQRS
+;BinI      9 GGATCnnnn'n_   1 !  AlwI,AclWI                        >
+;BlnI      1 C'CTAG_G       4 !  AvrII                             >AKM
+;BlpI      2 GC'TnA_GC      3 !  Bpu1102I,Bsp1720I,CelII           >N
+;Bme18I    1 G'GwC_C        3 !  AvaII,Eco47I,HgiEI,SinI           >I
+BmgI       3 GkGCCC         0 ? !                                    >
+;BmyI      5 G_dGCh'C      -4 !  Bsp1286I,SduI                     >M
+;BpiI      8 GAAGACnn'nnnn_   4 !  BbsI,Bbv16II,BpuAI                >DF
+BplI       5 GAGnnnnnCTC    0 ? !                                    >
+BpmI      22 CTGGAGnnnnnnnnnnnnnn_nn'  -2 !  GsuI                              >N
+Bpu10I     2 CC'TnA_GC      3 !                                    >
+;Bpu14I    2 TT'CG_AA       2 !  Bsp119I,BstBI,Csp45I,LspI,NspV,SfuI  >I
+Bpu1102I   2 GC'TnA_GC      3 !  Bsp1720I,CelII,BlpI               >BDEFK
+;BpuAI     8 GAAGACnn'nnnn_   4 !  BbsI,Bbv16II,BpiI                 >M
+BsaI       7 GGTCTCn'nnnn_   4 !  Eco31I                            >N
+;Bsa29I    2 AT'CG_AT       2 !  BanIII,BscI,Bsp106I,BspDI,BspXI,Bsu15I,ClaI,BseCI  >I
+BsaAI      3 yAC'GTr        0 !                                    >N
+BsaBI      5 GATnn'nnATC    0 !  MamI,Bsh1365I,Bse8I,BsrBRI        >N
+BsaHI      2 Gr'CG_yC       2 !  AcyI,BbiII,Hin1I,Hsp92I,Msp17I    >NS
+BsaJI      1 C'CnnG_G       4 !  BseDI                             >N
+;BsaMI     7 GAATG_Cn'     -2 !  BsmI,Mva1269I                     >R
+;BsaOI     4 CG_ry'CG      -2 !  BsiEI,Bsh1285I                    >R
+BsaWI      1 w'CCGG_w       4 !                                    >N
+BsaXI      5 ACnnnnnCTCC    0 ? !                                    >
+BsbI       3 CAACAC         0 ? !                                    >
+;BscI      2 AT'CG_AT       2 !  BanIII,Bsp106I,BspDI,BspXI,Bsu15I,ClaI,BseCI,Bsa29I  >L
+;Bsc4I     5 CCnnnnnnnGG    0 ? !  BsiYI,BslI                        >I
+BscGI      2 CCCGT          0 ? !                                    >
+;Bse1I     6 ACTG_Gn'      -2 !  BsrI,BsrSI,BseNI                  >I
+;Bse8I     5 GATnnnnATC     0 ? !  BsaBI,MamI,Bsh1365I,BsrBRI        >I
+;Bse21I    2 CC'TnA_GG      3 !  AocI,Bsu36I,CvnI,Eco81I           >I
+;Bse118I   1 r'CCGG_y       4 !  BsrFI,BssAI,Cfr10I                >I
+;BseAI     1 T'CCGG_A       4 !  AccIII,BsiMI,Bsp13I,BspEI,Kpn2I,MroI  >CM
+;BseCI     2 AT'CG_AT       2 !  BanIII,BscI,Bsp106I,BspDI,BspXI,Bsu15I,ClaI,Bsa29I  >C
+;BseDI     1 C'CnnG_G       4 !  BsaJI                             >DF
+;BseNI     6 ACTG_Gn'      -2 !  BsrI,BsrSI,Bse1I                  >DF
+;BsePI     3 GCGCGC         0 ? !  BssHII,PauI                       >I
+BseRI     16 GAGGAGnnnnnnnn_nn'  -2 !                                    >N
+BsgI      22 GTGCAGnnnnnnnnnnnnnn_nn'  -2 !                                    >N
+;Bsh1236I   2 CG'CG          0 !  AccII,BstUI,MvnI,ThaI             >DEF
+;Bsh1285I   4 CG_ry'CG      -2 !  BsaOI,BsiEI                       >DF
+;Bsh1365I   5 GATnn'nnATC    0 !  BsaBI,MamI,Bse8I,BsrBRI           >DF
+;BshNI     1 G'GyrC_C       4 !  AccB1I,BanI,Eco64I                >F
+;BsiI      1 C'TCGT_G       4 !  BssSI                             >I
+BsiEI      4 CG_ry'CG      -2 !  BsaOI,Bsh1285I                    >N
+BsiHKAI    5 G_wGCw'C      -4 !  Alw21I,AspHI,Bbv12I               >N
+;BsiMI     1 T'CCGG_A       4 !  AccIII,BseAI,Bsp13I,BspEI,Kpn2I,MroI  >A
+;BsiSI     1 C'CG_G         2 !  HapII,Hin2I,HpaII,MspI            >C
+;BsiWI     1 C'GTAC_G       4 !  Pfl23II,SplI,SunI,PspLI           >MNO
+;BsiYI     7 CCnn_nnn'nnGG  -3 !  BslI,Bsc4I                        >M
+BslI       7 CCnn_nnn'nnGG  -3 !  BsiYI,Bsc4I                       >N
+BsmI       7 GAATG_Cn'     -2 !  BsaMI,Mva1269I                    >ABDELMNOS
+BsmAI      6 GTCTCn'nnnn_   4 !  Alw26I                            >N
+BsmBI      7 CGTCTCn'nnnn_   4 !  Esp3I                             >N
+BsmFI     15 GGGACnnnnnnnnnn'nnnn_   4 !                                    >N
+;BsoBI     1 C'yCGr_G       4 !  Ama87I,AvaI,BcoI,Eco88I           >N
+BsoFI      2 GC'n_GC        1 !  ItaI                              >N
+;Bsp13I    1 T'CCGG_A       4 !  AccIII,BseAI,BsiMI,BspEI,Kpn2I,MroI  >I
+;Bsp19I    1 C'CATG_G       4 !  NcoI                              >I
+Bsp24I    24 GACnnnnnnTGGnnnnnnn_nnnnn'  -5 !                                    >
+Bsp24I    25 CCAnnnnnnGTCnnnnnnnn_nnnnn'  -5 !                                    >
+;Bsp68I    3 TCG'CGA        0 !  NruI                              >DF
+;Bsp106I   2 AT'CG_AT       2 !  BanIII,BscI,BspDI,BspXI,Bsu15I,ClaI,BseCI,Bsa29I  >E
+;Bsp119I   2 TT'CG_AA       2 !  Bpu14I,BstBI,Csp45I,LspI,NspV,SfuI  >DF
+;Bsp120I   1 G'GGCC_C       4 !  ApaI,PspOMI                       >DFN
+;Bsp143I   0 'GATC_         4 !  DpnII,Kzo9I,MboI,NdeII,Sau3AI     >DF
+;Bsp143II   5 r_GCGC'y      -4 !  HaeII                             >F
+Bsp1286I   5 G_dGCh'C      -4 !  BmyI,SduI                         >ADKNR
+;Bsp1407I   1 T'GTAC_A       4 !  BsrGI,SspBI                       >DF
+;Bsp1720I   2 GC'TnA_GC      3 !  Bpu1102I,CelII,BlpI               >I
+;BspCI     4 CG_AT'CG      -2 !  Ple19I,PvuI                       >E
+;BspDI     2 AT'CG_AT       2 !  BanIII,BscI,Bsp106I,BspXI,Bsu15I,ClaI,BseCI,Bsa29I  >N
+BspEI      1 T'CCGG_A       4 !  AccIII,BseAI,BsiMI,Bsp13I,Kpn2I,MroI  >N
+BspGI      3 CTGGAC         0 ? !                                    >
+;BspHI     1 T'CATG_A       4 !  RcaI                              >AN
+BspLU11I   1 A'CATG_T       4 !                                    >M
+BspMI     10 ACCTGCnnnn'nnnn_   4 !                                    >N
+;BspMII    1 T'CCGG_A       4 !  AccIII,BseAI,BsiMI,Bsp13I,BspEI,Kpn2I,MroI  >
+;BspTI     1 C'TTAA_G       4 !  AflII,BfrI,Vha464I,MspCI,Bst98I   >DF
+;BspXI     2 AT'CG_AT       2 !  BanIII,BscI,Bsp106I,BspDI,Bsu15I,ClaI,BseCI,Bsa29I  >G
+BsrI       6 ACTG_Gn'      -2 !  BsrSI,BseNI,Bse1I                 >N
+BsrBI      3 GAG'CGG        0 !  BstD102I                          >N
+;BsrBRI    5 GATnn'nnATC    0 !  BsaBI,MamI,Bsh1365I,Bse8I         >R
+BsrDI      8 GCAATG_nn'    -2 !                                    >N
+BsrFI      1 r'CCGG_y       4 !  Bse118I,BssAI,Cfr10I              >N
+BsrGI      1 T'GTAC_A       4 !  Bsp1407I,SspBI                    >N
+;BsrSI     2 ACTGG          0 ? !  BsrI,BseNI,Bse1I                  >R
+;BssAI     1 r'CCGG_y       4 !  Bse118I,BsrFI,Cfr10I              >C
+BssHII     1 G'CGCG_C       4 !  BsePI,PauI                        >ABDEKLMNOPQR
+BssSI      1 C'TCGT_G       4 !  BsiI                              >N
+;BssT1I    1 C'CwwG_G       4 !  Eco130I,EcoT14I,StyI,ErhI         >I
+;BstI      1 G'GATC_C       4 !  BamHI                             >P
+;Bst71I   13 GCAGCnnnnnnnn'nnnn_   4 !  BbvI                              >R
+;Bst98I    1 C'TTAA_G       4 !  AflII,BfrI,BspTI,Vha464I,MspCI    >R
+Bst1107I   3 GTA'TAC        0 !                                    >DFKMN
+;BstBI     2 TT'CG_AA       2 !  Bpu14I,Bsp119I,Csp45I,LspI,NspV,SfuI  >NS
+;BstD102I   3 GAG'CGG        0 !  BsrBI                             >P
+BstEII     1 G'GTnAC_C      5 !  BstPI,Eco91I,EcoO65I,PspEI        >BDGHLMNOPRS
+;BstF5I    7 GGATG_nn'     -2 !  FokI                              >I
+;BstNI     2 CC'w_GG        1 !  BstOI,EcoRII,MvaI                 >CENS
+;BstOI     2 CC'w_GG        1 !  BstNI,EcoRII,MvaI                 >R
+;BstPI     1 G'GTnAC_C      5 !  BstEII,Eco91I,EcoO65I,PspEI       >K
+;BstUI     2 CG'CG          0 !  AccII,MvnI,ThaI,Bsh1236I          >NS
+BstXI      8 CCAn_nnnn'nTGG  -4 !                                    >ABDEFGHKLMNOQRS
+BstYI      1 r'GATC_y       4 !  MflI,XhoII                        >BN
+;BstZI     1 C'GGCC_G       4 !  EagI,EclXI,Eco52I,XmaIII          >R
+;Bsu15I    2 AT'CG_AT       2 !  BanIII,BscI,Bsp106I,BspDI,BspXI,ClaI,BseCI,Bsa29I  >DF
+Bsu36I     2 CC'TnA_GG      3 !  AocI,Bse21I,CvnI,Eco81I           >ENRS
+;BsuRI     2 GG'CC          0 !  HaeIII,PalI                       >FI
+Cac8I      3 GCn'nGC        0 !                                    >N
+;CauII     2 CC's_GG        1 !  BcnI,NciI                         >
+;CciNI     2 GC'GGCC_GC     4 !  NotI                              >I
+;CelII     2 GC'TnA_GC      3 !  Bpu1102I,Bsp1720I,BlpI            >ALM
+;CfoI      3 G_CG'C        -2 !  HhaI,Hin6I,HinP1I,AspLEI,HspAI    >BLMRS
+;CfrI      1 y'GGCC_r       4 !  EaeI                              >F
+;Cfr9I     1 C'CCGG_G       4 !  PspAI,SmaI,XmaI,PspALI            >FO
+;Cfr10I    1 r'CCGG_y       4 !  Bse118I,BsrFI,BssAI               >ADFKMO
+;Cfr13I    1 G'GnC_C        3 !  AsuI,Sau96I                       >DFKO
+;Cfr42I    4 CC_GC'GG      -2 !  KspI,SacII,Sfr303I,SstII          >DF
+CjeI      20 CCAnnnnnnGTnnnnnnnnn'nnnnnn_   6 !                                    >
+CjeI      18 ACnnnnnnTGGnnnnnnn'nnnnnn_   6 !                                    >
+CjePI     20 CCAnnnnnnnTCnnnnnnnn'nnnnnn_   6 !                                    >
+CjePI     19 GAnnnnnnnTGGnnnnnnn'nnnnnn_   6 !                                    >
+ClaI       2 AT'CG_AT       2 !  BanIII,BscI,Bsp106I,BspDI,BspXI,Bsu15I,BseCI,Bsa29I  >ABKMNPRS
+;CpoI      2 CG'GwC_CG      3 !  CspI,RsrII                        >ADFK
+;CspI      2 CG'GwC_CG      3 !  CpoI,RsrII                        >EOR
+;Csp6I     1 G'TA_C         2 !  AfaI,RsaI                         >DFN
+;Csp45I    2 TT'CG_AA       2 !  Bpu14I,Bsp119I,BstBI,LspI,NspV,SfuI  >OR
+CviJI      2 rG'Cy          0 !                                    >Q
+CviRI      2 TG'CA          0 !                                    >
+;CvnI      2 CC'TnA_GG      3 !  AocI,Bse21I,Bsu36I,Eco81I         >B
+DdeI       1 C'TnA_G        3 !                                    >ABEGLMNOPR
+DpnI       2 GA'TC          0 !                                    >ABLMNRS
+;DpnII     0 'GATC_         4 !  Bsp143I,Kzo9I,MboI,NdeII,Sau3AI   >N
+DraI       3 TTT'AAA        0 !                                    >ABDEFGIKLMNOPQRS
+;DraII     2 rG'GnC_Cy      3 !  EcoO109I                          >AGMS
+DraIII     6 CAC_nnn'GTG   -3 !                                    >AEGMNS
+DrdI       7 GACnn_nn'nnGTC  -2 !                                    >N
+DrdII      3 GAACCA         0 ? !                                    >
+DsaI       1 C'CryG_G       4 !                                    >M
+EaeI       1 y'GGCC_r       4 !  CfrI                              >ADKLMNS
+EagI       1 C'GGCC_G       4 !  BstZI,EclXI,Eco52I,XmaIII         >NPS
+;Eam1104I   7 CTCTTCn'nnn_   3 !  EarI,Ksp632I                      >DEF
+;Eam1105I   6 GACnn_n'nnGTC  -1 !  AhdI,AspEI,EclHKI                 >DFK
+EarI       7 CTCTTCn'nnn_   3 !  Eam1104I,Ksp632I                  >N
+EciI       3 TCCGCC         0 ? !                                    >
+;Ecl136II   3 GAG'CTC        0 !  EcoICRI,SacI,SstI,Psp124BI        >DFN
+;EclHKI    6 GACnn_n'nnGTC  -1 !  AhdI,Eam1105I,AspEI               >R
+;EclXI     1 C'GGCC_G       4 !  BstZI,EagI,Eco52I,XmaIII          >M
+;Eco24I    5 G_rGCy'C      -4 !  BanII,FriOI                       >DF
+;Eco31I    7 GGTCTCn'nnnn_   4 !  BsaI                              >DF
+;Eco32I    3 GAT'ATC        0 !  EcoRV                             >F
+;Eco47I    1 G'GwC_C        3 !  AvaII,Bme18I,HgiEI,SinI           >FO
+Eco47III   3 AGC'GCT        0 !  Aor51HI,AfeI                      >BDEFLMNOR
+;Eco52I    1 C'GGCC_G       4 !  BstZI,EagI,EclXI,XmaIII           >ADFKOR
+Eco57I    22 CTGAAGnnnnnnnnnnnnnn_nn'  -2 !                                    >DFN
+;Eco64I    1 G'GyrC_C       4 !  AccB1I,BanI,BshNI                 >DF
+;Eco72I    3 CAC'GTG        0 !  BbrPI,PmaCI,PmlI                  >DEFR
+;Eco81I    2 CC'TnA_GG      3 !  AocI,Bse21I,Bsu36I,CvnI           >ADFKO
+;Eco88I    1 C'yCGr_G       4 !  Ama87I,AvaI,BcoI,BsoBI            >DF
+;Eco91I    1 G'GTnAC_C      5 !  BstEII,BstPI,EcoO65I,PspEI        >F
+;Eco105I   3 TAC'GTA        0 !  SnaBI                             >DFO
+;Eco130I   1 C'CwwG_G       4 !  BssT1I,EcoT14I,StyI,ErhI          >DF
+;Eco147I   3 AGG'CCT        0 !  AatI,Pme55I,StuI,SseBI            >DF
+;Eco255I   3 AGT'ACT        0 !  ScaI,Acc113I                      >F
+;EcoICRI   3 GAG'CTC        0 !  Ecl136II,SacI,SstI,Psp124BI       >R
+EcoNI      5 CCTnn'n_nnAGG   1 !                                    >ANS
+;EcoO65I   1 G'GTnAC_C      5 !  BstEII,BstPI,Eco91I,PspEI         >AK
+EcoO109I   2 rG'GnC_Cy      3 !  DraII                             >ABDEFKLN
+EcoRI      1 G'AATT_C       4 !                                    >ABCDEFGHIKLMNOPQRS
+EcoRII     0 'CCwGG_        5 !  BstNI,BstOI,MvaI                  >BEMOS
+EcoRV      3 GAT'ATC        0 !  Eco32I                            >ABCDEGHIKLMNOPQRS
+;EcoT14I   1 C'CwwG_G       4 !  BssT1I,Eco130I,StyI,ErhI          >AK
+;EcoT22I   5 A_TGCA'T      -4 !  Mph1103I,NsiI,Ppu10I,Zsp2I        >AKO
+;EheI      3 GGC'GCC        0 !  BbeI,KasI,NarI                    >ADFNO
+;ErhI      1 C'CwwG_G       4 !  BssT1I,Eco130I,EcoT14I,StyI       >I
+;EspI      2 GC'TnA_GC      3 !  Bpu1102I,Bsp1720I,CelII,BlpI      >
+;Esp3I     7 CGTCTCn'nnnn_   4 !  BsmBI                             >DF
+;Esp1396I   7 CCAn_nnn'nTGG  -3 !  AccB7I,PflMI,Van91I               >F
+FauI       9 CCCGCnnnn'nn_   2 !                                    >I
+;FbaI      1 T'GATC_A       4 !  BclI,Ksp22I                       >AK
+;FinI      2 GGGAC          0 ? !  BsmFI                             >
+;FnuDII    2 CG'CG          0 !  AccII,BstUI,MvnI,ThaI,Bsh1236I    >
+;Fnu4HI    2 GC'n_GC        1 !  ItaI,BsoFI                        >
+FokI      14 GGATGnnnnnnnnn'nnnn_   4 !  BstF5I                            >AGKLMNR
+;FriOI     5 G_rGCy'C      -4 !  BanII,Eco24I                      >I
+FseI       6 GG_CCGG'CC    -4 !                                    >AKN
+FspI       3 TGC'GCA        0 !  AviII,Acc16I                      >ABKNOS
+GdiII      1 y'GGCC_G       4 !                                    >
+;GsuI     22 CTGGAGnnnnnnnnnnnnnn_nn'  -2 !  BpmI                              >DFS
+HaeI       3 wGG'CCw        0 !                                    >
+HaeII      5 r_GCGC'y      -4 !  Bsp143II                          >ABDEGKLMNOPRS
+HaeIII     2 GG'CC          0 !  BsuRI,PalI                        >ABCDGHIKLMNOPQRS
+;HapII     1 C'CG_G         2 !  BsiSI,Hin2I,HpaII,MspI            >AK
+HgaI      10 GACGCnnnnn'nnnnn_   5 !                                    >AN
+;HgiAI     5 G_wGCw'C      -4 !  Alw21I,AspHI,Bbv12I,BsiHKAI       >
+;HgiCI     1 G'GyrC_C       4 !  AccB1I,BanI,Eco64I,BshNI          >
+;HgiEI     1 G'GwC_C        3 !  AvaII,Bme18I,Eco47I,SinI          >D
+HgiEII     6 ACCnnnnnnGGT   0 ? !                                    >
+;HgiJII    5 G_rGCy'C      -4 !  BanII,Eco24I,FriOI                >
+HhaI       3 G_CG'C        -2 !  CfoI,Hin6I,HinP1I,AspLEI,HspAI    >ABGKNOPRS
+;Hin1I     2 Gr'CG_yC       2 !  AcyI,BbiII,BsaHI,Hsp92I,Msp17I    >DEFO
+;Hin2I     2 CCGG           0 ? !  BsiSI,HapII,HpaII,MspI            >F
+Hin4I      5 GAbnnnnnvTC    0 ? !                                    >
+;Hin6I     1 G'CG_C         2 !  CfoI,HhaI,HinP1I,AspLEI,HspAI     >DF
+;HinP1I    1 G'CG_C         2 !  CfoI,HhaI,Hin6I,AspLEI,HspAI      >N
+HincII     3 GTy'rAC        0 !  HindII                            >ABCDEFGHKLNOPQRS
+;HindII    3 GTy'rAC        0 !  HincII                            >M
+HindIII    1 A'AGCT_T       4 !                                    >ABCDEFGHIKLMNOPQRS
+HinfI      1 G'AnT_C        3 !                                    >ABDEFGHIKLMNOPQRS
+HpaI       3 GTT'AAC        0 !                                    >ABDEFGIKLMNOPQRS
+;HpaII     1 C'CG_G         2 !  BsiSI,HapII,Hin2I,MspI            >BDEFGILMNOPQRS
+HphI      13 GGTGAnnnnnnn_n'  -1 !                                    >ANS
+;Hsp92I    2 Gr'CG_yC       2 !  AcyI,BbiII,BsaHI,Hin1I,Msp17I     >R
+;Hsp92II   4 _CATG'        -4 !  NlaIII                            >R
+;HspAI     1 G'CG_C         2 !  CfoI,HhaI,Hin6I,HinP1I,AspLEI     >I
+;ItaI      2 GC'n_GC        1 !  BsoFI                             >M
+;KasI      1 G'GCGC_C       4 !  BbeI,EheI,NarI                    >N
+KpnI       5 G_GTAC'C      -4 !  Acc65I,Asp718I                    >ABCDEFGHIKLMNOPQRS
+;Kpn2I     1 T'CCGG_A       4 !  AccIII,BseAI,BsiMI,Bsp13I,BspEI,MroI  >BDF
+;KspI      4 CC_GC'GG      -2 !  Cfr42I,SacII,Sfr303I,SstII        >M
+;Ksp22I    1 T'GATC_A       4 !  BclI,FbaI                         >I
+;Ksp632I   7 CTCTTCn'nnn_   3 !  Eam1104I,EarI                     >M
+;Kzo9I     0 'GATC_         4 !  Bsp143I,DpnII,MboI,NdeII,Sau3AI   >I
+;LspI      2 TT'CG_AA       2 !  Bpu14I,Bsp119I,BstBI,Csp45I,NspV,SfuI  >L
+;MaeI      1 C'TA_G         2 !  BfaI                              >M
+MaeII      1 A'CG_T         2 !                                    >MP
+MaeIII     0 'GTnAC_        5 !                                    >MP
+;MamI      5 GATnn'nnATC    0 !  BsaBI,Bsh1365I,Bse8I,BsrBRI       >M
+;MboI      0 'GATC_         4 !  Bsp143I,DpnII,Kzo9I,NdeII,Sau3AI  >ABCEFGKLNQRS
+MboII     13 GAAGAnnnnnnn_n'  -1 !                                    >ABDFKNOQRS
+;McrI      4 CG_ry'CG      -2 !  BsaOI,BsiEI,Bsh1285I              >
+;MfeI      1 C'AATT_G       4 !  MunI                              >N
+;MflI      1 r'GATC_y       4 !  BstYI,XhoII                       >AK
+MluI       1 A'CGCG_T       4 !                                    >ABDEFGIKLMNOPQRS
+;MluNI     3 TGG'CCA        0 !  BalI,MscI                         >M
+MmeI      26 TCCrACnnnnnnnnnnnnnnnnnn_nn'  -2 !                                    >
+MnlI      11 CCTCnnnnnn_n'  -1 !                                    >ADEFNQ
+;Mph1103I   5 A_TGCA'T      -4 !  EcoT22I,NsiI,Ppu10I,Zsp2I         >F
+;MroI      1 T'CCGG_A       4 !  AccIII,BseAI,BsiMI,Bsp13I,BspEI,Kpn2I  >MO
+;MroNI     1 G'CCGG_C       4 !  NaeI,NgoAIV,NgoMI                 >I
+MscI       3 TGG'CCA        0 !  BalI,MluNI                        >BDNOS
+MseI       1 T'TA_A         2 !  Tru9I,Tru1I                       >BN
+MslI       5 CAynn'nnrTG    0 !                                    >N
+MspI       1 C'CG_G         2 !  BsiSI,HapII,Hin2I,HpaII           >ABDEFGHIKLMNOPQRS
+;Msp17I    2 Gr'CG_yC       2 !  AcyI,BbiII,BsaHI,Hin1I,Hsp92I     >I
+MspA1I     3 CmG'CkG        0 !  NspBII                            >NR
+;MspCI     1 C'TTAA_G       4 !  AflII,BfrI,BspTI,Vha464I,Bst98I   >C
+;MspR9I    2 CC'n_GG        1 !  ScrFI                             >I
+;MstI      3 TGC'GCA        0 !  AviII,FspI,Acc16I                 >
+MunI       1 C'AATT_G       4 !  MfeI                              >BDEFKM
+;MvaI      2 CC'w_GG        1 !  BstNI,BstOI,EcoRII                >ADFKMO
+;Mva1269I   7 GAATG_Cn'     -2 !  BsaMI,BsmI                        >F
+;MvnI      2 CG'CG          0 !  AccII,BstUI,ThaI,Bsh1236I         >M
+MwoI       7 GCnn_nnn'nnGC  -3 !                                    >N
+;NaeI      3 GCC'GGC        0 !  NgoAIV,NgoMI,MroNI                >ADEKLMNOR
+NarI       2 GG'CG_CC       2 !  BbeI,EheI,KasI                    >BEMNOPRS
+NciI       2 CC's_GG        1 !  BcnI                              >BELMNORS
+NcoI       1 C'CATG_G       4 !  Bsp19I                            >ABCDEFGHKLMNOPQRS
+NdeI       2 CA'TA_TG       2 !                                    >ABDEFGKLMNPRS
+;NdeII     0 'GATC_         4 !  Bsp143I,DpnII,Kzo9I,MboI,Sau3AI   >BDGM
+NgoAIV     1 G'CCGG_C       4 !  NaeI,NgoMI,MroNI                  >B
+;NgoMI     1 G'CCGG_C       4 !  NaeI,NgoAIV,MroNI                 >NR
+NheI       1 G'CTAG_C       4 !                                    >ABDEFGKLMNOPRS
+NlaIII     4 _CATG'        -4 !  Hsp92II                           >ANOS
+NlaIV      3 GGn'nCC        0 !  PspN4I                            >NS
+NotI       2 GC'GGCC_GC     4 !  CciNI                             >ABCDEFGKLMNOPQRS
+NruI       3 TCG'CGA        0 !  Bsp68I                            >ABCDEGIKLMNOPQRS
+NsiI       5 A_TGCA'T      -4 !  EcoT22I,Mph1103I,Ppu10I,Zsp2I     >BDELMNRS
+NspI       5 r_CATG'y      -4 !                                    >ABKM
+NspV       2 TT'CG_AA       2 !  Bpu14I,Bsp119I,BstBI,Csp45I,LspI,SfuI  >ABKO
+;NspBII    3 CmG'CkG        0 !  MspA1I                            >A
+PacI       5 TTA_AT'TAA    -2 !                                    >NO
+;PaeI      5 G_CATG'C      -4 !  BbuI,SphI                         >DF
+;PaeR7I    1 C'TCGA_G       4 !  Sfr274I,XhoI                      >N
+;PalI      2 GG'CC          0 !  BsuRI,HaeIII                      >EP
+;PauI      3 GCGCGC         0 ? !  BsePI,BssHII                      >F
+;Pfl23II   1 C'GTAC_G       4 !  BsiWI,SplI,SunI,PspLI             >DF
+Pfl1108I   3 TCGTAG         0 ? !                                    >
+PflMI      7 CCAn_nnn'nTGG  -3 !  AccB7I,Van91I,Esp1396I            >ANS
+PinAI      1 A'CCGG_T       4 !  AgeI                              >BM
+PleI       9 GAGTCnnnn'n_   1 !                                    >N
+;Ple19I    4 CG_AT'CG      -2 !  BspCI,PvuI                        >I
+;PmaCI     3 CAC'GTG        0 !  BbrPI,Eco72I,PmlI                 >AK
+PmeI       4 GTTT'AAAC      0 !                                    >NP
+;Pme55I    3 AGG'CCT        0 !  AatI,Eco147I,StuI,SseBI           >I
+PmlI       3 CAC'GTG        0 !  BbrPI,Eco72I,PmaCI                >N
+;Ppu10I    1 A'TGCA_T       4 !  EcoT22I,Mph1103I,NsiI,Zsp2I       >DFN
+;PpuMI     2 rG'GwC_Cy      3 !  Psp5II                            >ANO
+PshAI      5 GACnn'nnGTC    0 !                                    >AK
+;PshBI     2 AT'TA_AT       2 !  AseI,AsnI,VspI                    >K
+Psp5II     2 rG'GwC_Cy      3 !  PpuMI                             >BDF
+Psp1406I   2 AA'CG_TT       2 !                                    >DFMN
+;PspAI     1 C'CCGG_G       4 !  Cfr9I,SmaI,XmaI,PspALI            >E
+;PspALI    3 CCC'GGG        0 !  Cfr9I,PspAI,SmaI,XmaI             >I
+;Psp124BI   5 G_AGCT'C      -4 !  Ecl136II,EcoICRI,SacI,SstI        >I
+;PspEI     1 G'GTnAC_C      5 !  BstEII,BstPI,Eco91I,EcoO65I       >I
+;PspLI     1 C'GTAC_G       4 !  BsiWI,Pfl23II,SplI,SunI           >I
+;PspN4I    3 GGn'nCC        0 !  NlaIV                             >I
+;PspOMI    1 G'GGCC_C       4 !  ApaI,Bsp120I                      >I
+PstI       5 C_TGCA'G      -4 !                                    >ABCDEFGHIKLMNOPQRS
+PvuI       4 CG_AT'CG      -2 !  BspCI,Ple19I                      >ABDEFGKLMNOPQRS
+PvuII      3 CAG'CTG        0 !                                    >ABCDEFGHIKLMNOPQRS
+RcaI       1 T'CATG_A       4 !  BspHI                             >BM
+RleAI     18 CCCACAnnnnnnnnn_nnn'  -3 !                                    >
+RsaI       2 GT'AC          0 !  AfaI,Csp6I                        >ABCDEGILMNOPQRS
+RsrII      2 CG'GwC_CG      3 !  CpoI,CspI                         >BMNS
+SacI       5 G_AGCT'C      -4 !  Ecl136II,EcoICRI,SstI,Psp124BI    >ACEGHKLMNOPQRS
+SacII      4 CC_GC'GG      -2 !  Cfr42I,KspI,Sfr303I,SstII         >ACEGHKLNOPQRS
+SalI       1 G'TCGA_C       4 !                                    >ABCDEFGHIKLMNOPQRS
+SanDI      2 GG'GwC_CC      3 !                                    >
+SapI       8 GCTCTTCn'nnn_   3 !                                    >N
+;SauI      2 CC'TnA_GG      3 !  AocI,Bse21I,Bsu36I,CvnI,Eco81I    >
+Sau96I     1 G'GnC_C        3 !  AsuI,Cfr13I                       >ALMNORS
+Sau3AI     0 'GATC_         4 !  Bsp143I,DpnII,Kzo9I,MboI,NdeII    >ABDEGHKLMNOPQRS
+ScaI       3 AGT'ACT        0 !  Eco255I,Acc113I                   >ABCDEFGKLMNOPQRS
+ScrFI      2 CC'n_GG        1 !  MspR9I                            >DMNOS
+;SduI      5 G_dGCh'C      -4 !  BmyI,Bsp1286I                     >F
+;SecI      1 C'CnnG_G       4 !  BsaJI,BseDI                       >
+SexAI      1 A'CCwGG_T      5 !                                    >M
+SfaNI     10 GCATCnnnnn'nnnn_   4 !                                    >IN
+SfcI       1 C'TryA_G       4 !                                    >N
+;SfeI      1 C'TryA_G       4 !  SfcI                              >
+SfiI       8 GGCCn_nnn'nGGCC  -3 !                                    >ABCDEGILMNOPQRS
+;Sfr274I   1 C'TCGA_G       4 !  PaeR7I,XhoI                       >I
+;Sfr303I   4 CC_GC'GG      -2 !  Cfr42I,KspI,SacII,SstII           >I
+;SfuI      2 TT'CG_AA       2 !  Bpu14I,Bsp119I,BstBI,Csp45I,LspI,NspV  >M
+SgfI       5 GCG_AT'CGC    -2 !                                    >OR
+SgrAI      2 Cr'CCGG_yG     4 !                                    >M
+;SinI      1 G'GwC_C        3 !  AvaII,Bme18I,Eco47I,HgiEI         >LR
+SmaI       3 CCC'GGG        0 !  Cfr9I,PspAI,XmaI,PspALI           >ABCDEFGHKLMNOPQRS
+;SmiI      4 ATTT'AAAT      0 !  SwaI                              >I
+;SnaI      3 GTATAC         0 ? !  Bst1107I                          >
+SnaBI      3 TAC'GTA        0 !  Eco105I                           >ACEKLMNPRS
+SpeI       1 A'CTAG_T       4 !  AclNI                             >ABDEHKLMNOPQRS
+SphI       5 G_CATG'C      -4 !  BbuI,PaeI                         >ABCDEGHIKLMNOPQRS
+;SplI      1 C'GTAC_G       4 !  BsiWI,Pfl23II,SunI,PspLI          >AK
+SrfI       4 GCCC'GGGC      0 !                                    >EO
+;Sse9I     0 'AATT_         4 !  TspEI,Tsp509I                     >DI
+Sse8387I   6 CC_TGCA'GG    -4 !                                    >AK
+Sse8647I   2 AG'GwC_CT      3 !                                    >
+;SseBI     3 AGG'CCT        0 !  AatI,Eco147I,Pme55I,StuI          >C
+SspI       3 AAT'ATT        0 !                                    >ABCDEFIKLMNOPQR
+;SspBI     1 T'GTAC_A       4 !  Bsp1407I,BsrGI                    >M
+;SstI      5 G_AGCT'C      -4 !  Ecl136II,EcoICRI,SacI,Psp124BI    >BCS
+;SstII     4 CC_GC'GG      -2 !  Cfr42I,KspI,SacII,Sfr303I         >BS
+StuI       3 AGG'CCT        0 !  AatI,Eco147I,Pme55I,SseBI         >ABEKLMNPQRS
+StyI       1 C'CwwG_G       4 !  BssT1I,Eco130I,EcoT14I,ErhI       >BCEMNRS
+SunI       1 C'GTAC_G       4 !  BsiWI,Pfl23II,SplI,PspLI          >B
+SwaI       4 ATTT'AAAT      0 !  SmiI                              >M
+TaqI       1 T'CG_A         2 !  TthHB8I                           >ABCDEFGLMNOPQRS
+TaqII     17 CACCCAnnnnnnnnn_nn'  -2 !                                    >
+TaqII     17 GACCGAnnnnnnnnn_nn'  -2 !                                    >
+TauI       2 GCsGC          0 ? !                                    >
+TfiI       1 G'AwT_C        3 !                                    >N
+ThaI       2 CG'CG          0 !  AccII,BstUI,MvnI,Bsh1236I         >B
+;Tru1I     1 T'TA_A         2 !  MseI,Tru9I                        >F
+;Tru9I     1 T'TA_A         2 !  MseI,Tru1I                        >DILMRS
+TseI       2 GCwGC          0 ? !                                    >N
+Tsp45I     0 'GTsAC_        5 !                                    >N
+Tsp509I    0 'AATT_         4 !  TspEI,Sse9I                       >N
+;TspEI     0 'AATT_         4 !  Tsp509I,Sse9I                     >LO
+TspRI      7 CAGTGnn'      -9 !                                    >N
+Tth111I    4 GACn'n_nGTC    1 !  AspI                              >ADKNPQR
+Tth111II  17 CAArCAnnnnnnnnn_nn'  -2 !                                    >
+;TthHB8I   1 T'CG_A         2 !  TaqI                              >AK
+UbaCI      3 wGTACw         0 ? !                                    >
+;Van91I    7 CCAn_nnn'nTGG  -3 !  AccB7I,PflMI,Esp1396I             >DFKM
+;Vha464I   1 C'TTAA_G       4 !  AflII,BfrI,BspTI,MspCI,Bst98I     >I
+;VneI      1 G'TGCA_C       4 !  Alw44I,ApaLI                      >I
+VspI       2 AT'TA_AT       2 !  AseI,AsnI,PshBI                   >BDEFIKR
+XbaI       1 T'CTAG_A       4 !                                    >ABCDEFGHIKLMNOPQRS
+XcmI       8 CCAnnnn_n'nnnnTGG  -1 !                                    >AN
+XhoI       1 C'TCGA_G       4 !  PaeR7I,Sfr274I                    >ABCDEFGHKLMNOPQRS
+;XhoII     1 r'GATC_y       4 !  BstYI,MflI                        >EMR
+;XmaI      1 C'CCGG_G       4 !  Cfr9I,PspAI,SmaI,PspALI           >ADNPRS
+;XmaIII    1 C'GGCC_G       4 !  BstZI,EagI,EclXI,Eco52I           >BE
+XmnI       5 GAAnn'nnTTC    0 !  Asp700I                           >DEN
+;Zsp2I     5 A_TGCA'T      -4 !  EcoT22I,Mph1103I,NsiI,Ppu10I      >I
+
+
+

@@ -1,0 +1,13 @@
+#!/bin/csh
+# rename: change the string arg1 in the names of files in current directory
+#         to the string in arg2
+
+if ($#argv != 2 ) then
+  echo "Usage: $0 pat1 pat2 -- rename files with pattern1 to pattern2"
+else
+  foreach i ( *$1* )
+	mv $i `echo $i | sed -n s/$1/$2/p`
+	# normally use -i to prevent overwrite
+	#mv -i $i `echo $i | sed -n s/$1/$2/p`
+  end
+endif

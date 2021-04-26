@@ -1,0 +1,7 @@
+
+this is an interim file of Mac Codewarrior development project files,
+from release 0.6d of seqpup.  It includes PPC & 68K projects for SeqPup
+and for fastDNAml (other child apps are similar), ChildApp.c and
+ChildApps.rsrc, for building new child apps or seqpup from source.
+This should go into dclap.tar.gz, but will be here for now.
+

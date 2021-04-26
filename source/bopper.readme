@@ -1,0 +1,123 @@
+
+
+bopper - a Biocomputing Office Protocol server
+taken directly from popper, a Post Office Protocol server
+by don gilbert,  gilbertd@bio.indiana.edu,  June 1996
+
+
+bopper is used to provide biocomputing services to bop-aware 
+clients (SeqPup).  BOP is an Internet transaction protocol
+for sending command line and file data to a server, and receiving
+result files back.  It is somewhat analogous to the SMTP-POP
+transaction system, but has been tailored to sending 
+
+  a) a command-line plus data input file block from client to server
+  b) executing a program/process on server to analyze this data
+  c) return result files to client when the client requests, for each
+     process
+
+The home archive for bopper is
+  ftp://iubio.bio.indiana.edu/util/dclap/source/bopper
+
+Note that popper source is
+ * Copyright (c) 1989 Regents of the University of California.
+ * All rights reserved.  The Berkeley software License Agreement
+ * specifies the terms and conditions for redistribution.
+
+
+bopper installation notes:
+
+scripts/  
+   Edit bopper.conf to suit needs.  Here is where server applications
+   are linked to client requests.
+   Then copy files as
+   bopper.conf  -> /usr/local/etc/
+   bopgcg       -> /usr/local/bin/  
+   boppileup    -> /usr/local/bin/
+
+src/
+  source code files
+  Makefile - configured for use on Sun Solaris2,
+    will likely need changes for other systems
+  after successful Make, copy bopper to /usr/local/etc/bopper,
+  change owner to of bopper to root
+
+docs/
+  mostly popper docs and traces of bopper transactions.
+  real docs need to be written
+
+add to
+/etc/services:
+bop  7110/tcp  # test BOP (biocompute office protocol) server
+
+/etc/inetd.conf:
+bop  stream  tcp  nowait  root  /usr/local/etc/bopper  bopper -t /tmp/bopper.trace
+
+The "-t /tmp/bopper.trace" is for optional debugging
+restart inetd according to standard usage (kill -HUP)
+
+
+Note that BOP protocol may undergo refinements.  Please send
+suggestions, source changes, etc to gilbertd@bio.indiana.edu
+ 
+For developers wanting to implement bop client services,
+the basic transaction is (c: client, s: server)
+
+  c:  connect to BOP server port
+  s:  +OK IUBio Bop server (version 1.0a) at sunflower starting.
+  c:  USER  myname
+  s:  +OK  Password required for myname
+  c:  PASS  mypass
+  s: +OK biology has 2 process(es).
+  
+  c:  NEW
+  s: +OK Process 3 open for access
+  c:  CMD  myapp  my.input -out=my.output  -default
+  s: +OK CMD myapp recieved
+  c:  PUT  my.input
+  s: +OK   Send file myseq
+  c:   --- data ---
+  c:   --- data ---
+  c:  .       (terminate data file)
+  s: +OK  File received
+  c:  EXEC
+  s: +OK  pid=13168, app myapp is executing
+  c:  CLOS
+  s: +OK Process 3 closed
+
+  c:  STAT 3
+  s: +OK executing Message 3 state 2
+  c:  STAT 3
+  s: +OK done Message 3 state 3
+
+  c:  OPEN 3
+  s: +OK Process 3 is open for access
+  c: GET my.output
+  s: +OK DATA 2588 ascii text/plain myseq.prime
+  s:  --- data ---
+  s:  --- data ---
+  s: .    ( terminate data)
+  s: +OK File sent
+  c:  GET stderr
+  s: +OK DATA 1228 ascii text/plain stderr
+  s:  --- data ---
+  s:  --- data ---
+  s: .    ( terminate data)
+  s: +OK File sent
+
+  c:  GET stdout
+  s:  -ERR Empty file 'stdout'
+
+  c:  CLOS
+  s: +OK Process 3 closed
+  c:  DELE 3
+  s: +OK Message 3 has been deleted.
+
+  c:  QUIT
+
+   
+ 
+Release notes:
+
+21Jun96 - 1st release (Solaris2)
+22Aug96 - minor source changes and new makefile to compile on SunOS4

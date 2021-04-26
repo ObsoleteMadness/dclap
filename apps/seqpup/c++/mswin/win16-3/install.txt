@@ -1,0 +1,55 @@
+
+Installation file tree for SeqPup on MSDos/MSWin3
+-------------------------------------------------
+
+Use the following listing to recreate the directories and placement of
+files required for SeqPup to operate properly.  The critical files and
+folders are
+  seqpup.exe, seqpup.pre (preferences), seqpup.hel  (help)
+  [apps] folder with various .exe and .htm files
+  [tables] folder with various .tab files
+  
+  The [seqs] folder contains example sequence data
+  The [autosdat] folder contains example autosequence data
+  
+If your system does not have networking and Winsock software, you will need
+to add a winsock.dll for seqpup to work.  See the winsock folder here.
+  
+  
+Directory of H:\TEMP\SEQPUP
+
+[.]             [..]            SEQPUP.EXE      [AUTOSDAT]      SEQPUP.HEL
+SEQPUP.PRE      SPUP-UPD.TXT    [APPS]          [TABLES]        [SEQS]
+         4 file(s)        914,479 bytes
+
+Directory of H:\TEMP\SEQPUP\APPS
+
+[.]             [..]            FONTFILE        CLUSTALW.DOC    FASTDNAM.DOC
+AUTOSEQ.EXE     CHILDBUG.TXT    CLUSTALW.EXE    DRAWGRAM.EXE    DRAWTREE.EXE
+FASTDNAM.EXE    LSADT.EXE       AUTOSEQ.HTM     CAP.HTM         CLUSTALW.HTM
+DNAML.HTM       DRAWGRAM.HTM    DRAWTREE.HTM    FASTDNAM.HTM    GCG_BLAS.HTM
+GCG_FAST.HTM    GCG_MAP.HTM     GCG_MFOL.HTM    GCG_MOTI.HTM    GCG_PEPS.HTM
+GCG_PILE.HTM    GCG_PRIM.HTM    LSADT.HTM       CAP.EXE
+        27 file(s)      1,018,776 bytes
+
+Directory of H:\TEMP\SEQPUP\AUTOSDAT
+
+[.]             [..]            BA16D1.S1       BA16D4.S1
+         2 file(s)        166,669 bytes
+
+Directory of H:\TEMP\SEQPUP\SEQS
+
+[.]             [..]            23-28SRR.GB     5SRNA.GB        TESTRESE.GCG
+FASTDNAM.INF    TESTRE.MAP      CAPTEST.SEQ
+         6 file(s)        512,300 bytes
+
+Directory of H:\TEMP\SEQPUP\TABLES
+
+[.]             [..]            DRO.COD         ECO.COD         HUM.COD
+RAT.COD         TOB.COD         CAP.DOC         CODON.TAB       COLOR.TAB
+RENZYME.TAB     SEQMASKS.TAB
+        10 file(s)         68,115 bytes
+
+Total files listed:
+        49 file(s)      2,680,339 bytes
+        14 dir(s)      15,992,832 bytes free

@@ -1,0 +1,10 @@
+In order to use the NCBI network services in conjunction with the Windows
+Sockets (WinSock) development tools, it is necessary to copy the following
+files into this directory:
+
+  winsock.lib
+  winsock.h
+
+These files are widely available.  For example, they are currently (5/5/93)
+available for anonymous FTP in the directory /pub/winsock/winsock-1.1
+on Microdyne.COM.

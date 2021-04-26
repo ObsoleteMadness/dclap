@@ -1,0 +1,15 @@
+
+This is the SeqPup biosequence editor distribution archive,
+iubio.bio.indiana.edu/molbio/java/apps/seqpup/
+
+You don't need everything in this folder.  Start with one
+of the items in the full-package/ folder, depending on your
+computer operating system.  Updates to the full package may be
+placed in the other folders.  Using the Update option of the
+program or checking file dates will tell you which items may
+need updating.
+
+NOTE on Wintel version (sep98) - you need the "JDK" version of java,
+not the "JRE" version, to use the current seqpup. This will
+later be fixed to use jre also.
+

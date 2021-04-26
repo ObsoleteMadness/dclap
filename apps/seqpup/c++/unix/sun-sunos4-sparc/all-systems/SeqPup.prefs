@@ -1,0 +1,181 @@
+; SeqPup.prefs 
+; default preferences for application
+
+[version=5]
+; increase version # each time this is edited to get app to update
+; prefs.  You can add a new [version=6] section at the end and
+; any new values after that will replace version=5 values.
+
+[general]
+gOptionIsOn=1
+gShortFolder=0
+
+
+
+[windows]
+fgLockText=1
+fgUseColor=1
+fgWinRect=211 87 781 389
+gRichDocRect=10 34 500 404
+
+[fonts]
+gNameFontName=Times
+gNameFontSize=10
+gNameStyle=0
+gBaseFontName=Courier
+gBaseFontSize=10
+gBaseStyle=0
+gIndexFontName=Times
+gIndexFontSize=9
+gIndexStyle=0
+gSeqFontName=Courier
+gSeqFontSize=10
+gSeqStyle=2
+gTextFontName=Courier
+gTextFontSize=10
+
+[seqprint]
+gNameLeft=0
+gNameRight=1
+gIndexLeft=1
+gIndexRight=1
+gIndexTop=1
+gColored=0
+gShowComplement=1
+gThreeLetAA=0
+gShowAA1=1
+gShowAA2=1
+gShowAA3=1
+gShowCompAA1=1
+gShowCompAA2=1
+gShowCompAA3=1
+gOnlyORF=0
+gBasesPerLine=60
+
+[remap]
+gShowAllZymes=1
+gShowCutpoints=1
+gShowNoncutters=1
+gShowExcludedCutters=1
+gREMinCuts=1
+gREMaxCuts=999
+
+
+
+[version=6]
+; updates for release 0.4i, aug'95
+
+[seqdoc]
+gWriteMasks=1
+gMinCommonPercent=70
+fgStartDoc=1
+fgViewMode=0
+fgSire=SPup
+
+
+[version=11]
+; updates for release 0.5a, jan'96
+
+[paths]
+; can use UNIX standard path descriptions here. DCLAP converts to local OS
+; e.g., /root/path/to/somewhere   -- full path from a root disk
+; or,  relative/path/to/somewhere -- relative path from app folder
+; okay to use local OS conventions, but avoid "/" in path if not UNIX
+temp=
+tables=tables
+apps=apps
+help=help
+
+[data]
+codon=tables:codon.table
+renzyme=tables:renzyme.table
+color=tables:color.table
+
+[menus]
+menubar=file,edit,seq,inet,childapp,window
+file=File,New/N,Open.../O,Close/W,-,Save/S,Save As...,-,Print,Help/H,Quit/Q
+edit=Edit,Undo/U,-,Cut/X,Copy/C,Paste/V,Clear,-,Select All/A
+seq=Sequence
+inet=Internet
+apps=ChildApp
+window=Windows
+
+[apps]
+clustal=ClustalW Multiple align...
+cap=CAP Contig assembly...
+fastdnaml=FastDNAml...
+lsadt=DeSoete LSADTree...
+drawtree=Draw unrooted Tree...
+drawgram=Draw Cladogram...
+autoseq=AutoSeq base calling...
+dnaml
+;dnaml=Phylip DNAML...
+
+[autoseq]
+form=$apps:autoseq.html
+
+[drawgram]
+form=$apps:drawgram.html
+
+[drawtree]
+form=$apps:drawtree.html
+
+[lsadt]
+form=$apps:lsadt.html
+
+[clustal]
+form=$apps:clustalw.html
+
+[cap]
+form=$apps:cap2.html
+
+[fastdnaml]
+form=$apps:fastdnaml.html
+
+[dnaml]
+form=$apps:dnaml.html
+
+
+[version=63]
+; new for version 0.6c, june 1996
+
+[apps]
+autoseq=AutoSeq base calling...
+
+[autoseq]
+form=$apps:autoseq.html
+
+[inet]
+bop_title=[BOP servers]
+gcg_map=GCG Map...
+gcg_blast=GCG Blast...
+gcg_pepstruc=GCG Peptide Struct...
+gcg_motifs=GCG Motifs...
+gcg_fasta=GCG FastA...
+gcg_prime=GCG Prime...
+gcg_mfold=GCG MFold...
+gcg_pileup=GCG Pileup...
+
+[gcg_map]
+form=$apps:gcg_map.html
+[gcg_blast]
+form=$apps:gcg_blast.html
+[gcg_pepstruc]
+form=$apps:gcg_pepstruc.html
+[gcg_motifs]
+form=$apps:gcg_motifs.html
+[gcg_fasta]
+form=$apps:gcg_fasta.html
+[gcg_prime]
+form=$apps:gcg_prime.html
+[gcg_mfold]
+form=$apps:gcg_mfold.html
+[gcg_pileup]
+form=$apps:gcg_pileup.html
+
+[version=64]
+; cap software is not 'cap2' but cap version 1 w/ a few changes
+; new cap2 by X. Huang is a different program (and not freely available)
+[cap]
+form=$apps:cap.html
+

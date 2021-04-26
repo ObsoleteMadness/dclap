@@ -1,0 +1,95 @@
+#	makefile for dclap C++ library routines
+#
+## Gnu gcc/g+ has been tested...
+## this one is for Sun Solaris w/ Sun cc and CC 
+#
+# dgg note -- for motif link to work, remember to set 
+#  setenv LD_LIBRARY_PATH /usr/lib:/usr/openwin/lib
+
+# default flags for compiling and loading
+
+#------------------------ local setup ---------------
+#SUFFIXLCL = $(LCL)
+SUFFIXLCL = sol
+CPFLAGS1 = -c -g  #- O 
+CFLAGS1 = -c -g -DDCLAP #-O 
+LDFLAGS1 = -O
+CC = cc
+CPP = CC
+RAN = echo #ranlib
+AR=ar
+# get rid of debug symbols
+STRIP=strip
+
+# solaris needs /usr/ccs/lib/libgen.a for regcmp/regex weird call from Xlib
+## but damn libXm isn't finding libgen funcs ???????
+OTHERLIBS = # -lgen  # -lm # -L/usr/ccs/lib -lgen
+
+OURLIBS = -lgen -lvibrant -ldclap -ldrich -lncbi 
+## SRV4 libs == Solaris libs
+NETLIBS = -ldnet  -lsocket -lnsl
+##NETLIBS = -ldnet  
+
+
+# try static linked x libs
+# note: !static == shared motif libs == runs on Solaris2 & SunOs
+#       -static == static libs == fails on Solaris2 (some non-shared stdlib problem)
+VIBLIBS =  -lXm  -lXt -lX11  #-lXmu
+#VIBLIBS = -B static -lXm -lXt -lX11 # -lXmu 
+VIBFLAG = -I/opt/IXIX11R5/include -I/opt/SUNWmotif/share/include -DWIN_MOTIF 
+
+#------------------------ end local setup ---------------
+
+
+SUFFIXENV = unx
+LIBNCBI = libncbi.a
+LIBVIB = libvibrant.a
+LIBDNET =  libdnet.a
+LIBDCLAP = libdclap.a
+LIBDRICH = libdrich.a
+
+INCPATH = ../include
+LIBPATH = ../lib   #-L/usr/ccs/lib 
+CFLAGS = $(CFLAGS1) -I$(INCPATH) $(VIBFLAG)
+CPFLAGS = $(CPFLAGS1) -I$(INCPATH) $(VIBFLAG)
+LDFLAGS = $(LDFLAGS1) -I$(INCPATH) -L$(LIBPATH) $(VIBFLAG)
+
+
+## All things to make
+##
+all :  copy
+
+
+## get all the source files
+##
+
+copy :
+	- mkdir ../include
+	- mkdir ../lib
+	- chmod +w ../include/*
+	- chmod +w *
+	cp ../corelib/*.h ../include
+	cp ../corelib/ncbilcl.$(SUFFIXLCL) ../include/ncbilcl.h
+	cp ../corelib/*.c .
+	- chmod +w *.c
+#	cp ../corelib/ncbimain.$(SUFFIXENV) ncbimain.c
+#	cp ../corelib/ncbienv.$(SUFFIXENV) ncbienv.c
+	cp ../vibrant/*.h ../include
+	cp ../vibrant/*.c .
+	cp ../DClap/*.h ../include
+	cp ../DNet/*.h ../include
+	cp ../Drtf/*.h ../include
+	cp ../DBio/*.h ../include
+	cp ../network/nsclilib/*.h ../include
+	cp ../DClap/*.cpp ../DClap/*.c .
+	cp ../DNet/*.cpp ../DNet/*.c .
+	cp ../Drtf/*.cpp ../Drtf/*.c .
+	cp ../DBio/*.cpp ../DBio/*.c .
+	cp ../DApp/*.* .
+	echo "Renaming build/*.cpp files to build/*.cc for silly g++"
+# cp ./rename .
+	./rename .cpp .cc
+	chmod +w ../include/*
+	chmod +w *
+
+

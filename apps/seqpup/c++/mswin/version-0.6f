@@ -1,0 +1,45 @@
+
+SeqPup, version 0.6f development release, 3 Sep 1996
+
+New since release 0.6d/0.6e:
+
+Macintosh and MSWin distribution archives now include all the
+files for SeqPup, including the preference, data, and child
+applications.   This should make it easier to install and
+have all parts properly configured.  There is not yet a new
+release for Unix/XWindow systems.
+  
+The Mac and MSWin versions have a few program changes that 
+may make using child apps more successful.
+	
+If you have had problems getting a prior 0.6 release to
+work, esp. getting the table data (e.g., protein translations)
+or the child apps working, you may want to replace that with
+this new release.  I also recommend that you remove the
+SeqPup preferences file on your system prior to installing this
+new release. 
+	
+For Macintoshes, remove this file -
+   System Folder:Preferences:seqpup.cnf
+For MSWin3/MSWinNt/MSWin95, remove this file -
+    C:\Windows\seqpup.ini
+	    
+Don Gilbert
+---------------------	
+	
+SeqPup is a biological sequence editor and analysis program
+usable on the common computer systems of Macintosh,
+MS-Windows and X-Windows.  It includes links to network
+services and external analysis programs.
+
+You can obtain this release thru anonymous ftp, gopher or
+http to iubio.bio.indiana.edu, in folder /molbio/seqpup.
+Versions are available for Macintosh (PowerMac and 68K), 
+MS Windows (Win95, WinNT and Win3), and Unix/XWindows systems
+including Sun Solaris, SGI Irix, DEC Unix, Linux.   The Internet 
+locators to this software are
+
+  <ftp://iubio.bio.indiana.edu/molbio/seqpup/>
+  <gopher://iubio.bio.indiana.edu/11/IUBio-Software+Data/molbio/seqpup/>
+  <http://iubio.bio.indiana.edu/1/IUBio-Software%2bData/molbio/seqpup/>
+

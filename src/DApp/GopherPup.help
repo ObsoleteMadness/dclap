@@ -1,0 +1,483 @@
++MENU:
+ +INFO: 1GopherPup home	1/IUBio-Software+Data/util/gopher/gopherpup	ftp.bio.indiana.edu	70	+
+ +menustring: ftp.bio.indiana.edu:/util/gopher/gopherpup
+ +INFO: 1DCLAP home	1/IUBio-Software+Data/util/dclap	ftp.bio.indiana.edu	70	+
+ +menustring: ftp.bio.indiana.edu:/util/dclap
+ +INFO: 1IUBio Archive		ftp.bio.indiana.edu	70	+
+ +menustring: "IUBio Biology Archive"
+ +INFO: 7GenBank sequence search	7/.indices/genbank	ftp.bio.indiana.edu	70	+
+ +MENUSTRING: "fetch a sequence entry from Genbank"
+ +INFO: 1RTF Info	1/IUBio-Software+Data/util/rtf	ftp.bio.indiana.edu	70	+
+ +MENUSTRING:  "Rich Text Format"
+ +INFO: 1RTF (Rich Text Format) utilities	1/RTF	ftp.primate.wisc.edu	70	+
+ +MENUSTRING:  ftp.primate.wisc.edu:/pub/RTF
+ +INFO: 0Go+hypertext-method	0/IUBio-Software+Data/util/gopher/go+menu-article.txt	ftp.bio.indiana.edu	70	+
+ +MENUSTRING:  "network hypertext links"
+ +comment: need a gopherpup "mail" kind (m?)
+ +INFO: mGopherPup bug report	GopherPup@Bio.Indiana.Edu	localhost	0
+ +menustring: GopherPup@Bio.Indiana.Edu
+ +INFO: 1NCBI Gopher		ncbi.nlm.nih.gov	70
+ +menustring: "National Center for Biotechnology Information"
+ +INFO: 1ncbi_tools	1/toolbox/ncbi_tools	ncbi.nlm.nih.gov	70
+ +menustring: ncbi.nlm.nih.gov:/toolbox
+ +INFO: 1Gopher help from U.Minnesota (USA)		gopher.micro.umn.edu	70	+
+ +menustring: gopher.micro.umn.edu
+ +comment: add links for "Fetch (ftp)", "TurboGopher"
+ +comment: add links for JPEG & GIF viewers, other helper apps !! need for each platform
+ +comment:
+ +comment: To read this with a standard wordprocessor, strip out the lines down thru
+ +comment: the "+DATA:" line, so that the first line starts with "{ \ rtf1"
++DATA:
+{\rtf1\mac\deff2 {\fonttbl{\f0\fswiss Chicago;}{\f2\froman New York;}{\f3\fswiss Geneva;}{\f4\fmodern Monaco;}{\f13\fnil Zapf Dingbats;}{\f14\fnil Bookman;}{\f16\fnil Palatino;}{\f18\fnil Zapf Chancery;}{\f19\fnil Souvenir;}{\f20\froman Times;}
+{\f21\fswiss Helvetica;}{\f22\fmodern Courier;}{\f23\ftech Symbol;}{\f26\fnil Lubalin Graph;}{\f33\fnil Avant Garde;}{\f34\fnil New Century Schlbk;}{\f156\fnil Garamond;}{\f2515\fnil MT Extra;}{\f32525\fnil VT100;}}{\colortbl\red0\green0\blue0;
+\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;\red255\green0\blue0;\red255\green255\blue0;\red255\green255\blue255;}{\stylesheet{\tx576\tx1440\tx6480 \f20\fs20 \sbasedon222\snext0 Normal;}{\s2\sb600\sa200\brdrb
+\brdrs \tx576\tx1440\tx6480 \f20\fs48 \sbasedon0\snext2 head1;}{\s3\sb100\tx576\tx1440\tx6480 \f20 \sbasedon0\snext3 realnormal;}{\s4\sb100\tx576\tx1440\tx6480 \b\f20\fs48\up100 \sbasedon3\snext4 head2;}{\s5\sb100\tx576\tx1440\tx6480 \b\f21 
+\sbasedon3\snext5 command;}}\ftnbj \sectd \linemod0\cols1 \pard\plain \s2\sb600\sa200\brdrb\brdrs \tx576\tx1440\tx6480 \f20\fs48 {{\pict\macpict\picw35\pich19 
+00c400000000001600231101a10064000c574f5244000000000016002301000a000000000016002390000600000000001500280000000000150022000000000015002200010000000000000000000000000000000000000000000000000e0ffe0000000fb001f000000ec00c0800000e81030800000e80e1f000000e809f00
+00000e80c10000000e813e0000000e81840000000e82780000000ec1080000000fb8f00000000e0700000000000000000000000000000000000000000000000000000000ff}} Abstract\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 GopherPup is an Internet information client program, usable on the common computer systems including Macintosh, Motif/X\-Windows and MS-Windows
+.  It provides an easy to use, Macintosh Finder-like link to the range of Internet Gopher services.\par 
+\pard \s3\sb100\tx576\tx1440\tx6480 
+This program supports Gopher+ methods, including ASK forms that make it possible to provide client-server dialogs for various information analyses, and supports multiple view formats, so that you can fetch versions of documents that most suit your computer
+ system.\par 
+\pard \s3\sb240\tx576\tx1440\tx6480 Release 0.2 adds support for Microsoft's {\cf5 Rich Text Format} (RTF) for display of fully formatted documents.  These can include a {\f22 variety} of {\f21 fonts} including {\f23 symbols}, font {\fs36 sizes} and {
+\b\i\ul styles}, {\up6 super}{\up6 -}scripting and {\dn4 sub}{\dn4 -}scripting, tabbing, paragraph formatting, and pictures (in both vector and bitmap forms).\par 
+\pard \s3\sb100\tx576\tx1440\tx6480 It also adds {\cf5 network hypertext links} as an extension of Gopher+ protocol.  This permits documents to have hot-spots that link to other documents or information serives on the network. \par 
+\pard \s3\sb240\tx576\tx1440\tx6480 GopherPup is based directly on my earlier GopherApp program for Macintosh computers.  It includes, or will include, the same feature set and general user interface. It is available at ftp.bio.indi
+ana.edu:/util/gopher/gopherpup.\par 
+\pard \s3\sb100\tx576\tx1440\tx6480 It is built on a cross-platform C toolkit from the Nat'l Center for Biotechnology Information (NCBI), especially Jonathan Kans' Vibrant user \-interface toolkit.  On top of this toolkit, the author
+ built a C++ application framework that is patterned after the MacApp framework from Apple Computer. This framework, called Don's Class Application Library (DCLAP), is available freely to the public, as is NCBI's toolkit
+.  The home archive location for DCLAP is \{ftp,gopher\} to ftp.bio.indiana.edu:/util/dclap.\par 
+This initial release of GopherPup lacks several important features, and also it includes several bugs, making it likely to crash, and not yet suitable for extensive use.  There are application executables for Macintosh, MS-Windows, and Sun Sparcstation
+, with a Silicon Graphics version expected soon.  Source code is available, at the DCLAP home, to those who wish to compile it on their own systems.\par 
+Comments, bug reports and suggestions for new features may be addressed via e-mail to    GopherPup@Bio.Indiana.Edu\par 
+\pard \s3\qr\sb100\tx576\tx1440\tx6480 \emdash  Don Gilbert \par 
+\pard \s3\qr\tx576\tx1440\tx6480 Bloomington, Indiana\par 
+\pard \s3\sb100\tx576\tx1440\tx6480 \par 
+{\b\ul History\par 
+}\pard \s3\fi-720\li720\tx1440\tx6480 00 May 94 , v  0.2.  Adds RichTextFormat, including PICT pictures, and network hypertext features.\par 
+?? April 94, v 0.1 of GopherPup.  somewhat better.\par 
+?? March 94, v  0 of GopherPup.  A bit better.\par 
+25 Jan 94, version -1 of GopherPup works on Mac and Sun\-Sparc-Motif, but still incomplete compared to GopherApp.\par 
+ 9 Nov 93, v 2.1bx of GopherApp (alias GopherApp++).\par 
+25 Mar 92, v 1.0 of GopherApp released to public.\par 
+\pard\plain \s2\sb600\sa200\brdrb\brdrs \tx576\tx1440\tx6480 \f20\fs48 {\fs28 {\pict\macpict\picw35\pich19 
+00c400000000001600231101a10064000c574f5244000000000016002301000a000000000016002390000600000000001500280000000000150022000000000015002200010000000000000000000000000000000000000000000000000e0ffe0000000fb001f000000ec00c0800000e81030800000e80e1f000000e809f00
+00000e80c10000000e813e0000000e81840000000e82780000000ec1080000000fb8f00000000e0700000000000000000000000000000000000000000000000000000000ff}} GopherPup Help\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 GopherPup is an Internet information client program, usable on the common computer systems including Macintosh, Motif/X\-Windows and MS-Windows.
+  It provides an easy to use, Macintosh Finder-like link to the range of Internet Gopher services.  This software is archived for public access at ftp.bio.indiana.edu:/util/gopher/gopherpup\par 
+
+Internet Gopher gives you access to a wide range of information services  that are now developing on the Internet.  Gopher is something like Telnet or FTP (file transfer), but also different.  It includes some of the keyword searching features of WAIS (Wid
+e Area Information Services). There are currently several biology gopher services found around the globe. These include fast and up\-to-date keyword searches of GenBank, EMBL, PIR and other important biology databanks.\par 
+Gophe
+r works something like the Macintosh Finder, only over the Internet and with various restrictions.  There are several file "types", include Text documents, Folders with more items, Search items to search databases for keyword matches, Phone book items to l
+ook up people's addresses, Binhex encoded Mac programs that you can fetch, and others.\par 
+When you find folders in a Gopher window, you can double\-click them to open a new window with more items.  [{\fs18 not in current release:} There is a drop-down menu at the top of each gopher window to select parent windows.]\par 
+
+The Internet features of GopherPup let you interchange ideas and data with people and computing services around the world.  If your computer is connected already to the Internet, you probably are familiar with electronic mail and some of its uses.  GopherP
+up includes a selection of network access features including a feature to send [{\fs18 not in current release:} and receive] e\-mail.\par 
+GopherPup will work properly over a telephone/modem connection to a Point to Point Protocol (PPP) or Serial Line Internet Protocol (SLIP) server (this is how it was developed).\par 
+This program supports Gopher+ methods, including ASK forms that make it possible to provide client-server dialogs for 
+various information analysis needs, and supports multiple view formats, so that you can fetch versions of documents that most suit your computer system.\par 
+Release 0.2 adds support for Microsoft's {\cf5 Rich Text Format} (RTF) for display of fully formatted documents.  These can include a {\f22 variety} of {\f21 fonts} including {\f23 symbols}, font {\fs36 sizes} and {\b\i\ul styles}, with {\up6 super}{\up6 
+-}scripting and {\dn4 sub}{\dn4 -}scripting, tabbing, paragraph formatting, and pictures (in both vector and bitmap forms).  Details of RTF and the source for Paul Dubois' RTF reader on which GopherPup bases its support is available at 
+ftp.primate.wisc.edu:/pub/RTF.\par 
+Release 0.2 also adds {\cf5 network hypertext links} as an extension of Gopher+ protocol.  This permits documents to have hot-spots that link to other documents or information serives on the network.  Double-clicking on items highlighted like this 
+will connect to a network service.  This release currently supports only the +MENUSTRING: method of marking links in a document.  Support for +MENULINE and +MENURECT will be added lat
+er. An addition to the article linked above is the use of +QUERYSTRING, which allows a Gopher Query (type 7) item to be searched for a specified string without prompting the user.  This lets documen
+t words and phrases be marked as text to search in a server database.\par 
+\par 
+GopherPup is based directly on the author's earlier GopherApp program for Macintosh computers.  It includes, or will include, the same feature set and general user interface.\par 
+It is built on top of a cross-platform toolkit from the National Center for Biotechnology Information (NCBI), especially Jonathan Kans' Vibrant user-interface toolkit, which works on Macintosh, MS-Windows and X/Motif (Unix and VMS) systems.  This NCBI 
+toolbox is in the public domain and is archived at\par 
+\tab ncbi.nlm.nih.gov:/toolbox\par 
+While it includes a lot of code for mana
+nging bio-sequences, the basic core library and vibrant graphic user interface sections are useful to any kind of application that would want to run on the common computer platforms of today.  This toolkit is written in ANSI C, and instructions are include
+d for compiling it on Macintosh, MS Windows, various Unix and VMS systems.\par 
+On top of the NCBI toolkit, the author built a C++ application framework that is patterned after the MacApp application library which the previous GopherApp was based on.  This application f
+ramework, called Don's Class Application Library (DCLAP), will be available freely to the public, for those wishing to use it for development of platform independent applications.  The home archive location for DCLAP is \{ftp,gopher\} to\par 
+\tab ftp.bio.indiana.edu:/util/dclap\par 
+Comments, bug reports and suggestions for new features may be addressed via e-mail to\par 
+\tab GopherPup@Bio.Indiana.Edu\par 
+With any bug reports, the author would appreciate as much detail as is reasonable without putting you off from making the report.  Include description of Mac hardware, system software version.  Include copies of data if relevant.\par 
+If you need to use land mail, send to\par 
+\pard\plain \li720\tx576\tx720\tx1440\tx2160\tx6480 \f20\fs20 Don Gilbert\par 
+Biocomputing Office, Biology Department \par 
+Indiana University, Bloomington, IN 47405\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 This GopherPup program is copyrighted 1994 by D.G. Gilbert. You may use GopherPup in any fashion, and you may re\-
+distribute it, if you make no charge for the redistribution and if you include the full distribution set (you may add features).\par 
+Be aware that this is a personal research proj
+ect of the author, who makes no money from it nor is funded to work on it.  It will likely be longer that people want for updates, and user support will be minimal to non existant.  Bug reports will get attention but generally not any replies. The main foc
+us of my work is toward biocomputing, not general, mass audience programming.\par 
+\pard\plain \s2\sb600\sa200\brdrb\brdrs \tx576\tx1440\tx6480 \f20\fs48 {\fs28 {\pict\macpict\picw35\pich19 
+00c400000000001600231101a10064000c574f5244000000000016002301000a000000000016002390000600000000001500280000000000150022000000000015002200010000000000000000000000000000000000000000000000000e0ffe0000000fb001f000000ec00c0800000e81030800000e80e1f000000e809f00
+00000e80c10000000e813e0000000e81840000000e82780000000ec1080000000fb8f00000000e0700000000000000000000000000000000000000000000000000000000ff}} Installing\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 The application is distributed from the IUBio Biology Archive, in ftp.bio.indiana.edu:/util/gopher/gopherpup.   There are versions for each of various computer
+ systems.  These generally include the application executable file and needed support files.  There will likely also be a separate folder at IUBio that includes the current selection of support files.  These may be updated independ
+ently of the application files.\par 
+Currently GopherPup requires a group of support files located in the same directory as the program.  For the program to work properly, these files need to be located in the folder with the application, with the names given{\fs20\up6 \'a0}.  This file 
+group is\par 
+\pard\plain \fi-2060\li2420\sb100 \f20\fs20 {\f22 GopherPup\tab }{\f21 Application}{\f22 \par 
+}\pard \fi-2060\li2420 {\f22 GopherPup.start\tab }{\f21 Your default rich-hyper-text document ("homepage" in other's jargon)}{\f22 \par 
+GopherPup.go4\tab }{\f21 Your default gopher document ("bookmarks" or "hotlist" in other's jargon)\par 
+}{\f22 GopherPup.help\tab }{\f21 Help file\par 
+}{\f22 GopherPup.goh\tab }{\f21 Network links for help file\par 
+}{\f22 GopherPup.icons\tab }{\f21 Icon data\par 
+}{\f22 GopherPup.prefs\tab }{\f21 Preference data (installed to system specific preference areas)\par 
+}{\f22 rtf-maps/\tab }{\f21 RTF data folder\par 
+}\pard \fi-620\li1340 {\i\f21 \tab input maps  (same for all systems)\par 
+}{\f22 ansi-gen, ansi-sym, mac-gen, mac-sym, \par 
+pc-gen, pc-sym, pca-gen, pca-sym\par 
+}{\i\f22 \tab output maps (specific for each system)\par 
+}{\f22 show-gen, show-sym\par 
+}\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 {\fs20\up6 \'a0}{\fs20  MS-DOS is name-space challenged, all names are shortened to "GOPHPUP.xxx".\par 
+\par 
+}System specific notes:\par 
+\pard \s3\fi-360\li360\sb100\tx576\tx1440\tx6480 \emdash \tab Macintosh:  requires MacTCP from Apple Computer.  Distributed as Binhex encoded, self-extracting archive.  The current release may fail to work on older macs (SE).\par 
+\emdash \tab MS-Windows:  requires WinSock TCP/IP compliant network DLL.  Distributed as a Zip archive.\par 
+\emdash \tab X/Motif requirements:  Binaries are distributed in compressed tar format (.tar.Z).  The author will only be able to supply binaries for a limited number of Unix OS flavors. These currently include\par 
+\pard \s3\li720\sb100\tx576\tx1440\tx6480 {\b Sun-Sparc-Motif}, for Sun Sparcstations, is now available. There is a version that includes statically linked Motif libraries ({\ul -stat} version), and one that uses dynamic, shared Motif runtime libraries ({
+\ul -dyn} version) from your system.  The dynamic verison is generally better, as I still haven't got the hang of linking just Motif libraries w/o other system libraries.  Solaris 2 and SunOS 4 are supported.\par 
+{\b SGI-Iris}, for Silicon Graphics computers, not yet ready (need to do system software upgrade 1st).\par 
+Other systems which are currently supported by NCBI tools and may well compile this include DEC-OSF/1, DEC-VMS, IBM-AIX, HP-HPUX, and NeXT.\par 
+\pard \s3\sb100\tx576\tx1440\tx6480 The program and dclap library source are distributed in Unix .tar.Z format (best available cross-platform format).  See the {\ul utils} section at ftp.bio.indiana.edu:/util/dclap f
+or Macintosh and MS Windows tar-compress utilities..\par 
+\pard\plain \s2\sb600\sa200\brdrb\brdrs \tx576\tx1440\tx6480 \f20\fs48 {\fs28 {\pict\macpict\picw35\pich19 
+00c400000000001600231101a10064000c574f5244000000000016002301000a000000000016002390000600000000001500280000000000150022000000000015002200010000000000000000000000000000000000000000000000000e0ffe0000000fb001f000000ec00c0800000e81030800000e80e1f000000e809f00
+00000e80c10000000e813e0000000e81840000000e82780000000ec1080000000fb8f00000000e0700000000000000000000000000000000000000000000000000000000ff}} Data files\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 GopherPup currently looks for three associated data files -\-GopherPup.icons, needed for the icon displays, GopherPup.help, readable text, and\par 
+\tab \tab GopherPup.go4\par 
+This last is a {\b gopher} {\b document}
+ which has links to any gopher servers you wish to see at startup.  Alternately you can save any gopher item window as a file and open again. Versions of GopherApp let you copy and paste items between gopher documents.  GopherPup will eventually support th
+is feature to let you easily create documents of links to your favorite network services.  You can alternatively edit a gopher document with a text editor, as long as you maintain the following format used in the Gopher transaction protocol:\par 
+[Type Char] [Title....] <tab> [Path] <tab>[Host.address] <tab>[Port#] <cr>\par 
+An optional <tab>+ after the Port will specify a Gopher+ server. This line format is repeated for any number of lines.\par 
+
+The New and Open commands on the File menu will let you create new or open old Gopher files.  You should use Copy/Paste and dragging gopher items, as well as the "New gopher link" and "Edit gopher link" commands to create gopher document files that suit yo
+ur tastes.\par 
+You may a
+lso edit a gopher document file as if it were a TEXT file.  When you save such a file, it is saved as a TEXT type.  GopherPup will currently let you try to open any file (on Macs, this is a bit of a user-interface boo-boo), and if it looks like a gopher do
+cument format, it will display the gopher links, otherwise it will try to display it as a plain text document.  [May fix this later on to restrict file types to known text or gopher types.]\par 
+\par 
+\par 
+\pard\plain \s2\sb600\sa200\brdrb\brdrs \tx576\tx1440\tx6480 \f20\fs48 {\fs28 {\pict\macpict\picw35\pich19 
+00c400000000001600231101a10064000c574f5244000000000016002301000a000000000016002390000600000000001500280000000000150022000000000015002200010000000000000000000000000000000000000000000000000e0ffe0000000fb001f000000ec00c0800000e81030800000e80e1f000000e809f00
+00000e80c10000000e813e0000000e81840000000e82780000000ec1080000000fb8f00000000e0700000000000000000000000000000000000000000000000000000000ff}} Menu commands{\fs18   }\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 {\fs36\cf4 \par 
+\par 
+}\pard\plain \s4\sb100\tx576\tx1440\tx6480 \b\f20\fs48\up100 {\plain \b\f20\fs48 File Menu}{\plain \f20\fs28  }{\plain \b\f20\fs48 {\pict\macpict\picw104\pich201 
+0b74000c001000d50078001102ff0c00ffffffff00100000000c00000078000000d500000000000000a00082001e0001000a000c001000d500780007000000000008000a00093049883ab59cf0390022fc1efc0e00000009ffffffffffffffff0023000000a000c400a100c001f42525445349444943543a5f63760d637572
+72656e7464696374202f6275206b6e6f776e207b62757d69660d7573657264696374202f5f6376206b6e6f776e206e6f747b7573657264696374202f5f63762033302064696374207075747d69660d5f637620626567696e0d2f6264667b62696e64206465667d62696e64206465660d63757272656e7473637265656e2f63
+732065786368206465662f63612065786368206465662f63662065786368206465660d2f736574636d796b636f6c6f722077686572657b2f736574636d796b636f6c6f7220676574202f6376636d796b2065786368206465667d7b2f6376636d796b7b31207375622034203120726f6c6c20337b3320696e64657820616464
+206e6567206475702030206c747b706f7020307d69662033203120726f6c6c7d72657065617420736574726762636f6c6f7220706f707d626466207d6966656c73650d2f73737b2f2f6366202f2f6361202f2f63732073657473637265656e7d6264660d2f7374677b737320736574677261797d6264660d2f73747267627b
+737320736574726762636f6c6f727d6264660d2f7374636d796b7b7373206376636d796b7d6264660d2f6d696e317b64757020302065717b706f7020317d69667d6264660d656e640d63757272656e7464696374202f626e206b6e6f776e207b626e7d69660d00a000bf00a100640030647277320004000c001000d5006f00
+00000000000000010000000000000000000000ffffffffffff000101000865000000a0008e0001000a000c001000d5006f0098000c000c001000d5006f000c001000d5006f000c001000d5006f000002f50002f50002f50008001ffdff00f0fb0008001ffdff00f0fb0008001ffdff00f0fb0009051ff8333ffff0fb000905
+1ff9ff3ffff0fb0009051ff9f3387ff0fb0009051ff9f3333ff0fb0009051ff873333ff0fb0009051ff9f3303ff0fb0009051ff9f333fff0fb0009051ff9f333bff0fb0009051ff9f3387ff0fb0008001ffdff00f0fb0008001ffdff00f0fb0008001ffdff00f0fb0008001ffdff00f0fb0008001ffdff00f0fb0006001ff7
+ff00f0060010f7000030060010f7000020060010f70000300c0310001040fd00030c6208310c0310001840fd0003129308310d0b10001c478ccc0000129388310d0b10001e4ccccc00000fe3c8300d0b1000174ccccc00000282e8300d0b100013cfcccc00000fe278300d0b100011cc0ccc0000129238300d0b100010cc4c
+c80000129218300d0b100010478ff000000c620831060010f7000031060010f7000031060010f7000030060010f7000030060010f7000030060010f7000030060010f70000300b0210000ffc00030c61e0310c0310001980fd0003129330310d0b1000199f0f1f0000129330310d02100019fe990580000fe330300d021000
+19fe99058000028330300d0b100019999f9980000fe330300d0b1000199998198000129330300d0b1000199998998000129330300d0b10000f1f0f1980000c61e031090310000018fa000031090310000018fa000031060010f7000030060010f7000030060010f7000030060010f7000030060010f7000030060010f70000
+31060010f7000031060010f7000031060010f7000030060010f700003006001ff7ff00f0060010f7000030060010f7000030060010f7000031060010f7000031060010f7000031060010f7000030060010f7000030060010f7000030060010f7000030060010f70000300c0310000f18fd00030c6333310c0310001898fd00
+03129333310d0b10001818f0e1e000129333310d0b10001819999330000fe333300d0b1000181999c33000028333300d0b1000181998e3f0000fe333300d0b1000181998730000129333300d0b1000189999331000129332300d0b10000f18f0e1e0000c63fc31060010f7000031060010f7000031060010f7000030060010
+f7000030060010f7000030060010f7000030060010f70000300b0210000efc00030c61c0310b02100019fc0003129320310d0b1000181e331e0000129300310d0b10001c23333300000fe380300d0b10000e1f333300000281c0300d0b10000733333f00000fe0e0300d0b1000033333300000129060300d0b100013333231
+0000129260300d0b10000e1f3c1e00000c61c031060010f7000031060010f7000031060010f7000030060010f7000030060010f7000030060010f7000030060010f70000300d0210000efe000101e0fe0000310d02100019fe00010330fe0000310d0b1000181e331e0331c00000310d0b10001c2333330333200000300d0b
+10000e1f333303f3800000300d0b10000733333f0331c00000300d0b1000033333300330e00000300d0b1000133332310332666600300d0b10000e1f3c1e0331c6660031060010f7000031060010f7000031060010f7000030060010f7000030060010f7000030060010f7000030060010f7000030060010f7000031060010
+f7000031060010f7000031060010f7000030060010f700003006001ff7ff00f0060010f7000030060010f7000030060010f7000031060010f7000031060010f7000031060010f7000030060010f7000030060010f7000030060010f7000030060010f70000300b0510001f006003fc0000310b05100019800003fc0000310c
+061000199b67c780fd0000310b051000199c6663fc0000300b0510001f186663fc0000300b05100018186663fc0000300b05100018186663fc0000300b05100018186663fc0000300c0610001818666180fd000031060010f7000031060010f7000031060010f7000030060010f700003006001ff7ff00f006001ff7ff00f0
+06001ff7ff00f00d041fffe67fe7feff03f39ccff10d041fffe67fe7feff03ed6ccff10d0b1fffe670e60fffffed6ccff10d0b1fffe6666667fffff01ccff00d0b1fffe0666667fffffd7c0ff00d0b1fffe6606667fffff01ccff00d0b1fffe667e667ffffed6ccff00d0b1fffe6676667ffffed6ccff00d0b1fffe670e60f
+fffff39ccff10b001ffeff01fe7ffcff00f10b001ffeff01fe7ffcff00f106001ff7ff00f106001ff7ff00f1060010f7000031060010f7000031060010f7000030060010f7000030060010f7000030060010f7000030060010f7000030060010f700003006001ff7ff00f0060010f7000030060010f7000030060010f70000
+30060010f7000030060010f7000030060010f7000030060010f7000030060010f7000030060010f7000030060010f70000300d0b10000f0018c000000c61e0300d0b1000198000c00000129330300d0b1000199999e00000129330300d0b1000199998c000000fe330300d0b1000199998c00000028330300d0b1000199998
+c000000fe330300d0b1000199998c00000129330300d0b1000199998c00000129330300d0b10000f0f986000000c61e0300a0310000180fb00013030060010f7000030060010f7000030060010f700003006001ff7ff00f002f50002f50002f5000000a0008f00a100640030647277320004009c006700ac00770000000000
+000000010001010000000000000000ffffffffffff000114010b0c000000a0008e0001000a009c006700ac007700900002009c006700ac0077009c006700ac0077009c006700ac00770003c000e000f000f800fc00fe00ff00ff80ffc0ffe0fe00ef00cf0087800780038000a0008f00a100640030647277320004009e0068
+00ae00780000000000000000010001010000000000000000ffffffffffff000114010900000000a0008e0001000a009e006800ae007800900002009e006800ae0078009e006800ae0078009e006800ae00780001000040006000700078007c007e007f007f807c006c004600060003000300000000a0008f00a10064000664
+727732004400a0008300ff}}{\plain \f20\fs18\up6 \par 
+}\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 \par 
+New\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab [Not yet active.]\par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Open\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab T
+his will open old Gopher folder or Text files. GopherPup tries to be smart when you choose to open a file, and if it looks like a gopher data file, will show it as a gopher folder, otherwise it will show any file as a text document.\par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Close\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab Close the currently active, front window.\par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Save, Save As\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab These will save the current active document to a disk file.  If the document is a gopher document, it will be saved in the format described below.  If the document is in RTF format
+, it will be saved in RTF format. If the document is text, it will be saved in that format.\par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Print\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab This will print the current document.  [currently active only for RTF and Text documents.]\par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Help\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab Display the help file (GopherPup.help).\par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Quit\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab Quit the program.\par 
+\pard\plain \s4\sb100\tx576\tx1440\tx6480 \b\f20\fs48\up100 \par 
+\pard \s4\sb100\tx576\tx1440\tx6480 {\plain \b\f20\fs48 Edit menu }{\plain \f20\fs48  }{\plain \b\f20\fs48 {\pict\macpict\picw113\pich134 
+08ec0017008e009d00ff001102ff0c00ffffffff008e00000017000000ff0000009d00000000000000a00082001e0001000a0017008e009d00ff00070000000000093049883ab59cf0390022fc1efc0e00000009ffffffffffffffff0023000000a000c400a100c001f42525445349444943543a5f63760d63757272656e74
+64696374202f6275206b6e6f776e207b62757d69660d7573657264696374202f5f6376206b6e6f776e206e6f747b7573657264696374202f5f63762033302064696374207075747d69660d5f637620626567696e0d2f6264667b62696e64206465667d62696e64206465660d63757272656e7473637265656e2f6373206578
+6368206465662f63612065786368206465662f63662065786368206465660d2f736574636d796b636f6c6f722077686572657b2f736574636d796b636f6c6f7220676574202f6376636d796b2065786368206465667d7b2f6376636d796b7b31207375622034203120726f6c6c20337b3320696e64657820616464206e6567
+206475702030206c747b706f7020307d69662033203120726f6c6c7d72657065617420736574726762636f6c6f7220706f707d626466207d6966656c73650d2f73737b2f2f6366202f2f6361202f2f63732073657473637265656e7d6264660d2f7374677b737320736574677261797d6264660d2f73747267627b73732073
+6574726762636f6c6f727d6264660d2f7374636d796b7b7373206376636d796b7d6264660d2f6d696e317b64757020302065717b706f7020317d69667d6264660d656e640d63757272656e7464696374202f626e206b6e6f776e207b626e7d69660d00a000bf00a1006400306472773200040017008e009d00ff0000000000
+000000010000000000000000000000ffffffffffff000114010865000000a0008e009800100017008e009d00ff0017008e009d00ff0017008e009d00ff000002f10008003ffdff00f0f70008003ffdff00f0f70008003ffdff00f0f70009053ff07e673ff0f70009053ff3fe7f3ff0f70009053ff3f0661ff0f70009053ff3
+e6673ff0f70009053ff0e6673ff0f70009053ff3e6673ff0f70009053ff3e6673ff0f70009053ff3e6673ff0f70009053ff070679ff0f70008003ffdff00f0f70008003ffdff00f0f70008003ffdff00f0f70008003ffdff00f0f70008003ffdff00f0f70007003ff4ff010000080020f50002010000080020f50002010000
+080020f500020100000e042000330003fb0004631f8100000e042000330003fb000494818100000f052000333e1f1efc000494818100000d012000fd33fc00047f030100000d012000fd33fc000414060100000d012000fd33fc00047f0c0100000d012000fd33fc000494980100000d012000fd33fc000494980100000f05
+20001e331f1efc0004631f810000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f5000201000007003ff4ff
+010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f500020100000e0420001e0018fb000463198100000e042000310018fb000494998100000e042000
+30333cfb000494998100000e042000303318fb00047f198100000e042000303318fb0004140f0100000e042000303318fb00047f198100000e042000303318fb000494998100000e042000313318fb000494998100000e0420001e1f0cfb00046319810000080020f50002010000080020f50002010000080020f500020100
+00080020f50002010000080020f50002010000080020f50002010000080020f500020100000c0220001ef90004630f0100000c02200031f9000494988100000f052000301e3e33fc000494980100000e02200030fe33fc00047f180100000e02200030fe33fc000414180100000e02200030fe33fc00047f180100000e0220
+0030fe33fc000494980100000e02200031fe33fc000494988100000f0520001e1e3e1ffc0004630f0100000d0020fe00013003fa00020100000d0020fe00013023fa00020100000c0020fd00001efa0002010000080020f50002010000080020f50002010000080020f50002010000080020f500020100000f0520003e0000
+30fc000463198100000f05200033000030fc0004949981000010062000331e1c78f0fd00049499810000100620003323323198fd00047f19810000100620003e1f383198fd000414198100001006200030331c31f8fd00047f198100001006200030330e3180fd00049499810000100620003033263188fd00049499010000
+10062000301f1c18f0fd0004631e010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f500020100000b0320001e30f800020100000b0320003130f800020100000e0620003031e1e360fb00020100000e06200030333233
+80fb00020100000d052000303331f3fa00020100000d0520003033f333fa00020100000d05200030330333fa00020100000d05200031331333fa00020100000d0520001e31e1f3fa0002010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f50002010000080020f500
+02010000080020f50002010000110f20001c0060000601e33000630f010000110f20003200600006033330009499810000110f2000303c63c38f0333300094998100001102200038fe660946033330007f19810000110220001cfe66090603f33000141f810000110f20000e7e67e606033330007f19810000110f20000660
+660606033330009499810000110f20002662662646033330009499810000110f20001c3c63c383033330006319810000080020f50002010000080020f50002010000080020f50002010000080020f5000201000007003ff4ff010000060007f4ffff0002f1000000a0008f00a10064000664727732004400a0008300ff}}
+{\plain \b\f20\fs20 \par 
+}\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 \par 
+Undo, cut, copy, paste, clear, select all \par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab These standard editing commands are not yet fully implemented.  They are active for some dialog text items.  They will, eventually, be used to manipulate link items in a gopher document, as we
+ll as manipulate editable text in various views.\par 
+\par 
+\par 
+\par 
+\pard\plain \s4\sb100\tx576\tx1440\tx6480 \b\f20\fs48\up100 {\plain \b\f20\fs48 Internet menu  }{\plain \b\f20\fs48 {\pict\macpict\picw190\pich311 
+131000ad009101e4014f001102ff0c00ffffffff0091000000ad0000014f000001e400000000000000a00082001e0001000a00ad009101e4014f00070000000000093049883ab59cf0390022fc1efc0e00000009ffffffffffffffff0023000000a000c400a100c001f42525445349444943543a5f63760d63757272656e74
+64696374202f6275206b6e6f776e207b62757d69660d7573657264696374202f5f6376206b6e6f776e206e6f747b7573657264696374202f5f63762033302064696374207075747d69660d5f637620626567696e0d2f6264667b62696e64206465667d62696e64206465660d63757272656e7473637265656e2f6373206578
+6368206465662f63612065786368206465662f63662065786368206465660d2f736574636d796b636f6c6f722077686572657b2f736574636d796b636f6c6f7220676574202f6376636d796b2065786368206465667d7b2f6376636d796b7b31207375622034203120726f6c6c20337b3320696e64657820616464206e6567
+206475702030206c747b706f7020307d69662033203120726f6c6c7d72657065617420736574726762636f6c6f7220706f707d626466207d6966656c73650d2f73737b2f2f6366202f2f6361202f2f63732073657473637265656e7d6264660d2f7374677b737320736574677261797d6264660d2f73747267627b73732073
+6574726762636f6c6f727d6264660d2f7374636d796b7b7373206376636d796b7d6264660d2f6d696e317b64757020302065717b706f7020317d69667d6264660d656e640d63757272656e7464696374202f626e206b6e6f776e207b626e7d69660d00a000bf00a10064003064727732000400ad009101e4014f0000000000
+000000010000000000000000000000ffffffffffff000114010865000000a0008e0098001800ad009101e4014f00ad009101e4014f00ad009101e4014f000002e90008007ff9ff00c0f30008007ff9ff00c0f30008007ff9ff00c0f30008007ff9ff00c0f3000d037ff3ffcffeff02fcffc0f3000d037ff3ffcffeff02fcff
+c0f3000d097ff383870e483c387fc0f3000d097ff399ce6639999cffc0f3000d097ff399ce6679999cffc0f3000d097ff399ce0679981cffc0f3000d097ff399ce7e7999fcffc0f3000d097ff399ce767999dcffc0f3000d097ff399e70e799c3e7fc0f30008007ff9ff00c0f30008007ff9ff00c0f30008007ff9ff00c0f3
+0008007ff9ff00c0f30008007ff9ff00c0f30006007febff00f8060040eb000008060040eb000008060040eb0000080f0940006660000007c00007f40000080f02400066fe00030660000cf4000008100a40006663c6660666cf1e38f50000080f014000fd66040667198c64f50000080f014000fd660407c6198c70f50000
+08100a40006667e66606061f8c38f5000008100a4000666606660606180c1cf5000008120c4000646626640606188c4cccc0f7000008120c40007863c7f806060f0c38ccc0f7000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008080040ed0002020008100840
+0066600000066006f500020300081002400066fe0002060006f50002038008120a40006663c6660667c66380f7000203c00811014000fd6604066666c640f7000203e00810014000fd660306666787f6000203f008120a40006667e6660666670380f7000203e008120a40006666066606666781c0f7000203c008120a4000
+64662664066666c4c0f70002038008120a40007863c7f80666666380f70002030008080040ed0002020008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008100a40007c0060060060000006f50000080d074000600060060060f2000008130d40006078f1c7c07c66
+06663c6660f80000081309400060cc632660666606fe660060f80000081309400078cc630660666606fe660060f8000008130d400060fc630660666606667e6660f8000008130d400060c063066066660666606660f8000008140e400060c46326606666064662664666f9000008140e4000607831c6607c3e07863c7f8666
+f90000080a0040fa000006f30000080a0040fa000046f30000080a0040fa00003cf3000008060040eb000008060040eb000008060040eb000008060040eb000008140e40007c006006000006318000000c60f90000081305400060006006fe0004318000000cf8000008171140006078f1c7c0666679f00f1f1e63c7c380fc
+000008170d400060cc6326606666319819998cfe660040fc0000081610400078cc6306606666319819998c666667fb0000081711400060fc6306606666319819998c66666380fc0000081711400060c06306606666319819998c666661c0fc0000081711400060c46326606646319819998c666664c0fc0000081711400060
+7831c6607f8619980f1f0663c66380fc0000080a0040f6000018f70000080a0040f6000018f7000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb00000806007febff00f8060040eb0000080600
+40eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb0000081102400041fb00053000000c000cf90000081102400061fb00053000000c000cf9000008150f4000711e33301f1e3e3e1e360f878c78fa0000081205400079333330
+fc3301380cfeccfa000008120540005d333330fc3301300cfeccfa000008140540004f3f3330fd33053f300cccccfcfa0000081405400047303330fd330530300cccccc0fa0000081605400043313320fd330731300cccccc4ccc0fc00000817114000411e3fc01f1e3e331e300cc78c78ccc0fc0000080c0040fc00020300
+30f30000080c0040fc0002230030f30000080a0040fc00001ef1000008060040eb000008060040eb000008060040eb000008060040eb000008130640007cc000c0c0fc000338330030fa00000813064000600000c0c0fc000360300030fa000008150f400060cf87c0f878ff878078f0333e33fa0000081405400060ccccc0
+fdcc05c0cc60333336fa0000081405400078ccccc0fdcc05c0cc6033333cfa0000081505400060ccccc0fecc06cfc0cc60333338fa0000081405400060ccccc0fdcc0500cc6033333cfa0000081405400060ccccc0fdcc0540cc60333336fa000008140c400060ccc7c0cc78ccc7807860fe33fa000008060040eb00000806
+0040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb0000081102400041fb00053000000cc00cf90000081102400061fb00053000000c000cf9000008150f4000711e33301f1e3e3e1e360ccf8cc0fa0000081305400079333330fc3304380ccccd80fa000008120540005d333330
+fc3303300ccccff9000008130540004f3f3330fd33043f300ccccef90000081305400047303330fd330430300ccccff90000081505400043313320fd330631300ccccd8cccfb000008140c4000411e3fc01f1e3e331e300cfdccfb0000080c0040fc0002030030f30000080c0040fc0002230030f30000080a0040fc00001e
+f1000008060040eb000008060040eb000008060040eb000008060040eb000008140440007c0cc6fe000003fe0002cc00c0f900000814044000600c06fe000003fe0002c000c0f9000008140e4000607ccf01f1e3e3e1e360ccf8ccf90000081205400060ccc603fc330380ccccd8f90000081205400078ccc603fc330300cc
+ccf0f90000081305400060ccc603fd3304f300cccce0f90000081305400060ccc603fd33040300ccccf0f90000081505400060ccc603fd33061300ccccd8ccc0fb000008150b40007c7cc301f1e3e331e300fdcc00c0fb0000080b0040fc00013003f20000080c0040fd0002023003f20000080b0040fd000101e0f1000008
+060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb00000806007febff00f8060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb00000806
+0040eb000008060040eb000008140640007c0cc60003fe00043000000330f900000812044000600c06fc00043000000330f900000816104000607ccf03331e33303e1e3e1f31e367fb0000081605400060ccc603fe3302303323fd33018c80fc0000081505400078ccc603fe330230331ffd33000efb0000081409400060cc
+c603333f3330fc3301f307fb0000081509400060ccc60333303330fc3302030380fc0000081609400060ccc60323313320fc330313099998fd000008181240007c7cc303c31e3fc0331f331f31e3071998fd000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008
+060040eb0000080e0440003c3180fc000070f50000080e044000663180fc0000c0f5000008110b40006679f0f1b07c6cf1e380f6000008110b400066319999c0667198c640f6000008100a40006631999980666198c7f5000008110b4000663199f9806661f8c380f6000008110b40006631998180666180c1c0f600000812
+0c40006631998980666188c4ccccf7000008120c40003c1998f1807c60f0c38cccf70000080a0040fb000060f20000080a0040fb000060f2000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008190940003c00300c001c0007fe000301980180fe00030318600819094000620030
+0c0030000cfe000301800180fe000304a4600819104000603c780c7c78f01e6cf1ff0199f198fe000304a46008191040006066300c6631980c719999819999b0fe000303f86008181040006e66300c6631980c619999819999e0fd0002a0600819104000667e300c6631980c619999819999c0fe000303f860081910400066
+60300c6631980c619999819999e0fe000304a46008191040006662300c6631980c619999819999b0fe000304a46008191040003c3c180c6630f00c60f19981999998fe000303186008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008170a400040
+2006603000198018fe00031800c006fc000008140a4000606000603000180018fc0000c0fb0000081917400070e3c66078f0199f1981ff0f19f1e3c67c3c6c0000081910400079e46660319819999b0199919998c4fe660370000008191740005f63e660319819999e01998f9998c3e6666660000008190b40004e66666031
+9819999c01fe990898c666667e60000008190b400044666660319819999e01fe990898c666666060000008190b400040666660319819999b01fe990898c666666261998008191740004063e66018f019999981998f999863e6663c61998008060040eb000008060040eb000008060040eb000008060040eb000008060040eb
+000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb00000806007febff00f8060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb00
+00080e08400040200660000060f30000080e08400060600060000060f3000008100a400070e3c6603878f333e0f5000008100a400079e4666064cc633330f5000008100a40005f63e66070cc633330f5000008100a40004e66666038fc633330f5000008100a4000446666601cc0633330f500000810084000406666604cc4
+63fe33f6000008110b40004063e660387831f3e333f60000080a0040f9000003f40000080a0040f9000003f4000008060040eb000008060040eb000008060040eb000008060040eb000008060040eb0000080f0940003800000c080400ccf40000080f044000640000fe0c01000cf40000080f0940006078f87c0e1c78ccf4
+0000080f02400070fecc030f3c8cccf40000080f02400038fecc030bec7cccf40000080e0640001cfccccc09feccf40000080f0940000cc0cccc088cccccf4000008110740004cc4cccc080cfecc00c0f6000008110b40003878cc7c080c7cccccc0f6000008060040eb000008060040eb000008060040eb000008060040eb
+000008060040eb000008060040eb000008060040eb000008110240003cfb000030fe0001c606f90000081002400062fb000030fe0000c6f800000819134000603c7fc7fc3c7c780f1f01e7c638078f8f80fe0000081602400060fb660a30199980c6666408ccccc0fe0000081602400060fb660a30199980c6667007ccccc0
+fe0000081802400060fd660c7e6630199980c666380cccccc0fe0000081802400060fd660c606630199980c6661c0cccccc0fe0000081702400062fd6609626630199980c6664c0cfdcc02000008190340003c3cfe66103c66180f198066663807cf8f8ccc0000080b0040f100010c0cfd0000080b0040f100010c0cfd0000
+08060040eb000008060040eb00000806007febff00f806000febff00f802e90000a0008f00a10064000664727732004400a0008300ff}}{\plain \b\f20\fs20 \par 
+}\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 View Prefs...\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 This dialog allows you to set some personal preferences for Gopher views.  
+Your choices for display font, size, and item information (host, port, path, ...) are selected in the Prefs window. Also default font and size for text views.\par 
+\par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 View Links >\par 
+\pard\plain \s4\sb100\tx576\tx1440\tx6480 \b\f20\fs48\up100 {{\pict\macpict\picw291\pich168 
+0e7a01f70043029f0166001102ff0c00ffffffff0043000001f7000001660000029f00000000000000a00082001e0001000a01f70043029f016600070000000000093049883ab59cf0390022fc1efc0e00000009ffffffffffffffff0023000000a000c400a100c001f42525445349444943543a5f63760d63757272656e74
+64696374202f6275206b6e6f776e207b62757d69660d7573657264696374202f5f6376206b6e6f776e206e6f747b7573657264696374202f5f63762033302064696374207075747d69660d5f637620626567696e0d2f6264667b62696e64206465667d62696e64206465660d63757272656e7473637265656e2f6373206578
+6368206465662f63612065786368206465662f63662065786368206465660d2f736574636d796b636f6c6f722077686572657b2f736574636d796b636f6c6f7220676574202f6376636d796b2065786368206465667d7b2f6376636d796b7b31207375622034203120726f6c6c20337b3320696e64657820616464206e6567
+206475702030206c747b706f7020307d69662033203120726f6c6c7d72657065617420736574726762636f6c6f7220706f707d626466207d6966656c73650d2f73737b2f2f6366202f2f6361202f2f63732073657473637265656e7d6264660d2f7374677b737320736574677261797d6264660d2f73747267627b73732073
+6574726762636f6c6f727d6264660d2f7374636d796b7b7373206376636d796b7d6264660d2f6d696e317b64757020302065717b706f7020317d69667d6264660d656e640d63757272656e7464696374202f626e206b6e6f776e207b626e7d69660d00a000bf00a10064003064727732000401f70043029f01660000000000
+000000010000000000000000000000ffffffffffff000114010865000000a0008e0098002601f70043029f016601f70043029f016601f70043029f0166000002db0002db0008007ff9ff00c0e50008007ff9ff00c0e50008007ff9ff00c0e50008007ff9ff00c0e5000d037ff3ffcffeff02fcffc0e5000d037ff3ffcffeff
+02fcffc0e5000d097ff383870e483c387fc0e5000d097ff399ce6639999cffc0e5000d097ff399ce6679999cffc0e5000d097ff399ce0679981cffc0e5000d097ff399ce7e7999fcffc0e5000d097ff399ce767999dcffc0e5000d097ff399e70e799c3e7fc0e50008007ff9ff00c0e50008007ff9ff00c0e50008007ff9ff
+00c0e50008007ff9ff00c0e50008007febff00f8f30008007ff9ff00c0e500080040eb000008f300080040eb000008f300080040eb000008f300110940006660000007c00007f4000008f3001102400066fe00030660000cf4000008f300120a40006663c6660666cf1e38f5000008f30011014000fd66040667198c64f500
+0008f30011014000fd660407c6198c70f5000008f300120a40006667e66606061f8c38f5000008f300120a4000666606660606180c1cf5000008f300140c4000646626640606188c4cccc0f7000008f300140c40007863c7f806060f0c38ccc0f7000008f300080040eb000008f300080040eb000008f300080040eb000008
+f3000c0040ec000001f5ff02fe00000a007febfff500020200000a007febfff500020200000d007fedff01fdfff500020300001d087fff999ffffff99ff9f5ff09fcff0000180070000630fd00020300001d027fff99feff02f9fff9f5ff09fc7f00001800c0000630fd00020300001f0a7fff999c3999f998399c7ff7ff09
+fc3f0000f8f1e3c66678fd00020300001e017ffffd9904f9999939bff7ff09fc1f00019998c4666630fd00020300001d017ffffd9903f9999878f6ff09fc0f00019998c3e66630fd00020300001f0a7fff99981999f99998fc7ff7ff09fc1f000199f8c6666630fd00020300001f0a7fff9999f999f999987e3ff7ff09fc3f
+00019980c6666630fd00020300001f0a7fff9b99d99bf999993b3ff7ff09fc7f00019988c6666630fd00020300001f0a7fff879c3807f999999c7ff7ff09fcff0000f8f0c3e3e618fd00020300000d007fedff01fdfff500020300000a007febfff500020300000a007febfff500020300000a007febfff500020300000c00
+40ec000001f500020300000c0040ec000001f500020300000c0040ec000001f500020300001d0a40007c0060060060000006f6000701000180001f000cfc00020300001a074000600060060060f30007010001800019800cfc0002030000210d40006078f1c7c07c6606663c6660f90008010001f198198f1e3cfd00020300
+002109400060cc632660666606fe660060f90008010001999819918c66fd00020300002109400078cc630660666606fe660060f900080100019998198f8c66fd0002030000210d400060fc630660666606667e6660f90008010001999819998c7efd0002030000210d400060c063066066660666606660f900080100019998
+19998c60fd0002030000220e400060c46326606666064662664666fa0008010001999819998c62fd0002030000220e4000607831c6607c3e07863c7f8666fa0008010001f0f81f0f863cfd0002030000140040fa000006f4000001fe000018f90002030000140040fa000046f400040100000118f90002030000140040fa00
+003cf4000001fe0000f0f900020300000c0040ec000001f500020300000c0040ec000001f500020300000c0040ec000001f500020300000c0040ec000001f50002030000200e40007c006006000006318000000c60fa000601000180000e30fb00020300001e05400060006006fe0004318000000cf90005010001800019fa
+0002030000251140006078f1c7c0666679f00f1f1e63c7c380fd0008010001f1981833f1e0fd0002030000250d400060cc6326606666319819998cfe660040fd000801000199981c303330fd00020300002410400078cc6306606666319819998c666667fc000801000199980e306330fd00020300002511400060fc630660
+6666319819998c66666380fd000801000199980730c3f0fd00020300002411400060c06306606666319819998c666661c0fd00070100019998033183fc00020300002511400060c46326606646319819998c666664c0fd0008010001999813330310fd000203000025114000607831c6607f8619980f1f0663c66380fd0008
+010001f0f80e33f1e0fd0002030000140040f6000018f8000001fe000018f90002030000140040f6000018f800040100000118f90002030000100040ec000001fe0000f0f900020300000c0040ec000001f500020300000c0040ec000001f500020300000c0040ec000001f500020300000c0040ec000001f5000203000012
+0040ec000601000180001040fb0002030000120040ec000601000180001840fb0002030000150040ec0009010001f1981c478ff878fe0002030000140040ec000601000199981e48feccfe0002030000140040ec000601000199981747feccfe000203000014007febff040001999813fecc00fcfe0002030000150040ec00
+05010001999811fecc00c0fe000003ff0013eb0005010001999810fecc00c4fe000003ff0013eb0009010001f0f81047cccc78fe000003ff000eeb000001fe000018f9000003ff000eeb00040100000118f9000003ff000eeb000001fe0000f0f9000003ff000aeb000001f5000003ff000aeb000001f5000003ff000aeb00
+0001f5000003ff000aeb000001f5000003ff0012eb0008010001800018cc000cfd000003ff0012eb000801000180001980000cfd000003ff0012eb0008010001f1981b0cf87cfd000003ff0012eb000801000199981e0cccccfd000003ff0012eb000801000199981c0cccccfd000003ff0012eb000801000199981e0ccccc
+fd000003ff0012eb000801000199981b0cccccfd000003ff0012eb00080100019998198cccccfd000003ff0012eb0008010001f0f818cccc7cfd000003ff000eeb000001fe000018f9000003ff000eeb00040100000118f9000003ff000eeb000001fe0000f0f9000003ff000aeb000001f5000003ff000aeb000001f50000
+03ff000aeb000001f5000003ff000aeb000001f5000003ff0012eb0008010001800019800018fd000003ff0012eb0008010001800019800018fd000003ff0012eb0008010001f198198f0e3cfd000003ff0012eb0008010001999819999918fd000003ff0012eb000801000199981f999c18fd000003ff0012eb0008010001
+999819998e18fd000003ff0012eb0008010001999819998718fd000003ff0012eb0008010001999819999318fd000003ff0012eb0008010001f0f8198f0e0cfd000003ff000eeb000001fe000018f9000003ff000eeb00040100000118f9000003ff000eeb000001fe0000f0f9000003ff000aeb000001f5000003ff000aeb
+000001f5000003ff000aeb000001f5000003ff000aeb000001f5000003ff0011eb000001fd00037e000060fd000003ff0011eb000001fd000318000060fd000003ff0012eb0008010000f0e01878ccf0fd000003ff0012eb0008010001199018cccc60fd000003ff0012eb0008010000f9c018cccc60fd000003ff0012eb00
+0801000198e018fc7860fd000003ff0012eb0008010001987018c0cc60fd000003ff0012eb0008010001993018c4cc60fd000003ff0012eb0008010000f8e01878cc30fd000003ff000aeb000001f5000003ff000aeb000001f5000003ff000aeb000001f5000003ff000aeb000001f5000003ff000aeb000001f5000003ff
+000aeb000001f5000003ff000aeb000001f5000003ff0012eb000001fd000830600600300000c003ff0012eb000001fd000830000600300000c003ff0013eb000d010000f0e03067c66078f199e003ff0013eb000d0100011990306666c0319998c003ff0013eb000d010000f9c030666780319998c003ff0013eb000d0100
+0198e03066670031f8f0c003ff0013eb000d010001987030666780318198c003ff0013eb000d0100019930306666c0318998c003ff0013eb000d010000f8e03e66666018f1986003ff000aeb000001f5000003ff000aeb000001f5000003ff000aeb000001f5000003ff0006de000003ff0006ea00f4ffff0002db0002db00
+0000a0008f00a10064000664727732004400a0008300ff}}{\plain \b\f20\fs20 \par 
+}\pard\plain \s3\tx576\tx1440\tx6480 \f20 \par 
+\tab Sort display of gopher items by date, size, name, kind, host. \par 
+{\b \tab as Text } \emdash  a text document view of the current gopher view\par 
+\tab {\b as Link text }\emdash  current gopher view in text format that gopher servers use.\par 
+\pard \s3\sb100\tx576\tx1440\tx6480  \par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Fetch by view...\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab lets you fetch a particular view form of the selected gopher item.  This is useful only with gopher+ servers.\par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Fetch with options\par 
+\pard \s5\sb100\brdrb\brdrs \tx576\tx1440\tx6480 \par 
+\pard \s5\sb100\tx576\tx1440\tx6480 \par 
+New gopher hole...\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab This and the following three items will add a new link line to your current active gopher window.  New gopher hole will let you specify a host address and name for a server.\par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Find home of link\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab This will look at the selec
+ted link in your active gopher document, and create a new link to the entry point to that link's gopher hole.  This is useful, for instance, with Veronica searches or saved links, in finding items related to a given link, and where they live in gopher spac
+e.\par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 New gopher link...\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab Create a new link, including type of item and full path.\par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Edit gopher link...\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab Edit the information in a selected gopher link.\par 
+\pard\plain \s5\sb100\brdrb\brdrs \tx576\tx1440\tx6480 \b\f21  \par 
+\pard \s5\sb100\tx576\tx1440\tx6480 \par 
+Edit view handlers...\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab Set mapping from gopher types to local file types, and to set application handlers. \par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Other prefs...\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab {\b Fetch brief gopher folders}: Do not fetch all gopher+ information when a folder is requested from gopher+ server.  When you select individual items
+ from a folder, then gopher+ information is fetched.  This option may be recommended for slow network links (e.g., modem phone lines).\par 
+\tab {\b Auto-Fetch from folder with just one item}: If a gopher folder has just one item, that item will be fetched without you needing to click on it, if this option is checked.\par 
+\tab {\b Edit gopher type handlers}: See also "Edit view handlers".  Set mapping from gopher types to local file types, and to set application handlers. {\b \par 
+}\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Get Info from link\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab returns detailed information about a given gopher item from the server.  Also you can use this item refresh, or fill in, gopher+ inform
+ation that may not have been fetched when the list of gopher items was fetched from a server, or if the list was stored on your local disk.\par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Mail to link maintainer...\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab Mail comments to the maintainer of a given gopher item. This is useful only with gopher+ servers.\par 
+\pard\plain \s5\sb100\brdrb\brdrs \tx576\tx1440\tx6480 \b\f21  \par 
+\pard \s5\sb100\tx576\tx1440\tx6480 \par 
+Mail setup...\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab The mail prefs dialog asks for your return e-mail address, and your preferred SMTP mail host.  These addresses may be similar.\par 
+Return e-mail address:  This is where another person should send mail so it will reach you.\par 
+\tab \tab Example:  bjones@department.university.edu\par 
+SMTP Mail host:  This is the internet address of the computer through which this program will send out mail to the rest of the world.\par 
+\tab \tab Example:  unixhost.department.university.edu\par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Send mail...\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab Send an electronic mail message.  You must enter an address to send to, and have entered your return address in the mail preferences dialog.\par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Comment on this app...\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab Send a comment or bug report to the developer of GopherPup.  Please include details of your computer system (hardware, software, network connection), and as many specifics of the bug as feasible
+ when reporting problems.\par 
+\par 
+\par 
+{\b\f21 \par 
+}\pard\plain \s4\sb100\tx576\tx1440\tx6480 \b\f20\fs48\up100 {\dn4 Window menu}{\dn4  }{\dn4 {\pict\macpict\picw82\pich70 
+05ae00360113007c0165001102ff0c00ffffffff011300000036000001650000007c00000000000000a00082001e0001000a00360113007c016500070000000000093049883ab59cf0390022fd99fc0e00000009ffffffffffffffff0023000000a000c400a100c001f42525445349444943543a5f63760d63757272656e74
+64696374202f6275206b6e6f776e207b62757d69660d7573657264696374202f5f6376206b6e6f776e206e6f747b7573657264696374202f5f63762033302064696374207075747d69660d5f637620626567696e0d2f6264667b62696e64206465667d62696e64206465660d63757272656e7473637265656e2f6373206578
+6368206465662f63612065786368206465662f63662065786368206465660d2f736574636d796b636f6c6f722077686572657b2f736574636d796b636f6c6f7220676574202f6376636d796b2065786368206465667d7b2f6376636d796b7b31207375622034203120726f6c6c20337b3320696e64657820616464206e6567
+206475702030206c747b706f7020307d69662033203120726f6c6c7d72657065617420736574726762636f6c6f7220706f707d626466207d6966656c73650d2f73737b2f2f6366202f2f6361202f2f63732073657473637265656e7d6264660d2f7374677b737320736574677261797d6264660d2f73747267627b73732073
+6574726762636f6c6f727d6264660d2f7374636d796b7b7373206376636d796b7d6264660d2f6d696e317b64757020302065717b706f7020317d69667d6264660d656e640d63757272656e7464696374202f626e206b6e6f776e207b626e7d69660d00a000bf00a10064003064727732000400360113007c01650000000000
+000000010000000000000000000000ffffffffffff000114010865000000a0008e0098000c00360113007c016500360113007c016500360113007c0165000002f50006f8ff02f8000006f8ff02f8000006f8ff02f8000006f8ff02f800000c04ffccccfffcfdff02f800000c04ffcccffffcfdff02f800000d0bffccccc1e0
+e1ccce3ff800000900fffacc03dff800000900fffacc037ff800000a00fffbcc04ce3ff800000a00fffbcc04cf1ff800000c02ffccdcfdcc04dd9ff800000d0bffc03ccce0e1c03e3ff8000006f8ff02f8000006f8ff02f8000006f8ff02f8000006f8ff02f8000006f8ff02f8000005f7ff018000070080f8000180000700
+80f800018000070080f8000180000c028000f8fd000431800080000c028000ccfd00044a400080000d0b8000ccd9e330004a400080000d0b8000cce33330003f800080000d0b8000f8c33330000a0f8080000d0b8000c0c3f330003f800080000d0b8000c0c30330004a400080000d0b8000c0c31320004a400080000d0b80
+00c0c1e3c0003180008000070080f800018000070080f800018000070080f800018000070080f800018000070080f800018000070080f800018000070080f8000180000d0b8000820000300031800080000d0b8000c2000030004a400080000d0b8000e23c6678004a420080000d0b8000f2666630003f820080000d0b8000
+ba666630000a0f8080000d0b80009e7e3c30003f820080000d0b80008e606630004a420080000d0b800086626630004a400080000d0b8000823c6618003180008000070080f800018000070080f800018000070080f800018000070080f800018000070080f800018000070080f800018000070080f8000180000d06800070
+01800018fe000180000d068000c801800018fe000180000d068000c0f18f0e3cfe000180000d028000e1fe990018fe000180000d0680007199999818fe000180000d06800039f99f9818fe000180000d0680001981981818fe000180000d0b80009989989918ccc00080000d0b800070f18f0e0cccc0008000070080f80001
+8000070080f800018000070080f800018000070080f80001800005f7ff01800002f50000a0008f00a10064000664727732004400a0008300ff}}{\plain \b\f20\fs20 \par 
+}\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 \par 
+Prev\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab Select the previously active window.\par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Next\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab Select the next window behind current active window.\par 
+\pard\plain \s5\sb100\tx576\tx1440\tx6480 \b\f21 Select...\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 \tab Select a window from the list of application windows.\par 
+\par 
+\par 
+\par 
+\par 
+\par 
+\pard\plain \s2\sb600\sa200\brdrb\brdrs \tx576\tx1440\tx6480 \f20\fs48 {\fs28 {\pict\macpict\picw35\pich19 
+00c400000000001600231101a10064000c574f5244000000000016002301000a000000000016002390000600000000001500280000000000150022000000000015002200010000000000000000000000000000000000000000000000000e0ffe0000000fb001f000000ec00c0800000e81030800000e80e1f000000e809f00
+00000e80c10000000e813e0000000e81840000000e82780000000ec1080000000fb8f00000000e0700000000000000000000000000000000000000000000000000000000ff}} Gopher+ Features\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 The salient features of GopherPup and version 2 of GopherApp, also known as GopherApp++, include support for Gopher+ features\par 
+\pard \s3\fi-360\li360\sb100\tx1440\tx6480 \emdash \tab 
+In the main gopher item windows, you now see "-", "+" or "?" after the icon for each item.  "-" stands for gopher-, the old format.  "+" indicates the item is new gopher+ format, and "?" indicates a gopher+ ASK dialog.\par 
+\emdash \tab ASK dialogs, which can include these simple user interface elements of edit-text lines (Ask), note-text lines (Note), edit-text blocks (AskL), checkboxes (Select), multi\-choice pop-up menus (Choose),  password edit lines (
+AskP), send file to server (ChooseF).  You will see a "?" after the icon for ASK dialogs.\par 
+\emdash \tab Multiple views for an item, so a server can provide the best document or image format for many different clients and users.  See the menu item "Open link by view" to select among views in gopher+ items.\par 
+\emdash \tab Use the Gopher Prefs dialog to edit the view mapping from Gopher+ server to Macintosh type.  For each Gopher+ server type and handler, you must specify a Macintosh type and application signature which will handle 
+that kind of document.  This area needs a better user interface and some bug squashing.\par 
+\emdash \tab The menu item "Mail to link maintainer" takes advantage of Gopher+'s publishing of gopher item maintainer email addresses.\par 
+\emdash \tab The get info item will use Gopher+'s info query to return details of an item.\par 
+\emdash \tab View links by size, date, name, host, etc. lets you sort a gopher directory according to those criteria.  The view as text creates a text file representation of the directory.\par 
+\emdash   "New gopher hole" is simplified way to connect to new gopher.\par 
+\emdash   "Find home of link" for Veronica users & other cases to locate root server for any given gopher link.\par 
+\emdash \tab 
+Matching gopher data to Mac applications has been cleaned up w/ Choose Application button in New & Edit gopher links.  This button lets you select a Mac application that knows how to process various kinds of gopher data, such as GIF or JPEG images.  And fr
+om any Mac application that you choose, you can select from file types that it knows, from the popup menu below the Choose Application button.\par 
+\emdash \tab 
+Mapping of Gopher+ types to Mac types, in the Preferences, has been revised to use a button to choose a Mac application and menu to select from its known file types.  Ditto for Gopher- and server mapping (these latter two features are of less importance wi
+th advent of gopher+).\par 
+\emdash \tab There is a new Preferences option for slow networks (e.g., phone dialups): "Use quickest gopher+ method" cuts amount of data fetched with each directory.  If this is option is turned
+ on, you then need to use the "Get Info" menu item to fetch all the gopher+ info, such as view types, for a given link.\par 
+\emdash \tab Support is added support for the new basic gopher- types of moo-V (;) and Note (i).\par 
+\emdash \tab Mapping file types\par 
+\pard\plain \tx576\tx720\tx1440\tx6480 \f20\fs20 \par 
+\pard\plain \s2\sb600\sa200\brdrb\brdrs \tx576\tx1440\tx6480 \f20\fs48 {\fs28 {\pict\macpict\picw35\pich19 
+00c400000000001600231101a10064000c574f5244000000000016002301000a000000000016002390000600000000001500280000000000150022000000000015002200010000000000000000000000000000000000000000000000000e0ffe0000000fb001f000000ec00c0800000e81030800000e80e1f000000e809f00
+00000e80c10000000e813e0000000e81840000000e82780000000ec1080000000fb8f00000000e0700000000000000000000000000000000000000000000000000000000ff}} What Is Internet Gopher?\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 
+Internet Gopher is an information distribution system. It combines features of electronic bulletin board services and databases, allowing you to either browse a hierarchy of information, or to search for the information you need using f
+ull-text indexes.  Gopher can also store references to wide area information services (WAIS), anonymous ftp sites, public telnet sessions, phone book servers, sounds and various graphic documents.\par 
+
+Internet Gopher gives you access to a wide range of information services  that are now developing on the Internet.  Gopher is something like Telnet or FTP (file transfer), but also different.  It includes some of the keyword searching features of WAIS (Wid
+e Area Information Services).\par 
+Gopher works something like t
+he Macintosh Finder, only over the Internet and with various restrictions.  There are several file "types", include Text documents, Folders with more items, Search items to search databases for keyword matches, Phone book items to look up people's addresse
+s, Binhex encoded Mac programs that you can fetch, and others.\par 
+Details about Internet Gopher, including software for clients and servers, are available at the home archive of gopher.micro.umn.edu at University of Minnesota, USA.\par 
+\pard\plain \s2\sb600\sa200\brdrb\brdrs \tx576\tx1440\tx6480 \f20\fs48 {\fs28 {\pict\macpict\picw35\pich19 
+00c400000000001600231101a10064000c574f5244000000000016002301000a000000000016002390000600000000001500280000000000150022000000000015002200010000000000000000000000000000000000000000000000000e0ffe0000000fb001f000000ec00c0800000e81030800000e80e1f000000e809f00
+00000e80c10000000e813e0000000e81840000000e82780000000ec1080000000fb8f00000000e0700000000000000000000000000000000000000000000000000000000ff}} Impressions\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 One of the impressive things I remember when I first when to a large university after growing up in a small town, was finding the library. My home town library was a place of di
+scovery and enjoyment for me. When I went off to college, the library was one of the first things I looked into.  I spent much time looking around this mountain of knowledge, and I learned much, perhaps more than from classes, in these big libraries.
+\par 
+That is the way Internet Gopher strikes me \emdash 
+ like going from a small town library to a big university one.  It is a very simple but powerful way to bring information from anywhere, locally or world-wide, to your personal computer.  It is easy to set up gopher 
+servers.  It is very easy to use the gopher clients. The IUBio Biology Archive is now available thru internet Gopher.  It is reached at host "ftp.bio.indiana.edu", standard gopher port
+ 70, with path="".  You may also find links to other Biology gophers at this site, including North American, European and Middle East sites, at the time of this writing.  Internet gopher is pretty easy to learn to use.  Gopher and WAIS provide somewhat dif
+ferent protocols for serving information out to clients over the Internet.  Gopher is strong on browsing -{\fs20\dn4  }\-
+you can find new things just by pointing at lists.  WAIS is strong on linking together many dispersed servers to answer a given question.  I think they both are good, but I think Gopher is an order of magnitude easier to learn, and install, and consequent
+ly will be more useful to more people. Thru the IUBio Archive, you can, for instance, fetch a sequence entry from Genbank by providing its accession number or locus name as the question.\par 
+\pard\plain \tx288\tx432\tx576\tx1440\tx6480 \f20\fs20 \par 
+\pard\plain \s2\sb600\sa200\brdrb\brdrs \tx576\tx1440\tx6480 \f20\fs48 {\fs28 {\pict\macpict\picw35\pich19 
+00c400000000001600231101a10064000c574f5244000000000016002301000a000000000016002390000600000000001500280000000000150022000000000015002200010000000000000000000000000000000000000000000000000e0ffe0000000fb001f000000ec00c0800000e81030800000e80e1f000000e809f00
+00000e80c10000000e813e0000000e81840000000e82780000000ec1080000000fb8f00000000e0700000000000000000000000000000000000000000000000000000000ff}} Bugs\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 As a public release, GopherPup is still buggy. \par 
+GopherPup can read and display plain Text and RichTextFormat (RTF) documents, or transfer binary files, and can deal with simple Query types.  It also can handle ASK forms associated with any of the basic gopher types,
+ and can fetch different views of a document.\par 
+It will not yet properly handle Telnet, CSO, WHOIS, and some other special purpose gopher types.  It will handle Image, Movie, Sound and similar types if they have an associated external handler program properly configured for use.\par 
+\pard\plain \tx576\tx1440\tx6480 \f20\fs20 \par 
+\pard\plain \s2\sb600\sa200\brdrb\brdrs \tx576\tx1440\tx6480 \f20\fs48 {\fs28 {\pict\macpict\picw35\pich19 
+00c400000000001600231101a10064000c574f5244000000000016002301000a000000000016002390000600000000001500280000000000150022000000000015002200010000000000000000000000000000000000000000000000000e0ffe0000000fb001f000000ec00c0800000e81030800000e80e1f000000e809f00
+00000e80c10000000e813e0000000e81840000000e82780000000ec1080000000fb8f00000000e0700000000000000000000000000000000000000000000000000000000ff}} History\par 
+\pard\plain \s3\sb100\tx576\tx1440\tx6480 \f20 GopherPup \emdash  cross-platform Son of GopherApp, first released to public 25 Jan 94?.  Version -1 of GopherPup works on Mac and Sun-Sparc-Motif, but still is incomplete compared to GopherApp.\par 
+GopherApp \emdash  First public release on 25 Mar 92. Derived from biosequence analysis application SeqApp.\par 
+SeqApp was started Sept. 1990 as MacApp sequence editor/analysis platform on which analysis programs from other authors, typically command line w/ weak user interfaces, could be easily incorporated into a usable Mac interface.\par 
+9 Nov 93, v 2.1b117  Stable beta release, still has known bugs but usable.  Built on the pointer-based MacApp v 3.1a. A lot of bugs from the v 2.0b release have been chased out. User-interface changes include:\par 
++ View links by size, date, name, host, ...\par 
++ "New gopher hole" is simplified way to connect to new gopher\par 
++ "Find home of link" for Veronica users & other cases to locate root server for any given gopher link\par 
++ Matching gopher data to Mac applications has been cleaned up w/ Choose Application button in New & Edit gopher links \par 
++ Mapping of Gopher+ types to Mac types (in Prefs) changed & simplified.\par 
++ Network preference "Use quickest gopher+ method" is for dialup internet or other slow network links.  Cuts amount of data fetched with each directory.\par 
++ Get Info from link\par 
++ Mail link maintainer\par 
++ added support for moo-V and Note gopher types\par 
+Non-interface changes\par 
++ TCP code extensively revised\par 
++ multithreading processes cleaned up\par 
+
+19 Aug 93, v 2.0b3    Major revision.  Translated from Object Pascal to C++, and from Macapp version 2 to version 3 (the later was harder than the former).  Added many Gopher+ features, including ASK dialogs and alternate views.  Added multitreaded executi
+on of TCP transactions (thanks Peter Speck for Nuntius's example).  There are still several known and suspected bugs in this release.\par 
+7 Jul 92, v 1.3b52 Various bug fixes to GopherApp, including long paths (>255 char) so now all wais searches should work, mapping to mac types extended to Gopher types\par 
+24 Jun 92, v. 1.2b?.  Updated Gopher functions, including background data fetching now works properly added binary file type (sound type now = binary) added item date and size display (when server permits) Gopher Diggings folde
+r for auto-save of files revamped internal structures and operations (be on lookout for new bugs) should be noticeably faster file fetch (esp. for larger files) experimental gopher type to mac file type mapping, including user prefs, editing and launching 
+(sys7) ReadMail (POP mail) now works and is enabled (it's not fancy though)\par 
+26 May 92, v1.1b31 \emdash   TCP work\par 
+12 May 92, v1.1b8 \emdash  various bug fixes\par 
+21 Apr 92 minor update: corrected GopherApp file creator signature, added domain name server lookup cache.\par 
+25 Mar 92, v1.0a41+.  First release to general public. Also released SeqApp for biologists.\par 
+\par 
+}

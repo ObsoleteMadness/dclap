@@ -1,0 +1,79 @@
+SeqPup, version 0.6 development release, June/July 1996
+
+New in this release:
+	Easily use GCG and other command-line software over network
+	Bare-bones autosequencer (ABI,SCF) base calling, editing, assembly
+	Expanded sequence size limits (now can open 1.9MB H.flu genome)
+	Numerous bug fixes and improvements
+	
+Summary
+
+SeqPup is a biological sequence editor and analysis program
+usable on the common computer systems of Macintosh,
+MS-Windows and X-Windows.  It includes links to network
+services and external analysis programs.
+
+Features include
+   + multiple sequence alignment and single sequence editors
+   - read and write several sequence file formats
+   + easy hand alignment features including colored bases and sliding
+   * Internet sequence analysis services by BOP and email methods 
+   - automatic multiple sequence alignment with ClustalW app
+   - automatic gel fragment alignment to contigs with CAP app
+   * automatic base calling from ABI or SCF trace files with autoseq app
+   - phylogenetic analysis of alignments with fastDNAml and LSADT apps
+   - consensus, reverse, complement, degap, and distance/similarity operations
+   - restriction maps
+   + pretty print of alignments and sequences with boxed and shaded regions.
+   - translate dna to/from protein using various codon tables
+   + find strings and ORFs
+   - automatic preference saving
+   - user-definable links to external analysis programs
+	 (* new, + updated)
+
+NOTICE:  This release is still unfinish, and has bugs. It may
+be useful to you as is, but be warned that it is still prone
+to problems.
+
+SeqPup is being written using DCLAP, a free and portable C++ 
+class application framework.  DCLAP is founded on the
+NCBI Toolkit, especially it's Vibrant user-interface section
+written primarily by Jonathan Kans.   SeqApp/SeqPup was
+started in 1990 as sequence editor/analysis platform on
+which analysis programs from other authors could be easily
+incorporated into a useable interface.  
+
+You can obtain this release thru anonymous ftp, gopher or
+http to iubio.bio.indiana.edu, in folder /molbio/seqpup.
+Versions are available for Macintosh (PowerMac and 68K), 
+MS Windows (Win95, WinNT and Win3), and Unix/XWindows systems
+including Sun Solaris, SGI Irix, DEC Unix, Linux.   The Internet 
+locators to this software are
+
+  <ftp://iubio.bio.indiana.edu/molbio/seqpup/>
+  <gopher://iubio.bio.indiana.edu/11/IUBio-Software+Data/molbio/seqpup/>
+  <http://iubio.bio.indiana.edu/1/IUBio-Software%2bData/molbio/seqpup/>
+
+Source code for this software is at
+  <ftp://iubio.bio.indiana.edu/util/dclap/source/>.
+The bopper source for installed a server for SeqPup Internet BOP
+functions is in this same folder as
+  <ftp://iubio.bio.indiana.edu/util/dclap/source/bopper.tar.gz>
+
+Comments, bug reports and suggestions for new features (see
+below) are very welcome and should be sent via e-mail to
+<mailto://SeqPup@Bio.Indiana.Edu/>.
+
+June/July 96: version 0.6d release
++ "bopper" Internet protocol for client/server use of command line 
+  programs such as the GCG suite.  
++ autoseq base calling app for reading ABI and SCF sequencer trace 
+  file data, plus base/trace editing functions.
++ Started expanding maximum sequence limit to 2 megabases (from about 30Kb), 
+  however most functions beyond viewing will still fail for >30Kb sequences.
++ Several bug fixes are included for mac, mswin, unix.  Added background 
+  color in align view, minimum ORF size pref, improved tracking of changed 
+  data, improved align editing, save pretty print to PICT or text; fixed 
+  child app bugs; fixed mswin edit truncation to 255 bases; editable data 
+  tables in selection dialogs
+

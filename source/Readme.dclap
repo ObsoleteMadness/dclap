@@ -1,10 +1,3 @@
-# dclap
-Don's Class Application (DCLAP) library is a C++ class library for building applications on the common windowing operating systems (Macintosh, MS-Windows, XWindow-Motif and possibly others).
-
-## Releases
-I could find two released of DCLAP, 5b and 6d. Both are included here, please see Github releases.
-
-## Original Readme
 
 Don's Class Application (DCLAP) library is a C++ class library for
 building applications on the common windowing operating systems
@@ -20,7 +13,6 @@ available for anonymous ftp from ncbi.nlm.nih.gov as
 
 Most of this toolkit is directed toward manipulation biosequence data. 
 The sections of it required for DCLAP are: 
-
 	corelib/  -- basic library of ansi-c additions/enhancements
 	vibrant/  -- user-interface (GUI) library, in c
 	make/	  -- instructions for compiling (see though dclap's Dmake/)
@@ -81,4 +73,17 @@ If you are working in the biocomputing/computational biology field and want
 help w/ dclap, please ask.  Contributions to dclap source are welcome.  
 
 -- Don Gilbert, 3 March 1994
+
+
+
+  
+
+
+
+
+
+
+
+
+
 

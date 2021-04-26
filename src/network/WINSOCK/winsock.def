@@ -1,0 +1,70 @@
+LIBRARY     WINSOCK
+
+DESCRIPTION 'Windows Sockets v1.1 API, (DLL v1.09 beta1)'
+
+EXETYPE         WINDOWS         ; required for all windows applications
+
+STUB            'WINSTUB.EXE'   ; generates error message if application
+																; is run without Windows
+
+;CODE can be FIXED in memory because of potential upcalls
+CODE            PRELOAD         FIXED
+
+;DATA must be SINGLE and at a FIXED location since this is a DLL 
+DATA            PRELOAD         FIXED           SINGLE
+
+HEAPSIZE        1024 
+STACKSIZE       16384 
+
+EXPORTS
+		WEP                            @500
+    ___EXPORTEDSTUB                @24  
+    GETHOSTBYADDR                  @51  
+    RECV                           @16  
+    GETHOSTBYNAME                  @52  
+    GETSERVBYNAME                  @55  
+    LISTEN                         @13  
+    WSAGETLASTERROR                @111 
+    GETPROTOBYNAME                 @53  
+    INET_ADDR                      @10  
+    WSASETLASTERROR                @112 
+    WSACANCELBLOCKINGCALL          @113 
+    WSAUNHOOKBLOCKINGHOOK          @110 
+    WSACANCELASYNCREQUEST          @108 
+    WSASETBLOCKINGHOOK             @109 
+    BIND                           @2   
+    GETSOCKNAME                    @6   
+    SEND                           @19  
+    SHUTDOWN                       @22  
+    WSASTARTUP                     @115 
+    CONNECT                        @4   
+    GETSOCKOPT                     @7   
+    __WSAFDISSET                   @151 
+    HTONL                          @8   
+    NTOHL                          @14  
+    WSAISBLOCKING                  @114 
+    HTONS                          @9   
+    WSAASYNCGETSERVBYPORT          @106 
+    NTOHS                          @15  
+    GETPEERNAME                    @5   
+    SETSOCKOPT                     @21  
+    ACCEPT                         @1   
+    WSAASYNCGETPROTOBYNUMBER       @104 
+    RECVFROM                       @17  
+    WSAASYNCSELECT                 @101 
+    GETSERVBYPORT                  @56  
+    IOCTLSOCKET                    @12  
+    INET_NTOA                      @11  
+    GETPROTOBYNUMBER               @54  
+    WSACLEANUP                     @116 
+    SOCKET                         @23  
+    WSAASYNCGETHOSTBYADDR          @102 
+    GETHOSTNAME                    @57  
+    WSAASYNCGETHOSTBYNAME          @103 
+    WSAASYNCGETSERVBYNAME          @107 
+    SELECT                         @18  
+    WSAASYNCGETPROTOBYNAME         @105 
+    CLOSESOCKET                    @3   
+		SENDTO                         @20
+
+

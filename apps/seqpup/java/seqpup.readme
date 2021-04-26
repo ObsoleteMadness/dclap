@@ -1,0 +1,72 @@
+
+
+SeqPup, version 0.9, September 1999
+
+SeqPup is a biological sequence editor and analysis program.  It
+includes links to network services and external analysis
+programs.  It is usable on common computer systems that support
+the Java runtime environment, including Macintosh, MS-Windows and
+X-Windows.
+
+This release is much easier to install and use.
+
+Features include
+  multiple sequence alignment and single sequence editing
+  read and write several sequence file formats 
+  sequence feature editing, manipulation and marking in prints
+  translate dna/protein, consensus, reverse/complement, and distance methods 
+  pretty print of alignments and sequences with boxed and shaded regions
+  Internet Sequence Retrieval System (SRS), and NCBI-BLAST searches 
+  User Plug-in sequence manipulations and analyses
+  User-definable links to external analysis programs, including
+    ClustalW multiple alignment, CAP contig assembly, tacg restriction map
+  Remote program client-server interface, using CORBA protocol 
+
+Additions to this Java release include sequence document and
+feature manipulation and display, enhanced sequence file
+handling, enhanced drawing/pretty print methods, including PDF
+output, user-developed plug-in methods for sequence analysis and
+display (Java classes),  improved single-sequence editing,
+improved alignment manipulations.
+
+This application is a work in progress; it has bugs still.  
+Your comments are welcome.
+
+Find this software at
+  ftp://iubio.bio.indiana.edu/molbio/seqpup/java/ 
+  http://iubio.bio.indiana.edu/soft/molbio/seqpup/java/
+
+Developers will find the source code for this application and others 
+in the iubio:/molbio/java/source folder, in the dclap-src.zip file.  
+
+Comments, bug reports and suggestions can be e-mailed to 
+seqpup@bio.indiana.edu.
+
+
+=== Usage and installation =====
+
+You will need to fetch the SeqPup.jar java archive.  It includes
+help documentation and data files, which will be installed when you
+first run the program. 
+
+To start SeqPup from MSWindows or Unix, use one of these command lines
+  jre  -cp SeqPup.jar  run   (for Java 1.1.x with jre)
+  java -cp SeqPup.jar  run   (for Java 1.2.x - not a recommended version)
+  java -classpath SeqPup.jar:$CLASSPATH  run   (for Java 1.1.x without jre)
+  
+To start SeqPup from MacOS, use the MRJ application, in SeqPup9-macos.hqx.
+Apple Java (MRJ) version 2.1.2 or later is recommended.
+  
+There are several external analysis applications available for SeqPup,
+as compiled programs for MacOS and MSWindows.  Find these in
+  seqpup9-methods-msdos.zip   (MS Windows ZIP archive)
+  seqpup9-methods-macos.sit   (MacOS Stuffit archive)
+These should be installed in a methods/ folder in the same folder as
+SeqPup.jar.
+
+Java version: This program will not work properly with the
+Java 1.2 runtime that is now commonly available on MSWindows systems.
+SeqPup will work with the Java 1.1.8 for MSWindows, which
+can be installed in addition to Java 1.2.
+==================================
+

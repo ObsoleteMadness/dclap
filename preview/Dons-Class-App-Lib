@@ -1,0 +1,123 @@
+don's class application library: d clap lib
+
+putting NCBI Tools & NCBI Vibrant -- cross-platform toolkit -- 
+into a C++ class application library, roughly patterned on MacApp, Think CL, ...
+
+Vibrant notes:
+	see vibwndws.c for main(), Nlm_ProcessEvents()
+		-- mac & mswin break anyevent into event classes: mouse, key, command(?),...
+		-- xwin anyevent breakdown NOT FOUND!?
+	see vibutils.c for Nlm_DoClick(), Nlm_DoCommand() == task kind handlers, specific to each win system!
+		-- mac:   DoClick(), DoKey(), DoDraw()==update, DoIdle()
+		-- mswin: DoCommand()
+		-- xwin:  DoCallback()
+		
+	change vibrant, to map from static proc callbacks to object handlers:
+vibincld.h:
+	typedef  struct  Nlm_graphicrec {
+  Nlm_GraphiC   next;
+  Nlm_GraphiC   parent;
+  Nlm_GraphiC   children;
+  Nlm_GraphiC   lastChild;
+  Nlm_GphPrcs   PNTR classptr;
+  Nlm_ActnProc  action;
+  Nlm_RecT      rect;
+  Nlm_Boolean   enabled;
+  Nlm_Boolean   visible;
+#ifndef NOCLAP
+	Nlm_VoidPtr 	thisobject; /* <<<add to hold DObjectPtr */
+#endif
+} Nlm_GraphicRec, Nlm_GraphicData, PNTR Nlm_GphPtr;
+
+
+vibprocs.h:
+#ifndef NOCLAP
+void Nlm_SetObject PROTO((Nlm_GraphiC a, Nlm_VoidPtr thisobject));
+Nlm_VoidPtr Nlm_GetObject PROTO((Nlm_GraphiC a));
+#endif
+
+vibutils.c:
+#ifndef NOCLAP
+extern void Nlm_SetObject (Nlm_GraphiC a, Nlm_VoidPtr thisobject)
+{
+  Nlm_GraphicData  gdata;
+  if (a != NULL && thisobject != NULL) {
+    Nlm_GetGraphicData (a, &gdata);
+    gdata.thisobject = thisobject;
+    Nlm_SetGraphicData (a, &gdata);
+  	}
+}
+
+extern Nlm_VoidPtr Nlm_GetObject (Nlm_GraphiC a)
+{
+  Nlm_GraphicData  gdata;
+  if (a != NULL) {
+    Nlm_GetGraphicData (a, &gdata);
+    return gdata.thisobject;
+  	}
+	else return NULL;
+}
+#endif
+
+
+Note: Think C v6. compiler, must set #define USE_MAC_MEMORY 1 in the
+	    C compiler header, in order to bypass suspect compiler/lib mem. 
+			bug (realloc() fails after a few calls !)
+
+
+
+DObject
+	DArray	== TDynamicArray
+		DSortedArray
+			DSortedList
+				DList	== TList
+	DArrayCounter	== TArrayIterator
+	
+	DTask == TEvent, TCommand, ...
+		DKeyTask	from Nlm_KeyboardView ???
+		DRepeatTask	from Nlm_Metronome
+		DPrintTask == TPrintHandler ???
+
+	DMenuChoiceGroup
+	
+	DCommandCentral
+		
+	DTaskMaster	== TEventHandler,TCommandHandler...include Nlm_ProcessEvents
+		DApplication 
+		
+		DDocument??/ DContainer??
+		
+		DView 
+		
+			DMenu	from Nlm_Menu.. procs
+				DPulldownMenu	
+				DAppleMenu
+				DSubMenu
+				DPopupMenu
+			DPopupList
+				
+			DWindow from Nlm_Window... procs
+			DControl
+				DGroup	from Nlm_Group... procs
+					DViewList	from Nlm_List... procs
+				DButton from Nlm_Button... procs, incl radio, check, push types
+					DRadioButton
+					DCheckBox
+					DIconButton from Nlm_IconButton
+					DRepeatButton from Nlm_RepeatButton
+				DScrollBar	from Nlm_ScrollBar...
+					DSwitch	from Nlm_UpDownSwitch ...
+				DText
+					DEditText from Nlm_DialogText 
+					DStaticText from Nlm_StaticPrompt
+					DScrollText from Nlm_ScrollText
+		
+			DPanel	?? from Nlm_Panel...		
+			DSlate	?? from Nlm_Slate
+		
+	DStream
+		DFileStream
+		DMemoryStream
+		DTCPStream
+		
+	DPreferences	?? / settings/ userprefs/ ?? from DStream

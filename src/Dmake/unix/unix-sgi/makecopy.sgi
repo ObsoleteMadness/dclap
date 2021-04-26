@@ -1,0 +1,39 @@
+#	makecopy for dclap C++ library routines
+# this copies source to build/ and include/ folders
+#.....
+
+SUFFIXLCL = sgi
+
+## All things to make
+##
+all : copy
+
+copy :
+	- mkdir ../include
+	- mkdir ../lib
+	- chmod +w ../include/*
+	- chmod +w *
+	cp ../corelib/*.h ../include
+	cp ../corelib/ncbilcl.$(SUFFIXLCL) ../include/ncbilcl.h
+	cp ../corelib/*.c .
+	- chmod +w *.c
+#	cp ../corelib/ncbimain.$(SUFFIXENV) ncbimain.c
+#	cp ../corelib/ncbienv.$(SUFFIXENV) ncbienv.c
+	cp ../vibrant/*.h ../include
+	cp ../vibrant/*.c .
+	cp ../DClap/*.h ../include
+	cp ../DNet/*.h ../include
+	cp ../Drtf/*.h ../include
+	cp ../DBio/*.h ../include
+	cp ../network/nsclilib/*.h ../include
+	cp ../DClap/*.cpp ../DClap/*.c .
+	cp ../DNet/*.cpp ../DNet/*.c .
+	cp ../Drtf/*.cpp ../Drtf/*.c .
+	cp ../DBio/*.cpp ../DBio/*.c .
+	cp ../DApp/*.* .
+	echo "Renaming build/*.cpp files to build/*.c++ for silly SGI CC"
+	- cp ../Dmake/rename .
+	./rename .cpp .c++
+	chmod +w ../include/*
+	chmod +w *
+

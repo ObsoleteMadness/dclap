@@ -1,0 +1,69 @@
+<html>
+<!dclap [clustal]>
+<!;child app calls using dialog forms>
+
+<title>Clustal Alignment</title>
+<b>ClustalW</b> - A multiple sequence alignment program 
+by Des Higgins and colleages.
+<HR>
+
+<FORM 
+	METHOD=localexec 
+	ACTION="$apps:clustalw 
+  /infile=$temp:clustal.inseq 
+  /outfile=$temp:clustal.outseq /output=gcg 
+  $align $tree $quick $boot $othercmd
+">
+<! need some if ($val) print $val2 parsing in localexec action !>
+
+Program options:<p>
+<INPUT TYPE="checkbox" NAME="align" VALUE="/ALIGN" CHECKED>do full multiple alignment<p>
+<INPUT TYPE="checkbox" NAME="tree" VALUE="/TREE">calculate NJ tree<p>
+<INPUT TYPE="checkbox" NAME="quick" VALUE="/QUICKTREE" CHECKED>use FAST algorithm for the alignment guide tree<p>
+<INPUT TYPE="checkbox" NAME="boot" VALUE="/BOOTSTRAP"> Bootstrap NJ tree.
+<INPUT NAME="bootval" VALUE=1000 SIZE=6> (# boostraps)
+<p>
+Other options: <p>
+<TEXTAREA NAME="othercmd" COLS=40 ROWS=2></TEXTAREA>
+<p>  
+<!A HREF=file:///$apps:clustalw.help Help with Clustal /A>
+<INPUT TYPE=submit VALUE="Launch app"> 
+
+<INPUT TYPE=hidden NAME=infile VALUE="$temp:clustal.inseq">
+<INPUT TYPE=hidden NAME=seqformat VALUE="nbrf">
+<INPUT TYPE=hidden NAME=minseq VALUE="2">
+<INPUT TYPE=hidden NAME=outfile2 VALUE="$temp:clustal.outseq  biosequence/msf">
+<INPUT TYPE=hidden NAME=outfile1 VALUE="$temp:clustal.dnd  biotree/newick">
+
+</FORM>
+<HR>
+<pre>
+                PARAMETERS (set things)
+
+***General settings:****
+/QUICKTREE   :use FAST algorithm for the alignment guide tree
+/NEWTREE=    :file for new guide tree
+/USETREE=    :file for old guide tree
+/NEGATIVE    :protein alignment with negative values in matrix
+
+***Fast Pairwise Alignments:***
+/KTUP=n      :word size                  /TOPDIAGS=n  :number of best diags.
+/WINDOW=n    :window around best diags.  /PAIRGAP=n   :gap penalty
+/SCORE       :PERCENT or ABSOLUTE
+
+***Slow Pairwise Alignments:***
+/PWMATRIX=   :BLOSUM, PAM, ID or filename
+/PWGAPOPEN=f :gap opening penalty        /PWGAPEXT=f  :gap opening penalty
+
+***Multiple Alignments:***
+/MATRIX=     :BLOSUM, PAM, ID or filename
+/GAPOPEN=f   :gap opening penalty        /GAPEXT=f    :gap extension penalty
+/ENDGAPS     :no end gap separation pen. /GAPDIST=n   :gap separation pen. range
+/NORGAP      :Residue specific gaps off  /NOHGAP      :hydrophilic gaps off
+/HGAPRESIDUES= :list hydrophilic res.    /MAXDIV=n    :% ident. for delay
+/TYPE=       :PROTEIN or DNA             /TRANSITIONS :transitions NOT weighted.
+
+***Trees:***                             /SEED=n    :seed number for bootstraps.
+/KIMURA      :use Kimura's correction.   /TOSSGAPS  :ignore positions with gaps.
+</pre>
+</html>
