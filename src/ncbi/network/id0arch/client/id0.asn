@@ -1,0 +1,62 @@
+--$Revision: 1.1 $
+--********************************************************************
+--
+--  Network Id server network access
+--  Sirotkin 1993
+--
+--
+--*********************************************************************
+--
+--  ID0.asn
+--
+--     messages for id server network access
+--
+--*********************************************************************
+
+NCBI-ID0Access DEFINITIONS ::=
+BEGIN
+
+IMPORTS Seq-id FROM NCBI-Seqloc
+		-- Bioseq-set FROM NCBI-Seqset
+		Seq-entry FROM NCBI-Seqset;
+
+        --**********************************
+        -- requests
+        --
+
+ID0server-request ::= CHOICE {
+		init NULL ,             -- DlInit
+		getgi Seq-id ,          -- get a gi given a Seq-id
+		getsefromgi ID0server-maxcomplex ,   -- given a gi, get the Seq-entry
+		fini NULL               -- DlFini
+ }
+
+--  Complexity stuff will be for ID1
+
+ID0server-maxcomplex ::= SEQUENCE {
+		maxplex Entry-complexities ,
+		gi INTEGER
+}
+
+Entry-complexities ::= ENUMERATED {
+		entry (0) ,             -- the "natural" entry for this (nuc-prot) 
+		bioseq (1) ,            -- only the bioseq identified
+		bioseq-set (2) ,        -- any seg-set it may be part of
+		nuc-prot (3) ,            -- any nuc-prot it may be part of
+		pub-set (4) 
+}
+
+ID0server-back ::= CHOICE {
+		init NULL ,                 -- DlInit
+		error INTEGER ,
+		gotgi INTEGER ,                 
+		gotseqentry  Seq-entry,  -- live
+		gotdeadseqentry  Seq-entry,  -- dead
+		fini NULL                   -- DlFini
+ }
+
+ID0server-debug ::= SET OF ID0server-back
+
+
+END
+

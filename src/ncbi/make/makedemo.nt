@@ -1,0 +1,330 @@
+#       makefile for ncbi demo programs
+#       Microsoft C under Windows 32 [ "nmake MSW=1" ]
+#
+
+!include <NTWIN32.MAK>
+
+# include and library paths, redirect as appripriate
+INCPATH = ..\include
+LIBPATH = ..\lib
+
+# flags for compiling and loading
+
+# Microsoft C under MS Windows 32
+!ifdef MSW
+GOTONE = 1
+MSWINDOWS = 1
+SUFFIXLCL = msw
+SUFFIXENV = msw
+CFLAGS1 = $(cflags) $(cvars)
+LDFLAGS1 = $(cflags) $(cvars)
+INLCUDE=$(INCLUDE);$(INCPATH)
+LIB=$(LIB);$(LIBPATH)
+!endif
+
+!ifndef GOTONE
+!error PLATFORM NOT DEFINED!! [ MSW ]
+!endif
+
+ASNDIR = asnstat
+LIB1 = ncbi.lib
+LIB2 = ncbiobj.lib
+LIB3 = ncbicdr.lib
+LIB4 = vibrant.lib
+LIB5 = ncbiacc.lib
+CFLAGS = $(CFLAGS1) -I$(INCPATH)
+LDFLAGS = $(LDFLAGS1) -I$(INCPATH)
+
+##
+## some things to make
+##
+# sources needed for versions of demo programs
+
+EXE1 =  testcore.exe \
+        getmesh.exe indexpub.exe getpub.exe testobj.exe seqtest.exe \
+        dosimple.exe asn2gnbk.exe asn2rpt.exe getseq.exe getfeat.exe \
+	checksub.exe asndhuff.exe
+
+OBJENT =  avail.obj browser.obj chosen.obj fetch.obj report.obj
+
+## All things to make
+##
+all : copy nocopy
+!ifdef MSWINDOWS
+nocopy : $(EXE1) entrez.exe entrezcf.exe
+!else
+nocopy : $(EXE1)
+!endif
+
+## To clean out the directory without removing make
+##
+clean :
+	-del *.c
+	-del *.h
+	-del *.obj
+	-del *.lib
+	-del *.def
+	-del *.rc
+	-del *.res
+	-del *.bj
+
+## Implicit actions
+##
+
+.SUFFIXES: .c
+.c.obj:
+        $(cc) $(CFLAGS) $*.c
+
+## get all the source files
+##
+
+copy :
+!ifndef NC
+        copy ..\demo\*.* .
+!ifdef MSWINDOWS
+        copy ..\browser\*.* .
+        copy ..\mswin\*.*
+!endif
+!ifdef MSC
+        copy ..\msdos\*.*
+!endif
+!endif
+!ifdef NC
+        echo no copy
+!endif
+
+## make demo applications
+##
+
+# testcore
+
+!ifdef MSWINDOWS
+testcore.obj : testcore.c
+        $(cc) $(CFLAGS) testcore.c
+
+testcore.res : testcore.rc ncbilogo.ico
+    rc -r -fo testcore.res $(cvars) -I$(INCPATH) testcore.rc
+    cvtres -$(CPU) testcore.res -o testcore.rbj
+
+testcore.exe : testcore.obj testcore.res
+    $(cvtobj) $(cvtdebug) *.obj
+    $(link) $(guiflags) testcore.obj $(LIB1) $(guilibs) testcore.rbj -out:testcore.exe
+!endif
+
+
+# getmesh
+
+!ifdef MSWINDOWS
+getmesh.obj : getmesh.c
+        $(cc) $(CFLAGS) getmesh.c
+
+getmesh.res : getmesh.rc
+    rc -r -fo getmesh.res $(cvars) -I$(INCPATH) getmesh.rc
+    cvtres -$(CPU) getmesh.res -o getmesh.rbj
+
+getmesh.exe : getmesh.obj getmesh.res
+    $(cvtobj) $(cvtdebug) *.obj
+    $(link) $(guiflags) getmesh.obj $(LIB2) $(LIB1) $(guilibs) getmesh.rbj -out:getmesh.exe
+!endif
+
+
+# indexpub
+
+!ifdef MSWINDOWS
+indexpub.obj : indexpub.c
+        $(cc) $(CFLAGS) indexpub.c
+
+indexpub.res : indexpub.rc
+    rc -r -fo indexpub.res $(cvars) -I$(INCPATH) indexpub.rc
+    cvtres -$(CPU) indexpub.res -o indexpub.rbj
+
+indexpub.exe : indexpub.obj indexpub.res
+    $(cvtobj) $(cvtdebug) *.obj
+    $(link) $(guiflags) indexpub.obj $(LIB2) $(LIB1) $(guilibs) indexpub.rbj -out:indexpub.exe
+!endif
+
+
+# getpub
+
+!ifdef MSWINDOWS
+getpub.obj : getpub.c
+        $(cc) $(CFLAGS) getpub.c
+
+getpub.res : getpub.rc
+    rc -r -fo getpub.res $(cvars) -I$(INCPATH) getpub.rc
+    cvtres -$(CPU) getpub.res -o getpub.rbj
+
+getpub.exe : getpub.obj getpub.res
+    $(cvtobj) $(cvtdebug) *.obj
+    $(link) $(guiflags) getpub.obj $(LIB2) $(LIB1) $(guilibs) getpub.rbj -out:getpub.exe
+!endif
+
+
+# dosimple
+
+!ifdef MSWINDOWS
+dosimple.obj : dosimple.c
+        $(cc) $(CFLAGS) dosimple.c
+
+dosimple.res : dosimple.rc
+    rc -r -fo dosimple.res $(cvars) -I$(INCPATH) dosimple.rc
+    cvtres -$(CPU) dosimple.res -o dosimple.rbj
+
+dosimple.exe : dosimple.obj dosimple.res
+    $(cvtobj) $(cvtdebug) *.obj
+    $(link) $(guiflags) dosimple.obj $(LIB2) $(LIB1) $(guilibs) dosimple.rbj -out:dosimple.exe
+!endif
+
+
+# testobj
+
+!ifdef MSWINDOWS
+testobj.obj : testobj.c
+        $(cc) $(CFLAGS) testobj.c
+
+testobj.res : testobj.rc
+    rc -r -fo testobj.res $(cvars) -I$(INCPATH) testobj.rc
+    cvtres -$(CPU) testobj.res -o testobj.rbj
+
+testobj.exe : testobj.obj testobj.res
+    $(cvtobj) $(cvtdebug) *.obj
+    $(link) $(guiflags) testobj.obj $(LIB2) $(LIB1) $(guilibs) testobj.rbj -out:testobj.exe
+!endif
+
+
+# seqtest
+
+!ifdef MSWINDOWS
+seqtest.obj : seqtest.c
+        $(cc) $(CFLAGS) seqtest.c
+
+seqtest.res : seqtest.rc
+    rc -r -fo seqtest.res $(cvars) -I$(INCPATH) seqtest.rc
+    cvtres -$(CPU) seqtest.res -o seqtest.rbj
+
+seqtest.exe : seqtest.obj seqtest.res
+    $(cvtobj) $(cvtdebug) *.obj
+    $(link) $(guiflags) seqtest.obj $(LIB2) $(LIB1) $(guilibs) seqtest.rbj -out:seqtest.exe
+!endif
+
+
+# asn2gnbk
+
+!ifdef MSWINDOWS
+asn2gnbk.obj : asn2gnbk.c
+        $(cc) $(CFLAGS) asn2gnbk.c
+
+asn2gnbk.res : asn2gnbk.rc
+    rc -r -fo asn2gnbk.res $(cvars) -I$(INCPATH) asn2gnbk.rc
+    cvtres -$(CPU) asn2gnbk.res -o asn2gnbk.rbj
+
+asn2gnbk.exe : asn2gnbk.obj asn2gnbk.res
+    $(cvtobj) $(cvtdebug) *.obj
+    $(link) $(guiflags) asn2gnbk.obj $(LIB2) $(LIB1) $(guilibs) asn2gnbk.rbj -out:asn2gnbk.exe
+!endif
+
+
+# asn2rpt
+
+!ifdef MSWINDOWS
+asn2rpt.obj : asn2rpt.c
+        $(cc) $(CFLAGS) asn2rpt.c
+
+asn2rpt.res : asn2rpt.rc
+    rc -r -fo asn2rpt.res $(cvars) -I$(INCPATH) asn2rpt.rc
+    cvtres -$(CPU) asn2rpt.res -o asn2rpt.rbj
+
+asn2rpt.exe : asn2rpt.obj asn2rpt.res
+    $(cvtobj) $(cvtdebug) *.obj
+    $(link) $(guiflags) asn2rpt.obj $(LIB2) $(LIB1) $(guilibs) asn2rpt.rbj -out:asn2rpt.exe
+!endif
+
+
+# getseq
+
+!ifdef MSWINDOWS
+getseq.obj : getseq.c
+        $(cc) $(CFLAGS) getseq.c
+
+getseq.res : getseq.rc
+    rc -r -fo getseq.res $(cvars) -I$(INCPATH) getseq.rc
+    cvtres -$(CPU) getseq.res -o getseq.rbj
+
+getseq.exe : getseq.obj getseq.res
+    $(cvtobj) $(cvtdebug) *.obj
+    $(link) $(guiflags) getseq.obj $(LIB5) $(LIB3) $(LIB2) $(LIB1) $(guilibs) getseq.rbj -out:getseq.exe
+!endif
+
+# getfeat
+
+!ifdef MSWINDOWS
+getfeat.obj : getfeat.c
+        $(cc) $(CFLAGS) getfeat.c
+
+getfeat.res : getfeat.rc
+    rc -r -fo getfeat.res $(cvars) -I$(INCPATH) getfeat.rc
+    cvtres -$(CPU) getfeat.res -o getfeat.rbj
+
+getfeat.exe : getfeat.obj getfeat.res
+    $(cvtobj) $(cvtdebug) *.obj
+    $(link) $(guiflags) getfeat.obj $(LIB5) $(LIB3) $(LIB2) $(LIB1) $(guilibs) getfeat.rbj -out:getfeat.exe
+!endif
+
+
+# checksub
+
+!ifdef MSWINDOWS
+checksub.obj : checksub.c
+        $(cc) $(CFLAGS) checksub.c
+
+checksub.res : checksub.rc
+    rc -r -fo checksub.res $(cvars) -I$(INCPATH) checksub.rc
+    cvtres -$(CPU) checksub.res -o checksub.rbj
+
+checksub.exe : checksub.obj checksub.res
+    $(cvtobj) $(cvtdebug) *.obj
+    $(link) $(guiflags) checksub.obj $(LIB2) $(LIB1) $(guilibs) checksub.rbj -out:checksub.exe
+!endif
+
+# entrez
+
+!ifdef MSWINDOWS
+entrez.res : entrez.rc ncbilogo.ico
+    rc -r -fo entrez.res $(cvars) -I$(INCPATH) entrez.rc
+    cvtres -$(CPU) entrez.res -o entrez.rbj
+
+entrez.exe : $(OBJENT) entrez.res
+    $(cvtobj) $(cvtdebug) *.obj
+    $(link) $(guiflags) $(OBJENT) $(LIB4) $(LIB5) $(LIB3) $(LIB2) $(LIB1) $(guilibs) entrez.rbj -out:entrez.exe
+!endif
+
+# asndhuff
+
+!ifdef MSWINDOWS
+asndhuff.obj : asndhuff.c
+        $(cc) $(CFLAGS) asndhuff.c
+
+asndhuff.res : asndhuff.rc
+    rc -r -fo asndhuff.res $(cvars) -I$(INCPATH) asndhuff.rc
+    cvtres -$(CPU) asndhuff.res -o asndhuff.rbj
+
+asndhuff.exe : asndhuff.obj asndhuff.res
+    $(cvtobj) $(cvtdebug) *.obj
+    $(link) $(guiflags) asndhuff.obj $(LIB5) $(LIB3) $(LIB2) $(LIB1) $(guilibs) asndhuff.rbj -out:asndhuff.exe
+!endif
+
+# entrezcf
+
+!ifdef MSWINDOWS
+entrezcf.obj : entrezcf.c
+        $(cc) $(CFLAGS) entrezcf.c
+
+entrezcf.res : entrezcf.rc
+    rc -r -fo entrezcf.res $(cvars) -I$(INCPATH) entrezcf.rc
+    cvtres -$(CPU) entrezcf.res -o entrezcf.rbj
+
+entrezcf.exe : entrezcf.obj entrezcf.res
+    $(cvtobj) $(cvtdebug) *.obj
+    $(link) $(guiflags) entrezcf.obj $(LIB4) $(LIB3) $(LIB1) $(guilibs) entrezcf.rbj -out:entrezcf.exe
+!endif
+

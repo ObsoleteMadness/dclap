@@ -1,0 +1,178 @@
+$!
+$!  MAKENET.TGV (OpenVMS VAX, Multinet TCP/IP suite)
+$!
+$!   Usage: @makenet.tgv
+$!
+$!   Builds the network interface, Entrez network access, and client TCP
+$!   libraries.
+$!
+$!   Creates the applications:
+$!
+$!      NetEntCf - A version of the Entrez configuration program, EntrezCf,
+$!                  which includes network support
+$!      NEntrez  - Network version of Entrez
+$!      CEntrez  - Combo version of Entrez which works with CD-ROMs
+$!                  and Network services.  This version uses CD-ROM data
+$!                  when available, network services otherwise.
+$!
+$!   William A. Gilbert
+$!   Whitehead Institute      gilbert@wi.mit.edu
+$!   Univ. of New Hampshire   gilbert@unh.edu
+$!--------------------------------------------------------------------------
+$ save_verify = f$verify("yes")
+$!
+$! Set up compiler definitions. These are specific for the Multinet TCP/IP 
+$! from TGV, Inc. suite.
+$!
+$ CC == "cc/nolist/include=([],[-.include])"
+$ CCFLAGS = "/define=(NETP_INET_TGV,__TIME)"
+$!
+$!--------------------------------------------------------------------------
+$! Add Network include files into NCBI include area
+$!
+$ copy [-.network.entrez.client]*.h  [-.include]     ! Entrez network access
+$ copy [-.network.nsclilib]*.h [-.include]           ! Network services 
+$ purge [-.include]
+$!
+$!--------------------------------------------------------------------------
+$!
+$! Make Network Interface library, netcli
+$!
+$!    N.B. Due to some problem between the compiler and the librarian
+$!         these object files will not produce a runnable executable
+$!         if linked in as a library, hence seperate files should be
+$!         used during linking.
+$!
+$ CC 'CCFLAGS' [-.network.nsclilib]ni_msg.c
+$ CC 'CCFLAGS' [-.network.nsclilib]ni_lib.c
+$ CC [-.network.NSCLILIB]ni_list.c
+$ CC [-.network.NSCLILIB]ni_error.c
+$ CC [-.network.NSCLILIB]ni_encrs.c
+$!
+$! Don't make library for now, just copy object file to library directory
+$!
+$ rename ni_lib.obj,ni_msg.obj,ni_error.obj,ni_list.obj,ni_encrs.obj [-.lib]
+$ purge [-.lib]
+$!! Librarian/create/object [-.lib]netcli.olb  ni_lib.obj,ni_msg.obj,-
+$!!                                            ni_error.obj,ni_list.obj,-
+$!!                                            ni_encrs.obj
+$!! delete ni_lib.obj;*,ni_msg.obj;*,ni_error.obj;*,ni_list.obj;*,ni_encrs.obj;*
+$!--------------------------------------------------------------------------
+$!
+$! Make Network Dispatcher/Entrez access library, netentr
+$!
+$ CC [-.network.entrez.client]netentr.c
+$ CC [-.network.entrez.client]netlib.c
+$ CC [-.network.entrez.client]objneten.c
+$!
+$  Librarian/create/object [-.lib]netentr.olb  netentr.obj,netlib.obj,objneten.obj
+$!
+$ delete netentr.obj;*,netlib.obj;*,objneten.obj;*
+$!
+$!=====================  A P P L I C A T I O N S  ==========================
+$!
+$! Make version of EntrezCf which has network support
+$!
+$ CCFLAGS = "/define=(NETP_INET_TGV,__TIME,NETWORK_SUPPORTED,WIN_MOTIF)"
+$ CC 'CCFLAGS' [-.demo]entrezcf.c/object=netentcf.obj
+$!
+$!  Link EntrezCf
+$!
+$ link netentcf.obj,sys$input/option
+[-.lib]libvibrant.olb/library
+[-.lib]libncbicdr.olb/library
+[-.lib]netentr.olb/library
+[-.lib]ni_lib.obj
+[-.lib]ni_msg.obj
+[-.lib]ni_list.obj
+[-.lib]ni_error.obj
+[-.lib]ni_encrs.obj
+[-.lib]libncbi.olb/library
+multinet:multinet_socket_library.exe/Shareable
+sys$share:decw$xlibshr.exe/shareable
+sys$share:decw$dxmlibshr.exe/shareable
+sys$share:decw$xmlibshr.exe/shareable
+sys$share:decw$xtshr.exe/shareable
+sys$share:vaxcrtl.exe/shareable
+$!
+$!----------------------------------------------------------------------------
+$!
+$!  Make network version of Entrez, NEntrez
+$!
+$!   Requires a copy of accentr.c compiled with the "_NETENT_" flag
+$!
+$!
+$ CC/define=WIN_MOTIF [-.browser]avail.c
+$ CC/define=WIN_MOTIF [-.browser]browser.c
+$ CC/define=WIN_MOTIF [-.browser]chosen.c
+$ CC/define=WIN_MOTIF [-.browser]fetch.c
+$ CC/define=WIN_MOTIF [-.browser]report.c
+$!
+$ CC/define=_NETENT_/object=Naccentr.obj [-.cdromlib]accentr.c
+$!
+$ link/exe=Nentrez.exe sys$input/option
+[]avail.obj
+[]browser.obj
+[]chosen.obj
+[]fetch.obj
+[]report.obj
+[-.lib]libvibrant.olb/library
+[]Naccentr.obj
+[-.lib]accutils.obj
+[-.lib]netentr.olb/library
+[-.lib]ni_lib.obj
+[-.lib]ni_msg.obj
+[-.lib]ni_list.obj
+[-.lib]ni_error.obj
+[-.lib]ni_encrs.obj
+[-.lib]libncbicdr.olb/library
+[-.lib]libncbiobj.olb/library
+[-.lib]libncbi.olb/library
+multinet:multinet_socket_library.exe/shareable
+sys$share:decw$xlibshr.exe/shareable
+sys$share:decw$dxmlibshr.exe/shareable
+sys$share:decw$xmlibshr.exe/shareable
+sys$share:decw$xtshr.exe/shareable
+sys$share:vaxcrtl.exe/shareable
+$!----------------------------------------------------------------------------
+$!
+$!  Make network/CD-ROM combo version of Entrez, CEntrez
+$!
+$!   Requires a copy of accentr.c compiled with the "_NET_AND_CD_" flag
+$!
+$!
+$ CC/define=_NET_AND_CD_/object=Caccentr.obj [-.cdromlib]accentr.c
+$!
+$ link/exe=Centrez.exe sys$input/option
+[]avail.obj
+[]browser.obj
+[]chosen.obj
+[]fetch.obj
+[]report.obj
+[-.lib]libvibrant.olb/library
+[]Caccentr.obj
+[-.lib]accutils.obj
+[-.lib]netentr.olb/library
+[-.lib]ni_lib
+[-.lib]ni_msg
+[-.lib]ni_list
+[-.lib]ni_error
+[-.lib]ni_encrs
+[-.lib]libncbicdr.olb/library
+[-.lib]libncbiobj.olb/library
+[-.lib]libncbi.olb/library
+multinet:multinet_socket_library.exe/shareable
+sys$share:decw$xlibshr.exe/shareable
+sys$share:decw$dxmlibshr.exe/shareable
+sys$share:decw$xmlibshr.exe/shareable
+sys$share:decw$xtshr.exe/shareable
+sys$share:vaxcrtl.exe/shareable
+$!-------------------------------------------------------------------------
+$!
+$!
+$ if .not.save_verify then set noverify
+$ exit
+
+
+
+

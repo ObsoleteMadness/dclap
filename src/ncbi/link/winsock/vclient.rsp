@@ -1,0 +1,6 @@
+/Tw C0Wl  vclient.obj
+vclient.exe
+
+IMPORT ..\lib\vibrant.lib ..\lib\ncbiobj.lib ..\lib\netcli.lib +
+..\lib\ncbi.lib ..\lib\winsock.lib CWl mathwl
+vclient.def

@@ -1,0 +1,8 @@
+NAME           EntrezCf
+DESCRIPTION    'Entrez Configuration Program'
+EXETYPE        WINDOWS
+STUB           'WINSTUB.EXE'
+CODE           MOVEABLE DISCARDABLE
+DATA           MOVEABLE MULTIPLE
+HEAPSIZE       1024
+STACKSIZE      5120

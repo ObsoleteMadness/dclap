@@ -1,0 +1,217 @@
+--$Revision: 1.3 $
+--*********************************************************************
+--
+--  entrez.asn
+--   Jim Ostell, 1993
+--              revised from epstein/ostell 1992
+--
+--     messages for entrez functions
+--
+--*********************************************************************
+
+NCBI-Entrez DEFINITIONS ::=
+BEGIN
+
+IMPORTS Seq-entry FROM NCBI-SeqSet
+        Medline-entry FROM NCBI-MedLine
+        Link-set FROM NCBI-Access
+        Cdrom-inf FROM NCBI-CdRom;
+
+        --**********************************
+        -- requests
+        --
+
+Entrez-request ::= CHOICE {
+    init SEQUENCE {                -- EntrezInit
+        version VisibleString OPTIONAL
+    } ,
+    maxlinks NULL ,                -- EntGetMaxLinks
+    eval Entrez-termget ,          -- EntTLEval
+    docsum Entrez-docget ,         -- DocSum
+    linkuidlist Link-setget ,      -- LinkUidList
+    uidlinks Link-setget ,         -- UidLinks
+    byterm Entrez-term-by-term ,   -- TermListByTerm
+    bypage Entrez-term-by-page ,   -- TermListByPage
+    findterm Term-lookup ,         -- EntrezFindTerm
+    fini NULL ,                    -- EntrezFini
+    createnamed Entrez-named-list ,
+    getmle Entrez-docget ,          -- get MedlineEntry
+    getseq Entrez-seqget }         -- get SeqEntry
+
+
+Entrez-docget ::= SEQUENCE {
+    class Entrez-class ,
+    mark-missing BOOLEAN OPTIONAL ,
+    ids Entrez-ids ,
+    defer-count INTEGER OPTIONAL }
+
+Entrez-seqget ::= SEQUENCE {       -- SeqEntryGet
+    retype ENUMERATED {
+        entry (0) ,             -- the "natural" entry for this (nuc-prot)
+        bioseq (1) ,            -- only the bioseq identified
+        bioseq-set (2) ,        -- any seg-set it may be part of
+        nuc-prot (3) ,            -- any nuc-prot it may be part of
+        pub-set (4) } DEFAULT entry ,
+    mark-missing BOOLEAN OPTIONAL ,
+    ids Entrez-ids }
+
+Entrez-termget ::= SEQUENCE {        -- terms query
+    max INTEGER OPTIONAL ,        -- maximum ids to return
+    cls Entrez-class ,            -- class of data to query
+    terms Entrez-term-list }
+
+Entrez-class ::= ENUMERATED {     -- class of document to query
+    medline (0) ,
+    aa (1) ,
+    na (2) }
+
+Entrez-field ::= INTEGER {              -- type of field
+    word (0) ,        -- words
+    mesh (1) ,        -- meSH terms
+    keyword (2) ,     -- keyword
+    author (3) ,      -- author names
+    journal (4) ,     -- journal title
+    org (5) ,         -- organism name
+    accn (6),         -- accession number
+    gene (7) ,        -- gene symbol
+    prot (8) ,        -- protein name
+    ecno (9) ,        -- E.C. number
+    glossary (10) }   -- MeSH glossary
+
+Entrez-operator ::= ENUMERATED {
+    lparen (1) ,
+    rparen (2) ,
+    andsymbl (3) ,
+    orsymbl (4) ,
+    butnotsymbl (5) }
+
+Special-operand ::= SEQUENCE {
+    term     VisibleString ,
+    fld      Entrez-field ,
+    type     Entrez-class }
+
+Total-operand ::= SEQUENCE {
+    term     VisibleString ,
+    fld      Entrez-field ,
+    type     Entrez-class }
+
+Entrez-term-list ::= SEQUENCE OF CHOICE {
+    operator      Entrez-operator ,
+    sp-operand    Special-operand ,
+    tot-operand   Total-operand   }
+
+Link-setget ::= SEQUENCE {
+    max INTEGER OPTIONAL ,        -- maximum ids to return
+    link-to-cls Entrez-class ,    -- class of data to return
+    query-cls Entrez-class ,      -- class of query
+    mark-missing BOOLEAN DEFAULT FALSE , -- need to know which IDs didn't match
+    query-size INTEGER ,          -- size of query
+    query SEQUENCE OF INTEGER }   -- ids of query
+
+
+        --*********************************
+        -- replies (back)
+        --
+
+Entrez-back ::= CHOICE {
+    error INTEGER ,                -- Generic errors
+    init SEQUENCE {                -- EntrezInit
+        e-info Cdrom-inf OPTIONAL
+    } ,
+    maxlinks INTEGER ,             -- EntGetMaxLinks
+    eval CHOICE {                  -- EntTLEval
+      bad-count INTEGER ,             -- if too many UIDs to return set
+      link-set Link-set } ,
+    docsum CHOICE {                -- get summarys by term (DocSum)
+      ml Ml-summary-list ,         -- medline summary list
+      seq Seq-summary-list } ,     -- sequence summary list
+    linkuidlist Marked-link-set ,  -- LinkUidList
+    uidlinks Marked-link-set ,     -- UidLinks
+    byterm Entrez-term-resp ,      -- TermListByTerm
+    bypage Entrez-term-resp ,      -- TermListByPage
+    findterm Term-counts ,         -- EntrezFindTerm
+    fini NULL ,                    -- EntrezFini
+    createnamed NULL ,
+    getmle Entrez-Medline-entry-list ,   -- get Medline Entry
+    getseq Entrez-Seq-entry-list } -- get SeqEntry
+
+Ml-summary-list ::= SEQUENCE {
+    num INTEGER ,
+    data SEQUENCE OF Ml-summary }
+
+Ml-summary ::= SEQUENCE {          
+    muid INTEGER ,
+    no-abstract BOOLEAN DEFAULT FALSE ,
+    translated-title BOOLEAN DEFAULT FALSE ,
+    no-authors BOOLEAN DEFAULT FALSE ,
+    caption VisibleString OPTIONAL ,
+    title VisibleString OPTIONAL }
+
+Seq-summary-list ::= SEQUENCE {
+    num INTEGER ,
+    data SEQUENCE OF Seq-summary }
+
+Seq-summary ::= SEQUENCE {
+    id INTEGER ,          -- Gi id
+    caption VisibleString OPTIONAL ,
+    title VisibleString OPTIONAL }
+
+Marked-link-set ::= SEQUENCE {
+    link-set Link-set ,
+    uids-processed INTEGER ,
+    marked-missing Entrez-ids OPTIONAL }
+
+Entrez-ids ::= SEQUENCE {
+    numid INTEGER ,                   -- number of ids to follow
+    ids SEQUENCE OF INTEGER }         -- the ids
+
+Entrez-term-by-page ::= SEQUENCE {
+    type     Entrez-class ,           -- type of query
+    fld      Entrez-field ,           -- 
+    page     INTEGER ,                -- starting page number
+    num-pages INTEGER }               -- # of pages desired
+
+Entrez-term-by-term ::= SEQUENCE {
+    type     Entrez-class ,           -- type of query
+    fld      Entrez-field ,           -- 
+    term     VisibleString ,          -- term on which to key
+    num-terms INTEGER }               -- # of terms desired
+
+Term-lookup ::= SEQUENCE {
+    type     Entrez-class ,           -- type of query
+    fld      Entrez-field ,           -- 
+    term     VisibleString }
+
+Term-page-info ::= SEQUENCE {
+    term       VisibleString ,
+    spec-count INTEGER ,
+    tot-count  INTEGER }
+
+Term-counts ::= SEQUENCE {
+    found BOOLEAN ,                   -- was the term found ?
+    spec-count INTEGER ,
+    tot-count  INTEGER }
+
+Entrez-term-resp ::= SEQUENCE {
+    num-terms INTEGER ,
+    first-page INTEGER OPTIONAL,
+    pages-read INTEGER ,
+    info SEQUENCE OF Term-page-info }
+
+Entrez-named-list ::= SEQUENCE {
+    term       VisibleString ,
+    type       Entrez-class ,           -- type of query
+    fld        Entrez-field ,           -- 
+    uids       Entrez-ids }
+
+Entrez-Seq-entry-list ::= SEQUENCE {
+    num INTEGER ,
+    data SEQUENCE OF Seq-entry ,
+    marked-missing Entrez-ids OPTIONAL }
+
+Entrez-Medline-entry-list ::= SEQUENCE {
+    num INTEGER ,
+    data SEQUENCE OF Medline-entry ,
+    marked-missing Entrez-ids OPTIONAL }
+
+END

@@ -1,0 +1,333 @@
+#	makefile for asntool and ncbi core routines,
+#	cdromlib data access functions, vibrant, and entrez
+#	Microsoft C large model under DOS [ "nmake MSC=1" ]
+#	Microsoft C large model under Windows (requires Windows SDK)
+#		[ "nmake MSW=1" ]
+#	Borland C/C++ large model under DOS [ "make -DBOR" ]
+#   Borland C/C++ large model under MSWindows [ "make -DBWN" ]
+#   
+#   Microsoft C medium model uses the -AM flag instead of -AL,
+#       and the mlibcew library instead of llibcew
+#   Borland C/C++ medium model uses the -mm flag instead of -ml,
+#       the C0Wm library instead of C0Wl, CWm instead of CWl,
+#       and mathwm (or mathm) instead of mathwl (or mathl)
+#   
+#   (The /30 flag in rc is only if you are using the Borland (3.0)
+#   compiler with the Microsoft (3.1) rc.)
+#   
+
+# flags for compiling and loading
+
+# Microsoft C under MSDOS
+!ifdef MSC
+GOTONE = 1
+SUFFIXLCL = msc
+SUFFIXENV = dos
+CC = cl
+!ifdef DBUG
+DFLAGS = -Od -Zi -D_DEBUG
+LFLAGS = /NOE /NOD /ONERROR:NOEXE /CO
+!else
+DFLAGS = -Os
+LFLAGS = /NOE /NOD /ONERROR:NOEXE
+!endif
+CFLAGS1 = -c -AL -G2s -Gt128 -W3 $(DFLAGS)
+LDFLAGS1 = -AL -G2s -Gt128 -W3 -F 1000 -Fm $(DFLAGS)
+!endif
+
+# Microsoft C under MS Windows
+!ifdef MSW
+GOTONE = 1
+MSWINDOWS = 1
+SUFFIXLCL = msw
+SUFFIXENV = msw
+CC = cl
+!ifdef DBUG
+DFLAGS = -Od -Zi -D_DEBUG
+LFLAGS = /NOE /NOD /ONERROR:NOEXE /CO
+!else
+DFLAGS = -Oselg
+LFLAGS = /NOE /NOD /ONERROR:NOEXE
+!endif
+CFLAGS1 = -c -AL -G2s -GA -Gt128 -W3 $(DFLAGS)
+LDFLAGS1 = -AL -G2s -GA -Gt128 -W3 $(DFLAGS)
+guilibs= commdlg llibcew libw oldnames
+!endif
+
+# Borland C++
+!ifdef BOR
+GOTONE = 1
+BORLAND = 1
+SUFFIXLCL = bor
+SUFFIXENV = dos
+CC = bcc
+CFLAGS1 = -c -ml -2 -O -Yo
+LDFLAGS1 = -ml -2 -O
+!endif
+
+# Borland C++ under MS Windows
+!ifdef BWN
+GOTONE = 1
+BORLAND = 1
+MSWINDOWS = 1
+SUFFIXLCL = bwn
+SUFFIXENV = msw
+CC = bcc
+CFLAGS1 = -c -ml -2 -O -W -D_WINDOWS
+LDFLAGS1 = -ml -2 -O -W -D_WINDOWS
+!endif
+
+!ifndef GOTONE
+!error PLATFORM NOT DEFINED!! [ MSC, MSW, BOR, BWN ]
+!endif
+
+ASNDIR = asnload
+LIB1 = ncbi.lib
+LIB2 = ncbiobj.lib
+LIB3 = ncbicdr.lib
+LIB4 = vibrant.lib
+LIB5 = ncbiacc.lib
+LIB6 = netcli.lib
+LIB7 = netentr.lib
+LIB8 = ncbinacc.lib
+LIB9 = ncbicacc.lib
+# LIB10 is reserved for ncsasock
+LIB10 =
+
+INCPATH = ..\include
+LIBPATH = ..\lib
+CFLAGS = $(CFLAGS1) -I$(INCPATH)
+LDFLAGS = $(LDFLAGS1) -I$(INCPATH)
+
+##
+## some things to make
+##
+# sources needed for versions of asntool and entrez
+
+SRC1 =	ncbibs.c ncbierr.c ncbienv.c ncbifile.c ncbiprop.c \
+	ncbimain.c ncbimath.c ncbimem.c ncbimisc.c \
+	ncbimsg.c ncbistr.c ncbitime.c ncbisgml.c \
+	asndebin.c asnenbin.c asngen.c asnio.c asnlex.c \
+	asnlext.c asnout.c asnprint.c asntypes.c
+
+SRC2 =	objacces.c objalign.c objall.c objbibli.c \
+	objfeat.c objgen.c objloc.c objmedli.c objpub.c \
+	objres.c objseq.c objcode.c objblock.c objsset.c \
+	objsub.c objprt.c seqport.c sequtil.c prtutil.c \
+	simple.c tofasta.c tofile.c tognbk1.c \
+	tognbk2.c tognbk3.c tomedlin.c toreport.c \
+	valid.c subutil.c edutil.c
+
+SRC3 =	cdentrez.c cdromlib.c casn.c cdconfig.c
+
+SRC4 =	vibbutns.c vibextra.c vibfiles.c vibgroup.c \
+	viblists.c vibmenus.c vibprmpt.c \
+	vibsbars.c vibslate.c vibtexts.c \
+	vibutils.c vibwndws.c ncbidraw.c \
+	drawing.c mapping.c picture.c viewer.c \
+	document.c table.c palette.c
+
+SRC5 =	accentr.c accutils.c
+
+# objects needed for versions of asntool and entrez
+
+OBJ1 =	ncbibs.obj ncbierr.obj ncbienv.obj ncbifile.obj ncbiprop.obj \
+	ncbimain.obj ncbimath.obj ncbimem.obj ncbimisc.obj \
+	ncbimsg.obj ncbistr.obj ncbitime.obj ncbisgml.obj \
+	asndebin.obj asnenbin.obj asngen.obj asnio.obj asnlex.obj \
+	asnlext.obj asnout.obj asnprint.obj asntypes.obj
+
+OBJ2 =	objacces.obj objalign.obj objall.obj objbibli.obj \
+	objfeat.obj objgen.obj objloc.obj objmedli.obj objpub.obj \
+	objres.obj objseq.obj objcode.obj objblock.obj objsset.obj \
+	objsub.obj objprt.obj seqport.obj sequtil.obj prtutil.obj \
+	simple.obj tofasta.obj tofile.obj tognbk1.obj \
+	tognbk2.obj tognbk3.obj tomedlin.obj toreport.obj \
+	valid.obj subutil.obj edutil.obj
+
+OBJ3 = cdentrez.obj cdromlib.obj casn.obj cdconfig.obj
+
+OBJ4 =	vibbutns.obj vibextra.obj vibfiles.obj vibgroup.obj \
+	viblists.obj vibmenus.obj vibprmpt.obj \
+	vibsbars.obj vibslate.obj vibtexts.obj \
+	vibutils.obj vibwndws.obj ncbidraw.obj \
+	drawing.obj mapping.obj picture.obj viewer.obj \
+	document.obj table.obj palette.obj
+
+OBJ5 =	accentr.obj accutils.obj
+
+## All things to make
+##
+!ifdef MSWINDOWS
+all : copy nocopy
+nocopy : $(LIB1) $(LIB2) $(LIB3) $(LIB4) $(LIB5) asntool.exe
+!else
+all : copy nocopy
+nocopy : $(LIB1) $(LIB2) $(LIB3) $(LIB5) asntool.exe
+!endif
+
+## To clean out the directory without removing make
+##
+clean :
+	del *.c
+	del *.h
+	del *.obj
+	del *.lib
+	del *.rsp
+	del *.def
+	del *.rc
+
+## Implicit actions
+##
+
+!ifdef BORLAND
+!ifdef BOR
+$(OBJ1) : $(SRC1)
+	$(CC) $(CFLAGS) -Y {$&.c }
+
+.c.obj:
+	$(CC) $(CFLAGS) -Yo {$< }
+!else
+.c.obj:
+	$(CC) $(CFLAGS) {$< }
+!endif
+!else
+.c.obj:
+	$(CC) $(CFLAGS) $*.c
+!endif
+
+## get all the source files
+##
+
+copy :
+!ifndef NC
+	copy ..\corelib\ncbi*.h ..\include
+	copy ..\corelib\ncbilcl.$(SUFFIXLCL) ..\include\ncbilcl.h
+	copy ..\corelib\*.c .
+	copy ..\corelib\core*.h .
+	copy ..\corelib\ncbimain.$(SUFFIXENV) ncbimain.c
+	copy ..\asnlib\*.h .
+	copy asn.h ..\include
+	del asn.h
+	copy ..\asnlib\*.c .
+	copy ..\object\*.c .
+	copy ..\object\*.h ..\include
+	copy ..\$(ASNDIR)\*.h ..\include
+	copy ..\api\*.h ..\include
+	copy ..\api\*.c .
+	copy ..\cdromlib\*.h ..\include
+	copy ..\cdromlib\*.c .
+!ifdef MSWINDOWS
+	copy ..\vibrant\*.h ..\include
+	copy ..\vibrant\*.c .
+	copy ..\link\mswin\*.*
+!endif
+!endif
+!ifdef NC
+	echo no copy
+!endif
+
+## make libraries
+##
+
+$(LIB1) : $(OBJ1)
+	del $(LIB1)
+!ifdef BORLAND
+	tlib $(LIB1) /C /E @..\make\libinp.bor
+!else
+	lib /PAGESIZE:128 @<<
+$@
+y
+$(OBJ1)
+;
+<<
+!endif
+	copy $(LIB1) ..\lib
+
+$(LIB2) : $(OBJ2)
+	del $(LIB2)
+!ifdef BORLAND
+	tlib $(LIB2) /C /E @..\make\libobj.bor
+!else
+	lib /PAGESIZE:128 @<<
+$@
+y
+$(OBJ2)
+;
+<<
+!endif
+	copy $(LIB2) ..\lib
+
+$(LIB3) : $(OBJ3)
+	del $(LIB3)
+!ifdef BORLAND
+	tlib $(LIB3) /C /E @..\make\libcdr.bor
+!else
+	lib /PAGESIZE:128 @<<
+$@
+y
+$(OBJ3)
+;
+<<
+!endif
+	copy $(LIB3) ..\lib
+
+$(LIB4) : $(OBJ4)
+	del $(LIB4)
+!ifdef BORLAND
+	tlib $(LIB4) /C /E @..\make\libvib.bor
+!else
+	lib /PAGESIZE:128 @<<
+$@
+y
+$(OBJ4)
+;
+<<
+!endif
+	copy $(LIB4) ..\lib
+
+$(LIB5) : $(OBJ5)
+	del $(LIB5)
+!ifdef BORLAND
+	tlib $(LIB5) /C /E @..\make\libacc.bor
+!else
+	lib /PAGESIZE:128 @<<
+$@
+y
+$(OBJ5)
+;
+<<
+!endif
+	copy $(LIB5) ..\lib
+
+## make asntool application
+##
+
+# asntool
+
+!ifdef MSWINDOWS
+asntool.obj : asntool.c
+	$(CC) $(CFLAGS) asntool.c
+
+asntool.res : asntool.rc asntool.ico
+    rc -r -I..\include asntool.rc
+
+asntool.exe : asntool.obj asntool.res $(LIB1) $(LIB4)
+!ifdef BORLAND
+	tlink /Tw C0Wl asntool.obj, asntool.exe,, IMPORT $(LIBPATH)\$(LIB4) $(LIBPATH)\$(LIB1) CWl mathwl, asntool.def
+	rc -K /30 asntool.res asntool.exe
+!else
+	link  @<<
+asntool.obj
+asntool/align:16
+asntool
+$(LFLAGS) $(LIB4) $(LIB1) $(guilibs)
+asntool.def
+<<
+	rc -K asntool.res asntool.exe
+!endif
+!else
+asntool.exe : asntool.c $(LIB1)
+	$(CC) $(LDFLAGS) asntool.c $(LIBPATH)\$(LIB1)
+!endif
+	copy asntool.exe ..\bin

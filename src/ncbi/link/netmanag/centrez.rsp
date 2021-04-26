@@ -1,0 +1,7 @@
+/Tw C0Wl  avail.obj browser.obj chosen.obj fetch.obj report.obj
+centrez.exe
+
+IMPORT ..\lib\vibrant.lib ..\lib\ncbicacc.lib ..\lib\ncbicdr.lib +
+..\lib\netentr ..\lib\ncbiobj.lib ..\lib\netcli.lib ..\lib\ncbi.lib +
+..\lib\nmpcip.lib CWl mathwl
+centrez.def

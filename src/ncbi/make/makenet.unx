@@ -1,0 +1,448 @@
+#   makefile for network demo programs and network entrez
+#   Sun with unbundled ANSI compiler [ make CC=acc RAN=ranlib ]
+#   Sun with Gnu C [ make CC=gcc RAN=ranlib ]
+#   Sun with Solaris 2.x OS [ make CC="cc -Xa" OTHERLIBS="-lsocket -lnsl -lm" ]
+#   Silicon Graphics [ make OTHERLIBS="-lm -lPW -lsun" ]
+#   IBM 3090 with AIX [ make  ]
+#   ULTRIX [ make RAN=ranlib ]
+#   Apple AUX [ make SHELL=\usr\bin ]
+#   NeXt [ make CFLAGS1="-c -ansi" RAN=ranlib ]
+#   DEC Alpha under OSF/1  [ make CC=cc RAN=ranlib ]
+#   
+#   Subsequent makes should make ... nocopy instead of make ... all
+#   to avoid recopying the include files
+#
+#   To Make the Motif version of demos and to make entrez add:
+#      VIBLIBS="-lXm -lXmu -lXt -lX11" VIBFLAG="-I/am/Motif/include -DWIN_MOTIF" VIB="Nentrez Centrez Vclient"
+#   to the argument list.  Substitute the path to your Motif includes for
+#    /am/Motif/include.
+#
+#   To build network services tools which support data encryption, add:
+#      NCBI_ENCR=E
+#   and see the discussion in network/encrypt/README for how to obtain
+#   the RSAREF source files.
+#
+#   To Make the network server and dispatcher tools, add 'servers' as an
+#   object to be made, e.g.:
+#     make all servers
+#          OR
+#     make nocopy servers
+#
+#   To make the getseq demo program for the network "make netseq"
+#
+#   This makefile may be run either before, after, or without 'makedemo'
+#   It must be run after 'makeall'
+#   
+
+# default flags for compiling and loading
+
+SUFFIXLCL = $(LCL)
+CFLAGS1 = -c -O
+LDFLAGS1 = -O
+CC = cc
+RAN = ls
+AR = ar
+OTHERLIBS = -lm
+VIBLIBS = 
+VIBFLAG = -I/am/Motif/include -DWIN_MOTIF
+VIBFLAG =
+VIB = Nentrez Centrez vclient
+VIB =
+VIBLIBS= -lXm -lXmu -lXt -lX11
+VIBLIBS=
+
+SUFFIXENV = unx
+ASNDIR = asnstat
+
+BLIB5 = libncbiacc.a
+BLIB6 = libnetcli.a
+BLIB7 = libnetentr.a
+BLIB8 = libncbiNacc.a
+BLIB9 = libncbiCacc.a
+BLIB11 = libncbimla.a
+BLIB12 = libncbitax.a
+BLIB13 = libncbiid0.a
+BLIB14 = libncbibls1.a
+BLIB15 = libnetcliE.a
+
+LIB1 = -lncbi
+LIB2 = -lncbiobj
+LIB3 = -lncbicdr
+LIB4 = -lvibrant
+LIB5 = -lncbiacc
+LIB6 = -lnetcli
+LIB7 = -lnetentr
+LIB8 = -lncbiNacc
+LIB9 = -lncbiCacc
+# LIB10 is reserved for NCSA socket library
+LIB10 =
+LIB11 = -lncbimla
+LIB12 = -lncbitax
+LIB13 = -lncbiid0
+LIB14 = -lncbibls1
+LIB15 = -lnetcliE
+
+##
+## encryption of network services
+##
+ENCRSRCDIR = ../network/encrypt/ripem/rsaref/source
+## uncomment the following line for encryption, or set NCBI_ENCR=E externally
+# NCBI_ENCR = E
+BNETCLILIB = libnetcli$(NCBI_ENCR).a
+NETCLILIB = $(LIB6)$(NCBI_ENCR)
+
+NCBI_INCDIR = ../include
+NCBI_LIBDIR = ../lib
+
+CFLAGS = $(CFLAGS1) -I$(NCBI_INCDIR) $(VIBFLAG)
+LDFLAGS = -I$(NCBI_INCDIR) -L$(NCBI_LIBDIR) $(VIBFLAG)
+
+
+##
+## some things to make
+##
+
+## sources for libraries
+
+SRC6 =	ni_lib.c ni_msg.c ni_error.c ni_list.c ni_encrs.c
+
+SRC7 =	netentr.c netlib.c objneten.c
+
+SRC8 =	accentr.c accutils.c
+
+SRC9 =	$(SRC8)
+
+SRC11 = objmla.c medarch.c medutil.c
+
+SRC12 = objtaxon.c taxarch.c
+
+SRC13 = id0gen.c id0arch.c
+
+SRC14 = objblst1.c netblap1.c gishutil.c blastout.c
+
+SRCRSAREF = desc.c digit.c digitas.c md2c.c md5c.c nn.c prime.c r_encode.c \
+	    r_enhanc.c r_keygen.c r_random.c r_stdlib.c rsa.c
+
+SRC15 = ni_lib.c ni_msg.c ni_error.c ni_list.c ni_encr.c $(SRCRSAREF)
+
+NET_LIBS_SRC = $(SRC6) $(SRC7) $(SRC8) $(SRC9)
+
+# objects for libraries
+
+OBJ6 =	ni_lib.o ni_msg.o ni_error.o ni_list.o ni_encrs.o
+
+OBJ7 =	netentr.o netlib.o objneten.o
+
+OBJ8 =	Naccentr.o accutils.o
+
+OBJ9 =	Caccentr.o accutils.o
+
+OBJ11 = objmla.o medarch.o medutil.o
+
+OBJ12 = objtaxon.o taxarch.o
+
+OBJ13 = id0gen.o id0arch.o
+
+OBJ14 = objblst1.o netblap1.o gishutil.o blastout.o
+
+OBJRSAREF = desc.o digit.o digitas.o md2c.o md5c.o nn.o prime.o r_encode.o \
+	    r_enhanc.o r_keygen.o r_random.o r_stdlib.o rsa.o
+
+OBJ15BASE = ni_lib.o ni_msg.o ni_error.o ni_list.o ni_encr.o
+
+OBJ15 = $(OBJ15BASE) $(OBJRSAREF)
+
+# objects & sources needed for versions of network demo programs
+
+OBJCLIENT =	client.o
+
+OBJVCLIENT =	vclient.o
+
+OBJENT =	avail.o browser.o chosen.o fetch.o report.o
+
+OBJDISPD =	dispd.o ni_servlib.o ni_buff.o ni_callmgr.o
+
+OBJNCBID =	ncbid.o ni_servlib.o ni_buff.o
+
+OBJSVBROKER =	svbroker.o
+
+OBJENCRUTIL =   encrutil.o
+
+OBJECHOD =	echoserv.o
+
+OBJENTSRV =	srventr.o
+
+EXEDISPD =	dispd
+
+EXENCBID =	ncbid
+
+EXESVBROKER =   svbroker
+
+EXEENCRUTIL =	encrutil
+
+EXEECHOD =	echoserv
+
+EXEENTSRV =	srventr
+
+SRCCLIENT =	client.c
+
+SRCVCLIENT =	vclient.c
+
+SRCENT =	avail.c browser.c chosen.c fetch.c report.c
+
+SRCDISPD =	dispd.c ni_servlib.c ni_buff.c ni_callmgr.c
+
+SRCNCBID =	ncbid.c ni_servlib.c ni_buff.c
+
+SRCSVBROKER =   svbroker.c
+
+SRCENCRUTIL =	encrutil.c
+
+SRCECHOD =	echoserv.c
+
+SRCENTSRV =	srventr.c
+
+CLI_SRC = $(SRCCLIENT) $(SRCVCLIENT) $(SRCENT)
+
+CLIENTS = client
+
+SERV_SRC = $(SRCDISPD) $(SRCNCBID) $(SRCECHOD) $(SRCENTSRV) $(SRCSVBROKER) \
+	$(SRCENCRUTIL)
+
+SERVERS = $(EXEDISPD) $(EXENCBID) $(EXEECHOD) $(EXEENTSRV) $(EXESVBROKER) \
+	$(EXEENCRUTIL)
+
+## All things to make
+##
+all : copy nocopy
+
+nocopy : sources $(BLIB6) $(NCBI_ENCR) $(BLIB7) $(BLIB8) $(BLIB9) $(CLIENTS) $(VIB)
+
+sources : $(NET_LIBS_SRC) $(CLI_SRC) $(SRCENT)
+
+servers : $(SERV_SRC) $(SERVERS)
+
+## encryption
+##
+E : $(BLIB15)
+
+others : $(BLIB11) $(BLIB12) $(BLIB13) $(BLIB14)
+
+
+## To clean out the directory without removing make
+##
+clean :
+	- rm -f *.[acho]
+
+copy :
+	cp ../network/entrez/client/*.h ../include
+	cp ../network/entrez/client/*.c .
+	-cp ../network/medarch/client/*.h ../include
+	-cp ../network/medarch/client/*.c .
+	-cp ../network/taxonomy/client/*.h ../include
+	-cp ../network/taxonomy/client/*.c .
+	-cp ../network/id0arch/client/*.h ../include
+	-cp ../network/id0arch/client/*.c .
+	-cp ../network/blast1/client/*.h ../include
+	-cp ../network/blast1/client/*.c .
+	-cp $(ENCRSRCDIR)/*.c .
+	cp ../network/nsclilib/*.h ../include
+	cp ../network/nsclilib/*.c .
+	cp ../cdromlib/*.h ../include
+	cp ../cdromlib/accentr.c .
+	cp ../cdromlib/accutils.c .
+	cp ../browser/*.* .
+	cp ../demo/entrezcf.c .
+	cp ../demo/getseq.c .
+	-cp ../network/entrez/server/*.* .
+	-cp ../network/nsdaemon/*.* .
+	cp ../network/nsdemocl/*.* .
+	chmod +w *
+	chmod +w ../include/*
+
+
+## Implicit actions
+##
+
+.c.o :
+	$(CC) $(CFLAGS) $<
+
+## Special rules for network Acclib
+##
+Naccentr.o : accentr.c
+	cp accentr.c Naccentr.c
+	$(CC) $(CFLAGS) -D_NETENT_ Naccentr.c
+
+## Special rules for network/cd ("combo") Acclib
+##
+Caccentr.o : accentr.c
+	cp accentr.c Caccentr.c
+	$(CC) $(CFLAGS) -D_NET_AND_CD_ Caccentr.c
+
+## Special rules for automatically generated object loaders
+##
+objmla.o: objmla.c
+	$(CC) $(CFLAGS) -DNLM_OBJ_INCL=\"mapmla.h\" objmla.c
+
+objtaxon.o: objtaxon.c
+	$(CC) $(CFLAGS) -DNLM_OBJ_INCL=\"mappings.h\" objtaxon.c
+
+id0gen.o: id0gen.c
+	$(CC) $(CFLAGS) -DNLM_OBJ_INCL=\"id0map.h\" id0gen.c
+
+## Special rule for ni_encr.c
+##
+ni_encr.o : ni_encr.c
+	$(CC) $(CFLAGS) -I$(ENCRSRCDIR) -DPROTOTYPES ni_encr.c
+
+## Explicit rules for SunOS and Solaris make utilities,
+## which can't seem to figure out how to make medarch.c & taxarch.c
+## using the default rules
+medarch.o: medarch.c
+	$(CC) $(CFLAGS) medarch.c
+medutil.o: medutil.c
+	$(CC) $(CFLAGS) medutil.c
+taxarch.o: taxarch.c
+	$(CC) $(CFLAGS) taxarch.c
+id0arch.o: id0arch.c
+	$(CC) $(CFLAGS) id0arch.c
+objblst1.o : objblst1.c
+	$(CC) $(CFLAGS) objblst1.c
+netblap1.o : netblap1.c
+	$(CC) $(CFLAGS) netblap1.c
+
+## get all the source files
+##
+
+
+## make libraries
+##
+
+$(BLIB6) : $(OBJ6)
+	- rm -f $(BLIB6)
+	$(AR) cru $(BLIB6) $(OBJ6)
+	cp $(BLIB6) $(NCBI_LIBDIR)
+	$(RAN) $(NCBI_LIBDIR)/$(BLIB6)
+
+$(BLIB7) : $(OBJ7)
+	- rm -f $(BLIB7)
+	$(AR) cru $(BLIB7) $(OBJ7)
+	cp $(BLIB7) $(NCBI_LIBDIR)
+	$(RAN) $(NCBI_LIBDIR)/$(BLIB7)
+
+$(BLIB8) : $(OBJ8)
+	- rm -f $(BLIB8)
+	$(AR) cru $(BLIB8) $(OBJ8)
+	cp $(BLIB8) $(NCBI_LIBDIR)
+	$(RAN) $(NCBI_LIBDIR)/$(BLIB8)
+
+$(BLIB9) : $(OBJ9)
+	- rm -f $(BLIB9)
+	$(AR) cru $(BLIB9) $(OBJ9)
+	cp $(BLIB9) $(NCBI_LIBDIR)
+	$(RAN) $(NCBI_LIBDIR)/$(BLIB9)
+
+$(BLIB11) : $(OBJ11)
+	- rm -f $(BLIB11)
+	$(AR) cru $(BLIB11) $(OBJ11)
+	cp $(BLIB11) $(NCBI_LIBDIR)
+	$(RAN) $(NCBI_LIBDIR)/$(BLIB11)
+
+$(BLIB12) : $(OBJ12)
+	- rm -f $(BLIB12)
+	$(AR) cru $(BLIB12) $(OBJ12)
+	cp $(BLIB12) $(NCBI_LIBDIR)
+	$(RAN) $(NCBI_LIBDIR)/$(BLIB12)
+
+$(BLIB13) : $(OBJ13)
+	- rm -f $(BLIB13)
+	$(AR) cru $(BLIB13) $(OBJ13)
+	cp $(BLIB13) $(NCBI_LIBDIR)
+	$(RAN) $(NCBI_LIBDIR)/$(BLIB13)
+
+$(BLIB14) : $(OBJ14)
+	- rm -f $(BLIB14)
+	$(AR) cru $(BLIB14) $(OBJ14)
+	cp $(BLIB14) $(NCBI_LIBDIR)
+	$(RAN) $(NCBI_LIBDIR)/$(BLIB14)
+
+$(BLIB15) : $(OBJ15BASE) $(SRCRSAREF)
+	@echo "Warning: If you have not already done so, you may need to modify"
+	@echo "$(ENCRSRCDIR)/global.h for this compilation environment"
+	$(CC) $(CFLAGS) -I$(ENCRSRCDIR) -DPROTOTYPES $(SRCRSAREF)
+	- rm -f $(BLIB15)
+	$(AR) cru $(BLIB15) $(OBJ15)
+	cp $(BLIB15) $(NCBI_LIBDIR)
+	$(RAN) $(NCBI_LIBDIR)/$(BLIB15)
+
+
+## make applications
+##
+
+# Network entrez
+
+Nentrez : $(OBJENT) $(BNETCLILIB) $(BLIB7) $(BLIB8) netentcf
+	$(CC) -o Nentrez $(LDFLAGS) $(OBJENT) $(LIB4) $(LIB8) $(LIB7) $(NETCLILIB) $(LIB3) $(LIB2) $(LIB1) $(VIBLIBS) $(OTHERLIBS)
+
+# Network + CD ("combo") entrez
+
+Centrez : $(OBJENT) $(BNETCLILIB) $(BLIB7) $(BLIB9)
+	$(CC) -o Centrez $(LDFLAGS) $(OBJENT) $(LIB4) $(LIB9) $(LIB7) $(NETCLILIB) $(LIB3) $(LIB2) $(LIB1) $(VIBLIBS) $(OTHERLIBS)
+
+netentcf : netentcf.c
+	$(CC) -o netentcf -DNETWORK_SUPPORTED $(LDFLAGS) netentcf.c $(LIB4) $(LIB3) $(LIB7) $(NETCLILIB) $(LIB1) $(VIBLIBS) $(OTHERLIBS)
+
+netentcf.c : entrezcf.c
+	cp entrezcf.c netentcf.c
+
+
+# sample network services client (non-Vibrant)
+
+client : client.c $(BNETCLILIB)
+	$(CC) -o client $(LDFLAGS) client.c $(NETCLILIB) $(LIB1) $(OTHERLIBS)
+
+# sample network services client (Vibrant)
+
+vclient : vclient.c $(BNETCLILIB)
+	$(CC) -o vclient $(LDFLAGS) vclient.c $(LIB4) $(NETCLILIB) $(LIB1) $(VIBLIBS) $(OTHERLIBS)
+
+
+# network services dispatcher
+
+dispd : $(OBJDISPD) $(BNETCLILIB)
+	$(CC) -o dispd $(LDFLAGS) $(OBJDISPD) $(NETCLILIB) $(LIB1) $(OTHERLIBS)
+
+# network services server manager
+
+ncbid : $(OBJNCBID) $(BNETCLILIB)
+	$(CC) -o ncbid $(LDFLAGS) $(OBJNCBID) $(NETCLILIB) $(LIB1) $(OTHERLIBS)
+
+# generic service broker
+
+svbroker : $(OBJSVBROKER) $(BNETCLILIB)
+	$(CC) -o svbroker $(LDFLAGS) $(OBJSVBROKER) $(NETCLILIB) $(LIB1) $(OTHERLIBS)
+
+# encryption utilities
+
+encrutil : $(OBJENCRUTIL) $(BNETCLILIB)
+	$(CC) -o encrutil $(LDFLAGS) $(OBJENCRUTIL) $(NETCLILIB) $(LIB1) $(OTHERLIBS)
+
+# Entrez network server
+
+srventr : srventr.c $(BNETCLILIB) $(BLIB7)
+	$(CC) -o srventr $(LDFLAGS) srventr.c $(LIB5) $(LIB7) $(NETCLILIB) $(LIB3) $(LIB2) $(LIB1) $(OTHERLIBS)
+
+# sample network services server
+
+echoserv : echoserv.c $(BNETCLILIB)
+	$(CC) -o echoserv $(LDFLAGS) echoserv.c $(NETCLILIB) $(LIB1) $(OTHERLIBS)
+
+# demo program (network version of "getseq")
+
+netseq : getseq.c $(BNETCLILIB) $(BLIB7) $(BLIB8)
+	$(CC) -o netseq $(LDFLAGS) getseq.c $(LIB8) $(LIB7) $(NETCLILIB) $(LIB3) $(LIB2) $(LIB1) $(VIBLIBS) $(OTHERLIBS)
+
+# test client for the id0 network service
+
+id0test: id0test.c $(BLIB13)
+	$(CC) -g -o id0test $(LDFLAGS) id0test.c $(LIB13) $(NETCLILIB) $(LIB2) $(LIB1) $(OTHERLIBS)

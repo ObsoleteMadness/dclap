@@ -1,0 +1,63 @@
+--$Revision: 2.0 $
+--********************************************************************
+--
+--  CdRom Specific data structures
+--  James Ostell, 1991
+--
+--  uids are
+--      Medline uid
+--      Giim id
+--********************************************************************
+
+NCBI-CdRom DEFINITIONS ::=
+BEGIN
+
+EXPORTS Cdrom-inf;
+
+Cdrom-inf ::= SEQUENCE {
+    volume-label VisibleString ,            -- name of this cdrom
+    version INTEGER ,                       -- major version number of cdrom
+	issue INTEGER ,                         -- minor version number
+	format INTEGER ,                        -- version of cdrom format used
+	descr VisibleString ,                   -- a brief summary of contents
+	no-compression BOOLEAN ,                -- if TRUE, uncompressed database
+    huff-count INTEGER ,                    -- size of Huffman array
+    huff-left SEQUENCE OF INTEGER ,         -- "Left" vector for Huffman decode
+    huff-right SEQUENCE OF INTEGER ,        -- "Right" vector for Huffman decode
+    type-count INTEGER ,                    -- number of document types
+    type-names SEQUENCE OF VisibleString ,  -- names of document types
+    type-bucket-size INTEGER ,              -- size of buckets for *uid.lst
+    field-count INTEGER ,                   -- number of field types
+    field-names SEQUENCE OF VisibleString , -- names of field types
+    field-bucket-size INTEGER ,             -- size of buckets for *.lst
+    types SEQUENCE OF Typedata }              -- statistics by type
+
+Typedata ::= SEQUENCE {
+    num INTEGER ,         -- number of entries
+    num-uids INTEGER ,          -- number of uids (may be more than num)
+	minuid INTEGER ,            -- minimum uid used
+	maxuid INTEGER ,            -- maximum uid used
+    num-bucket INTEGER ,        -- number of buckets for *uid.lst
+    fields SEQUENCE OF Fielddata }  -- info by field within type
+
+Fielddata ::= SEQUENCE {
+    num-terms INTEGER ,         -- number of terms in this field
+    num-bucket INTEGER }        -- number of buckets for this field
+
+
+Docsum-set ::= SEQUENCE OF Docsum
+
+Doc-type ::= ENUMERATED {       -- allowed document types
+    medline (0) ,
+    aa (1) ,
+    nt (2) }
+                            -- short document summary
+Docsum ::= SEQUENCE {          
+    no-abstract BOOLEAN DEFAULT FALSE ,
+    translated-title BOOLEAN DEFAULT FALSE ,
+    no-authors BOOLEAN DEFAULT FALSE ,
+    caption VisibleString OPTIONAL ,
+    title VisibleString OPTIONAL }
+
+END
+

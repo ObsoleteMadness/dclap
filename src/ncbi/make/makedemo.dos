@@ -1,0 +1,624 @@
+#	makefile for ncbi demo programs
+#	Microsoft C large model under DOS [ "nmake MSC=1" ]
+#	Microsoft C medium model under Windows (requires Windows SDK)
+#		[ "nmake MSW=1" ]
+#	Borland C/C++ large model under DOS [ "make -DBOR" ]
+#   Borland C/C++ medium model under MSWindows [ "make -DBWN" ]
+#   
+#   Microsoft C medium model uses the -AM flag instead of -AL,
+#       and the mlibcew library instead of llibcew
+#   Borland C/C++ medium model uses the -mm flag instead of -ml,
+#       the C0Wm library instead of C0Wl, CWm instead of CWl,
+#       and mathwm (or mathm) instead of mathwl (or mathl)
+#   
+#   (The /30 flag in rc is only if you are using the Borland (3.0)
+#   compiler with the Microsoft (3.1) rc.)
+#
+#   Note:  Both the Borland and Microsoft commands below make DOS versions
+#   that overlay code.  This greatly reduces the memory requirements
+#   of the executable.
+#   
+
+# flags for compiling and loading
+
+# Microsoft C under MSDOS
+!ifdef MSC
+GOTONE = 1
+SUFFIXLCL = msc
+SUFFIXENV = dos
+CC = cl
+!ifdef DBUG
+DFLAGS = -Od -Zi -D_DEBUG
+LFLAGS = /NOE /NOD /ONERROR:NOEXE /CO
+!else
+DFLAGS = -Os
+LFLAGS = /NOE /NOD /ONERROR:NOEXE
+!endif
+CFLAGS1 = -c -AL -G2s -Gt128 -W3 $(DFLAGS)
+LDFLAGS1 = -AL -G2s -Gt128 -W3 -F 1000 -Fm $(DFLAGS)
+!endif
+
+# Microsoft C under MS Windows
+!ifdef MSW
+GOTONE = 1
+MSWINDOWS = 1
+SUFFIXLCL = msw
+SUFFIXENV = msw
+CC = cl
+!ifdef DBUG
+DFLAGS = -Od -Zi -D_DEBUG
+LFLAGS = /NOE /NOD /ONERROR:NOEXE /CO
+!else
+DFLAGS = -Oselg
+LFLAGS = /NOE /NOD /ONERROR:NOEXE
+!endif
+CFLAGS1 = -c -AL -G2s -GA -Gt128 -W3 $(DFLAGS)
+LDFLAGS1 = -AL -G2s -GA -Gt128 -W3 $(DFLAGS)
+guilibs= commdlg llibcew libw oldnames
+!endif
+
+# Borland C++
+!ifdef BOR
+GOTONE = 1
+BORLAND = 1
+SUFFIXLCL = bor
+SUFFIXENV = dos
+CC = bcc
+CFLAGS1 = -c -ml -2 -O -Yo
+LDFLAGS1 = -ml -2 -O
+!endif
+
+# Borland C++ under MS Windows
+!ifdef BWN
+GOTONE = 1
+BORLAND = 1
+MSWINDOWS = 1
+SUFFIXLCL = bwn
+SUFFIXENV = msw
+CC = bcc
+CFLAGS1 = -c -ml -2 -O -W -D_WINDOWS
+LDFLAGS1 = -ml -2 -O -W -D_WINDOWS
+!endif
+
+!ifndef GOTONE
+!error PLATFORM NOT DEFINED!! [ MSC, MSW, BOR, BWN ]
+!endif
+
+ASNDIR = asnload
+LIB1 = ncbi.lib
+LIB2 = ncbiobj.lib
+LIB3 = ncbicdr.lib
+LIB4 = vibrant.lib
+LIB5 = ncbiacc.lib
+INCPATH = ..\include
+LIBPATH = ..\lib
+CFLAGS = $(CFLAGS1) -I$(INCPATH)
+LDFLAGS = $(LDFLAGS1) -I$(INCPATH)
+
+##
+## some things to make
+##
+# sources needed for versions of demo programs
+
+EXE1 = testcore.exe \
+    getmesh.exe indexpub.exe getpub.exe testobj.exe seqtest.exe \
+	dosimple.exe asn2gnbk.exe asn2rpt.exe getseq.exe \
+	getfeat.exe checksub.exe
+
+OBJENT =	avail.obj browser.obj chosen.obj fetch.obj report.obj
+
+## Implicit actions
+##
+
+.c.obj:
+	$(CC) $(CFLAGS) $*.c
+
+## All things to make
+##
+all : copy nocopy
+!ifdef MSWINDOWS
+nocopy : $(EXE1) entrez.exe entrezcf.exe
+!else
+nocopy : $(EXE1)
+!endif
+
+## To clean out the directory without removing make
+##
+clean :
+	del *.c
+	del *.h
+	del *.obj
+	del *.lib
+	del *.rsp
+	del *.def
+	del *.rc
+
+## get all the source files
+##
+
+copy :
+!ifndef NC
+	copy ..\demo\*.* .
+!ifdef MSWINDOWS
+	copy ..\browser\*.* .
+	copy ..\make\*.rsp
+	copy ..\link\mswin\*.*
+!endif
+!ifdef MSC
+	copy ..\link\msdos\*.*
+!endif
+!endif
+!ifdef NC
+	echo no copy
+!endif
+
+## make demo applications
+##
+
+# testcore
+
+!ifdef MSWINDOWS
+testcore.obj : testcore.c
+	$(CC) $(CFLAGS) testcore.c
+
+testcore.res : testcore.rc ncbilogo.ico
+    rc -r -I..\include testcore.rc
+
+testcore.exe : testcore.obj testcore.res
+!ifdef BORLAND
+	tlink /Tw C0Wl testcore.obj, testcore.exe,, IMPORT $(LIBPATH)\$(LIB4) $(LIBPATH)\$(LIB1) CWl mathwl, testcore.def
+	rc /30 testcore.res testcore.exe
+!else
+	link  @<<
+testcore.obj
+testcore/align:16
+
+$(LFLAGS) $(LIB4) $(LIB1) $(guilibs)
+testcore.def
+<<
+	rc testcore.res testcore.exe
+!endif
+!else
+testcore.exe : testcore.c
+	$(CC) $(LDFLAGS) testcore.c $(LIBPATH)\$(LIB1) $(OTHERLIBS)
+!endif
+
+
+# getmesh
+
+!ifdef MSWINDOWS
+getmesh.obj : getmesh.c
+	$(CC) $(CFLAGS) getmesh.c
+
+getmesh.res : getmesh.rc
+    rc -r -I..\include getmesh.rc
+
+getmesh.exe : getmesh.obj getmesh.res
+!ifdef BORLAND
+	tlink /Tw C0Wl getmesh.obj, getmesh.exe,, IMPORT $(LIBPATH)\$(LIB4) $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1) CWl mathwl, getmesh.def
+	rc -K /30 getmesh.res getmesh.exe
+!else
+	link  @<<
+getmesh.obj
+getmesh/align:16
+
+$(LFLAGS) $(LIB4) $(LIB2) $(LIB1) $(guilibs)
+getmesh.def
+<<
+	rc -K getmesh.res getmesh.exe
+!endif
+!else
+getmesh.exe : getmesh.c
+	$(CC) $(LDFLAGS) getmesh.c $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1)
+!endif
+
+
+# indexpub
+
+!ifdef MSWINDOWS
+indexpub.obj : indexpub.c
+	$(CC) $(CFLAGS) indexpub.c
+
+indexpub.res : indexpub.rc
+    rc -r -I..\include indexpub.rc
+
+indexpub.exe : indexpub.obj indexpub.res
+!ifdef BORLAND
+	tlink /Tw C0Wl indexpub.obj, indexpub.exe,, IMPORT $(LIBPATH)\$(LIB4) $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1) CWl mathwl, indexpub.def
+	rc -K /30 indexpub.res indexpub.exe
+!else
+	link  @<<
+indexpub.obj
+indexpub/align:16
+
+$(LFLAGS) $(LIB4) $(LIB2) $(LIB1) $(guilibs)
+indexpub.def
+<<
+	rc -K indexpub.res indexpub.exe
+!endif
+!else
+indexpub.exe : indexpub.c
+	$(CC) $(LDFLAGS) indexpub.c $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1)
+!endif
+
+
+# getpub
+
+!ifdef MSWINDOWS
+getpub.obj : getpub.c
+	$(CC) $(CFLAGS) getpub.c
+
+getpub.res : getpub.rc
+    rc -r -I..\include getpub.rc
+
+getpub.exe : getpub.obj getpub.res
+!ifdef BORLAND
+	tlink /Tw C0Wl getpub.obj, getpub.exe,, IMPORT $(LIBPATH)\$(LIB4) $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1) CWl mathwl, getpub.def
+	rc -K /30 getpub.res getpub.exe
+!else
+	link  @<<
+getpub.obj
+getpub/align:16
+
+$(LFLAGS) $(LIB4) $(LIB2) $(LIB1) $(guilibs)
+getpub.def
+<<
+	rc -K getpub.res getpub.exe
+!endif
+!else
+getpub.exe : getpub.c
+	$(CC) $(LDFLAGS) getpub.c $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1)
+!endif
+
+
+# dosimple
+
+!ifdef MSWINDOWS
+dosimple.obj : dosimple.c
+	$(CC) $(CFLAGS) dosimple.c
+
+dosimple.res : dosimple.rc
+    rc -r -I..\include dosimple.rc
+
+dosimple.exe : dosimple.obj dosimple.res
+!ifdef BORLAND
+	tlink /Tw C0Wl dosimple.obj, dosimple.exe,, IMPORT $(LIBPATH)\$(LIB4) $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1) CWl mathwl, dosimple.def
+	rc -K /30 dosimple.res dosimple.exe
+!else
+	link  @<<
+dosimple.obj
+dosimple/align:16
+
+$(LFLAGS) $(LIB4) $(LIB2) $(LIB1) $(guilibs)
+dosimple.def
+<<
+	rc -K dosimple.res dosimple.exe
+!endif
+!else
+dosimple.exe : dosimple.c
+	$(CC) $(LDFLAGS) dosimple.c $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1)
+!endif
+
+
+# testobj
+
+!ifdef MSWINDOWS
+testobj.obj : testobj.c
+	$(CC) $(CFLAGS) testobj.c
+
+testobj.res : testobj.rc
+    rc -r -I..\include testobj.rc
+
+testobj.exe : testobj.obj testobj.res
+!ifdef BORLAND
+	tlink /Tw C0Wl testobj.obj, testobj.exe,, IMPORT $(LIBPATH)\$(LIB4) $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1) CWl mathwl, testobj.def
+	rc -K /30 testobj.res testobj.exe
+!else
+	link  @<<
+testobj.obj
+testobj/align:16
+
+$(LFLAGS) $(LIB4) $(LIB2) $(LIB1) $(guilibs)
+testobj.def
+<<
+	rc -K testobj.res testobj.exe
+!endif
+!else
+testobj.exe : testobj.c
+	$(CC) $(LDFLAGS) testobj.c $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1)
+!endif
+
+
+# seqtest
+
+!ifdef MSWINDOWS
+seqtest.obj : seqtest.c
+	$(CC) $(CFLAGS) seqtest.c
+
+seqtest.res : seqtest.rc
+    rc -r -I..\include seqtest.rc
+
+seqtest.exe : seqtest.obj seqtest.res
+!ifdef BORLAND
+	tlink /Tw C0Wl seqtest.obj, seqtest.exe,, IMPORT $(LIBPATH)\$(LIB4) $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1) CWl mathwl, seqtest.def
+	rc -K /30 seqtest.res seqtest.exe
+!else
+	link  @<<
+seqtest.obj
+seqtest/align:16
+
+$(LFLAGS) $(LIB4) $(LIB2) $(LIB1) $(guilibs)
+seqtest.def
+<<
+	rc -K seqtest.res seqtest.exe
+!endif
+!else
+!ifdef BORLAND
+seqtest.exe : seqtest.c
+	$(CC) $(CFLAGS) seqtest.c
+	tlink C0l /o seqtest.obj, seqtest.exe,, /o $(LIBPATH)\$(LIB2) /o- $(LIBPATH)\$(LIB1) OVERLAY emu mathl cl,
+!else
+seqtest.exe : seqtest.c
+	$(CC) $(LDFLAGS) seqtest.c seqtest.def $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1)
+!endif
+!endif
+
+
+# asn2gnbk
+
+!ifdef MSWINDOWS
+asn2gnbk.obj : asn2gnbk.c
+	$(CC) $(CFLAGS) asn2gnbk.c
+
+asn2gnbk.res : asn2gnbk.rc
+    rc -r -I..\include asn2gnbk.rc
+
+asn2gnbk.exe : asn2gnbk.obj asn2gnbk.res
+!ifdef BORLAND
+	tlink /Tw C0Wl asn2gnbk.obj, asn2gnbk.exe,, IMPORT $(LIBPATH)\$(LIB4) $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1) CWl mathwl, asn2gnbk.def
+	rc -K /30 asn2gnbk.res asn2gnbk.exe
+!else
+	link  @<<
+asn2gnbk.obj
+asn2gnbk/align:16
+
+$(LFLAGS) $(LIB4) $(LIB2) $(LIB1) $(guilibs)
+asn2gnbk.def
+<<
+	rc -K asn2gnbk.res asn2gnbk.exe
+!endif
+!else
+!ifdef BORLAND
+asn2gnbk.exe : asn2gnbk.c
+	$(CC) $(CFLAGS) asn2gnbk.c
+	tlink C0l /o asn2gnbk.obj, asn2gnbk.exe,, /o $(LIBPATH)\$(LIB2) /o- $(LIBPATH)\$(LIB1) OVERLAY emu mathl cl,
+!else
+asn2gnbk.exe : asn2gnbk.c
+	$(CC) $(LDFLAGS) asn2gnbk.c asn2gnbk.def $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1)
+!endif
+!endif
+
+
+# asn2rpt
+
+!ifdef MSWINDOWS
+asn2rpt.obj : asn2rpt.c
+	$(CC) $(CFLAGS) asn2rpt.c
+
+asn2rpt.res : asn2rpt.rc
+    rc -r -I..\include asn2rpt.rc
+
+asn2rpt.exe : asn2rpt.obj asn2rpt.res
+!ifdef BORLAND
+	tlink /Tw C0Wl asn2rpt.obj, asn2rpt.exe,, IMPORT $(LIBPATH)\$(LIB4) $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1) CWl mathwl, asn2rpt.def
+	rc -K /30 asn2rpt.res asn2rpt.exe
+!else
+	link  @<<
+asn2rpt.obj
+asn2rpt/align:16
+
+$(LFLAGS) $(LIB4) $(LIB2) $(LIB1) $(guilibs)
+asn2rpt.def
+<<
+	rc -K asn2rpt.res asn2rpt.exe
+!endif
+!else
+!ifdef BORLAND
+asn2rpt.exe : asn2rpt.c
+	$(CC) $(CFLAGS) asn2rpt.c
+	tlink C0l /o asn2rpt.obj, asn2rpt.exe,, /o $(LIBPATH)\$(LIB2) /o- $(LIBPATH)\$(LIB1) OVERLAY emu mathl cl,
+!else
+asn2rpt.exe : asn2rpt.c
+	$(CC) $(LDFLAGS) asn2rpt.c asn2rpt.def $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1)
+!endif
+!endif
+
+
+# getseq
+
+!ifdef MSWINDOWS
+getseq.obj : getseq.c
+	$(CC) $(CFLAGS) getseq.c
+
+getseq.res : getseq.rc
+    rc -r -I..\include getseq.rc
+
+getseq.exe : getseq.obj getseq.res
+!ifdef BORLAND
+	tlink @getseq.rsp
+	rc -K /30 getseq.res getseq.exe
+!else
+	link  @<<
+getseq.obj
+getseq/align:16
+
+$(LFLAGS) $(LIB4) $(LIB5) $(LIB3) $(LIB2) $(LIB1) $(guilibs)
+getseq.def
+<<
+	rc -K getseq.res getseq.exe
+!endif
+!else
+!ifdef BORLAND
+getseq.exe : getseq.c
+	$(CC) $(CFLAGS) getseq.c
+	tlink C0l /o getseq.obj, getseq.exe,, /o $(LIBPATH)\$(LIB5) $(LIBPATH)\$(LIB3) $(LIBPATH)\$(LIB2) /o- $(LIBPATH)\$(LIB1) OVERLAY emu mathl cl,
+!else
+getseq.exe : getseq.c
+	$(CC) $(CFLAGS) getseq.c
+	link getseq.obj,,,$(LIBPATH)\$(LIB5) $(LIBPATH)\$(LIB3) $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1),getseq.def
+!endif
+!endif
+
+# getfeat
+
+!ifdef MSWINDOWS
+getfeat.obj : getfeat.c
+	$(CC) $(CFLAGS) getfeat.c
+
+getfeat.res : getfeat.rc
+    rc -r -I..\include getfeat.rc
+
+getfeat.exe : getfeat.obj getfeat.res
+!ifdef BORLAND
+	tlink @getfeat.rsp
+	rc -K /30 getfeat.res getfeat.exe
+!else
+	link  @<<
+getfeat.obj
+getfeat/align:16
+
+$(LFLAGS) $(LIB4) $(LIB5) $(LIB3) $(LIB2) $(LIB1) $(guilibs)
+getfeat.def
+<<
+	rc -K getfeat.res getfeat.exe
+!endif
+!else
+!ifdef BORLAND
+getfeat.exe : getfeat.c
+	$(CC) $(CFLAGS) getfeat.c
+	tlink C0l /o getfeat.obj, getfeat.exe,, /o $(LIBPATH)\$(LIB5) $(LIBPATH)\$(LIB3) $(LIBPATH)\$(LIB2) /o- $(LIBPATH)\$(LIB1) OVERLAY emu mathl cl,
+!else
+getfeat.exe : getfeat.c
+	$(CC) $(CFLAGS) getfeat.c
+	link getfeat.obj,,,$(LIBPATH)\$(LIB5) $(LIBPATH)\$(LIB3) $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1),getfeat.def
+!endif
+!endif
+
+
+# checksub
+
+!ifdef MSWINDOWS
+checksub.obj : checksub.c
+	$(CC) $(CFLAGS) checksub.c
+
+checksub.res : checksub.rc
+    rc -r -I..\include checksub.rc
+
+checksub.exe : checksub.obj checksub.res
+!ifdef BORLAND
+	tlink /Tw C0Wl checksub.obj, checksub.exe,, IMPORT $(LIBPATH)\$(LIB4) $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1) CWl mathwl, checksub.def
+	rc -K /30 checksub.res checksub.exe
+!else
+	link  @<<
+checksub.obj
+checksub/align:16
+
+$(LFLAGS) $(LIB4) $(LIB2) $(LIB1) $(guilibs)
+checksub.def
+<<
+	rc -K checksub.res checksub.exe
+!endif
+!else
+!ifdef BORLAND
+checksub.exe : checksub.c
+	$(CC) $(CFLAGS) checksub.c
+	tlink C0l /o checksub.obj, checksub.exe,, /o $(LIBPATH)\$(LIB2) /o- $(LIBPATH)\$(LIB1) OVERLAY emu mathl cl,
+!else
+checksub.exe : checksub.c
+	$(CC) $(LDFLAGS) checksub.c checksub.def $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1)
+!endif
+!endif
+
+# entrez
+
+!ifdef MSWINDOWS
+entrez.res : entrez.rc ncbilogo.ico
+    rc -r -I..\include entrez.rc
+
+entrez.exe : $(OBJENT) entrez.res
+!ifdef BORLAND
+	tlink  @entrez.rsp
+	rc /30 entrez.res entrez.exe
+!else
+	link  @<<
+$(OBJENT)
+entrez/align:16
+entrez/map
+$(LFLAGS) $(LIB4) $(LIB5) $(LIB3) $(LIB2) $(LIB1) $(guilibs)
+entrez.def
+<<
+	rc entrez.res entrez.exe
+!endif
+
+!endif
+
+# asndhuff
+
+!ifdef MSWINDOWS
+asndhuff.obj : asndhuff.c
+	$(CC) $(CFLAGS) asndhuff.c
+
+asndhuff.res : asndhuff.rc
+    rc -r -I..\include asndhuff.rc
+
+asndhuff.exe : asndhuff.obj asndhuff.res
+!ifdef BORLAND
+	tlink @asndhuff.rsp
+	rc -K /30 asndhuff.res asndhuff.exe
+!else
+	link  @<<
+asndhuff.obj
+asndhuff/align:16
+
+$(LFLAGS) $(LIB4) $(LIB5) $(LIB3) $(LIB2) $(LIB1) $(guilibs)
+asndhuff.def
+<<
+	rc -K asndhuff.res asndhuff.exe
+!endif
+!else
+!ifdef BORLAND
+asndhuff.exe : asndhuff.c
+	$(CC) $(CFLAGS) asndhuff.c
+	tlink C0l /o asndhuff.obj, asndhuff.exe,, /o $(LIBPATH)\$(LIB3) $(LIBPATH)\$(LIB2) /o- $(LIBPATH)\$(LIB1) OVERLAY emu mathl cl,
+!else
+asndhuff.exe : asndhuff.c
+	$(CC) $(LDFLAGS) asndhuff.c asndhuff.def $(LIBPATH)\$(LIB3) $(LIBPATH)\$(LIB2) $(LIBPATH)\$(LIB1)
+!endif
+!endif
+
+
+# entrezcf
+
+!ifdef MSWINDOWS
+entrezcf.obj : entrezcf.c
+	$(CC) $(CFLAGS) entrezcf.c
+
+entrezcf.res : entrezcf.rc
+    rc -r -I..\include entrezcf.rc
+
+entrezcf.exe : entrezcf.obj entrezcf.res
+!ifdef BORLAND
+	tlink @entrezcf.rsp
+	rc -K /30 entrezcf.res entrezcf.exe
+!else
+	link  @<<
+entrezcf.obj
+entrezcf/align:16
+
+$(LFLAGS) $(LIB4) $(LIB3) $(LIB1) $(guilibs)
+entrezcf.def
+<<
+	rc -K entrezcf.res entrezcf.exe
+!endif
+!endif
+

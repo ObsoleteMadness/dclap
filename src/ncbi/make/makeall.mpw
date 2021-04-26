@@ -1,0 +1,301 @@
+#   File:       makeall.make
+#   Target:     asntool
+#   Created:    Monday, June 22, 1992 1:18:06 PM
+
+CC = C
+CFLAGS = -model farData -r -w -i "{MPW}"ncbi:include: -o "{MPW}"ncbi:build:
+LFLAGS = ¶
+		-model far ¶
+		"{CLibraries}"CSANELib.o ¶
+		"{CLibraries}"Math.o ¶
+		#"{CLibraries}"Complex.o ¶
+		"{CLibraries}"StdClib.o ¶
+		"{Libraries}"Runtime.o ¶
+		"{Libraries}"Interface.o
+
+LIB1 = "{MPW}"ncbi:lib:libncbi.o
+LIB2 = "{MPW}"ncbi:lib:libncbiobj.o
+LIB3 = "{MPW}"ncbi:lib:libncbicdr.o
+LIB4 = "{MPW}"ncbi:lib:libvibrant.o
+LIB5 = "{MPW}"ncbi:lib:libncbiacc.o
+
+OBJ1 = ¶
+		"{MPW}"ncbi:build:ncbibs.c.o ¶
+		"{MPW}"ncbi:build:ncbienv.c.o ¶
+		"{MPW}"ncbi:build:ncbierr.c.o ¶
+		"{MPW}"ncbi:build:ncbifile.c.o ¶
+		"{MPW}"ncbi:build:ncbimath.c.o ¶
+		"{MPW}"ncbi:build:ncbimem.c.o ¶
+		"{MPW}"ncbi:build:ncbimisc.c.o ¶
+		"{MPW}"ncbi:build:ncbimsg.c.o ¶
+		"{MPW}"ncbi:build:ncbiprop.c.o ¶
+		"{MPW}"ncbi:build:ncbisgml.c.o ¶
+		"{MPW}"ncbi:build:ncbistr.c.o ¶
+		"{MPW}"ncbi:build:ncbitime.c.o ¶
+		"{MPW}"ncbi:build:asndebin.c.o ¶
+		"{MPW}"ncbi:build:asnenbin.c.o ¶
+		"{MPW}"ncbi:build:asngen.c.o ¶
+		"{MPW}"ncbi:build:asnio.c.o ¶
+		"{MPW}"ncbi:build:asnlex.c.o ¶
+		"{MPW}"ncbi:build:asnlext.c.o ¶
+		"{MPW}"ncbi:build:asnout.c.o ¶
+		"{MPW}"ncbi:build:asnprint.c.o ¶
+		"{MPW}"ncbi:build:asntypes.c.o
+
+OBJ2 = ¶
+		"{MPW}"ncbi:build:objacces.c.o ¶
+		"{MPW}"ncbi:build:objalign.c.o ¶
+		"{MPW}"ncbi:build:objall.c.o ¶
+		"{MPW}"ncbi:build:objbibli.c.o ¶
+		"{MPW}"ncbi:build:objfeat.c.o ¶
+		"{MPW}"ncbi:build:objgen.c.o ¶
+		"{MPW}"ncbi:build:objloc.c.o ¶
+		"{MPW}"ncbi:build:objmedli.c.o ¶
+		"{MPW}"ncbi:build:objpub.c.o ¶
+		"{MPW}"ncbi:build:objres.c.o ¶
+		"{MPW}"ncbi:build:objseq.c.o ¶
+		"{MPW}"ncbi:build:objcode.c.o ¶
+		"{MPW}"ncbi:build:objblock.c.o ¶
+		"{MPW}"ncbi:build:objsset.c.o ¶
+		"{MPW}"ncbi:build:objsub.c.o ¶
+		"{MPW}"ncbi:build:objprt.c.o ¶
+		"{MPW}"ncbi:build:seqport.c.o ¶
+		"{MPW}"ncbi:build:sequtil.c.o ¶
+		"{MPW}"ncbi:build:prtutil.c.o ¶
+		"{MPW}"ncbi:build:subutil.c.o ¶
+		"{MPW}"ncbi:build:edutil.c.o ¶
+		"{MPW}"ncbi:build:valid.c.o ¶
+		"{MPW}"ncbi:build:simple.c.o ¶
+		"{MPW}"ncbi:build:tofasta.c.o ¶
+		"{MPW}"ncbi:build:tofile.c.o ¶
+		"{MPW}"ncbi:build:tognbk1.c.o ¶
+		"{MPW}"ncbi:build:tognbk2.c.o ¶
+		"{MPW}"ncbi:build:tognbk3.c.o ¶
+		"{MPW}"ncbi:build:tomedlin.c.o ¶
+		"{MPW}"ncbi:build:toreport.c.o
+
+OBJ3 = ¶
+		"{MPW}"ncbi:build:cdentrez.c.o ¶
+		"{MPW}"ncbi:build:cdromlib.c.o ¶
+		"{MPW}"ncbi:build:casn.c.o ¶
+		"{MPW}"ncbi:build:cdconfig.c.o
+
+OBJ4 = ¶
+		"{MPW}"ncbi:build:vibbutns.c.o ¶
+		"{MPW}"ncbi:build:vibextra.c.o ¶
+		"{MPW}"ncbi:build:vibfiles.c.o ¶
+		"{MPW}"ncbi:build:vibgroup.c.o ¶
+		"{MPW}"ncbi:build:viblists.c.o ¶
+		"{MPW}"ncbi:build:vibmenus.c.o ¶
+		"{MPW}"ncbi:build:vibprmpt.c.o ¶
+		"{MPW}"ncbi:build:vibsbars.c.o ¶
+		"{MPW}"ncbi:build:vibslate.c.o ¶
+		"{MPW}"ncbi:build:vibtexts.c.o ¶
+		"{MPW}"ncbi:build:vibutils.c.o ¶
+		"{MPW}"ncbi:build:vibwndws.c.o ¶
+		"{MPW}"ncbi:build:ncbidraw.c.o ¶
+		"{MPW}"ncbi:build:drawing.c.o ¶
+		"{MPW}"ncbi:build:mapping.c.o ¶
+		"{MPW}"ncbi:build:picture.c.o ¶
+		"{MPW}"ncbi:build:viewer.c.o ¶
+		"{MPW}"ncbi:build:document.c.o ¶
+		"{MPW}"ncbi:build:palette.c.o ¶
+		"{MPW}"ncbi:build:table.c.o
+
+OBJ5 = ¶
+		"{MPW}"ncbi:build:accentr.c.o ¶
+		"{MPW}"ncbi:build:accutils.c.o
+
+"{MPW}"ncbi:include:ncbilcl.h ÄÄ "{MPW}"ncbi:corelib:ncbilcl.mpw
+	Duplicate "{MPW}"ncbi:corelib:ncbilcl.mpw "{MPW}"ncbi:include:ncbilcl.h
+	Duplicate "{MPW}"ncbi:corelib:Å.h "{MPW}"ncbi:include:
+	Duplicate "{MPW}"ncbi:asnlib:Å.h "{MPW}"ncbi:include:
+	Duplicate "{MPW}"ncbi:asnload:Å.h "{MPW}"ncbi:include:
+	Duplicate "{MPW}"ncbi:object:Å.h "{MPW}"ncbi:include:
+	Duplicate "{MPW}"ncbi:cdromlib:Å.h "{MPW}"ncbi:include:
+	Duplicate "{MPW}"ncbi:api:Å.h "{MPW}"ncbi:include:
+	Duplicate "{MPW}"ncbi:vibrant:Å.h "{MPW}"ncbi:include:
+
+makeall ÄÄ "{MPW}"ncbi:include:ncbilcl.h {LIB1} {LIB2} {LIB3} {LIB4} {LIB5} asntool
+
+{LIB1} ÄÄ {OBJ1}
+	Lib {OBJ1}Å -o {LIB1}
+
+{LIB2} ÄÄ {OBJ2}
+	Lib {OBJ2}Å -o {LIB2}
+
+{LIB3} ÄÄ {OBJ3}
+	Lib {OBJ3}Å -o {LIB3}
+
+{LIB4} ÄÄ {OBJ4}
+	Lib {OBJ4}Å -o {LIB4}
+
+{LIB5} ÄÄ {OBJ5}
+	Lib {OBJ5}Å -o {LIB5}
+
+asntool ÄÄ "{MPW}"ncbi:link:macmpw:asntool.r
+	Rez "{MPW}"ncbi:link:macmpw:asntool.r -append -o asntool
+
+asntool ÄÄ "{MPW}"ncbi:include:ncbilcl.h "{MPW}"ncbi:build:asntool.c.o
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:asntool.c.o ¶
+		{LIB4} {LIB1} ¶
+		{LFLAGS} ¶
+		-o asntool
+
+"{MPW}"ncbi:build:asntool.c.o Ä "{MPW}"ncbi:asnlib:asntool.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:asnlib:asntool.c
+"{MPW}"ncbi:build:ncbibs.c.o Ä "{MPW}"ncbi:corelib:ncbibs.c
+	{CC} {CFLAGS} -s CorSegA  "{MPW}"ncbi:corelib:ncbibs.c
+"{MPW}"ncbi:build:ncbienv.c.o Ä "{MPW}"ncbi:corelib:ncbienv.c
+	{CC} {CFLAGS} -s CorSegB  "{MPW}"ncbi:corelib:ncbienv.c
+"{MPW}"ncbi:build:ncbierr.c.o Ä "{MPW}"ncbi:corelib:ncbierr.c
+	{CC} {CFLAGS} -s CorSegB  "{MPW}"ncbi:corelib:ncbierr.c
+"{MPW}"ncbi:build:ncbifile.c.o Ä "{MPW}"ncbi:corelib:ncbifile.c
+	{CC} {CFLAGS} -s CorSegA  "{MPW}"ncbi:corelib:ncbifile.c
+"{MPW}"ncbi:build:ncbimath.c.o Ä "{MPW}"ncbi:corelib:ncbimath.c
+	{CC} {CFLAGS} -s CorSegB  "{MPW}"ncbi:corelib:ncbimath.c
+"{MPW}"ncbi:build:ncbimem.c.o Ä "{MPW}"ncbi:corelib:ncbimem.c
+	{CC} {CFLAGS} -s CorSegA  "{MPW}"ncbi:corelib:ncbimem.c
+"{MPW}"ncbi:build:ncbimisc.c.o Ä "{MPW}"ncbi:corelib:ncbimisc.c
+	{CC} {CFLAGS} -s CorSegA  "{MPW}"ncbi:corelib:ncbimisc.c
+"{MPW}"ncbi:build:ncbimsg.c.o Ä "{MPW}"ncbi:corelib:ncbimsg.c
+	{CC} {CFLAGS} -s CorSegA  "{MPW}"ncbi:corelib:ncbimsg.c
+"{MPW}"ncbi:build:ncbiprop.c.o Ä "{MPW}"ncbi:corelib:ncbiprop.c
+	{CC} {CFLAGS} -s CorSegA  "{MPW}"ncbi:corelib:ncbiprop.c
+"{MPW}"ncbi:build:ncbisgml.c.o Ä "{MPW}"ncbi:corelib:ncbisgml.c
+	{CC} {CFLAGS} -s CorSegA  "{MPW}"ncbi:corelib:ncbisgml.c
+"{MPW}"ncbi:build:ncbistr.c.o Ä "{MPW}"ncbi:corelib:ncbistr.c
+	{CC} {CFLAGS} -s CorSegA  "{MPW}"ncbi:corelib:ncbistr.c
+"{MPW}"ncbi:build:ncbitime.c.o Ä "{MPW}"ncbi:corelib:ncbitime.c
+	{CC} {CFLAGS} -s CorSegA  "{MPW}"ncbi:corelib:ncbitime.c
+"{MPW}"ncbi:build:asndebin.c.o Ä "{MPW}"ncbi:asnlib:asndebin.c
+	{CC} {CFLAGS} -s AsnSegA  "{MPW}"ncbi:asnlib:asndebin.c
+"{MPW}"ncbi:build:asnenbin.c.o Ä "{MPW}"ncbi:asnlib:asnenbin.c
+	{CC} {CFLAGS} -s AsnSegA  "{MPW}"ncbi:asnlib:asnenbin.c
+"{MPW}"ncbi:build:asngen.c.o Ä "{MPW}"ncbi:asnlib:asngen.c
+	{CC} {CFLAGS} -s AsnSegA  "{MPW}"ncbi:asnlib:asngen.c
+"{MPW}"ncbi:build:asnio.c.o Ä "{MPW}"ncbi:asnlib:asnio.c
+	{CC} {CFLAGS} -s AsnSegA  "{MPW}"ncbi:asnlib:asnio.c
+"{MPW}"ncbi:build:asnlex.c.o Ä "{MPW}"ncbi:asnlib:asnlex.c
+	{CC} {CFLAGS} -s AsnSegA  "{MPW}"ncbi:asnlib:asnlex.c
+"{MPW}"ncbi:build:asnlext.c.o Ä "{MPW}"ncbi:asnlib:asnlext.c
+	{CC} {CFLAGS} -s AsnSegB  "{MPW}"ncbi:asnlib:asnlext.c
+"{MPW}"ncbi:build:asnout.c.o Ä "{MPW}"ncbi:asnlib:asnout.c
+	{CC} {CFLAGS} -s AsnSegB  "{MPW}"ncbi:asnlib:asnout.c
+"{MPW}"ncbi:build:asnprint.c.o Ä "{MPW}"ncbi:asnlib:asnprint.c
+	{CC} {CFLAGS} -s AsnSegB  "{MPW}"ncbi:asnlib:asnprint.c
+"{MPW}"ncbi:build:asntypes.c.o Ä "{MPW}"ncbi:asnlib:asntypes.c
+	{CC} {CFLAGS} -s AsnSegB  "{MPW}"ncbi:asnlib:asntypes.c
+"{MPW}"ncbi:build:objacces.c.o Ä "{MPW}"ncbi:object:objacces.c
+	{CC} {CFLAGS} -s ObjSegB  "{MPW}"ncbi:object:objacces.c
+"{MPW}"ncbi:build:objalign.c.o Ä "{MPW}"ncbi:object:objalign.c
+	{CC} {CFLAGS} -s ObjSegA  "{MPW}"ncbi:object:objalign.c
+"{MPW}"ncbi:build:objall.c.o Ä "{MPW}"ncbi:object:objall.c
+	{CC} {CFLAGS} -s ObjSegE  "{MPW}"ncbi:object:objall.c
+"{MPW}"ncbi:build:objbibli.c.o Ä "{MPW}"ncbi:object:objbibli.c
+	{CC} {CFLAGS} -s ObjSegA  "{MPW}"ncbi:object:objbibli.c
+"{MPW}"ncbi:build:objblock.c.o Ä "{MPW}"ncbi:object:objblock.c
+	{CC} {CFLAGS} -s ObjSegD  "{MPW}"ncbi:object:objblock.c
+"{MPW}"ncbi:build:objcode.c.o Ä "{MPW}"ncbi:object:objcode.c
+	{CC} {CFLAGS} -s ObjSegC  "{MPW}"ncbi:object:objcode.c
+"{MPW}"ncbi:build:objfeat.c.o Ä "{MPW}"ncbi:object:objfeat.c
+	{CC} {CFLAGS} -s ObjSegB  "{MPW}"ncbi:object:objfeat.c
+"{MPW}"ncbi:build:objgen.c.o Ä "{MPW}"ncbi:object:objgen.c
+	{CC} {CFLAGS} -s ObjSegE  "{MPW}"ncbi:object:objgen.c
+"{MPW}"ncbi:build:objloc.c.o Ä "{MPW}"ncbi:object:objloc.c
+	{CC} {CFLAGS} -s ObjSegC  "{MPW}"ncbi:object:objloc.c
+"{MPW}"ncbi:build:objmedli.c.o Ä "{MPW}"ncbi:object:objmedli.c
+	{CC} {CFLAGS} -s ObjSegE  "{MPW}"ncbi:object:objmedli.c
+"{MPW}"ncbi:build:objprt.c.o Ä "{MPW}"ncbi:object:objprt.c
+	{CC} {CFLAGS} -s ObjSegF  "{MPW}"ncbi:object:objprt.c
+"{MPW}"ncbi:build:objpub.c.o Ä "{MPW}"ncbi:object:objpub.c
+	{CC} {CFLAGS} -s ObjSegE  "{MPW}"ncbi:object:objpub.c
+"{MPW}"ncbi:build:objres.c.o Ä "{MPW}"ncbi:object:objres.c
+	{CC} {CFLAGS} -s ObjSegE  "{MPW}"ncbi:object:objres.c
+"{MPW}"ncbi:build:objseq.c.o Ä "{MPW}"ncbi:object:objseq.c
+	{CC} {CFLAGS} -s ObjSegD  "{MPW}"ncbi:object:objseq.c
+"{MPW}"ncbi:build:objsset.c.o Ä "{MPW}"ncbi:object:objsset.c
+	{CC} {CFLAGS} -s ObjSegC  "{MPW}"ncbi:object:objsset.c
+"{MPW}"ncbi:build:objsub.c.o Ä "{MPW}"ncbi:object:objsub.c
+	{CC} {CFLAGS} -s ObjSegC  "{MPW}"ncbi:object:objsub.c
+"{MPW}"ncbi:build:accentr.c.o Ä "{MPW}"ncbi:cdromlib:accentr.c
+	{CC} {CFLAGS} -s AccSegA  "{MPW}"ncbi:cdromlib:accentr.c
+"{MPW}"ncbi:build:accutils.c.o Ä "{MPW}"ncbi:cdromlib:accutils.c
+	{CC} {CFLAGS} -s AccSegA  "{MPW}"ncbi:cdromlib:accutils.c
+"{MPW}"ncbi:build:cdentrez.c.o Ä "{MPW}"ncbi:cdromlib:cdentrez.c
+	{CC} {CFLAGS} -s CdrSegA  "{MPW}"ncbi:cdromlib:cdentrez.c
+"{MPW}"ncbi:build:cdromlib.c.o Ä "{MPW}"ncbi:cdromlib:cdromlib.c
+	{CC} {CFLAGS} -s CdrSegB  "{MPW}"ncbi:cdromlib:cdromlib.c
+"{MPW}"ncbi:build:casn.c.o Ä "{MPW}"ncbi:cdromlib:casn.c
+	{CC} {CFLAGS} -s CdrSegA  "{MPW}"ncbi:cdromlib:casn.c
+"{MPW}"ncbi:build:cdconfig.c.o Ä "{MPW}"ncbi:cdromlib:cdconfig.c
+	{CC} {CFLAGS} -s CdrSegA  "{MPW}"ncbi:cdromlib:cdconfig.c
+"{MPW}"ncbi:build:seqport.c.o Ä "{MPW}"ncbi:api:seqport.c
+	{CC} {CFLAGS} -s ApiSegA  "{MPW}"ncbi:api:seqport.c
+"{MPW}"ncbi:build:sequtil.c.o Ä "{MPW}"ncbi:api:sequtil.c
+	{CC} {CFLAGS} -s ApiSegB  "{MPW}"ncbi:api:sequtil.c
+"{MPW}"ncbi:build:prtutil.c.o Ä "{MPW}"ncbi:api:prtutil.c
+	{CC} {CFLAGS} -s ApiSegC  "{MPW}"ncbi:api:prtutil.c
+"{MPW}"ncbi:build:valid.c.o Ä "{MPW}"ncbi:api:valid.c
+	{CC} {CFLAGS} -s ApiSegC  "{MPW}"ncbi:api:valid.c
+"{MPW}"ncbi:build:edutil.c.o Ä "{MPW}"ncbi:api:edutil.c
+	{CC} {CFLAGS} -s ApiSegD  "{MPW}"ncbi:api:edutil.c
+"{MPW}"ncbi:build:subutil.c.o Ä "{MPW}"ncbi:api:subutil.c
+	{CC} {CFLAGS} -s ApiSegD  "{MPW}"ncbi:api:subutil.c
+"{MPW}"ncbi:build:simple.c.o Ä "{MPW}"ncbi:api:simple.c
+	{CC} {CFLAGS} -s ApiSegA  "{MPW}"ncbi:api:simple.c
+"{MPW}"ncbi:build:tofasta.c.o Ä "{MPW}"ncbi:api:tofasta.c
+	{CC} {CFLAGS} -s ApiSegA  "{MPW}"ncbi:api:tofasta.c
+"{MPW}"ncbi:build:tofile.c.o Ä "{MPW}"ncbi:api:tofile.c
+	{CC} {CFLAGS} -s ApiSegA  "{MPW}"ncbi:api:tofile.c
+"{MPW}"ncbi:build:tognbk1.c.o Ä "{MPW}"ncbi:api:tognbk1.c
+	{CC} {CFLAGS} -s ApiSegF  "{MPW}"ncbi:api:tognbk1.c
+"{MPW}"ncbi:build:tognbk2.c.o Ä "{MPW}"ncbi:api:tognbk2.c
+	{CC} {CFLAGS} -s ApiSegG  "{MPW}"ncbi:api:tognbk2.c
+"{MPW}"ncbi:build:tognbk3.c.o Ä "{MPW}"ncbi:api:tognbk3.c
+	{CC} {CFLAGS} -s ApiSegH  "{MPW}"ncbi:api:tognbk3.c
+"{MPW}"ncbi:build:tomedlin.c.o Ä "{MPW}"ncbi:api:tomedlin.c
+	{CC} {CFLAGS} -s ApiSegA  "{MPW}"ncbi:api:tomedlin.c
+"{MPW}"ncbi:build:toreport.c.o Ä "{MPW}"ncbi:api:toreport.c
+	{CC} {CFLAGS} -s ApiSegE  "{MPW}"ncbi:api:toreport.c
+"{MPW}"ncbi:build:vibbutns.c.o Ä "{MPW}"ncbi:vibrant:vibbutns.c
+	{CC} {CFLAGS} -s VibSegB  "{MPW}"ncbi:vibrant:vibbutns.c
+"{MPW}"ncbi:build:vibextra.c.o Ä "{MPW}"ncbi:vibrant:vibextra.c
+	{CC} {CFLAGS} -s VibSegE  "{MPW}"ncbi:vibrant:vibextra.c
+"{MPW}"ncbi:build:vibfiles.c.o Ä "{MPW}"ncbi:vibrant:vibfiles.c
+	{CC} {CFLAGS} -s VibSegE  "{MPW}"ncbi:vibrant:vibfiles.c
+"{MPW}"ncbi:build:vibgroup.c.o Ä "{MPW}"ncbi:vibrant:vibgroup.c
+	{CC} {CFLAGS} -s VibSegE  "{MPW}"ncbi:vibrant:vibgroup.c
+"{MPW}"ncbi:build:viblists.c.o Ä "{MPW}"ncbi:vibrant:viblists.c
+	{CC} {CFLAGS} -s VibSegA  "{MPW}"ncbi:vibrant:viblists.c
+"{MPW}"ncbi:build:vibmenus.c.o Ä "{MPW}"ncbi:vibrant:vibmenus.c
+	{CC} {CFLAGS} -s VibSegB  "{MPW}"ncbi:vibrant:vibmenus.c
+"{MPW}"ncbi:build:vibprmpt.c.o Ä "{MPW}"ncbi:vibrant:vibprmpt.c
+	{CC} {CFLAGS} -s VibSegE  "{MPW}"ncbi:vibrant:vibprmpt.c
+"{MPW}"ncbi:build:vibsbars.c.o Ä "{MPW}"ncbi:vibrant:vibsbars.c
+	{CC} {CFLAGS} -s VibSegE  "{MPW}"ncbi:vibrant:vibsbars.c
+"{MPW}"ncbi:build:vibslate.c.o Ä "{MPW}"ncbi:vibrant:vibslate.c
+	{CC} {CFLAGS} -s VibSegC  "{MPW}"ncbi:vibrant:vibslate.c
+"{MPW}"ncbi:build:vibtexts.c.o Ä "{MPW}"ncbi:vibrant:vibtexts.c
+	{CC} {CFLAGS} -s VibSegC  "{MPW}"ncbi:vibrant:vibtexts.c
+"{MPW}"ncbi:build:vibutils.c.o Ä "{MPW}"ncbi:vibrant:vibutils.c
+	{CC} {CFLAGS} -s VibSegD  "{MPW}"ncbi:vibrant:vibutils.c
+"{MPW}"ncbi:build:vibwndws.c.o Ä "{MPW}"ncbi:vibrant:vibwndws.c
+	{CC} {CFLAGS} -s VibSegA  "{MPW}"ncbi:vibrant:vibwndws.c
+"{MPW}"ncbi:build:ncbidraw.c.o Ä "{MPW}"ncbi:vibrant:ncbidraw.c
+	{CC} {CFLAGS} -s VibSegD  "{MPW}"ncbi:vibrant:ncbidraw.c
+"{MPW}"ncbi:build:drawing.c.o Ä "{MPW}"ncbi:vibrant:drawing.c
+	{CC} {CFLAGS} -s VibSegF  "{MPW}"ncbi:vibrant:drawing.c
+"{MPW}"ncbi:build:mapping.c.o Ä "{MPW}"ncbi:vibrant:mapping.c
+	{CC} {CFLAGS} -s VibSegF  "{MPW}"ncbi:vibrant:mapping.c
+"{MPW}"ncbi:build:picture.c.o Ä "{MPW}"ncbi:vibrant:picture.c
+	{CC} {CFLAGS} -s VibSegF  "{MPW}"ncbi:vibrant:picture.c
+"{MPW}"ncbi:build:viewer.c.o Ä "{MPW}"ncbi:vibrant:viewer.c
+	{CC} {CFLAGS} -s VibSegF  "{MPW}"ncbi:vibrant:viewer.c
+"{MPW}"ncbi:build:document.c.o Ä "{MPW}"ncbi:vibrant:document.c
+	{CC} {CFLAGS} -s VibSegG  "{MPW}"ncbi:vibrant:document.c
+"{MPW}"ncbi:build:palette.c.o Ä "{MPW}"ncbi:vibrant:palette.c
+	{CC} {CFLAGS} -s VibSegH  "{MPW}"ncbi:vibrant:palette.c
+"{MPW}"ncbi:build:table.c.o Ä "{MPW}"ncbi:vibrant:table.c
+	{CC} {CFLAGS} -s VibSegH  "{MPW}"ncbi:vibrant:table.c

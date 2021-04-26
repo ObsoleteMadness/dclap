@@ -1,0 +1,8 @@
+ncbi
+y
++ncbimsg.obj+ncbimem.obj+ncbistr.obj&
++ncbibs.obj+ncbitime.obj+ncbimain.obj
+
+
+
+

@@ -1,0 +1,48 @@
+--$Revision: 2.0 $
+--********************************************************************
+--
+--  Direct Submission of Sequence Data
+--  James Ostell, 1991
+--
+--  This is a trial specification for direct submission of sequence
+--    data worked out between NCBI and EMBL
+--  Later revised to reflect work with GenBank and Integrated database
+--
+--********************************************************************
+
+NCBI-Submit DEFINITIONS ::=
+BEGIN
+
+EXPORTS Seq-submit;
+
+IMPORTS Cit-sub FROM NCBI-Biblio
+        Date, Object-id FROM NCBI-General
+        Seq-annot FROM NCBI-Seq
+		Seq-id FROM NCBI-Seqloc
+        Seq-entry FROM NCBI-Seqset;
+
+Seq-submit ::= SEQUENCE {
+	sub Submit-block ,
+    data CHOICE {
+		entrys	SET OF Seq-entry ,  -- sequence(s)
+		annots	SET OF Seq-annot ,  -- annotation(s)
+		delete	SET OF Seq-id } } -- deletions of entries
+
+Submit-block ::= SEQUENCE {
+    contact Contact-info ,        -- who to contact
+    cit Cit-sub ,                 -- citation for this submission
+    hup BOOLEAN DEFAULT FALSE ,   -- hold until publish
+	reldate Date OPTIONAL }       -- release by date
+
+Contact-info ::= SEQUENCE {      -- who to contact to discuss the submission
+    name VisibleString ,
+    address SEQUENCE OF VisibleString ,  -- mailing address
+    phone VisibleString OPTIONAL ,
+    fax VisibleString OPTIONAL ,
+    email VisibleString OPTIONAL ,
+    telex VisibleString OPTIONAL ,
+	owner-id Object-id OPTIONAL ,         -- for owner accounts
+	password OCTET STRING OPTIONAL }
+
+END
+

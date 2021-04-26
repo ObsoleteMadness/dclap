@@ -1,0 +1,2 @@
+rm -f asn.all
+cat head.all *.asn > asn.all

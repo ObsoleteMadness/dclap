@@ -1,0 +1,245 @@
+###################################################################
+#
+#	Platform definitions: include either DOSWIN16.MAK or NTWIN32.MAK
+#
+!if "$(DBUG)" == ""
+NODEBUG=1
+TUNE=1
+!endif
+!IF "$(CPU)" != ""
+OS=NT
+ENV=WIN32
+!else
+OS=DOS
+ENV=WIN16
+!endif
+!include <$(OS)$(ENV).MAK>
+
+MSWINDOWS=1
+
+###################################################################
+#
+#	Paths for includes and libraries
+#
+!ifndef NCBIDIR
+NCBIDIR=..
+!endif
+ncbiinc=$(NCBIDIR)\include
+ncbilib=$(NCBIDIR)\lib\$(ENV)$(DBUG)
+
+!if "$(OS)" == "NT"
+ASNDIR= ..\asnstat
+!else
+ASNDIR= ..\asnload
+!endif
+
+INCLUDE=$(INCLUDE);$(ncbiinc);$(ASNDIR)
+LIB=$(LIB);$(ncbilib)
+
+usrlibs= vibrant.lib ncbi.lib ncbiobj.lib ncbinacc.lib ncbicdr.lib netentr.lib netcli.lib
+
+###################################################################
+#
+#	Compiler flags
+#
+!if "$(DBUG)" != ""
+cdebug=$(cdebug) -D_DEBUG
+!endif
+!if "$(NET)" == ""
+NET=WSOCK
+!endif
+
+!if "$(NET)" == "WSOCK"
+cflags=$(cflags) -DNETP_INET_WSOCK
+!if "$(OS)" == "NT"
+socklib= wsock32.lib
+!else
+socklib= winsock.lib
+!endif
+!endif
+
+
+###################################################################
+#
+#	Inference rules
+#
+.SUFFIXES: .c  .rc
+
+.c.obj:
+    $(cc) $(cflags) $(cdebug) $(cvars) $<
+
+.rc.res:
+	rc -r -fo $(@B).res $(cvars) $(@B).rc
+!if "$(OS)" == "NT"
+	cvtres -$(CPU) $(@B).res -o $(@B).rbj
+!endif
+
+
+###################################################################
+#
+#	Targets
+#
+
+LIB1= $(ncbilib)\ncbi.lib
+LIB2= $(ncbilib)\ncbiobj.lib
+LIB3= $(ncbilib)\ncbicdr.lib
+LIB4= $(ncbilib)\vibrant.lib
+LIB5= $(ncbilib)\ncbiacc.lib
+LIB6= $(ncbilib)\netcli.lib
+LIB7= $(ncbilib)\netentr.lib
+LIB8= $(ncbilib)\ncbinacc.lib
+LIB9= $(ncbilib)\ncbicacc.lib
+# LIB10 is reserved for ncsasock
+LIB10=
+
+OBJ6= ni_msg.obj ni_lib.obj ni_error.obj ni_list.obj ni_encrs.obj
+OBJ7= netentr.obj netlib.obj objneten.obj
+OBJ8= naccentr.obj accutils.obj
+OBJ9= caccentr.obj accutils.obj
+OBJENT= avail.obj browser.obj chosen.obj fetch.obj report.obj
+
+all : nentrez.exe netentcf.exe
+
+
+## special rules for network-only and network-plus-CD versions of acclib
+##
+naccentr.obj: accentr.c
+	copy accentr.c naccentr.c
+	$(cc) $(cflags) $(cdebug) $(cvars) -D_NETENT_ naccentr.c
+
+caccentr.obj: accentr.c
+	copy accentr.c caccentr.c
+	$(cc) $(cflags) $(cdebug) $(cvars) -D_NET_AND_CD_ caccentr.c
+
+netentcf.obj : entrezcf.c
+	copy entrezcf.c netentcf.c
+	$(cc) $(cflags) $(cdebug) $(cvars) -DNETWORK_SUPPORTED netentcf.c
+
+
+###################################################################
+#
+#	Libraries
+#
+
+### netcli.lib
+$(LIB6) : $(OBJ6)
+	del $(LIB6)
+!if "$(OS)" == "NT"
+	lib32 $(OBJ6) -out:$(LIB6)
+!else
+	lib /PAGESIZE:128 @<<
+$@
+y
+$(OBJ6)
+netcli.lst
+;
+<<
+!endif
+
+### netentr.lib
+$(LIB7) : $(OBJ7)
+	del $(LIB7)
+!if "$(OS)" == "NT"
+	lib32 $(OBJ7) -out:$(LIB7)
+!else
+	lib /PAGESIZE:128 @<<
+$@
+y
+$(OBJ7)
+netentr.lst
+;
+<<
+!endif
+
+### ncbinacc.lib
+$(LIB8) : $(OBJ8)
+	del $(LIB8)
+!if "$(OS)" == "NT"
+	lib32 $(OBJ8) -out:$(LIB8)
+!else
+	lib /PAGESIZE:128 @<<
+$@
+y
+$(OBJ8)
+ncbinacc.lst
+;
+<<
+!endif
+
+### ncbicacc.lib
+$(LIB9) : $(OBJ9)
+	del $(LIB9)
+!if "$(OS)" == "NT"
+	lib32 $(OBJ9) -out:$(LIB9)
+!else
+	lib /PAGESIZE:128 @<<
+$@
+y
+$(OBJ9)
+ncbicacc.lst
+;
+<<
+!endif
+
+
+$(LIB6) $(LIB7) $(LIB8) : $(ncbiinc)\ncbinet.h
+
+###################################################################
+#
+#	Programs
+#
+
+### Network entrez
+
+nentrez.exe : $(LIB6) $(LIB7) $(LIB8) $(OBJENT) nentrez.res
+!if "$(OS)" == "NT"
+    $(link) $(linkdebug) $(guiflags) $(OBJENT) $(guilibs) $(usrlibs) $(socklib) nentrez.rbj -out:nentrez.exe
+!else
+	$(link) @<<
+$(OBJENT)
+nentrez /AL:16 /SEG:150
+nentrez /map
+$(linkdebug) $(guiflags) $(guilibs) $(usrlibs) $(netlibs) $(socklib)
+nentrez
+<<
+	rc nentrez.res nentrez.exe
+!endif
+
+
+### Network Entrez configuration program
+
+netentcf.exe : $(LIB6) $(LIB7) $(LIB8)  netentcf.obj netentcf.res
+!if "$(OS)" == "NT"
+    $(link) $(linkdebug) $(guiflags) netentcf.obj $(guilibs) $(usrlibs) $(socklib) netentcf.rbj -out:netentcf.exe
+!else
+	$(link) @<<
+netentcf.obj
+netentcf /AL:16 /SEG:150
+netentcf /map
+$(linkdebug) $(guiflags) $(guilibs) $(usrlibs) $(netlibs) $(socklib)
+netentcf
+<<
+	rc netentcf.res netentcf.exe
+!endif
+
+
+## get all the source files
+##
+
+$(ncbiinc)\ncbinet.h : ..\network\nsclilib\ncbinet.h
+	copy ..\browser\*.* .
+	copy ..\demo\entrezcf.c .
+	copy ..\network\entrez\client\*.h $(ncbiinc)
+	copy ..\network\entrez\client\*.c .
+	copy ..\network\nsclilib\*.h  $(ncbiinc)
+	copy ..\network\nsclilib\*.c .
+	copy ..\network\nsdemocl\*.* .
+	copy ..\link\mswin\nentrez.*
+	copy ..\link\mswin\netentcf.*
+
+## To clean out the directory without removing makefiles
+##
+clean :
+	- del *.obj
+	- del *.res
+

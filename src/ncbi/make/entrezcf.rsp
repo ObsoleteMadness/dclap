@@ -1,0 +1,6 @@
+/Tw C0Wl  entrezcf.obj
+entrezcf.exe
+
+IMPORT ..\lib\vibrant.lib ..\lib\ncbicdr.lib +
+..\lib\ncbi.lib CWl mathwl
+entrezcf.def

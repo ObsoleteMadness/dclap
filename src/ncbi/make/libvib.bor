@@ -1,0 +1,6 @@
++ncbidraw.obj +vibutils.obj +vibwndws.obj &
++vibmenus.obj +vibgroup.obj +vibslate.obj &
++vibprmpt.obj +vibbutns.obj +viblists.obj &
++vibsbars.obj +vibfiles.obj +vibtexts.obj &
++vibextra.obj +drawing.obj +mapping.obj +picture.obj &
++viewer.obj +palette.obj +table.obj +document.obj

@@ -1,0 +1,7 @@
+/Tw C0Wl  avail.obj browser.obj chosen.obj fetch.obj report.obj
+nentrez.exe
+
+IMPORT ..\lib\vibrant.lib ..\lib\ncbinacc.lib ..\lib\ncbicdr.lib +
+..\lib\netentr ..\lib\ncbiobj.lib ..\lib\netcli.lib ..\lib\ncbi.lib +
+..\lib\nmpcip.lib CWl mathwl
+nentrez.def

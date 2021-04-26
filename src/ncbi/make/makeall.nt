@@ -1,0 +1,265 @@
+###################################################################
+#
+#	Platform definitions: include either DOSWIN16.MAK or NTWIN32.MAK
+#
+!if "$(DBUG)" == ""
+NODEBUG=1
+TUNE=1
+!endif
+!IF "$(CPU)" != ""
+OS=NT
+ENV=WIN32
+!else
+OS=DOS
+ENV=WIN16
+!endif
+!include <$(OS)$(ENV).MAK>
+
+###################################################################
+#
+#	Paths for includes and libraries
+#
+!ifndef NCBIDIR
+NCBIDIR=..
+!endif
+ncbiinc=$(NCBIDIR)\include
+ncbilib=$(NCBIDIR)\lib\$(ENV)$(DBUG)
+
+!if "$(OS)" == "NT"
+asnparse= ..\asnstat
+!else
+asnparse= ..\asnload
+!endif
+
+INCLUDE=$(INCLUDE);$(ncbiinc);$(asnparse)
+LIB=$(LIB);$(ncbilib)
+
+usrlibs= vibrant.lib ncbi.lib ncbiobj.lib ncbiacc.lib ncbicdr.lib
+
+
+###################################################################
+#
+# compiler flags and default build rule
+#
+!if "$(DBUG)" != ""
+cdebug=$(cdebug) -D_DEBUG
+!endif
+
+.SUFFIXES: .c
+.c.obj:
+    - $(cc) $(cflags) $(cdebug) $(cvars) $<
+
+.rc.res:
+	rc -r -fo $(@B).res $(cvars) $(@B).rc
+!if "$(OS)" == "NT"
+	cvtres -$(CPU) $(@B).res -o $(@B).rbj
+!endif
+
+
+###################################################################
+#
+#	Targets
+#
+
+LIB1 = $(ncbilib)\ncbi.lib
+LIB2 = $(ncbilib)\ncbiobj.lib
+LIB3 = $(ncbilib)\ncbicdr.lib
+LIB4 = $(ncbilib)\vibrant.lib
+LIB5 = $(ncbilib)\ncbiacc.lib
+
+all : $(ncbiinc)\ncbilcl.h entrez.exe entrezcf.exe
+
+OBJ1 =  ncbibs.obj ncbierr.obj ncbienv.obj ncbifile.obj ncbiprop.obj \
+        ncbimain.obj ncbimath.obj ncbimem.obj ncbimisc.obj \
+        ncbimsg.obj ncbistr.obj ncbitime.obj ncbisgml.obj \
+ 	asndebin.obj asnenbin.obj asngen.obj asnio.obj asnlex.obj \
+	asnlext.obj asnout.obj asnprint.obj asntypes.obj
+
+OBJ2 =  objacces.obj objalign.obj objall.obj objbibli.obj \
+        objfeat.obj objgen.obj objloc.obj objmedli.obj objpub.obj \
+        objres.obj objseq.obj objcode.obj objsset.obj objsub.obj \
+        objprt.obj seqport.obj sequtil.obj prtutil.obj \
+        simple.obj tofasta.obj tofile.obj objblock.obj tognbk1.obj \
+        tognbk2.obj tognbk3.obj tomedlin.obj toreport.obj \
+		valid.obj subutil.obj edutil.obj
+
+OBJ3 =  cdentrez.obj cdromlib.obj casn.obj cdconfig.obj
+
+OBJ4 =  vibbutns.obj vibextra.obj vibfiles.obj vibgroup.obj \
+        viblists.obj vibmenus.obj vibprmpt.obj \
+        vibsbars.obj vibslate.obj vibtexts.obj \
+        vibutils.obj vibwndws.obj ncbidraw.obj \
+        drawing.obj mapping.obj picture.obj viewer.obj \
+        document.obj table.obj palette.obj
+
+OBJ5 =  accentr.obj accutils.obj
+
+OBJENT= avail.obj browser.obj chosen.obj fetch.obj report.obj
+
+
+###################################################################
+#
+#	Build the libraries
+#
+
+### ncbi.lib
+$(LIB1) : $(OBJ1)
+        -del $(LIB1)
+!if "$(OS)" == "NT"
+        lib32 $(OBJ1) -out:$(LIB1) 
+!else
+	lib /PAGESIZE:128 @<<
+$@
+y
+$(OBJ1)
+ncbi.lst
+;
+<<
+!endif
+
+### ncbiobj.lib
+$(LIB2) : $(OBJ2)
+        -del $(LIB2)
+!if "$(OS)" == "NT"
+        lib32 $(OBJ2) -out:$(LIB2) 
+!else
+	lib /PAGESIZE:128 @<<
+$@
+y
+$(OBJ2)
+ncbiobj.lst
+;
+<<
+!endif
+
+### ncbicdr.lib
+$(LIB3) : $(OBJ3)
+        -del $(LIB3)
+!if "$(OS)" == "NT"
+        lib32 $(OBJ3) -out:$(LIB3) 
+!else
+	lib /PAGESIZE:128 @<<
+$@
+y
+$(OBJ3)
+ncbicdr.lst
+;
+<<
+!endif
+
+### vibrant.obj
+$(LIB4) : $(OBJ4)
+        -del $(LIB4)
+!if "$(OS)" == "NT"
+        lib32 $(OBJ4) -out:$(LIB4) 
+!else
+	lib /PAGESIZE:128 @<<
+$@
+y
+$(OBJ4)
+vibrant.lst
+;
+<<
+!endif
+
+### ncbiacc.lib
+$(LIB5) : $(OBJ5)
+        -del $(LIB5)
+!if "$(OS)" == "NT"
+        lib32 $(OBJ5) -out:$(LIB5) 
+!else
+	lib /PAGESIZE:128 @<<
+$@
+y
+$(OBJ5)
+ncbiacc.lst
+;
+<<
+!endif
+
+
+###################################################################
+#
+#	Programs
+#
+
+
+### entrez.exe (CD-ROM Entrez)
+entrez.exe : $(OBJENT) entrez.res $(LIB1) $(LIB2) $(LIB3) $(LIB4) $(LIB5) entrez.def
+!if "$(OS)" == "NT"
+    $(link) $(linkdebug) $(guiflags) $(OBJENT) $(guilibs) $(usrlibs) entrez.rbj -out:entrez.exe
+!else
+	$(link) @<<
+$(OBJENT)
+entrez /AL:16 /SEG:150
+entrez /map
+$(linkdebug) $(guiflags) $(guilibs) $(usrlibs)
+entrez
+<<
+	rc entrez.res entrez.exe
+!endif
+
+
+### entrez.exe (CD-ROM Entrez configuration utility)
+entrezcf.exe : entrezcf.obj entrezcf.res $(LIB1) $(LIB2) $(LIB3) $(LIB4) $(LIB5) entrezcf.def
+!if "$(OS)" == "NT"
+    $(link) $(linkdebug) $(guiflags) entrezcf.obj $(guilibs) $(usrlibs) entrezcf.rbj -out:entrezcf.exe
+!else
+	$(link) @<<
+entrezcf.obj
+entrezcf /AL:16 /SEG:150
+entrezcf /map
+$(linkdebug) $(guiflags) $(guilibs) $(usrlibs)
+entrezcf
+<<
+	rc entrezcf.res entrezcf.exe
+!endif
+
+###################################################################
+#
+#       Copy source files to the build directory and headers
+#       to the include directory
+#
+refresh:
+	echo Refreshing source files and headers...
+        copy ..\corelib\ncbi*.h $(ncbiinc)
+        copy ..\corelib\ncbilcl.msw $(ncbiinc)\ncbilcl.h
+        copy ..\corelib\core*.h .
+        copy ..\corelib\*.c .
+        copy ..\corelib\ncbimain.msw ncbimain.c
+        copy ..\asnlib\*.h .
+        copy asn.h $(ncbiinc)
+	del asn.h
+        copy ..\asnlib\*.c .
+        copy ..\object\*.c .
+        copy ..\object\*.h $(ncbiinc)
+        copy ..\api\*.h $(ncbiinc)
+        copy ..\api\*.c .
+        copy ..\cdromlib\*.h $(ncbiinc)
+        copy ..\cdromlib\*.c .
+        copy ..\vibrant\*.h $(ncbiinc)
+        copy ..\vibrant\*.c .
+	copy ..\browser\*.* .
+	copy ..\demo\entrezcf.c .
+        copy ..\link\mswin\*.*
+
+#couple of obvious dependencies...  (not a complete list, by any means)
+$(ncbiinc)\ncbilcl.h : ..\corelib\ncbilcl.msw
+	refresh
+$(ncbiinc)\asn.h : ..\asnlib\asn.h
+	refresh
+
+###################################################################
+#
+#	Cleanup
+#
+clean :
+        - del *.c
+        - del *.h
+        - del *.obj
+        - del *.lib
+        - del *.lnk
+        - del *.rsp
+        - del *.def
+        - del *.rc
+

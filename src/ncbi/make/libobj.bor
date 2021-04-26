@@ -1,0 +1,10 @@
+ +objgen.obj +objbibli.obj +objmedli.obj +objpub.obj &
+ +objloc.obj +objfeat.obj +objseq.obj +objres.obj +objalign.obj &
+ +objsset.obj +simple.obj +seqport.obj +tofasta.obj +tognbk1.obj &
+ +tognbk2.obj +tognbk3.obj +objall.obj +tofile.obj +toreport.obj &
+ +objacces.obj +sequtil.obj +prtutil.obj +tomedlin.obj +objsub.obj &
+ +objblock.obj +objcode.obj +objprt.obj +valid.obj +subutil.obj +edutil.obj
+
+
+
+

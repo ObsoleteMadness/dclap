@@ -1,0 +1,30 @@
+$ !
+$ ! Simple makefile for NCBI Entrez program with Vibrant
+$ !
+$ copy [-.browser]*.* []
+$ !
+$ ! Make entrez
+$ !
+$ cc/nolist/include=([],[-.include])/DEFINE=WIN_MOTIF avail
+$ cc/nolist/include=([],[-.include])/DEFINE=WIN_MOTIF browser
+$ cc/nolist/include=([],[-.include])/DEFINE=WIN_MOTIF chosen
+$ cc/nolist/include=([],[-.include])/DEFINE=WIN_MOTIF fetch
+$ cc/nolist/include=([],[-.include])/DEFINE=WIN_MOTIF report
+$ link/exe=entrez sys$input/option
+avail
+browser
+chosen
+fetch
+report
+[-.lib]libvibrant/lib
+[-.lib]libncbicdr/lib
+[-.lib]libncbiobj/lib
+[-.lib]libncbi/lib
+sys$library:vaxcrtl.olb/library
+sys$share:decw$xlibshr/share
+sys$share:decw$dxmlibshr/shareable
+sys$share:decw$xmlibshr/shareable
+sys$share:decw$xtshr/shareable
+sys$share:decc$shr.exe/shareable
+$ exit
+

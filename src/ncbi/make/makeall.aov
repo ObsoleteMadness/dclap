@@ -1,0 +1,183 @@
+$!
+$! Simple makefile for NCBI tool libraries with Vibrant
+$! Also makes AsnTool
+$!------------------------------------------------------------------------
+$! Definitions
+$!
+$ CC = "cc/nolist/include=([],[-.include])"
+$!------------------------------------------------------------------------
+$ delete [-.include]*.*;*
+$!
+$ copy [-.corelib]*.h          [-.include]
+$ copy [-.corelib]ncbilcl.aov  [-.include]ncbilcl.h
+$ copy [-.corelib]ncbimain.vms [-.corelib]ncbimain.c
+$ copy [-.asnlib]*.h           [-.include]
+$ copy [-.object]*.h           [-.include]
+$ copy [-.asnstat]*.h          [-.include]
+$ copy [-.api]*.h              [-.include]
+$ copy [-.cdromlib]*.h         [-.include]
+$ copy [-.vibrant]*.h          [-.include]
+$!--------------------------------------
+$!
+$! Make libncbi.olb
+$!
+$ CC [-.corelib]ncbibs
+$ CC [-.corelib]ncbienv
+$ CC [-.corelib]ncbierr
+$ CC [-.corelib]ncbifile
+$ CC [-.corelib]ncbimain
+$ CC [-.corelib]ncbimath
+$ CC [-.corelib]ncbimem
+$ CC [-.corelib]ncbimisc
+$ CC [-.corelib]ncbiprop
+$ CC [-.corelib]ncbisgml
+$ CC [-.corelib]ncbimsg
+$ CC [-.corelib]ncbistr
+$ CC [-.corelib]ncbitime
+$ CC [-.asnlib]asndebin
+$ CC [-.asnlib]asnenbin
+$ CC [-.asnlib]asngen
+$ CC [-.asnlib]asnio
+$ CC [-.asnlib]asnlex
+$ CC [-.asnlib]asnlext
+$ CC [-.asnlib]asnout
+$ CC [-.asnlib]asnprint
+$ CC [-.asnlib]asntypes
+$!
+$ librarian/object/create [-.lib]libncbi.olb -
+    ncbibs.obj, ncbierr.obj, ncbienv.obj, ncbifile.obj, ncbiprop.obj, ncbimain.obj,-
+    ncbimath.obj, ncbimem.obj, ncbimisc.obj, ncbimsg.obj, ncbisgml.obj, ncbistr.obj,-
+    ncbitime.obj, asndebin.obj, asnenbin.obj, asngen.obj, asnio.obj,-
+    asnlex.obj, asnlext.obj, asnout.obj, asnprint.obj, asntypes.obj
+$ delete *.obj;*
+$!--------------------------------------------------------------------
+$!
+$! Make libncbiobj.olb
+$!
+$ CC [-.object]objacces
+$ CC [-.object]objalign
+$ CC [-.object]objall
+$ CC [-.object]objbibli
+$ CC [-.object]objblock
+$ CC [-.object]objcode
+$ CC [-.object]objfeat
+$ CC [-.object]objgen
+$ CC [-.object]objloc
+$ CC [-.object]objmedli
+$ CC [-.object]objpub
+$ CC [-.object]objres
+$ CC [-.object]objseq
+$ CC [-.object]objsset
+$ CC [-.object]objsub
+$ CC [-.object]objprt
+$ CC [-.api]seqport
+$ CC [-.api]sequtil
+$ CC [-.api]prtutil
+$ CC [-.api]simple
+$ CC [-.api]tofasta
+$ CC [-.api]tofile
+$ CC [-.api]tognbk1
+$ CC [-.api]tognbk2
+$ CC [-.api]tognbk3
+$ CC [-.api]tomedlin
+$ CC [-.api]toreport
+$ CC [-.api]valid
+$ CC [-.api]subutil
+$ CC [-.api]edutil
+$ librarian/object/create [-.lib]libncbiobj.olb -
+    objacces.obj, objalign.obj, objall.obj, objblock, objcode,-
+    objbibli.obj, objfeat.obj, objgen.obj, objloc.obj, objmedli.obj,-
+    objpub.obj, objres.obj, objseq.obj, objsset.obj, objsub.obj,-
+    objprt.obj, seqport.obj, sequtil.obj, prtutil.obj, simple.obj,-
+    tofasta.obj, tofile.obj, tognbk1.obj, tognbk2.obj, tognbk3.obj,-
+    tomedlin.obj, toreport.obj, valid.obj, subutil.obj, edutil.obj
+$ delete *.obj;*
+$!----------------------------------------------------------------------
+$!
+$! Make libncbicdr.olb
+$!
+$ CC [-.cdromlib]accentr
+$ CC [-.cdromlib]accutils
+$ CC [-.cdromlib]cdentrez
+$ CC [-.cdromlib]cdromlib
+$ CC [-.cdromlib]cdconfig
+$ CC [-.cdromlib]casn
+$!
+$ librarian/object/create [-.lib]libncbicdr.olb -
+    accentr.obj, accutils.obj, cdentrez.obj, cdromlib.obj, cdconfig.obj, casn.obj
+$!
+$ delete *.obj;*
+$!------------------------------------------------------------------------
+$! If this VMS system does not have Motif Development include files skip
+$! building the VIBRANT interface library.
+$!
+$  if f$search("decw$include:Xm.h") .eqs. "" then Goto BuildASNTool
+$!------------------------------------------------------------------------
+$!
+$! Make libvibrant.olb
+$!
+$ define/nolog X11 decw$include     ! WAG   <X11/Xlib.h>
+$ define/nolog Xm  decw$include     ! WAG   <Xm/*.h>
+$ define/nolog sys sys$library      ! WAG   <sys/*.h>
+$!
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]vibbutns
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]vibextra
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]vibfiles
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]vibgroup
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]viblists
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]vibmenus
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]vibprmpt
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]vibsbars
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]vibslate
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]vibtexts
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]vibutils
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]vibwndws
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]ncbidraw
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]drawing
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]mapping
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]picture
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]viewer
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]document
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]palette
+$ CC/DEFINE=WIN_MOTIF [-.vibrant]table
+$!
+$ librarian/object/create [-.lib]libvibrant.olb -
+    vibbutns.obj, vibextra.obj, vibfiles.obj, vibgroup.obj,-
+    viblists.obj, vibmenus.obj, vibprmpt.obj, vibsbars.obj,-
+    vibslate.obj, vibtexts.obj, vibutils.obj, vibwndws.obj,-
+    ncbidraw.obj, drawing.obj, mapping.obj, picture.obj,-
+    viewer.obj, document.obj, table.obj, palette.obj
+$!
+$ delete *.obj;*
+$!-------------------------------------------------------------------------
+$!
+$! Make asntool
+$!
+$ BuildASNTool:
+$!
+$ CC [-.asnlib]asntool
+$!
+$! Has Vibrant library?
+$!
+$ if f$search("[-.lib]libvibrant.olb") .nes. ""
+$ then
+$ link asntool,sys$input/option
+[-.lib]libvibrant.olb/library
+[-.lib]libncbi.olb/library
+sys$library:vaxcrtl.olb/library
+sys$share:decw$xlibshr.exe/share
+sys$share:decw$dxmlibshr.exe/shareable
+sys$share:decw$xmlibshr.exe/shareable
+sys$share:decw$xtshr.exe/shareable
+sys$share:decc$shr.exe/shareable 
+$!
+$! Doesn't have vibrant library
+$!
+$ else
+$ link asntool,sys$input/option
+[-.lib]libncbi.olb/library
+sys$library:vaxcrtl.olb/library
+sys$share:decc$shr.exe/shareable 
+$ endif
+$ exit
+

@@ -1,0 +1,7 @@
+/Tw C0Wl  netentcf.obj
+netentcf.exe
+
+IMPORT ..\lib\vibrant.lib ..\lib\ncbinacc.lib ..\lib\ncbicdr.lib +
+..\lib\netentr ..\lib\ncbiobj.lib ..\lib\netcli.lib ..\lib\ncbi.lib +
+..\lib\winsock.lib CWl mathwl
+netentcf.def

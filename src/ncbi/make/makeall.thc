@@ -1,0 +1,235 @@
+Under THINK C 6.0, all subprojects should have the SIZE Flags set to 5880,
+and should have the Far Data option checked.  No optimizations are currently
+used.  Unless stated otherwise below, the Prefix option should be empty;
+ThinkC inserts "include <MacHeaders>" by default, and this should be removed.
+
+In the corelib directory, rename the ncbilcl.thc file as ncbilcl.h.
+Assign files to separate projects as follows:
+
+AccLib    accentr.c
+AccLib    accutils.c
+
+ApiLibA   seqport.c
+ApiLibA   simple.c
+ApiLibA   tofasta.c
+ApiLibA   tofile.c
+ApiLibA   tomedlin.c
+
+ApiLibB   sequtil.c
+
+ApiLibC   prtutil.c
+ApiLibC   valid.c
+
+ApiLibD   edutil.c
+ApiLibD   subutil.c
+
+ApiLibE   toreport.c
+
+ApiLibF   tognbk1.c
+
+ApiLibG   tognbk2.c
+
+ApiLibH   tognbk3.c
+
+AsnLibA   asndebin.c
+AsnLibA   asnenbin.c
+AsnLibA   asngen.c
+AsnLibA   asnio.c
+AsnLibA   asnlex.c
+
+AsnLibB   asnlext.c
+AsnLibB   asnout.c
+AsnLibB   asnprint.c
+AsnLibB   asntypes.c
+
+CdrLibA   casn.c
+CdrLibA   cdconfig.c
+CdrLibA   cdentrez.c
+
+CdrLibB   cdromlib.c
+
+CorLibA   ncbibs.c
+CorLibA   ncbifile.c
+CorLibA   ncbimem.c
+CorLibA   ncbimisc.c
+CorLibA   ncbimsg.c
+CorLibA   ncbistr.c
+CorLibA   ncbitime.c
+CorLibA   ncbisgml.c
+CorLibA   ncbiprop.c
+
+CorLibB   ncbienv.c
+CorLibB   ncbierr.c
+CorLibB   ncbimath.c
+
+ObjLibA   objalign.c
+ObjLibA   objbibli.c
+
+ObjLibB   objacces.c
+ObjLibB   objfeat.c
+
+ObjLibC   objcode.c
+ObjLibC   objloc.c
+ObjLibC   objsset.c
+ObjLibC   objsub.c
+
+ObjLibD   objseq.c
+ObjLibD   objblock.c
+
+ObjLibE   objall.c
+ObjLibE   objgen.c
+ObjLibE   objmedli.c
+ObjLibE   objpub.c
+ObjLibE   objres.c
+
+ObjLibF   objprt.c
+
+VibLibA   viblists.c
+VibLibA   vibwndws.c
+
+VibLibB   vibbutns.c
+VibLibB   vibmenus.c
+
+VibLibC   vibslate.c
+VibLibC   vibtexts.c
+
+VibLibD   ncbidraw.c
+VibLibD   vibutils.c
+
+VibLibE   vibextra.c
+VibLibE   vibfiles.c
+VibLibE   vibgroup.c
+VibLibE   vibprmpt.c
+VibLibE   vibsbars.c
+
+PanelsA   drawing.c
+PanelsA   mapping.c
+PanelsA   picture.c
+PanelsA   viewer.c
+
+PanelsB   document.c
+
+PanelsC   palette.c
+PanelsC   table.c
+
+All projects are under 32 K, and therefore they can be loaded as individual
+segments in another project.  Note that the functions in ncbimain.c and
+ncbimsg.c are implemented in vibwndws.c, and thus the original corelib files
+should not be included in the CoreLib project under THINK C.  (To make a
+non-Vibrant version of some of the demonstration programs, you would need to
+rename ncbimain.mac to ncbimain.c.)
+
+The segment assignment for Entrez should be as follows:
+
+-----------
+ANSI
+-----------
+MacTraps
+MacTraps2
+unix
+-----------
+The above projects, each in a separate segment.
+-----------
+avail.c
+chosen.c
+-----------
+fetch.c
+-----------
+browser.c
+report.c
+-----------
+
+PrGlue was needed in THINK C 5.0, but is removed in THINK C 6.0.
+
+The remaining demonstration programs should be compiled as separate
+projects, each of which includes the necessary libraries.
+
+
+
+To create Network Entrez, the AccLib library must not appear in the link,
+and the following libraries must also be included in your link module
+(augmenting the Entrez requirements listed above):
+
+NetEntA   netentr.c
+NetEntA   netlib.c
+
+NetEntB   objneten.c
+
+NetCliA   ni_error.c
+NetCliA   ni_lib.c
+NetCliA   ni_list.c
+
+NetCliB   ni_msg.c
+NetCliB   ni_encrs.c
+
+In THINK C 6.0, the NcsaSock library must contain the statement
+       #define _GestaltDispatch 0xA0AD
+in its THINK C "prefix".
+
+NcsaSock  dnr.c
+NcsaSock  dprintf.c
+NcsaSock  netdb.c
+NcsaSock  rexec.c
+NcsaSock  socket.c
+NcsaSock  sock_std.c
+NcsaSock  sock_tcp.c
+NcsaSock  sock_udp.c
+NcsaSock  sock_utl.c
+NcsaSock  syslog.c
+NcsaSock  tcpglue.c
+NcsaSock  unixlib.c
+
+In addition, there must be another project included called
+       NAccLib
+
+This library should consist of the same modules as AccLib, but must contain
+the statement
+       #define _NETENT_
+in its THINK C "prefix".
+
+To create a combined Network/CD-ROM Entrez, use the same files as for
+the Network Entrez project, only replace the NAccLib project with another
+project called CAccLib, which is the same as AccLib but with the statement
+       #define _NET_AND_CD_
+in its THINK C "prefix".
+
+
+Also note several important items about the NcsaSock and NetCli libraries:
+   1) Not all of the necessary files are to be found in the distribution
+      tree, because some files are copyright by Apple. The copyright files
+      may be copied individually by each developer from the MacTCP
+      Developer Disk into the network:apple folder. The files to be copied
+      are:
+
+        dnr.c
+        AddressXlation.h
+        GetMyIPAddr.h
+        MacTCPCommonTypes.h
+        TCPPB.h
+        UDPPB.h
+    2) Because it is undesirable to modify this Apple source code, the
+       NcsaSock library must be compiled with the "Strict Prototype Enforcement"
+       Language Setting disabled. Most other libraries should be compiled
+       with this option enabled, and the "Require Prototypes" sub-option
+       selected.
+    3) The NetCli library should be compiled with the "Strict Prototype
+       Enforcement" Language Setting enabled, but with the "Infer Prototypes"
+       sub-option selected.
+    4) The NcsaSock library must be compiled with the 4-byte-integer option
+       enabled. All other libraries may be compiled with either the 2-byte
+       or 4-byte integer options, although all other libraries must be
+       consistent with one another. I.e., either all libraries (including
+       NcsaSock) must be compiled with 4-byte integers, or all libraries except
+       NcsaSock must be compiled with 2-byte integers, and the NcsaSock
+       library must be compiled with 4-byte integers. Note that the libraries
+       (ANSI, etc.) must be compiled with the same size integers as the
+       other non-NcsaSock projects.
+
+
+
+To create the Network Entrez configuration program, use the same libraries
+and procedures as for creating Network Entrez, but replace the browser
+files (avail.c, browser.c, chosen.c, fetch.c, and report.c) with entrezcf.c
+(which must reside in its own segment), and add the following to the Think C
+"prefix".
+       #define NETWORK_SUPPORTED

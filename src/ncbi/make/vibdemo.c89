@@ -1,0 +1,15 @@
+#	UNIX shell file to source to make Vibrant version of demos using
+#   gcc compiler on suns.  Just modify this according to the header info
+#   in makeall.unx for other systems.
+#	
+#	Sun with Gnu C [ make CC=gcc ]
+#
+#	To Make the Motif version of Vibrant libraries and add Vibrant front
+#   end to asntool, add:
+#      VIBLIBS="-lXm -lXmu -lXt -lX11" LIB4=libvibrant.a VIBFLAG="-I/am/Motif/include -DWIN_MOTIF"
+#   to the argument list.  Substitute the path to your Motif includes for
+#    /am/Motif/include.
+#	
+
+make -f makedemo.unx CC="c89 -common -O2"  VIBLIBS="-lDXm -lMrm -lXm -lXt -lX11" LIB4=-lvibrant VIBFLAG="-I/usr/include -I/usr/include/Xt -I/usr/include/Xm -DWIN_MOTIF" VIB=entrez
+

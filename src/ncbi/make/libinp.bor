@@ -1,0 +1,7 @@
+ +ncbimsg.obj +ncbimem.obj +ncbistr.obj +ncbifile.obj &
+ +ncbibs.obj +ncbitime.obj +ncbimain.obj +ncbienv.obj +ncbierr.obj &
+ +ncbiprop.obj +ncbisgml.obj +ncbimath.obj +ncbimisc.obj &
+ +asnprint.obj +asnio.obj +asnlex.obj &
+ +asnlext.obj +asntypes.obj +asnout.obj &
+ +asndebin.obj +asnenbin.obj +asngen.obj
+

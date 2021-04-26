@@ -1,0 +1,277 @@
+#   File:       makeall.make
+#   Target:     asntool
+#   Created:    Wednesday, January 6, 1993 4:18:06 PM
+
+CC = C
+CFLAGS = -model farData -r -w -i "{MPW}"ncbi:include: -o "{MPW}"ncbi:build:
+LFLAGS = ¶
+		-model far ¶
+		"{CLibraries}"CSANELib.o ¶
+		"{CLibraries}"Math.o ¶
+		#"{CLibraries}"Complex.o ¶
+		"{CLibraries}"StdClib.o ¶
+		"{Libraries}"Runtime.o ¶
+		"{Libraries}"Interface.o
+
+LIB1 = "{MPW}"ncbi:lib:libncbi.o
+LIB2 = "{MPW}"ncbi:lib:libncbiobj.o
+LIB3 = "{MPW}"ncbi:lib:libncbicdr.o
+LIB4 = "{MPW}"ncbi:lib:libvibrant.o
+LIB5 = "{MPW}"ncbi:lib:libncbiacc.o
+LIB6 = "{MPW}"ncbi:lib:libnetcli.o
+LIB7 = "{MPW}"ncbi:lib:libnetentr.o
+LIB8 = "{MPW}"ncbi:lib:libnetNacc.o
+LIB9 = "{MPW}"ncbi:lib:libnetCacc.o
+LIB10 = "{MPW}"ncbi:lib:libncsasock.o
+#
+# LIB11-14 are reserved
+#
+LIB15 = "{MPW}"ncbi:lib:libnetcliE.o
+NCBI_ENCR =
+#   See the discussion in network:encrypt:README for how to obtain
+#   the RSAREF source files.
+#
+# Uncomment the following line to make encrypted applications
+# NCBI_ENCR = E
+NETCLILIB = "{MPW}"ncbi:lib:libnetcli{NCBI_ENCR}.o
+
+OBJ6 = ¶
+		"{MPW}"ncbi:build:ni_error.c.o ¶
+		"{MPW}"ncbi:build:ni_lib.c.o ¶
+		"{MPW}"ncbi:build:ni_list.c.o ¶
+		"{MPW}"ncbi:build:ni_encrs.c.o ¶
+		"{MPW}"ncbi:build:ni_msg.c.o
+
+OBJ7 = ¶
+		"{MPW}"ncbi:build:netentr.c.o ¶
+		"{MPW}"ncbi:build:netlib.c.o ¶
+		"{MPW}"ncbi:build:objneten.c.o
+
+OBJ8 = ¶
+		"{MPW}"ncbi:build:Naccentr.c.o ¶
+		"{MPW}"ncbi:build:accutils.c.o
+
+OBJ9 = ¶
+		"{MPW}"ncbi:build:Caccentr.c.o ¶
+		"{MPW}"ncbi:build:accutils.c.o
+
+OBJ10 = ¶
+		"{MPW}"ncbi:build:dprintf.c.o ¶
+		"{MPW}"ncbi:build:netdb.c.o ¶
+		"{MPW}"ncbi:build:rexec.c.o ¶
+		"{MPW}"ncbi:build:sock_std.c.o ¶
+		"{MPW}"ncbi:build:sock_tcp.c.o ¶
+		"{MPW}"ncbi:build:sock_udp.c.o ¶
+		"{MPW}"ncbi:build:sock_utl.c.o ¶
+		"{MPW}"ncbi:build:socket.c.o ¶
+		"{MPW}"ncbi:build:syslog.c.o ¶
+		"{MPW}"ncbi:build:tcpglue.c.o ¶
+		"{MPW}"ncbi:build:unixlib.c.o ¶
+		"{MPW}"ncbi:build:dnr.c.o
+
+OBJ15 = ¶
+		"{MPW}"ncbi:build:ni_error.c.o ¶
+		"{MPW}"ncbi:build:ni_lib.c.o ¶
+		"{MPW}"ncbi:build:ni_list.c.o ¶
+		"{MPW}"ncbi:build:ni_encr.c.o ¶
+		"{MPW}"ncbi:build:ni_msg.c.o ¶
+		"{MPW}"ncbi:build:desc.c.o ¶
+		"{MPW}"ncbi:build:digit.c.o ¶
+		"{MPW}"ncbi:build:digitas.c.o ¶
+		"{MPW}"ncbi:build:md2c.c.o ¶
+		"{MPW}"ncbi:build:md5c.c.o ¶
+		"{MPW}"ncbi:build:nn.c.o ¶
+		"{MPW}"ncbi:build:prime.c.o ¶
+		"{MPW}"ncbi:build:r_encode.c.o ¶
+		"{MPW}"ncbi:build:r_enhanc.c.o ¶
+		"{MPW}"ncbi:build:r_keygen.c.o ¶
+		"{MPW}"ncbi:build:r_random.c.o ¶
+		"{MPW}"ncbi:build:r_stdlib.c.o ¶
+		"{MPW}"ncbi:build:rsa.c.o
+
+OBJENT = ¶
+		"{MPW}"ncbi:build:avail.c.o ¶
+		"{MPW}"ncbi:build:browser.c.o ¶
+		"{MPW}"ncbi:build:chosen.c.o ¶
+		"{MPW}"ncbi:build:fetch.c.o ¶
+		"{MPW}"ncbi:build:report.c.o
+
+EXE = ¶
+		Nentrez Centrez vclient netentcf
+
+"{MPW}"ncbi:include:ni_net.h ÄÄ "{MPW}"ncbi:network:nsclilib:ni_net.h
+	Duplicate "{MPW}"ncbi:network:ncsasock:Å.h "{MPW}"ncbi:include:
+	Duplicate "{MPW}"ncbi:network:apple:Å.h "{MPW}"ncbi:include:
+	Duplicate "{MPW}"ncbi:network:entrez:client:Å.h "{MPW}"ncbi:include:
+	Duplicate "{MPW}"ncbi:network:nsclilib:Å.h "{MPW}"ncbi:include:
+
+"{MPW}"ncbi:include:browser.h ÄÄ "{MPW}"ncbi:browser:browser.h
+	Duplicate "{MPW}"ncbi:browser:Å.h "{MPW}"ncbi:include:
+
+makenet ÄÄ "{MPW}"ncbi:include:ni_net.h {LIB6} {LIB7} {LIB8} {LIB9} {LIB10} {EXE}
+
+{LIB6} ÄÄ {OBJ6}
+	Lib {OBJ6}Å -o {LIB6}
+
+{LIB7} ÄÄ {OBJ7}
+	Lib {OBJ7}Å -o {LIB7}
+
+{LIB8} ÄÄ {OBJ8}
+	Lib {OBJ8}Å -o {LIB8}
+
+{LIB9} ÄÄ {OBJ9}
+	Lib {OBJ9}Å -o {LIB9}
+
+{LIB10} ÄÄ {OBJ10}
+	Lib {OBJ10}Å -o {LIB10}
+
+{LIB15} ÄÄ {OBJ15}
+	Lib {OBJ15}Å -o {LIB15}
+
+Nentrez ÄÄ "{MPW}"ncbi:link:macmpw:entrez.r "{MPW}"ncbi:link:macmpw:ncbiicon.r
+	Rez "{MPW}"ncbi:link:macmpw:entrez.r -append -o Nentrez
+	Rez "{MPW}"ncbi:link:macmpw:ncbiicon.r -append -o Nentrez
+
+Nentrez ÄÄ "{MPW}"ncbi:include:browser.h {OBJENT} {NETCLILIB}
+	Link -t APPL -c '????' ¶
+		{OBJENT} {LIB4} ¶
+		{LIB8} {LIB7} {NETCLILIB} {LIB10} {LIB3} {LIB2} {LIB1} {LFLAGS} ¶
+		-o Nentrez
+	SetFile -a B -c 'ENTZ' Nentrez
+
+Centrez ÄÄ "{MPW}"ncbi:link:macmpw:entrez.r "{MPW}"ncbi:link:macmpw:ncbiicon.r
+	Rez "{MPW}"ncbi:link:macmpw:entrez.r -append -o Centrez
+	Rez "{MPW}"ncbi:link:macmpw:ncbiicon.r -append -o Centrez
+
+Centrez ÄÄ "{MPW}"ncbi:include:browser.h {OBJENT} {NETCLILIB}
+	Link -t APPL -c '????' ¶
+		{OBJENT} {LIB4} ¶
+		{LIB9} {LIB7} {NETCLILIB} {LIB10} {LIB3} {LIB2} {LIB1} {LFLAGS} ¶
+		-o Centrez
+	SetFile -a B -c 'ENTZ' Centrez
+
+client ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o client
+
+client ÄÄ "{MPW}"ncbi:build:client.c.o {NETCLILIB}
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:client.c.o ¶
+		{NETCLILIB} {LIB10} {LIB1} {LFLAGS} ¶
+		-o client
+
+vclient ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o vclient
+
+vclient ÄÄ "{MPW}"ncbi:build:vclient.c.o {NETCLILIB}
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:vclient.c.o ¶
+		{LIB4} {NETCLILIB} {LIB10} {LIB1} {LFLAGS} ¶
+		-o vclient
+
+netentcf ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r "{MPW}"ncbi:link:macmpw:ncbiicon.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o netentcf
+	Rez "{MPW}"ncbi:link:macmpw:ncbiicon.r -append -o netentcf
+
+netentcf ÄÄ "{MPW}"ncbi:build:netentcf.c.o {NETCLILIB}
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:netentcf.c.o ¶
+		{LIB4} {LIB3} {LIB7} {NETCLILIB} {LIB10} {LIB1} {LFLAGS} ¶
+		-o netentcf
+	SetFile -a B -c 'ENTZ' netentcf
+
+
+"{MPW}"ncbi:build:Naccentr.c.o Ä "{MPW}"ncbi:cdromlib:accentr.c
+	{CC} {CFLAGS} -d _NETENT_ -s NAccSegA {NewerDeps} -o {Targ}
+"{MPW}"ncbi:build:Caccentr.c.o Ä "{MPW}"ncbi:cdromlib:accentr.c
+	{CC} {CFLAGS} -d _NET_AND_CD_ -s CAccSegA {NewerDeps} -o {Targ}
+"{MPW}"ncbi:build:accutils.c.o Ä "{MPW}"ncbi:cdromlib:accutils.c
+	{CC} {CFLAGS} -s AccSegA {NewerDeps} -o {Targ}
+"{MPW}"ncbi:build:ni_msg.c.o Ä "{MPW}"ncbi:network:nsclilib:ni_msg.c
+	{CC} {CFLAGS} -s NscSegB {NewerDeps}
+"{MPW}"ncbi:build:ni_encrs.c.o Ä "{MPW}"ncbi:network:nsclilib:ni_encrs.c
+	{CC} {CFLAGS} -s NscSegB {NewerDeps}
+"{MPW}"ncbi:build:ni_encr.c.o Ä "{MPW}"ncbi:network:nsclilib:ni_encr.c
+	{CC} {CFLAGS} -i "{MPW}"ncbi:network:encrypt:ripem:rsaref:source -s NscSegB {NewerDeps}
+"{MPW}"ncbi:build:ni_lib.c.o Ä "{MPW}"ncbi:network:nsclilib:ni_lib.c
+	{CC} {CFLAGS} -s NscSegA {NewerDeps}
+"{MPW}"ncbi:build:ni_error.c.o Ä "{MPW}"ncbi:network:nsclilib:ni_error.c
+	{CC} {CFLAGS} -s NscSegA {NewerDeps}
+"{MPW}"ncbi:build:ni_list.c.o Ä "{MPW}"ncbi:network:nsclilib:ni_list.c
+	{CC} {CFLAGS} -s NscSegA {NewerDeps}
+"{MPW}"ncbi:build:netentr.c.o Ä "{MPW}"ncbi:network:entrez:client:netentr.c
+	{CC} {CFLAGS} -s NentSegA {NewerDeps}
+"{MPW}"ncbi:build:netlib.c.o Ä "{MPW}"ncbi:network:entrez:client:netlib.c
+	{CC} {CFLAGS} -s NentSegA {NewerDeps}
+"{MPW}"ncbi:build:objneten.c.o Ä "{MPW}"ncbi:network:entrez:client:objneten.c
+	{CC} {CFLAGS} -s NetenSegB {NewerDeps}
+"{MPW}"ncbi:build:dprintf.c.o Ä "{MPW}"ncbi:network:ncsasock:dprintf.c
+	{CC} {CFLAGS} -s NcsaSegA {NewerDeps}
+"{MPW}"ncbi:build:netdb.c.o Ä "{MPW}"ncbi:network:ncsasock:netdb.c
+	{CC} {CFLAGS} -s NcsaSegA {NewerDeps}
+"{MPW}"ncbi:build:rexec.c.o Ä "{MPW}"ncbi:network:ncsasock:rexec.c
+	{CC} {CFLAGS} -s NcsaSegA {NewerDeps}
+"{MPW}"ncbi:build:sock_std.c.o Ä "{MPW}"ncbi:network:ncsasock:sock_std.c
+	{CC} {CFLAGS} -s NcsaSegA {NewerDeps}
+"{MPW}"ncbi:build:sock_tcp.c.o Ä "{MPW}"ncbi:network:ncsasock:sock_tcp.c
+	{CC} {CFLAGS} -s NcsaSegA {NewerDeps}
+"{MPW}"ncbi:build:sock_udp.c.o Ä "{MPW}"ncbi:network:ncsasock:sock_udp.c
+	{CC} {CFLAGS} -s NcsaSegA {NewerDeps}
+"{MPW}"ncbi:build:sock_utl.c.o Ä "{MPW}"ncbi:network:ncsasock:sock_utl.c
+	{CC} {CFLAGS} -s NcsaSegA {NewerDeps}
+"{MPW}"ncbi:build:socket.c.o Ä "{MPW}"ncbi:network:ncsasock:socket.c
+	{CC} {CFLAGS} -s NcsaSegA {NewerDeps}
+"{MPW}"ncbi:build:syslog.c.o Ä "{MPW}"ncbi:network:ncsasock:syslog.c
+	{CC} {CFLAGS} -s NcsaSegA {NewerDeps}
+"{MPW}"ncbi:build:tcpglue.c.o Ä "{MPW}"ncbi:network:ncsasock:tcpglue.c
+	{CC} {CFLAGS} -s NcsaSegA {NewerDeps}
+"{MPW}"ncbi:build:unixlib.c.o Ä "{MPW}"ncbi:network:ncsasock:unixlib.c
+	{CC} {CFLAGS} -s NcsaSegA {NewerDeps}
+"{MPW}"ncbi:build:dnr.c.o Ä "{MPW}"ncbi:network:apple:dnr.c
+	{CC} {CFLAGS} -s NcsaSegA {NewerDeps}
+
+"{MPW}"ncbi:build:vclient.c.o Ä "{MPW}"ncbi:network:nsdemocl:vclient.c
+	{CC} {CFLAGS} -s MainSeg  {NewerDeps}
+"{MPW}"ncbi:build:client.c.o Ä "{MPW}"ncbi:network:nsdemocl:client.c
+	{CC} {CFLAGS} -s MainSeg  {NewerDeps}
+
+"{MPW}"ncbi:build:netentcf.c.o Ä "{MPW}"ncbi:demo:entrezcf.c
+	{CC} {CFLAGS} -d NETWORK_SUPPORTED -s MainSeg {NewerDeps} -o {Targ}
+
+"{MPW}"ncbi:build:avail.c.o Ä "{MPW}"ncbi:browser:avail.c
+	{CC} {CFLAGS} -s EntSegB  "{MPW}"ncbi:browser:avail.c
+"{MPW}"ncbi:build:browser.c.o Ä "{MPW}"ncbi:browser:browser.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:browser:browser.c
+"{MPW}"ncbi:build:chosen.c.o Ä "{MPW}"ncbi:browser:chosen.c
+	{CC} {CFLAGS} -s EntSegB  "{MPW}"ncbi:browser:chosen.c
+"{MPW}"ncbi:build:fetch.c.o Ä "{MPW}"ncbi:browser:fetch.c
+	{CC} {CFLAGS} -s EntSegC  "{MPW}"ncbi:browser:fetch.c
+"{MPW}"ncbi:build:report.c.o Ä "{MPW}"ncbi:browser:report.c
+	{CC} {CFLAGS} -s EntSegD  "{MPW}"ncbi:browser:report.c
+
+"{MPW}"ncbi:build:desc.c.o Ä "{MPW}"ncbi:network:encrypt:ripem:rsaref:source:desc.c
+	{CC} {CFLAGS} -i "{MPW}"ncbi:network:encrypt:ripem:rsaref:source -s RsaSeg  {NewerDeps}
+"{MPW}"ncbi:build:digit.c.o Ä "{MPW}"ncbi:network:encrypt:ripem:rsaref:source:digit.c
+	{CC} {CFLAGS} -i "{MPW}"ncbi:network:encrypt:ripem:rsaref:source -s RsaSeg  {NewerDeps}
+"{MPW}"ncbi:build:digitas.c.o Ä "{MPW}"ncbi:network:encrypt:ripem:rsaref:source:digitas.c
+	{CC} {CFLAGS} -i "{MPW}"ncbi:network:encrypt:ripem:rsaref:source -s RsaSeg  {NewerDeps}
+"{MPW}"ncbi:build:md2c.c.o Ä "{MPW}"ncbi:network:encrypt:ripem:rsaref:source:md2c.c
+	{CC} {CFLAGS} -i "{MPW}"ncbi:network:encrypt:ripem:rsaref:source -s RsaSeg  {NewerDeps}
+"{MPW}"ncbi:build:md5c.c.o Ä "{MPW}"ncbi:network:encrypt:ripem:rsaref:source:md5c.c
+	{CC} {CFLAGS} -i "{MPW}"ncbi:network:encrypt:ripem:rsaref:source -s RsaSeg  {NewerDeps}
+"{MPW}"ncbi:build:nn.c.o Ä "{MPW}"ncbi:network:encrypt:ripem:rsaref:source:nn.c
+	{CC} {CFLAGS} -i "{MPW}"ncbi:network:encrypt:ripem:rsaref:source -s RsaSeg  {NewerDeps}
+"{MPW}"ncbi:build:prime.c.o Ä "{MPW}"ncbi:network:encrypt:ripem:rsaref:source:prime.c
+	{CC} {CFLAGS} -i "{MPW}"ncbi:network:encrypt:ripem:rsaref:source -s RsaSeg  {NewerDeps}
+"{MPW}"ncbi:build:r_encode.c.o Ä "{MPW}"ncbi:network:encrypt:ripem:rsaref:source:r_encode.c
+	{CC} {CFLAGS} -i "{MPW}"ncbi:network:encrypt:ripem:rsaref:source -s RsaSeg  {NewerDeps}
+"{MPW}"ncbi:build:r_enhanc.c.o Ä "{MPW}"ncbi:network:encrypt:ripem:rsaref:source:r_enhanc.c
+	{CC} {CFLAGS} -i "{MPW}"ncbi:network:encrypt:ripem:rsaref:source -s RsaSeg  {NewerDeps}
+"{MPW}"ncbi:build:r_keygen.c.o Ä "{MPW}"ncbi:network:encrypt:ripem:rsaref:source:r_keygen.c
+	{CC} {CFLAGS} -i "{MPW}"ncbi:network:encrypt:ripem:rsaref:source -s RsaSeg  {NewerDeps}
+"{MPW}"ncbi:build:r_random.c.o Ä "{MPW}"ncbi:network:encrypt:ripem:rsaref:source:r_random.c
+	{CC} {CFLAGS} -i "{MPW}"ncbi:network:encrypt:ripem:rsaref:source -s RsaSeg  {NewerDeps}
+"{MPW}"ncbi:build:r_stdlib.c.o Ä "{MPW}"ncbi:network:encrypt:ripem:rsaref:source:r_stdlib.c
+	{CC} {CFLAGS} -i "{MPW}"ncbi:network:encrypt:ripem:rsaref:source -s RsaSeg  {NewerDeps}
+"{MPW}"ncbi:build:rsa.c.o Ä "{MPW}"ncbi:network:encrypt:ripem:rsaref:source:rsa.c
+	{CC} {CFLAGS} -i "{MPW}"ncbi:network:encrypt:ripem:rsaref:source -s RsaSeg  {NewerDeps}
+

@@ -1,0 +1,244 @@
+#	makefile for asntool and ncbi core routines,
+#	cdromlib data access functions, vibrant, and entrez
+#	Sun with unbundled ANSI compiler [ make LCL=acc RAN=ranlib CC=acc ]
+#	Sun with Gnu C [ make LCL=gcc RAN=ranlib CC=gcc ]
+#   Sun with Solaris 2.x OS [ make LCL=sol CC="cc -Xa" ]
+#	Silicon Graphics [ make LCL=sgi OTHERLIBS="-lm -lPW -lsun" ]
+#	IBM 3090 with AIX [ make LCL=370 ]
+#	ULTRIX [ make LCL=ult RAN=ranlib ]
+#	Apple AUX [ make LCL=aux SHELL=\usr\bin ]
+#	NeXt [ make LCL=nxt CFLAGS1="-c -ansi" RAN=ranlib ]
+#	DEC Alpha under OSF/1  [ make LCL=alf CC=cc RAN=ranlib ]
+#
+#   see README for other supported systems
+#	
+#	Subsequent makes should make ... nocopy instead of make ... all
+#	to avoid recopying the include files
+#
+#	To Make the Motif version of Vibrant libraries and add Vibrant front
+#   end to asntool, add:
+#      VIBLIBS="-lXm -lXmu -lXt -lX11" LIB4=libvibrant.a VIBFLAG="-I/am/Motif/include -DWIN_MOTIF"
+#   to the argument list.  Substitute the path to your Motif includes for
+#    /am/Motif/include.
+#
+#   Motif versions on Solaris 2.x are more complicated
+#
+#   make LCL=sol CC="cc -Xa"
+# VIBLIBS="-L/netopt/X11R5/lib -L/netopt/Motif1.2.2/lib -lXm -lXmu -lXt -lX11"
+# LIB4=libvibrant.a
+# VIBFLAG="-I/netopt/X11R5/include -I/netopt/Motif1.2.2/include -DWIN_MOTIF"
+#      
+#   (this can be sourced from ncbi/make/viball.sol)
+#   again, you must set the paths to the Motif libs properly for your system
+#	
+#
+#   NOTE: some make utilities (like SGI and IBM 3090) do not like a target
+#     which is undefined.  This would be $(LIB4) if you are not making a
+#     vibrant version.  Thus, this library target must be deleted on those
+#     systems.  The section to be deleted is marked below with DELETE
+#
+
+# default flags for compiling and loading
+
+SUFFIXLCL = $(LCL)
+CFLAGS1 = -c -O
+LDFLAGS1 = -O
+CC = cc
+RAN = ls
+AR=ar
+OTHERLIBS = -lm
+VIBLIBS = 
+VIBFLAG =
+
+SUFFIXENV = unx
+ASNDIR = asnstat
+LIB1 = libncbi.a
+LIB2 = libncbiobj.a
+LIB3 = libncbicdr.a
+LIB4 = libvibrant.a
+LIB4 =
+LIB5 = libncbiacc.a
+LIB6 = libnetcli.a
+LIB7 = libnetentr.a
+LIB8 = libncbiNacc.a
+LIB9 = libncbiCacc.a
+# LIB10 is reserved for ncsasock
+LIB10 =
+
+NCBI_INCDIR = ../include
+NCBI_LIBDIR = ../lib
+
+CFLAGS = $(CFLAGS1) -I$(NCBI_INCDIR) $(VIBFLAG)
+LDFLAGS = $(LDFLAGS1) -I$(NCBI_INCDIR) $(VIBFLAG) -L$(NCBI_LIBDIR)
+
+##
+## some things to make
+##
+
+# sources needed for versions of asntool and entrez
+
+SRC1 =	ncbibs.c ncbierr.c ncbienv.c ncbifile.c ncbiprop.c \
+	ncbimain.c ncbimath.c ncbimem.c ncbimisc.c \
+	ncbimsg.c ncbistr.c ncbitime.c ncbisgml.c \
+	asndebin.c asnenbin.c asngen.c asnio.c asnlex.c \
+	asnlext.c asnout.c asnprint.c asntypes.c
+
+SRC2 =	objacces.c objalign.c objall.c objbibli.c \
+	objfeat.c objgen.c objloc.c objmedli.c objpub.c \
+	objres.c objseq.c objblock.c objcode.c objsset.c \
+	objsub.c objprt.c seqport.c sequtil.c prtutil.c \
+	simple.c tofasta.c tofile.c tognbk1.c \
+	tognbk2.c tognbk3.c tomedlin.c toreport.c \
+	valid.c subutil.c edutil.c
+
+SRC3 =	cdentrez.c cdromlib.c casn.c cdconfig.c
+
+SRC4 =	vibbutns.c vibextra.c vibfiles.c vibgroup.c \
+	viblists.c vibmenus.c vibprmpt.c \
+	vibsbars.c vibslate.c vibtexts.c \
+	vibutils.c vibwndws.c ncbidraw.c \
+	drawing.c mapping.c picture.c viewer.c \
+	document.c table.c palette.c
+
+SRC5 =	accentr.c accutils.c
+
+SRC6 =  ni_lib.c ni_msg.c ni_error.c ni_list.c ni_encrs.c
+
+SRC7 =  netentr.c netlib.c objneten.c
+
+SRC11 = objmla.c medarch.c
+
+SRC12 = objtaxon.c taxarch.c
+
+
+# objects needed for versions of asntool and entrez
+
+OBJ1 =	ncbibs.o ncbierr.o ncbienv.o ncbifile.o ncbimain.o ncbiprop.o \
+	ncbimath.o ncbimem.o ncbimisc.o ncbimsg.o ncbistr.o ncbisgml.o \
+	ncbitime.o asndebin.o asnenbin.o asngen.o asnio.o \
+	asnlex.o asnlext.o asnout.o asnprint.o asntypes.o
+
+OBJ2 =	objacces.o objalign.o objall.o objbibli.o objfeat.o \
+	objgen.o objloc.o objmedli.o objpub.o objres.o objseq.o \
+	objblock.o objcode.o objsset.o objsub.o objprt.o \
+	seqport.o sequtil.o prtutil.o simple.o tofasta.o \
+	tofile.o tognbk1.o tognbk2.o tognbk3.o tomedlin.o toreport.o \
+	valid.o subutil.o edutil.o
+
+OBJ3 =  cdentrez.o cdromlib.o casn.o cdconfig.o
+
+OBJ4 =	vibbutns.o vibextra.o vibfiles.o vibgroup.o \
+	viblists.o vibmenus.o vibprmpt.o \
+	vibsbars.o vibslate.o vibtexts.o \
+	vibutils.o vibwndws.o ncbidraw.o \
+	drawing.o mapping.o picture.o viewer.o \
+	document.o table.o palette.o
+
+OBJ5 =	accentr.o accutils.o
+
+OBJ6 =  ni_lib.o ni_msg.o ni_error.o ni_list.o ni_encrs.o
+
+OBJ7 =  netentr.o netlib.o objneten.o
+
+OBJ11 = objmla.o medarch.o
+
+OBJ12 = objtaxon.o taxarch.o
+   
+## All things to make
+##
+all : copy nocopy asntool
+
+nocopy : sources $(LIB1) $(LIB2) $(LIB3) $(LIB4) $(LIB5)
+
+sources : $(SRC1) $(SRC2) $(SRC3) $(SRC4) $(SRC5)
+
+## To clean out the directory without removing make
+##
+clean :
+	- rm -f *.[acho]
+
+## Implicit actions
+##
+
+.c.o :
+	$(CC) $(CFLAGS) $<
+
+## get all the source files
+##
+
+copy :
+	- chmod +w ../include/*
+	- chmod +w *
+	cp ../corelib/ncbi*.h ../include
+	cp ../corelib/ncbilcl.$(SUFFIXLCL) ../include/ncbilcl.h
+	cp ../corelib/*.c .
+	cp ../corelib/core*.h .
+	- chmod +w *.c
+	cp ../corelib/ncbimain.$(SUFFIXENV) ncbimain.c
+	cp ../asnlib/*.h .
+	mv asn.h ../include
+	cp ../asnlib/*.c .
+	cp ../object/*.c .
+	cp ../object/*.h ../include
+	cp ../$(ASNDIR)/*.h ../include
+	cp ../api/*.h ../include
+	cp ../api/*.c .
+	cp ../cdromlib/*.h ../include
+	cp ../cdromlib/*.c .
+	cp ../vibrant/*.h ../include
+	cp ../vibrant/*.c .
+	- chmod +w ../include/*
+	- chmod +w *
+
+## make libraries
+##
+
+$(LIB1) : $(OBJ1)
+	- rm -f $(LIB1)
+	$(AR) cru $(LIB1) $(OBJ1)
+	cp $(LIB1) $(NCBI_LIBDIR)
+	$(RAN) $(NCBI_LIBDIR)/$(LIB1)
+
+$(LIB2) : $(OBJ2)
+	- rm -f $(LIB2)
+	$(AR) cru $(LIB2) $(OBJ2)
+	cp $(LIB2) $(NCBI_LIBDIR)
+	$(RAN) $(NCBI_LIBDIR)/$(LIB2)
+
+$(LIB3) : $(OBJ3)
+	- rm -f $(LIB3)
+	$(AR) cru $(LIB3) $(OBJ3)
+	cp $(LIB3) $(NCBI_LIBDIR)
+	$(RAN) $(NCBI_LIBDIR)/$(LIB3)
+
+#  DELETE You may have to delete this part to make non-vibrant version
+#   on some machines (eg. SGI and IBM 3090)
+
+$(LIB4) : $(OBJ4)
+	- rm -f $(LIB4)
+	$(AR) cru $(LIB4) $(OBJ4)
+	cp $(LIB4) $(NCBI_LIBDIR)
+	$(RAN) $(NCBI_LIBDIR)/$(LIB4)
+
+#	END DELETE section 
+
+$(LIB5) : $(OBJ5)
+	- rm -f $(LIB5)
+	$(AR) cru $(LIB5) $(OBJ5)
+	cp $(LIB5) $(NCBI_LIBDIR)
+	$(RAN) $(NCBI_LIBDIR)/$(LIB5)
+
+## make asntool application
+##  This is ALWAYS the command line version
+
+# asntool
+
+asntool : asntool.c $(LIB1)
+	$(CC) -o asntool $(LDFLAGS) asntool.c $(NCBI_LIBDIR)/$(LIB1) $(OTHERLIBS)
+	cp asntool ../bin
+
+
+getmuid.src :
+	#load $(LDFLAGS) getmuid.c medutil.c \
+	$(SRC11) $(SRC8) $(SRC7) $(SRC6) $(SRC5) $(SRC3) \
+	$(SRC2) $(SRC1) $(OTHERLIBS) /am/SunPro/SC2.0.1/libansi.a

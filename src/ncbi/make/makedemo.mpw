@@ -1,0 +1,215 @@
+#   File:       makedemo.make
+#   Target:     entrez
+#   Created:    Monday, June 22, 1992 1:18:06 PM
+
+CC = C
+CFLAGS = -model farData -r -w -i "{MPW}"ncbi:include: -o "{MPW}"ncbi:build:
+LFLAGS = ¶
+		-model far ¶
+		"{CLibraries}"CSANELib.o ¶
+		"{CLibraries}"Math.o ¶
+		#"{CLibraries}"Complex.o ¶
+		"{CLibraries}"StdClib.o ¶
+		"{Libraries}"Runtime.o ¶
+		"{Libraries}"Interface.o
+
+LIB1 = "{MPW}"ncbi:lib:libncbi.o
+LIB2 = "{MPW}"ncbi:lib:libncbiobj.o
+LIB3 = "{MPW}"ncbi:lib:libncbicdr.o
+LIB4 = "{MPW}"ncbi:lib:libvibrant.o
+LIB5 = "{MPW}"ncbi:lib:libncbiacc.o
+
+OBJENT = ¶
+		"{MPW}"ncbi:build:avail.c.o ¶
+		"{MPW}"ncbi:build:browser.c.o ¶
+		"{MPW}"ncbi:build:chosen.c.o ¶
+		"{MPW}"ncbi:build:fetch.c.o ¶
+		"{MPW}"ncbi:build:report.c.o
+
+EXE = ¶
+		testcore getmesh indexpub getpub testobj ¶
+		seqtest dosimple asn2gnbk asn2rpt getseq ¶
+		getfeat checksub entrez asndhuff entrezcf
+
+"{MPW}"ncbi:include:browser.h ÄÄ "{MPW}"ncbi:browser:browser.h
+	Duplicate "{MPW}"ncbi:browser:Å.h "{MPW}"ncbi:include:
+
+makedemo ÄÄ "{MPW}"ncbi:include:browser.h {EXE}
+
+testcore ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o testcore
+
+testcore ÄÄ "{MPW}"ncbi:build:testcore.c.o
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:testcore.c.o ¶
+		{LIB4} {LIB1} {LFLAGS} ¶
+		-o testcore
+
+getmesh ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o getmesh
+
+getmesh ÄÄ "{MPW}"ncbi:build:getmesh.c.o
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:getmesh.c.o ¶
+		{LIB4} {LIB1} {LFLAGS} ¶
+		-o getmesh
+
+indexpub ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o indexpub
+
+indexpub ÄÄ "{MPW}"ncbi:build:indexpub.c.o
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:indexpub.c.o ¶
+		{LIB4} {LIB1} {LFLAGS} ¶
+		-o indexpub
+
+getpub ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o getpub
+
+getpub ÄÄ "{MPW}"ncbi:build:getpub.c.o
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:getpub.c.o ¶
+		{LIB4} {LIB1} {LFLAGS} ¶
+		-o getpub
+
+testobj ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o testobj
+
+testobj ÄÄ "{MPW}"ncbi:build:testobj.c.o
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:testobj.c.o ¶
+		{LIB4} {LIB2} {LIB1} {LFLAGS} ¶
+		-o testobj
+
+seqtest ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o seqtest
+
+seqtest ÄÄ "{MPW}"ncbi:build:seqtest.c.o
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:seqtest.c.o ¶
+		{LIB4} {LIB2} {LIB1} {LFLAGS} ¶
+		-o seqtest
+
+dosimple ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o dosimple
+
+dosimple ÄÄ "{MPW}"ncbi:build:dosimple.c.o
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:dosimple.c.o ¶
+		{LIB4} {LIB2} {LIB1} {LFLAGS} ¶
+		-o dosimple
+
+asn2gnbk ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o asn2gnbk
+
+asn2gnbk ÄÄ "{MPW}"ncbi:build:asn2gnbk.c.o
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:asn2gnbk.c.o ¶
+		{LIB4} {LIB2} {LIB1} {LFLAGS} ¶
+		-o asn2gnbk
+
+asn2rpt ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o asn2rpt
+
+asn2rpt ÄÄ "{MPW}"ncbi:build:asn2rpt.c.o
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:asn2rpt.c.o ¶
+		{LIB4} {LIB2} {LIB1} {LFLAGS} ¶
+		-o asn2rpt
+
+getseq ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o getseq
+
+getseq ÄÄ "{MPW}"ncbi:build:getseq.c.o
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:getseq.c.o ¶
+		{LIB4} {LIB5} {LIB3} {LIB2} {LIB1} {LFLAGS} ¶
+		-o getseq
+
+getfeat ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o getfeat
+
+getfeat ÄÄ "{MPW}"ncbi:build:getfeat.c.o
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:getfeat.c.o ¶
+		{LIB4} {LIB5} {LIB3} {LIB2} {LIB1} {LFLAGS} ¶
+		-o getfeat
+
+checksub ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o checksub
+
+checksub ÄÄ "{MPW}"ncbi:build:checksub.c.o
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:checksub.c.o ¶
+		{LIB4} {LIB2} {LIB1} {LFLAGS} ¶
+		-o checksub
+
+entrez ÄÄ "{MPW}"ncbi:link:macmpw:entrez.r "{MPW}"ncbi:link:macmpw:ncbiicon.r
+	Rez "{MPW}"ncbi:link:macmpw:entrez.r -append -o entrez
+	Rez "{MPW}"ncbi:link:macmpw:ncbiicon.r -append -o entrez
+
+entrez ÄÄ "{MPW}"ncbi:include:browser.h {OBJENT}
+	Link -t APPL -c '????' ¶
+		{OBJENT} ¶
+		{LIB4} {LIB5} {LIB3} {LIB2} {LIB1} {LFLAGS} ¶
+		-o entrez
+	SetFile -a B -c 'ENTZ' entrez
+
+asndhuff ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o asndhuff
+
+asndhuff ÄÄ "{MPW}"ncbi:build:asndhuff.c.o
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:asndhuff.c.o ¶
+		{LIB4} {LIB5} {LIB3} {LIB2} {LIB1} {LFLAGS} ¶
+		-o asndhuff
+
+entrezcf ÄÄ "{MPW}"ncbi:link:macmpw:ncbi.r "{MPW}"ncbi:link:macmpw:ncbiicon.r
+	Rez "{MPW}"ncbi:link:macmpw:ncbi.r -append -o entrezcf
+	Rez "{MPW}"ncbi:link:macmpw:ncbiicon.r -append -o entrezcf
+
+entrezcf ÄÄ "{MPW}"ncbi:build:entrezcf.c.o
+	Link -t APPL -c '????' ¶
+		"{MPW}"ncbi:build:entrezcf.c.o ¶
+		{LIB4} {LIB3} {LIB1} {LFLAGS} ¶
+		-o entrezcf
+	SetFile -a B -c 'ENTZ' entrezcf
+
+"{MPW}"ncbi:build:avail.c.o Ä "{MPW}"ncbi:browser:avail.c
+	{CC} {CFLAGS} -s EntSegB  "{MPW}"ncbi:browser:avail.c
+"{MPW}"ncbi:build:browser.c.o Ä "{MPW}"ncbi:browser:browser.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:browser:browser.c
+"{MPW}"ncbi:build:chosen.c.o Ä "{MPW}"ncbi:browser:chosen.c
+	{CC} {CFLAGS} -s EntSegB  "{MPW}"ncbi:browser:chosen.c
+"{MPW}"ncbi:build:fetch.c.o Ä "{MPW}"ncbi:browser:fetch.c
+	{CC} {CFLAGS} -s EntSegC  "{MPW}"ncbi:browser:fetch.c
+"{MPW}"ncbi:build:report.c.o Ä "{MPW}"ncbi:browser:report.c
+	{CC} {CFLAGS} -s EntSegD  "{MPW}"ncbi:browser:report.c
+"{MPW}"ncbi:build:testcore.c.o Ä "{MPW}"ncbi:demo:testcore.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:demo:testcore.c
+"{MPW}"ncbi:build:getmesh.c.o Ä "{MPW}"ncbi:demo:getmesh.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:demo:getmesh.c
+"{MPW}"ncbi:build:indexpub.c.o Ä "{MPW}"ncbi:demo:indexpub.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:demo:indexpub.c
+"{MPW}"ncbi:build:getpub.c.o Ä "{MPW}"ncbi:demo:getpub.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:demo:getpub.c
+"{MPW}"ncbi:build:testobj.c.o Ä "{MPW}"ncbi:demo:testobj.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:demo:testobj.c
+"{MPW}"ncbi:build:seqtest.c.o Ä "{MPW}"ncbi:demo:seqtest.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:demo:seqtest.c
+"{MPW}"ncbi:build:dosimple.c.o Ä "{MPW}"ncbi:demo:dosimple.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:demo:dosimple.c
+"{MPW}"ncbi:build:asn2gnbk.c.o Ä "{MPW}"ncbi:demo:asn2gnbk.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:demo:asn2gnbk.c
+"{MPW}"ncbi:build:asn2rpt.c.o Ä "{MPW}"ncbi:demo:asn2rpt.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:demo:asn2rpt.c
+"{MPW}"ncbi:build:getseq.c.o Ä "{MPW}"ncbi:demo:getseq.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:demo:getseq.c
+"{MPW}"ncbi:build:getfeat.c.o Ä "{MPW}"ncbi:demo:getfeat.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:demo:getfeat.c
+"{MPW}"ncbi:build:checksub.c.o Ä "{MPW}"ncbi:demo:checksub.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:demo:checksub.c
+"{MPW}"ncbi:build:asndhuff.c.o Ä "{MPW}"ncbi:demo:asndhuff.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:demo:asndhuff.c
+"{MPW}"ncbi:build:entrezcf.c.o Ä "{MPW}"ncbi:demo:entrezcf.c
+	{CC} {CFLAGS} -s MainSeg  "{MPW}"ncbi:demo:entrezcf.c

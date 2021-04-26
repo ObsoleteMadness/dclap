@@ -1,0 +1,6 @@
+/Tw C0Wl  getseq.obj
+getseq.exe
+
+IMPORT ..\lib\vibrant.lib ..\lib\ncbiacc.lib ..\lib\ncbicdr.lib +
+..\lib\ncbiobj.lib ..\lib\ncbi.lib CWl mathwl
+getseq.def

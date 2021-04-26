@@ -1,0 +1,16 @@
+#	UNIX shell file to source to make Vibrant version of tools using
+#   acc compiler on suns.  Just modify this according to the header info
+#   in makeall.unx for other systems.
+#
+#   Sun with unbundled ANSI compiler [ make LCL=acc RAN=ranlib CC=acc ]
+#	
+#	To Make the Motif version of Vibrant libraries and add Vibrant front
+#   end to asntool, add:
+#      VIBLIBS="-lXm -lXmu -lXt -lX11" LIB4=libvibrant.a VIBFLAG="-I/am/Motif/include -DWIN_MOTIF"
+#   to the argument list.  Substitute the path to your Motif includes for
+#    /am/Motif/include.
+#	
+#  ERROR messages are redirected to the file "errs"
+
+make LCL=acc RAN=ranlib CC=acc  VIBLIBS="-lXm -lXmu -lXt -lX11" LIB4=libvibrant.a VIBFLAG="-I/am/Motif/include -DWIN_MOTIF" >& errs
+
