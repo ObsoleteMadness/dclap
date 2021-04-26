@@ -1,8 +1,10 @@
 # dclap
 Don's Class Application (DCLAP) library is a C++ class library for building applications on the common windowing operating systems (Macintosh, MS-Windows, XWindow-Motif and possibly others).
 
+The DCLAP code also contains source code for GopherPup and SeqPup. This may be of historic interest as it is an early cross-platform Gopher+ client with many advanced features. 
+
 ## Releases
-I could find two released of DCLAP, 5b and 6d. Both are included here, please see Github releases.
+I could find two released of DCLAP, 5b and 6d. Both are included here, please see Github [tags](https://github.com/ObsoleteMadness/dclap/tags).
 
 ## Original Readme
 
