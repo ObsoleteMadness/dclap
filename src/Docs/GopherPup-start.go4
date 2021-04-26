@@ -1,0 +1,20 @@
++INFO: 1IUBio-Archive		ftp.bio.indiana.edu	71	+
++MENULINE: 5 7 5 19
++INFO: hIUBio-Archive via HTTP	/	iubio.bio.indiana.edu	80	+
++URL:  http://iubio.bio.indiana.edu/ 
++MENULINE: 5 34 5 42
++INFO: 0IUBio-door	9/This-Gopher/gopup/IUBio-door	ftp.bio.indiana.edu	71	+
++MENULINE: 5 53 5 73
++INFO: hVirtual Library @ CERN	/hypertext/DataSources/bySubject/Overview.html	info.cern.ch	80	+
++URL:  http://info.cern.ch/hypertext/DataSources/bySubject/Overview.html 
++MENULINE: 10 0 10 22
++INFO: 1gopherpup	1/IUBio-Software+Data/util/dclap/apps/gopherpup	ftp.bio.indiana.edu	70	+
++MENULINE: 28 56 28 89
++INFO: 1DClap docs	1/IUBio-Software+Data/util/dclap/docs	ftp.bio.indiana.edu	70	+
++MENULINE: 28 101 28 174
++INFO: 0waisfree-2b4bio.readme	0/IUBio-Software+Data/util/wais/waisfree-2b4bio.readme	ftp.bio.indiana.edu	70	+
++MENULINE: 31 38 31 78
++INFO: 1University of Minnesota Mother Gopher		gopher.micro.umn.edu	70	+
++MENULINE: 8 0 8 30
++INFO: 1Washington & Lee Univ.		liberty.uc.wlu.edu	70	+
++MENULINE: 9 0 9 26

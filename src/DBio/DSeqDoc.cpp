@@ -1,7 +1,7 @@
 // DSeqDoc.cp
 
-#define MASKS 1
 #define ETEXT 1
+
 
 #include "DSeqDoc.h"
 #include <ncbi.h>
@@ -19,6 +19,7 @@
 #include <DMenu.h>
 #include <DUtil.h>
 #include <DFindDlog.h>
+#include "DRichHandler.h"
 #include "DSeqFile.h"
 #include "DSeqEd.h"
 #include "DSeqMail.h"
@@ -28,7 +29,9 @@
 #include "DSeqPict.h"
 #include "DSeqViews.h"
 
-#include "DRichHandler.h"
+//#include "DSeqAsmView.h"
+
+
 
 Global char* gDefSeqName = NULL;
 static char gDefSeqNameStore[128];
@@ -41,6 +44,7 @@ short		 DSeqDoc::fgViewMode = DAlnView::kModeSlide;
 //Boolean  DSeqDoc::fgUseColor = false;  
 short		 DSeqDoc::fgUseColor = DAlnView::kBaseColor;
 Nlm_RecT DSeqDoc::fgWinRect = { 0, 0, 0, 0 };
+char *	 DSeqDoc::fgSire = "SPup";
 
 
 
@@ -95,6 +99,8 @@ DAlnColorPopup::DAlnColorPopup(long id, DView* superior, short defaultvalue) :
 	AddItem( "Black");
 	AddItem( "Color");
 	AddItem( "Align");
+	AddItem( "Back color");
+	AddItem( "Back align");
 	this->SetValue(defaultvalue +1 - DAlnView::kBaseBlack);
 }
 
@@ -140,8 +146,9 @@ void DAlnFindDialog::DoFind()
 	const char	*target;
 	Boolean back;
 	Nlm_RecT selr;
-	short		selrow;
+	long		selrow;
 	
+	//fAlnView->DeInstallEditSeq(); //?? reinstall after ?
 	fSequence= fAlnView->SelectedSequence(selrow);
 	fRow= selrow;
 	if (fSequence) {
@@ -168,8 +175,9 @@ void DAlnFindDialog::DoFind()
 				fSequence->SetSelection( match, nBases);
 				selr.left= match;
 				selr.right= match + nBases;
-				fAlnView->SelectCells( selr); // !? this is bad
-				//fAlnView->InvalidateSelection();
+				fAlnView->SelectCells( selr);  
+				if (fAlnView->fEditSeq && fAlnView->fEditRow == selrow)
+					fAlnView->fEditSeq->Select(match, nBases);
 				}
 			}
 		}
@@ -214,24 +222,27 @@ DSeqDoc::DSeqDoc( long id, DSeqList* itsSeqList, char* name) :
 
 DSeqDoc::~DSeqDoc()
 {
-#if 0
-		// done now as part of ~DTaskMaster !
-	if (gLastCommand) { 
-	
-		// !! MUST delete any tasks/commands owned by window in task queue !!
-		// at least any 'edit seq' tasks...
-
-	  if (((DView*)gLastCommand->fSource)->GetWindow() == this) {
-			delete gLastCommand; gLastCommand= NULL; 
-			}  
+	fAlnView->DeInstallEditSeq(); 
+	if (fSeqList) { 
+		//fSeqList->FreeAllObjects(); 
+		//fSeqList->suicide(); // need this for other users of list ??
+		fSeqList->fDeleteObjects= true; 
+		delete fSeqList; // knows how to delete
 		}
-#endif
-	if (fSeqList) { fSeqList->FreeAllObjects(); fSeqList->suicide(); }
 }
 
 void DSeqDoc::FreeData()
 {
-	if (fSeqList) { fSeqList->FreeAllObjects(); }
+	fAlnView->DeInstallEditSeq(); 
+	if (fSeqList) { 
+		//fSeqList->FreeAllObjects(); // DaMN !! THIS IS NOT CALLING Seq Destructors !!
+		long i, n= fSeqList->GetSize();
+		for (i=0; i<n; i++) {
+			DSequence* aseq= fSeqList->SeqAt(i);
+			delete aseq;
+			}
+		fSeqList->DeleteAll();
+		}
 }
 
 
@@ -296,6 +307,26 @@ void DSeqDoc::Open(DFile* aFile)
 }
 
 
+void DSeqDoc::Revert()
+{
+	char buf[512];
+	char *name= GetFilename(buf, sizeof(buf));
+	DFile aFile(name);
+	fAlnView->DeInstallEditSeq(); 
+	if ( ReadFrom( &aFile, false) ) {
+		//this->Open();
+		DSaveHandler::NotDirty();
+		fAlnView->GetReadyToShow();  
+		fAlnView->Invalidate();
+		fAlnITitle->GetReadyToShow();
+		if (fAlnIndex){
+			fAlnIndex->GetReadyToShow();
+			fAlnIndex->Invalidate();
+			}
+		}
+}
+
+
 // static
 void DSeqDoc::NewSeqDoc()
 {
@@ -319,7 +350,11 @@ void DSeqDoc::GetGlobals()
 	//fgUseColor= gApplication->GetPrefVal( "fgUseColor", "windows", onoffs);
 	fgUseColor= gApplication->GetPrefVal( "fgUseColor", "windows", "0");
 	fgViewMode= gApplication->GetPrefVal( "fgViewMode", "seqdoc", "0");
-
+	fgSire= gApplication->GetPref( "fgSire", "seqdoc", "SApp");
+	//DSeqFile::fgSire= fgSire; // messy !
+	//DSeqList::fgSire= fgSire; // messy !
+	DFile::fgSire= fgSire; // messy !
+	
 	{
 	//350, 200
 	char* srect = gApplication->GetPref( "fgWinRect", "windows", "30 40 450 220");
@@ -356,6 +391,7 @@ void DSeqDoc::SaveGlobals()
 	gApplication->SetPref( (int) fgLockText,"fgLockText","windows");
 	gApplication->SetPref( (int) fgUseColor, "fgUseColor","windows");
 	gApplication->SetPref( (int) fgViewMode, "fgViewMode","seqdoc");
+	gApplication->SetPref( fgSire, "fgSire","seqdoc");
 
 	if (!Nlm_EmptyRect(&fgWinRect)) {
 		char  srect[128];
@@ -366,54 +402,63 @@ void DSeqDoc::SaveGlobals()
 }
 
 
-void DSeqDoc::Open()
+void DSeqDoc::AddAlnIndex(DView* super, short width, short height)
+{
+	fAlnIndex= new DAlnIndex(0, super, this, fSeqList, width, height); 
+}
+
+void DSeqDoc::AddAlnView(DView* super, short width, short height)
+{
+	fAlnView= new DAlnView(0, super, this, fSeqList, width, height); 
+}
+
+void DSeqDoc::AddModePopup(DView* super)
+{
+	fModePop= new DAlnModePopup(kModePopup, super, fgViewMode);
+}
+
+void DSeqDoc::AddTopViews(DView* super)
+{
+	DPrompt* pr;
+
+	pr= new DPrompt(0,super,"Color:",0, 0, Nlm_programFont);
+	super->NextSubviewToRight();
+	fColorPop= new DAlnColorPopup(kColorPopup,super,fgUseColor);
+	fUseColor= fgUseColor;
+	super->NextSubviewToRight();
+
+	pr= new DPrompt(0,super," View:",0, 0, Nlm_programFont);
+					
+	super->NextSubviewToRight();
+	this->AddModePopup(super); 
+	fLockCheck= NULL;
+
+	super->NextSubviewToRight();
+	pr= new DPrompt(0,super,"  File format:",0, 0, Nlm_programFont);
+
+	DCluster* metergrp= new DCluster( 0, this, 0, 0, true);   // was 0,0 for w,h
+	pr= new DPrompt(0,metergrp,"Base#",0, 0, Nlm_programFont);
+	metergrp->NextSubviewToRight();
+	fSeqMeter= new DPrompt(0,metergrp,"0000000",0,0,Nlm_programFont,justright); //60,14
+
+	super->NextSubviewToRight();
+	fFormatPop= new DSeqFormatPopup(0,super,fInFormat);
+	super->NextSubviewBelowLeft();
+}
+
+
+void DSeqDoc::AddViews()
 {
 	DView* super;
 	short width, height;
 	Nlm_PoinT		nps;
 	DPrompt* pr;
-	Boolean selectone= false;
 	
-	if (!fSeqList) fSeqList= new DSeqList();
-	if (fSeqList->GetSize() == 0) {
-		fSeqList->AddNewSeq();	// install 1 blank seq for new doc
-		selectone= true;
-		}
 	if (!fAlnView || !fAlnIndex || !fAlnHIndex || !fAlnITitle) {
 		super= this;
-		pr= new DPrompt(0,super,"Color:",0, 0, Nlm_programFont);
-		super->NextSubviewToRight();
-		fColorPop= new DAlnColorPopup(kColorPopup,super,fgUseColor);
-		//fColorCheck= new DCheckBox(kColorButHit,super,"Color bases");
-		//fColorCheck->SetStatus(fgUseColor);
-		fUseColor= fgUseColor;
-		super->NextSubviewToRight();
-				
-#if MASKS
-		pr= new DPrompt(0,super," View:",0, 0, Nlm_programFont);
 		
-		// super->NextSubviewToRight() !
-		//fSeqMeter= new DPrompt(0,super,"00000",0,0,Nlm_programFont,justright); //60,14
-				
-		super->NextSubviewToRight();
-		fModePop= new DAlnModePopup(kModePopup,super,fgViewMode);
-		fLockCheck= NULL;
-#else
-		fLockCheck= new DCheckBox(kLockButHit,super,"Lock text");
-		fLockCheck->SetStatus(fgLockText);
-#endif
-		super->NextSubviewToRight();
-		pr= new DPrompt(0,super,"  File format:",0, 0, Nlm_programFont);
+		AddTopViews( super);
 
-		DCluster* metergrp= new DCluster( 0, this, 0, 0, true);   // was 0,0 for w,h
-		pr= new DPrompt(0,metergrp,"  Base#",0, 0, Nlm_programFont);
-		metergrp->NextSubviewToRight();
-		fSeqMeter= new DPrompt(0,metergrp,"00000",0,0,Nlm_programFont,justright); //60,14
-
-		super->NextSubviewToRight();
-		fFormatPop= new DSeqFormatPopup(0,super,fInFormat);
-		super->NextSubviewBelowLeft();
-		
 			// left group : titleline over name table
 		DCluster* grouper= new DCluster( 0, this, 0, 0, true);   // was 0,0 for w,h
 		grouper->SetResize( DView::fixed, DView::relsuper);
@@ -426,8 +471,9 @@ void DSeqDoc::Open()
 		super->GetNextPosition( &nps);
 		width = MAX( 40, fgWinRect.right - fgWinRect.left) - Nlm_vScrollBarWidth  - nps.x; 
 		height= MAX( 60, fgWinRect.bottom - fgWinRect.top) - Nlm_hScrollBarHeight - nps.y;   
-		fAlnIndex= new DAlnIndex(0, super, this, fSeqList, 80, height); // pixwidth,height
-																									  //  ^^ needs to be user changable ??
+		
+		this->AddAlnIndex( super, 80, height);
+
 		super= this;
 		super->NextSubviewToRight();	
  	
@@ -449,19 +495,23 @@ void DSeqDoc::Open()
 		super->GetNextPosition( &nps);
 		width = MAX( 40, fgWinRect.right - fgWinRect.left) - Nlm_vScrollBarWidth  - nps.x; 
 		height= MAX( 60, fgWinRect.bottom - fgWinRect.top) - Nlm_hScrollBarHeight - nps.y; 
-		fAlnView= new DAlnView(0, super, this, fSeqList, width, height); // pixwidth,height
+		this->AddAlnView( super, width, height);
 		fAlnView->SetTextLock( fgLockText);
 		super= this;
 
 #if ETEXT
 		//if (gLastEditView) gLastEditView->DeInstallEditSeq();
 		{
-		Nlm_PoinT  nps, saveps;
+		short charwidth= 0;
+    Nlm_PoinT  nps, saveps;
 		GetNextPosition( &saveps);
 		nps.x= 1; nps.y= 1; // locate dialog item 
 		SetNextPosition( nps);
 		//gDialogTextMultiline= false;
-		DAlnSequence* eseq= new DAlnSequence( 0, this);  
+
+		charwidth= width / fAlnView->GetItemWidth();
+
+		DAlnSequence* eseq= new DAlnSequence( 0, fAlnView, charwidth);  
 		fAlnView->fEditSeq= eseq;
 		//this->SetEditText(eseq);
 		eseq->fVisible= true;
@@ -470,23 +520,62 @@ void DSeqDoc::Open()
 		SetNextPosition( saveps);
 		}
 #endif
-
 		}
+		
+	if (!fFindDlog) fFindDlog= new DAlnFindDialog( NULL, (DAlnView*)fAlnView);
+}
+
+
+
+void DSeqDoc::Open()
+{
+	Boolean selectone= false;
+	
+	if (!fSeqList) fSeqList= new DSeqList();
+	if (fSeqList->GetSize() == 0) {
+		fSeqList->AddNewSeq();	// install 1 blank seq for new doc
+		selectone= true;
+		}
+	
+	AddViews();
 	fSaveHandler= this;  
 	fPrintHandler= this; 
-	
-	if (!fFindDlog) fFindDlog= new DAlnFindDialog( NULL, fAlnView);
 
 	this->Select(); // for motif
+#if 0
+	fAlnView->GetReadyToShow(); // do before others ...
+	if (fAlnIndex) fAlnIndex->GetReadyToShow();
+	fAlnITitle->GetReadyToShow();
+
+	if (0) {
+			// try auto-sizing aln view to data
+			//long ns= fSeqList->GetSize();
+	long ht = 0, nrow= fAlnView->GetMaxRows();
+	if (nrow > 2) {
+		ht = 80 + fAlnITitle->GetItemHeight(0);  
+		if (nrow > 25) nrow= 25; // max size?
+		for (long i= 0; i<nrow; i++) ht += fAlnView->GetItemHeight(i);
+		Nlm_RecT r;
+		GetPosition(r);
+		r.bottom = r.top + ht;
+		SetPosition(r);
+		}
+	}
+	this->CalcWindowSize();
+
+#else
 	this->CalcWindowSize();
 	fAlnView->GetReadyToShow(); // do before others ...
 	if (fAlnIndex) fAlnIndex->GetReadyToShow();
 	fAlnITitle->GetReadyToShow();
 	//fAlnHIndex->GetReadyToShow();
+
+#endif
+
 	fAlnView->SetViewColor(fgUseColor);
 	fAlnView->SetViewMode(fgViewMode);
 	if (selectone && fAlnIndex) fAlnIndex->SelectCells(0,0);
-	fSeqMeter->Show(); // need for auto-update !? apply to seqed items also !!
+	fSeqMeter->Show();  
 	
 	DWindow::Open();
 }
@@ -568,14 +657,14 @@ void DSeqDoc::AddNewSeqToList()
  
 void DSeqDoc::FirstSelection( DSequence*& aSeq, long& start, long& nbases)
 {	
-	short			left, right, top, bottom, atRow;
+	long			left, right, top, bottom, atRow;
 
 	start= nbases= atRow= 0;
 	fAlnView->DeInstallEditSeq(); //?? reinstall after ?
 	fAlnView->GetFirstSelectedCell(top,left);
 	fAlnView->GetLastSelectedCell(bottom,right);
 	
-	if (left != DTableView::kNoSelection && top != DTableView::kNoSelection 
+	if (left !=  DTabSelection::kNoSelection && top !=  DTabSelection::kNoSelection 
 	 && (left != right || top != bottom)) {
 	  atRow = top;
 		start = left; // - 1;
@@ -596,17 +685,11 @@ void DSeqDoc::FirstSelection( DSequence*& aSeq, long& start, long& nbases)
 		}
 }
 
-void DSeqDoc::AddSeqAtToList( short aRow, long start1, long nbases1, 
+void DSeqDoc::AddSeqAtToList( long aRow, long start1, long nbases1, 
 														DSeqList*& aSeqList, long& start, long& nbases)
 {
 	DSequence* aSeq= fAlnView->SeqAt( aRow); 
 	if (aSeq) {
-		/*--- ?? default is use all when nbases==0 !?
-		if (wantAll) {
-			start1= 0;
-			nbases1= GethandleSize(aSeq->fBases);
-			}
-		---*/
 		aSeq->SetIndex( aRow);
 		aSeq->SetSelection( start1, nbases1);
 		aSeqList->InsertLast( aSeq);
@@ -616,25 +699,81 @@ void DSeqDoc::AddSeqAtToList( short aRow, long start1, long nbases1,
 		}
 }
 
-void DSeqDoc::GetSelection(Boolean equalCount, Boolean allAtNoSelection,
-														DSeqList*& aSeqList, long& start, long& nbases)
+void DSeqDoc::AddMaskedSeqToList( long aRow, short masklevel,
+									DSeqList*& aSeqList, long& start, long& nbases)
 {
-	short			left, right, top, bottom, arow, acol;
-	long			start1, nbases1;
-	Boolean		wantAll;
+	DSequence* aSeq= fAlnView->SeqAt( aRow); 
+	if (aSeq && aSeq->MasksOk()) {
+		aSeq->ClearSelection();
+		aSeq= aSeq->CompressFromMask(masklevel);
+			// !! NOTE these Seqs are NEW -- delete when aSeqList is deleted
+		if (!aSeq) return;
+		if (aSeq->LengthF() == 0) { delete aSeq; return; }
+		aSeq->SetIndex( aRow);
+		aSeqList->InsertLast( aSeq);
+		aSeqList->fDeleteObjects= true;  // so NEW seqs are deleted
+		start= 0;
+		if (nbases==0) nbases= aSeq->LengthF();
+		else nbases= Min(nbases,aSeq->LengthF());
+		}
+}
 
+#if 0
+enum  selectforms { 
+	kSeqSel = 1, kNoSeqSel = 0,
+	kMaskSel = 2, kNoMaskSel= 0,
+	kIndexSel = 4, kNoIndexSel = 0,
+	kAllIfNone = 8, kNoneIfNone = 0,
+	kEqualCount = 16, kUnequalCount = 0,
+	};
+  // kSeqSel+kMaskSel+kIndexSel+kAllIfNone+kEqualCount
+#endif
+  
+void DSeqDoc::GetSelection( long selectFlags, DSeqList*& aSeqList, long& start, long& nbases)
+// GetSelection(Boolean equalCount, Boolean allAtNoSelection,
+{
+	long			left, right, top, bottom, arow, acol;
+	long			start1, nbases1;
+	Boolean		equalCount, allAtNoSelection, useSeqSelection, useMasks;
+
+	equalCount = (selectFlags & kEqualCount);
+	allAtNoSelection = (selectFlags & kAllIfNone);
+	useMasks = (selectFlags & kMaskSel);
+	useSeqSelection = (selectFlags & kSeqSel);
+	
 	fAlnView->DeInstallEditSeq(); //?? reinstall after ?
 	start= 0; start1= 0;
 	nbases= 0; nbases1= 0;
 	aSeqList= new DSeqList();
+	useMasks= useMasks && (fAlnView->fMaskLevel > 0);
+	
 	fAlnView->GetFirstSelectedCell(top,left);
 	fAlnView->GetLastSelectedCell(bottom,right);
+	useSeqSelection = useSeqSelection && (!useMasks 
+			&& left != DTabSelection::kNoSelection 
+			&& top != DTabSelection::kNoSelection 
+	 		&& (left != right || top != bottom));
 	
-	if (left != DTableView::kNoSelection && top != DTableView::kNoSelection 
-	&& (left != right || top != bottom)) {
-		wantAll= false;
+#if 0
+		// THIS IS STILL BUGGY -- need to TEST & FIX
+	if (useMasks && fAlnView->IsMasked()) {
+		top= 0;
+		bottom= fSeqList->GetSize();
+		if (fAlnIndex && fAlnIndex->IsSelected()) {
+			fAlnIndex->GetFirstSelectedCell(top,left);
+			fAlnIndex->GetLastSelectedCell(bottom,right);
+			}
+		for (arow= top; arow<bottom; arow++)  
+			AddMaskedSeqToList( arow, fAlnView->fMaskLevel, 
+														aSeqList, start, nbases);
+		}		
+	else 
+#endif
+
+	if (useSeqSelection) {
 		for (arow= top; arow<bottom; arow++) {
 			if (equalCount) acol= left; else acol= 0; 
+			
 			while (acol<right && !fAlnView->IsSelected(arow,acol)) acol++;
 			start1= acol; // - 1;
 			if (equalCount)
@@ -642,6 +781,7 @@ void DSeqDoc::GetSelection(Boolean equalCount, Boolean allAtNoSelection,
 			else 
 				while (fAlnView->IsSelected(arow,acol)) acol++;
 			nbases1= acol - start1;
+			
 			AddSeqAtToList( arow, start1, nbases1, aSeqList, start, nbases);
 			}
 		start = left; // - 1;
@@ -651,14 +791,12 @@ void DSeqDoc::GetSelection(Boolean equalCount, Boolean allAtNoSelection,
 	else if (fAlnIndex && fAlnIndex->IsSelected()) {
 		fAlnIndex->GetFirstSelectedCell(top,left);
 		fAlnIndex->GetLastSelectedCell(bottom,right);
-		wantAll= true;
 		for (arow= top; arow<bottom; arow++) 
 			AddSeqAtToList( arow, start1, nbases1, aSeqList, start, nbases);
 		}	
-	else {
-		wantAll= true;
-		if (allAtNoSelection) 
-		 for (arow= 0; arow<fAlnView->GetMaxRows(); arow++) 
+		
+	else if (allAtNoSelection) {
+		 for (arow= 0; arow<fSeqList->GetSize(); arow++) 
 			AddSeqAtToList( arow, start1, nbases1, aSeqList, start, nbases);
 		}
 }
@@ -667,10 +805,10 @@ void DSeqDoc::GetSelection(Boolean equalCount, Boolean allAtNoSelection,
 short DSeqDoc::SelectionToFile(Boolean AllatNoSelection, char* aFileName, short seqFormat)  
 {
 	long		start, nbases;
-	short		nseqs;
+	long		nseqs;
 	DSeqList *aSeqList;
  
-	GetSelection( FALSE, AllatNoSelection, aSeqList, start, nbases);
+	GetSelection( kSeqSel+kMaskSel+kIndexSel+kAllIfNone, aSeqList, start, nbases);
 	nseqs= aSeqList->GetSize();
 	aSeqList->DoWrite( aFileName, seqFormat); 
 	delete aSeqList;
@@ -678,6 +816,15 @@ short DSeqDoc::SelectionToFile(Boolean AllatNoSelection, char* aFileName, short 
 }
 
 
+void DSeqDoc::NotDirty()
+{
+	DSaveHandler::NotDirty();
+	long i, nseqs= fSeqList->GetSize();
+	for (i=0; i<nseqs; i++) {
+		fSeqList->SeqAt(i)->SetChanged(false);
+		}
+	if (fAlnIndex) fAlnIndex->Invalidate();
+}  
 
 
 void DSeqDoc::WriteTo(DFile* aFile)  
@@ -689,7 +836,7 @@ void DSeqDoc::WriteTo(DFile* aFile)
 		long		start, nbases;
 		DSeqList* aSeqList= NULL;
 		fSaveSelection= false;
-		GetSelection( FALSE, true, aSeqList, start, nbases);
+		GetSelection( kSeqSel+kMaskSel+kIndexSel+kAllIfNone, aSeqList, start, nbases);
 		aSeqList->DoWrite( aFile, outformat);
 		delete aSeqList;
 		}	
@@ -704,68 +851,6 @@ void DSeqDoc::WriteTo(DFile* aFile)
 
 
 
-#ifdef FIX_LATER
-/***********
-void DSeqDoc::AboutToSaveFile(TFile theSaveFile, CommandNumber itsCmd, 
-															Boolean VAR makingCopy) // override 
-VAR
-		Boolean		needSameSize, sizesDiffer, isInterleaved;
-		integer		nseqs, err, format ;
-		longint		minbases;
-		Handle		aHand;
-		
-	void checkEqualSize( DSequence aSeq)
-	longint		var  start, nbases;
-	{
-		//aSeq->GetSelection( start, nbases); << can still be set from fSelection or other old selecting command 
-		nBases= aSeq->fLength; 
-		if (minbases<0) then minbases= nbases
-		else begin
-			if (nbases!=minbases) then sizesDiffer= true;
-			//- minbases= min( nbases, minbases); 
-			end();
-	}
-
-{
-	inherited::AboutToSaveFile(theSaveFile, itsCmd, makingCopy);
-	
-	if ((!fSaveSelection)) { 
-					//^^^^ !???? TAlnDoc will set this, always equal #bases????
-		if (fFormatPop == NULL) format= kGenBank
-		else format= fFormatPop->GetCurrentItem(); 
-		needSameSize= false;
-		isInterleaved= false;
-		sizesDiffer= false;
-		minbases= -1; 
-		nseqs= fSeqList->GetSize();
-		
-		if (nseqs>1)) // deal w/ one-per-file formats 
-			switch (format) {
-				kGCG		: format= kMSF;
-				kStrider: format= kIG;
-				kNoformat, kPlain, kUnknown: format= kGenbank;
-				}
-			
-		fSeqList->ClearSelections(); //! make sure we write all of seq from this call !?
-		fSeqList->Each( checkEqualSize);	
-	
-		aHand= NewHandle(0);
-		WriteSeqHeader( longint(aHand), TRUE, format, nseqs, minbases, gOutputName, 
-					needSameSize, isInterleaved); //<< need write for last two results 
-		aHand= DisposeIfHandle(aHand);
-		
-		if (((needSameSize || isInterleaved) && sizesDiffer)) {
-			ParamText('all sequences must have same # bases for this format',
-					' Pick another format like Genbank or change selection.',
-					'WriteSeq','');	
-			Failure( -1, msgMyError);  
-			}
-		}
-}
-**********/
-#endif
-
-
 Boolean DSeqDoc::ReadFrom(DFile* aFile, Boolean append)	// revise for iostreams
 {
 	if (!append) FreeData();   //?? or leave here for append...
@@ -774,24 +859,6 @@ Boolean DSeqDoc::ReadFrom(DFile* aFile, Boolean append)	// revise for iostreams
 	return true; //?? (fInFormat != DSeqFile::kUnknown)
 }
 
-
-
-#if 0
-void DSeqDoc::Close() // override 
-//must make sure all windows owned by ListDoc are closed 1st
-
-	procedure closeSubwindows(TWindow aWind)
-	begin
-	  // this is a subwindow !may not be owned by this  doc
-		if (!aWind->fClosesDocument) aWind->CloseAndFree();
-	end();
-	
-{
-	ForAllWindowsDo(closeSubwindows);
-	inherited::Close();
-}
-
-#endif
 
 
 
@@ -812,31 +879,6 @@ void DSeqDoc::EditSeqs()
 {
 	DSequence* aSeq= fAlnView->SelectedSequence();  
 	if (aSeq) this->OpenSeqedWindow(aSeq);
-				
-#if 0
-	aCell	: GridCell;
-	count	: integer;
-	
-	pascal void newEditWindow( integer anItem)
-	TSequence		VAR aSeq;
-	{
-		aSeq= TSequence(this->fSeqList->At(anItem));
-		if ((aSeq!=NULL) && (count<kMaxOpenSeqed)) {
-			this->OpenSeqedWindow(aSeq);
-			count= count+1;
-			}
-  }
-	
-
-	if ((fAlnIndex=NULL) || (fAlnIndex.firstSelectedItem == 0)) 
-			//nada
-			
-	else if (editOnly 
-		|| (fAlnIndex.FirstSelectedItem == fAlnIndex->LastSelectedItem())) {
-		count= 0;
-		fAlnIndex->EachSelectedItemDo( newEditWindow);
-		}
-#endif		
 }
 
 
@@ -844,40 +886,11 @@ void DSeqDoc::EditSeqs()
 
 void DSeqDoc::ToTextDoc()
 {
-#if 1
 	DTempFile* tmpFile= new DTempFile();
 	this->WriteTo(tmpFile);
 	DRichTextDoc* doc= new DRichTextDoc(0,  true, gTextFont);
 	doc->Open(tmpFile);
 	delete tmpFile;
-#else
-	Nlm_ParData paratabs = {false, false, false, false, true, 0, 0}; // tabs==tabs		
-	char	*txt 	= NULL;
-	Nlm_ColData*	cols= NULL;
-	Nlm_ParData*	para= &paratabs;
-
-	ulong txtsize = 0;
-	DTempFile* tmpFile= new DTempFile();
-	this->WriteTo(tmpFile);
-	txt= tmpFile->ReadIntoMemory(txtsize);
-	delete tmpFile;
-	
-	if (txt) {
-		char name[256];
-		StrCpy(name,"Text of ");
-		long len= StrLen(name);
-		//char *namep= name + len;
-		(void) this->GetTitle( name + len, 256 - len);
-		DWindow* aWin= new DWindow( 0, gApplication, document, -1, -1, -10, -10, name);
-		DTextDocPanel* aDoc= new DTextDocPanel( 0, aWin, 500, 300);
-		aDoc->SetResize( DView::matchsuper, DView::relsuper);
-		aDoc->SetSlateBorder( false);
-		aDoc->SetTabs( gTextTabStops);
-		aDoc->Append( txt, para, cols, gTextFont);
-		aWin->Open();  
-		aDoc->SizeToSuperview( aWin, true, false);
-		}
-#endif
 }
 
 
@@ -888,7 +901,8 @@ void DSeqDoc::MakeSeqPrint(Boolean doREMap)
 	fSaveSelection= false;
 	DWindow	* aDoc;
 	
-	GetSelection( true, true, aSeqList, firstbase, nbases);
+	GetSelection( kSeqSel+kMaskSel+kIndexSel+kAllIfNone, //+kEqualCount??
+								aSeqList, firstbase, nbases);
 	if (!aSeqList)
 		return;
 	else if (doREMap) {
@@ -942,12 +956,14 @@ void DSeqDoc::SetUpMenu(short menuId, DMenu*& aMenu)
 		mMenu->AddItem(cMask2Sel,"Mask to Selection",false, true);
 		mMenu->AddItem(cMaskOrSel,"Mask OR Selection",false, true);
 		mMenu->AddItem(cMaskAndSel,"Mask AND Selection",false, true);
-		gViewCentral->DisableView(cMask2Sel);
-		gViewCentral->DisableView(cMaskOrSel);
-		gViewCentral->DisableView(cMaskAndSel);
+		//gViewCentral->DisableView(cMask2Sel);
+		//gViewCentral->DisableView(cMaskOrSel);
+		//gViewCentral->DisableView(cMaskAndSel);
 		mMenu->AddSeparator();
+		mMenu->AddItem(cMaskCompress, "Compress by mask");
 		mMenu->AddItem(cMaskSelCommon,"Mask consensus",false, true);
 		mMenu->AddItem(cMaskSelORF,"Mask ORFs",false, true);
+		mMenu->AddItem(cMaskReplicate,"Replicate mask to all seqs",false, true);
 
 		aMenu->AddSeparator();
 		aMenu->AddItem( cRevSeq, "Reverse");
@@ -987,6 +1003,7 @@ void DSeqDoc::SetUpMenu(short menuId, DMenu*& aMenu)
 		
  	else if (menuId == kInternetMenu) {
 		if (!aMenu) aMenu = gApplication->NewMenu( menuId, "Internet");
+		aMenu->AddItem( 0, "[Mail servers]");
 		aMenu->AddItem( cNCBIfetch, "NCBI fetch...");
 		aMenu->AddItem( cNCBIblast, "NCBI BLAST search...");
 		aMenu->AddItem( cEMBLfetch, "EMBL fetch...");
@@ -999,22 +1016,12 @@ void DSeqDoc::SetUpMenu(short menuId, DMenu*& aMenu)
 		aMenu->AddItem( cGrailSearch, "Grail search...");
 		//aMenu->AddItem( cGenmarkSearch, "Genmark search...");
 		//aMenu->AddItem( cPythiaSearch, "Pythia search...");
-	 	aMenu->AddSeparator();	
+	 	//aMenu->AddSeparator();	
 	 	}							
 
 }
 
 
-
-#if 0
-char* DSeqDoc::GetTitle(char* title, ulong maxsize) 
-{ 
-	if (title==NULL) title= (char*) MemNew(maxsize);  
-kUntitled
-	Nlm_GetTitle( fNlmObject, title, maxsize);
-	return title;
-}
-#endif
 
 
 char* DSeqDoc::GetTitle(char* title, ulong maxsize) 
@@ -1048,7 +1055,7 @@ void DSeqDoc::FindORF()
 {
 	long	start, stop;
 	DSequence* aSeq;
-	short			selrow;
+	long			selrow= 0;
 	Nlm_RecT	selr;
 	
 	aSeq= fAlnView->SelectedSequence(selrow);
@@ -1065,6 +1072,8 @@ void DSeqDoc::FindORF()
 			selr.left= start;
 			selr.right= stop;
 			fAlnView->SelectCells( selr);
+			if (fAlnView->fEditSeq && fAlnView->fEditRow == selrow)
+				fAlnView->fEditSeq->Select(start, stop - start);
 			}
 		} 
 }
@@ -1076,11 +1085,12 @@ void DSeqDoc::MakeConsensus()
 	DSeqList * aSeqList= NULL;
 	DSequence* cons;
 	
-	GetSelection( true, true, aSeqList, firstBase, nBases);
+	GetSelection( kSeqSel+kMaskSel+kIndexSel+kAllIfNone+kEqualCount, 
+								aSeqList, firstBase, nBases);
 	if (aSeqList) {
 		cons= fSeqList->Consensus();
 		if (cons) {
-			short aRow, totalRows;
+			long aRow, totalRows;
 			Nlm_RecT	r;
 			aRow= fSeqList->GetIdentityItemNo( cons);
 			totalRows= fSeqList->GetSize();
@@ -1115,7 +1125,8 @@ void DSeqDoc::DistanceMatrix(short form)
 	
 	this->GetTitle(title, sizeof(title));
 	
-	GetSelection( true, true, aSeqList, firstBase, nBases);
+	GetSelection( kSeqSel+kMaskSel+kIndexSel+kAllIfNone+kEqualCount, 
+								aSeqList, firstBase, nBases);
 	if (aSeqList) {			
 		char* dmat = NULL;
 		switch (form) {
@@ -1195,10 +1206,14 @@ Boolean DSeqDoc::DoMenuTask(long tasknum, DTask* theTask)
 
 		case cSaveSel:
 			fSaveSelection= true;
-			gApplication->DoMenuTask( DApplication::kSaveAs, NULL);
+			gApplication->DoMenuTask( DApplication::kSaveACopy, NULL);
 			fSaveSelection= false;
 			return true;
 
+		case cRevert:
+			Revert();
+			return true;
+			
 		case cFindORF: 
 			FindORF();
 			return true;
@@ -1215,6 +1230,7 @@ Boolean DSeqDoc::DoMenuTask(long tasknum, DTask* theTask)
 			DistanceMatrix(1);
 			return true;
 					
+	
 		case cRevSeq:
 		case cCompSeq:
 		case cRevCompSeq:
@@ -1223,6 +1239,7 @@ Boolean DSeqDoc::DoMenuTask(long tasknum, DTask* theTask)
 		case cToUpper: 
 		case cToLower:
 		case cDegap:
+		case cMaskCompress:
 		case cLockIndels:
 		case cUnlockIndels:
 		case cTranslate:
@@ -1232,7 +1249,10 @@ Boolean DSeqDoc::DoMenuTask(long tasknum, DTask* theTask)
 			DSeqChangeCmd *	cmd = NULL;  
 			
 			//fAlnView->DeInstallEditSeq(); //?? reinstall after ?
-			GetSelection( TRUE, TRUE, aSeqList, firstBase, nBases);
+			long flags;
+			flags= kIndexSel+kAllIfNone; //+kEqualCount??
+			if (tasknum != cMaskCompress) flags |= kMaskSel|kSeqSel;
+			GetSelection( flags, aSeqList, firstBase, nBases);
 			switch (tasknum) {
 		  	case cRevSeq		: cmd= new DSeqReverseCmd( this, fAlnView, aSeqList);  break;
 				case cCompSeq		: cmd= new DSeqComplementCmd( this, fAlnView,aSeqList); break;
@@ -1246,6 +1266,8 @@ Boolean DSeqDoc::DoMenuTask(long tasknum, DTask* theTask)
 				case cUnlockIndels: cmd= new DSeqUnlockIndelsCmd( this, fAlnView,aSeqList); break;
 				case cTranslate	:	cmd= new DSeqTranslateCmd( this, fAlnView,aSeqList); break;
 
+				case cMaskCompress:	cmd= new DSeqCompressMaskCmd( this, fAlnView,aSeqList); break;
+
 				default:
 					delete aSeqList;
 					Message(MSG_OK,"DSeqDoc::method not ready.");
@@ -1255,8 +1277,9 @@ Boolean DSeqDoc::DoMenuTask(long tasknum, DTask* theTask)
 		  if (cmd) {
 		  	if (cmd->Initialize()) PostTask( cmd);
 		  	else {
-		  		delete cmd;
+		  		// use cmd.fTitle==GetTitle for ::method name !?
 		  		Message(MSG_OK,"DSeqDoc::method failed.");
+		  		delete cmd; 
 					}
 		  	}
 			return true;	
@@ -1358,6 +1381,7 @@ Boolean DSeqDoc::DoMenuTask(long tasknum, DTask* theTask)
 
 Boolean DSeqDoc::IsMyAction(DTaskMaster* action) 
 {
+	enum appMenus { kInternetMenu = 100, kPrefsMenu, kOpenMenu };  // HACK ! from SeqPup.cpp
 	long  menuid= 0, menuitem = action->Id();
 	if (action->fSuperior) menuid = action->fSuperior->Id();
 	
@@ -1367,6 +1391,13 @@ Boolean DSeqDoc::IsMyAction(DTaskMaster* action)
 		}
 		
 	//if (menuid == DApplication::cEditMenu)  
+	
+	if ((menuid == kInternetMenu
+	    ||menuid == DSeqApps::kChildMenu)
+	 && (menuitem >= DSeqApps::kChildMenuBaseID 
+	     && menuitem <= DSeqApps::kChildMenuBaseID + 50) // +50 = HACK !! need better way to distinguish menu items !
+	) goto caseChildMenu;
+		
 	switch (menuitem) {
 	
 		case DApplication::kCut:
@@ -1402,7 +1433,6 @@ Boolean DSeqDoc::IsMyAction(DTaskMaster* action)
 
 		}
 
-		
 	if (menuid == kViewKindMenu)  
 	 switch (menuitem) {
 			case kViewByDefault:
@@ -1420,82 +1450,15 @@ Boolean DSeqDoc::IsMyAction(DTaskMaster* action)
 			default: return true;
 			}
 
-#if MASKS		 
-	else if (menuid == kSeqMaskMenu && fAlnView->fMaskLevel>0)  {
-		long iseq, nseq= fSeqList->GetSize();
-		long jbase, nbases;
-		short maskval, selval;
-		
-	 	switch (menuitem) {
-	 	
-			case cMaskSelCommon:
-				fAlnView->HiliteCommonBases();
-				return true;
-				
-			case cMaskSelORF:
-				fAlnView->HiliteORFs();
-				return true;
-				
-			case cMaskSelAll:
-				for (iseq= 0; iseq<nseq; iseq++) 
-					fSeqList->SeqAt(iseq)->SetMask(fAlnView->fMaskLevel);
-				fAlnView->Invalidate();
-				return true;
-				
-			case cMaskInvert:
-				for (iseq= 0; iseq<nseq; iseq++) 
-					fSeqList->SeqAt(iseq)->FlipMask(fAlnView->fMaskLevel);
-				fAlnView->Invalidate();
-				return true;
-				
-			case cMaskClear:
-				for (iseq= 0; iseq<nseq; iseq++) 
-					fSeqList->SeqAt(iseq)->ClearMask(fAlnView->fMaskLevel);
-				fAlnView->Invalidate();
-				return true;
-
-			case cSel2Mask:
-				for (iseq= 0; iseq<nseq; iseq++) {
-					DSequence* aseq= fSeqList->SeqAt(iseq);
-					nbases= aseq->LengthF();
-					for (jbase= 0; jbase<nbases; jbase++) {
-						selval= fAlnView->IsSelected(iseq,jbase);
-						aseq->SetMaskAt(jbase, fAlnView->fMaskLevel, selval);
-						}
-					}
-				fAlnView->Invalidate();
-				return true;
-
-			case cMask2Sel:
-			case cMaskOrSel:
-			case cMaskAndSel:
-				for (iseq= 0; iseq<nseq; iseq++) {
-					DSequence* aseq= fSeqList->SeqAt(iseq);
-					nbases= aseq->LengthF();
-					for (jbase= 0; jbase<nbases; jbase++) {
-						maskval= aseq->MaskAt(jbase, fAlnView->fMaskLevel);
-						selval = fAlnView->IsSelected(iseq,jbase);
-						switch (menuitem) {
-						  case cMask2Sel	: selval= maskval; break;
-						  case cMaskOrSel	: selval= (selval | maskval); break;
-						  case cMaskAndSel: selval= (selval & maskval); break;
-						  }
-						  
-// !! This IS NO GOOD now -- must have disjoint selection ability in DTableView...
-						fAlnView->SelectCells(iseq,jbase,true,false, selval);
-						}
-					}
-				fAlnView->Invalidate();
-				return true;
-				
-			default: 
-				return true;
-			}
+	else if (menuid == kSeqMaskMenu && fAlnView->fMaskLevel>0) {
+		if (menuitem == cMaskCompress) 
+			return DoMenuTask(menuitem, NULL);
+		else
+			return fAlnView->MaskCommand( menuitem);
 		}
-#endif
 
-
-	else if (menuid == DSeqApps::kChildMenu) 
+	else if (menuid == DSeqApps::kChildMenu) {
+	caseChildMenu:
 		switch (menuitem) {
 #if 0
 			case cAddChildCmd:
@@ -1508,40 +1471,32 @@ Boolean DSeqDoc::IsMyAction(DTaskMaster* action)
 				long	firstBase = 0, nBases = 0;
 				DSeqList * aSeqList= NULL;
 				//fAlnView->DeInstallEditSeq(); //?? reinstall after ?
-				GetSelection( TRUE, TRUE, aSeqList, firstBase, nBases);
+				GetSelection( kSeqSel+kMaskSel+kIndexSel+kAllIfNone, //+kEqualCount ??
+								aSeqList, firstBase, nBases);
 				DSeqApps::CallChildApp( menuitem, aSeqList);
 				if (aSeqList) delete aSeqList;
 				}
 				break;
 			}
-			
-#if 1
+		}
+		
 	else if (menuitem == kColorPopup) {
 		fgUseColor= fColorPop->GetValue();
 		fAlnView->SetViewColor( fgUseColor);
 		//fAlnView->Invalidate();
   	return true;
 		}
-#else				
-	else if (menuitem == kColorButHit) {
-		fUseColor= ((DView*)action)->GetStatus();
-		fAlnView->Invalidate();
-  	return true;
-  	}
-#endif
  
 	else if (menuitem == kLockButHit) {
 		fAlnView->SetTextLock( ((DView*)action)->GetStatus());
   	return true;
   	}
 
-#if MASKS
 	else if (menuitem == kModePopup) {
 		short mode= fModePop->GetValue();  
 		fAlnView->SetViewMode( mode);
   	return true;
   	}
-#endif
 	
 	else 
 		return DoMenuTask(menuitem, NULL);

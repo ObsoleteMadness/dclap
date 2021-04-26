@@ -1,0 +1,30 @@
++MENU:
+ +INFO: 1GopherPup home	1/IUBio-Software+Data/util/gopher/gopherpup	ftp.bio.indiana.edu	70	+
+ +menustring: ftp.bio.indiana.edu:/util/gopher/gopherpup
+ +INFO: 1DCLAP home	1/IUBio-Software+Data/util/dclap	ftp.bio.indiana.edu	70	+
+ +menustring: ftp.bio.indiana.edu:/util/dclap
+ +INFO: 1IUBio Archive		ftp.bio.indiana.edu	70	+
+ +menustring: "IUBio Biology Archive"
+ +INFO: 7GenBank sequence search	7/.indices/genbank	ftp.bio.indiana.edu	70	+
+ +MENUSTRING: "fetch a sequence entry from Genbank"
+ +INFO: 1RTF Info	1/IUBio-Software+Data/util/rtf	ftp.bio.indiana.edu	70	+
+ +MENUSTRING:  "Rich Text Format"
+ +INFO: 1RTF (Rich Text Format) utilities	1/RTF	ftp.primate.wisc.edu	70	+
+ +MENUSTRING:  ftp.primate.wisc.edu:/pub/RTF
+ +INFO: 0Go+hypertext-method	0/IUBio-Software+Data/util/gopher/go+menu-article.txt	ftp.bio.indiana.edu	70	+
+ +MENUSTRING:  "network hypertext links"
+ +comment: need a gopherpup "mail" kind (m?)
+ +INFO: mGopherPup bug report	GopherPup@Bio.Indiana.Edu	localhost	0
+ +menustring: GopherPup@Bio.Indiana.Edu
+ +INFO: 1NCBI Gopher		ncbi.nlm.nih.gov	70
+ +menustring: "National Center for Biotechnology Information"
+ +INFO: 1ncbi_tools	1/toolbox/ncbi_tools	ncbi.nlm.nih.gov	70
+ +menustring: ncbi.nlm.nih.gov:/toolbox
+ +INFO: 1Gopher help from U.Minnesota (USA)		gopher.micro.umn.edu	70	+
+ +menustring: gopher.micro.umn.edu
+ +comment: add links for "Fetch (ftp)", "TurboGopher"
+ +comment: add links for JPEG & GIF viewers, other helper apps !! need for each platform
+ +comment:
+ +comment: To read this with a standard wordprocessor, strip out the lines down thru
+ +comment: the "+DATA:" line, so that the first line starts with "{ \ rtf1"
++DATA:

@@ -2106,6 +2106,14 @@ static void Nlm_SlateClickCallback (Widget w, XEvent *ev,
       if ((state &ShiftMask) != 0) {
         Nlm_shftKey = TRUE;
       }
+#ifdef DCLAP
+      if ((state & Mod1Mask) != 0) {
+        Nlm_optKey = TRUE;
+      }
+      if ((state & Mod2Mask) != 0) {
+        Nlm_cmmdKey = TRUE;
+      }
+#endif
       if (strcmp (args [0], "down") == 0) {
         ticks = (Nlm_Uint4) event->time;
         if (s == recentlyClickedSlate) {
@@ -2184,6 +2192,14 @@ static void Nlm_SlateKeyCallback (Widget w, XEvent *ev,
       if ((state & ShiftMask) != 0) {
         Nlm_shftKey = TRUE;
       }
+#ifdef DCLAP
+      if ((state & Mod1Mask) != 0) {
+        Nlm_optKey = TRUE;
+      }
+      if ((state & Mod2Mask) != 0) {
+        Nlm_cmmdKey = TRUE;
+      }
+#endif
       if (ev->type == KeyPress && strcmp (args [0], "key") == 0) {
         buffer [0] = '\0';
         charcount = XLookupString (&(ev->xkey), buffer, 20, &keysym, &compose);

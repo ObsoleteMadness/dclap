@@ -18,45 +18,43 @@
 #include <DChildDlogDoc.h>
 #include <DRichMoreStyle.h>
 #include <DRichViewNu.h>
+#include <DNetObject.h>
+#include <DBOPclient.h>
+#include <DURL.h>
 
 #include "DSeqFile.h"
 #include "DSeqList.h"
 #include "DSeqDoc.h"
+#include "DSeqAsmDoc.h"
 
 
 
-#if 0
- need 3 dialog methods here --
-  * run app -- simple dlog w/ description, run button, help button, ?cancel button
-  * edit child list -- list dlog w/ list of child apps, edit button, delete button, add button
-  * edit child -- dlog w/ child app params -- pathname, desc, cmdline,
-					 in/out files, min seqs, seqformat, other??
 
- when redoing childapp menu, mac can replace menu, others can't yet (thru vibrant)
- if (WIN_MAC) menu->Reset(); // to remove all menu items, then rebuild...
- 
-#endif
-
+// !! many of these SeqChildApp methods should go inti ChildApp class
 
 class DSeqChildApp : public DChildApp
 {
 public:
 	//char  * fName, * fCmdline;
 	//const char * fStdin, * fStdout, * fStderr;
-	enum seqactions { kOpenSequence = 11, kOpenTree };
+	enum seqactions { kOpenSequence = 11, kOpenTree, kOpenAutoseq };
 	char 	* fMenuname, * fDescription, * fSeqformat, *fHelpfile;
 	char	* fForm, * fFormName;
 	ulong		fFormLength;
-	short		fMinseq, fMenucmd;
-	DFile * fInfile;
+	short		fMinseq, fMaxseq, fMenucmd;
+	DChildFile * fInfile;
+	char		fFileType[128];
+	Boolean	fSaveFiletype, fDeleteWhenDone;
 	
 	DSeqChildApp() :
 		DChildApp(),
 		fMenuname(NULL), fDescription(NULL), fSeqformat(NULL), fHelpfile(NULL),
-		fInfile(NULL), fMinseq(0), fMenucmd(0), 
-		fFormName(NULL), fForm(NULL), fFormLength(0)
+		fInfile(NULL), fMinseq(0), fMaxseq(0), fMenucmd(0), 
+		fFormName(NULL), fForm(NULL), fFormLength(0), fSaveFiletype(false),
+		fDeleteWhenDone(true)
 		{
-			fFiles= new DList();
+			//fFiles= new DList();
+			fFileType[0]= '\0';
 		}
 	virtual ~DSeqChildApp();
 	virtual void LaunchDialog( DSeqList* aSeqList); 
@@ -65,6 +63,7 @@ public:
 	virtual void CollectOptions( DList* optList);
 	virtual char* CollectFilePath(char* value, Boolean checkOutType, short& action);
 	virtual char* SubstituteVars(char* data, DList* optList);
+	virtual char* SubstituteAppID(char* data);
 };
 
 
@@ -144,7 +143,7 @@ DSeqChildApp::~DSeqChildApp()
 }
 
 
-enum { kDistanceMat = -89, kSimilarityMat, kBiotree };
+enum { kDistanceMat = -89, kSimilarityMat, kBiotree, kTracefile };
 
 void DSeqChildApp::LaunchDialog( DSeqList* aSeqList) 
 {
@@ -178,20 +177,27 @@ void DSeqChildApp::LaunchAfterDialog( DSeqList* aSeqList)
 							fMenuname, fMinseq);
 		return;
 		}
+	if (fMaxseq>0 && (!aSeqList || aSeqList->GetSize()>fMaxseq)) {
+		Message(MSG_OK, "%s needs a selection of no more than %d sequence(s)", 
+							fMenuname, fMaxseq);
+		return;
+		}
 			// write aSeqList to this->inputfile...
 	DFile* aFile = this->fInfile;
-	if (aFile) {
+	if (aFile && this->fInfile->fDelete) {
 		char  * data = NULL;
 		short  outformat= 0;
 		
-		aFile->Open("w");
 		if (StrNICmp(fSeqformat, "distance", 8)==0) outformat= kDistanceMat;
+		else if (StrNICmp(fSeqformat, "tracefile", 9)==0) {
+			outformat= kTracefile;
+			goto doLaunch;
+			}
 		else if (StrNICmp(fSeqformat, "similar", 7)==0) outformat= kSimilarityMat;
 		else if (StrNICmp(fSeqformat, "biotree", 7)==0) outformat= kBiotree;
 		else outformat= DSeqFile::FormatFromName(fSeqformat);
-		if (outformat == DSeqFile::kUnknown) 
-			outformat= DSeqFile::kPearson; //?? or kPearson ?
-			
+		if (outformat == DSeqFile::kUnknown) outformat= DSeqFile::kPearson; 
+
 		if (aSeqList) aSeqList->ClearSelections(); //! make sure we write all of seq from this call !?
 		switch (outformat) {
 		
@@ -209,14 +215,15 @@ void DSeqChildApp::LaunchAfterDialog( DSeqList* aSeqList)
 				{
 						// data is text in front richtext window !?
 				DRichTextDoc* rtdoc = (DRichTextDoc*) gWindowManager->CurrentWindow();
+				aFile->Open("w");
 				rtdoc->fRichView->Save(aFile);
-				//data= rtdoc->fRichView->GetSelectedText();
 				}
 				break;
 				
 			default:
 				if (!aSeqList) return;
 				DSeqFile::DontSaveMasks();
+				aFile->Open("w");
 				aSeqList->DoWrite( aFile, outformat);
 				DSeqFile::DoSaveMasks();
 				break;
@@ -224,13 +231,15 @@ void DSeqChildApp::LaunchAfterDialog( DSeqList* aSeqList)
 			
 		if (data) {
 			ulong count= StrLen(data);
+			aFile->Open("w");
 			aFile->WriteData( data, count);
 			MemFree(data);
 			}
 		aFile->Close();
 		aFile->SetMode("r");
 		}
-	
+		
+doLaunch:	
 	if (!this->Launch())
 		Message(MSG_OK, "Failed to launch %s with '%s'", fName, fCmdline);
 	  
@@ -250,7 +259,18 @@ void DSeqChildApp::FileAction( DChildFile* aFile)
 				if (win && win->fSaveHandler) win->fSaveHandler->Dirty();
 				}
 			break;
-		
+			
+		case kOpenAutoseq: {
+			DSeqAsmDoc::fgTestAutoseqFile= true;  
+			gApplication->OpenDocument( aFile);
+			DSeqAsmDoc::fgTestAutoseqFile= false; 
+			if (aFile->fDelete) {
+				DWindow* win= gWindowManager->CurrentWindow();
+				if (win && win->fSaveHandler) win->fSaveHandler->Dirty();
+				}
+			}
+			break;
+			
 	  case kOpenTree:
 	  	// fix later...
 		default:
@@ -261,8 +281,11 @@ void DSeqChildApp::FileAction( DChildFile* aFile)
 
 
 
+
 char* DSeqChildApp::CollectFilePath(char* value, Boolean checkOutType, short& action)
 {
+	fSaveFiletype  = false;
+	fDeleteWhenDone= true;
 	if (checkOutType) {
 		char* ftype= StrChr(value,'\t'); // look for mime/type after name
 		if (!ftype) ftype= StrChr(value,' '); // !? can we also scan for spaces ??
@@ -272,14 +295,31 @@ char* DSeqChildApp::CollectFilePath(char* value, Boolean checkOutType, short& ac
 			if (StrNICmp(ftype,"biosequence",11) == 0 
 			 || StrNICmp(ftype,"sequence",8) == 0)
 					action= DSeqChildApp::kOpenSequence;
+					
+			else if (StrNICmp(ftype,"autoseq",7) == 0) {
+				action= DSeqChildApp::kOpenAutoseq;
+				StrNCpy( fFileType, ftype, sizeof(fFileType));
+				fSaveFiletype= true;
+				fDeleteWhenDone= false;
+				}
+					
 			else if (StrNICmp(ftype,"biotree",7) == 0 
 			 || StrNICmp(ftype,"tree",4) == 0)
 					action= DSeqChildApp::kOpenTree;
 			}
 		}
+		
 	char* cp= value; 
 	while (isspace(*cp) || *cp == '$') cp++;
-	return gApplication->ConvertStdFilePath(cp);
+	
+		// check for special infile (for ChooseFile...)
+	if (fInfile && StrNICmp( cp,"infile",6)==0) { 
+		char* np= StrDup( fInfile->GetName());
+		StrExtendCat( &np, cp+6);
+		return np;
+		}
+	else
+		return gApplication->ConvertStdFilePath(cp);
 }				
 
 
@@ -290,10 +330,11 @@ char* DSeqChildApp::SubstituteVars(char* data, DList* optList)
 	short action, kind;
 	DControlStyle* cont;
 	
+	data= SubstituteAppID(data);
 	if (!optList) return data;
-	short i, n= optList->GetSize();
+	short i, nopts= optList->GetSize();
 	
-	for (i=0; i<n; i++) {
+	for (i=0; i<nopts; i++) {
 			// pass 1, collect non-hidden control vars == user opts
 			
 		cont= (DControlStyle*) optList->At(i);
@@ -302,7 +343,7 @@ char* DSeqChildApp::SubstituteVars(char* data, DList* optList)
 		kind= cont->fKind;
 
 		if (item && kind != DControlStyle::kHidden) { 
-			Boolean istest;
+			Boolean istest, dosub;
 			char * ep, * dp, * itemp, * iteme;
 			char * trueval, * falseval;
 			char * newvalue = StrDup("");
@@ -310,6 +351,7 @@ char* DSeqChildApp::SubstituteVars(char* data, DList* optList)
 			dp= cp = data;
 			do {
 				istest= false;
+				dosub= false;
 				trueval= falseval= NULL;
 				ep= StrChr( dp, '$');
 				if (!ep)
@@ -328,12 +370,22 @@ char* DSeqChildApp::SubstituteVars(char* data, DList* optList)
 						iteme= itemp + itemsize;
 						istest= true;
 						}
+#if 0
+					else if (ep[1] == '$') {
+						// '$$' == process ID, or AppID() !
+						value= (char*) gApplication->AppID();  
+						dosub= true;
+						itemp= ep+1;
+						itemsize= 1;
+						iteme= ep+2;
+						}
+#endif
 					else {
 						itemp= ep+1;
 						iteme= itemp + itemsize;
 						}
 						
-					if (itemp && StrNICmp( item, itemp, itemsize) == 0) {
+					if (itemp && (dosub || StrNICmp( item, itemp, itemsize) == 0)) {
 						if (istest) {
 							trueval= iteme;
 							if (*trueval == ':') {
@@ -372,19 +424,54 @@ char* DSeqChildApp::SubstituteVars(char* data, DList* optList)
 }
 				
 				
+char* DSeqChildApp::SubstituteAppID(char* data)
+{	
+	// change $$ variable only !?!?!
+	char * cp, * ep, * dp;
+	
+	dp= cp = data;
+	ep= StrStr( dp, "$$");
+	if (!ep) return data;
+
+	char * newvalue = StrDup("");
+	do {
+		ep= StrChr( dp, '$');
+		if (!ep)
+			StrExtendCat( &newvalue, cp);
+		else {
+			if (ep[1] == '$') {
+				// '$$' == process ID, or AppID() !
+				char* value= (char*) gApplication->AppID(); //tmpnam(NULL);
+				char* iteme= ep+2;
+
+				*ep++ = 0;
+				StrExtendCat( &newvalue, cp);  // add on string before '$'
+				if (value) StrExtendCat( &newvalue, value);
+				// else we drop the variable marker !
+				cp= dp= iteme;
+				}
+			else
+				dp= ep+1;
+			}
+	} while (ep);
+	MemFree( data);
+	return newvalue;
+}
+				
+				
 void DSeqChildApp::CollectOptions( DList* optList)
 {
 	char * cp, * item, * value, * newpath;
-	short action, kind;
+	short action, kind, i, nopts;
 	DControlStyle* cont;
 	char * execapp = NULL;
 	DChildFile 		* cfile;
 	Boolean 	noStderr= true, noStdout= true, noStdin= true;
 	
 	if (!optList) return;
-	short i, n= optList->GetSize();
 	
-	for (i=0; i<n; i++) {
+	nopts= optList->GetSize();
+	for (i=0; i<nopts; i++) {
 			// pass 0, collect command line !
 			
 		cont= (DControlStyle*) optList->At(i);
@@ -393,17 +480,62 @@ void DSeqChildApp::CollectOptions( DList* optList)
 		if (value) while (isspace(*value)) value++;
 		kind= cont->fKind;
 		
-		if (item && value && kind == DControlStyle::kHidden) { 
+		if (item && value) {
+		 if (kind == DControlStyle::kHidden) { 
 			if (StrICmp(item,"localexec")==0 || StrICmp(item,"exec")==0) {
 				execapp= StrDup(value);
+				fCallMethod= kLocalexec;
+				}
+			else if (StrICmp(item,"bop")==0 || StrICmp(item,"bopexec")==0) {
+				execapp= StrDup(value);
+#if 1
+				// do variable substitution in execapp for $bophost, ? $bopport
+				// by the way, looks like optList is a memory leak -- is no one deleting it?
+				DControlStyle* cs;
+				char sport[80];
+				sprintf( sport, "%d", DBOP::gPort);
+				cs= new DControlStyle(NULL);
+				cs->ControlData( "bophost", DBOP::gHost);
+				optList->InsertLast( cs);
+				cs= new DControlStyle(NULL);
+				cs->ControlData( "bopport", sport);
+				optList->InsertLast( cs);
+#endif
+
+				fCallMethod= kBOPexec;
+				if (!fNob) fNob = new DNetOb();
 				}
 			else if (StrICmp(item,"get")==0) {
 				execapp= StrDup(value);
+				fCallMethod= kHTTPget;
 				}
 			else if (StrICmp(item,"post")==0) {
 				execapp= StrDup(value);
+				fCallMethod= kHTTPpost;
 				}
 			}
+		else if (kind == DControlStyle::kFileChooser) {
+			if (StrICmp(item,"infile")==0) {// option for more than 1 infile ??
+							// value == full pathname (?) - split into path + name??
+				// ?? need "rb" or "rt" flag??
+				newpath= value;
+				cfile= new DChildFile( newpath, DChildFile::kInput, DChildFile::kDontDelete,
+									      DChildFile::kNoAction, "rb", "????", "????");
+				AddFile(cfile);
+				fInfile= cfile; 
+				}
+			}
+		else if ( StrICmp(item, "user") == 0) {
+			if (!fNob) fNob = new DNetOb();
+			fNob->StoreUser( value);
+			}
+		else if ( StrICmp(item, "password") == 0) {
+			if (!fNob) fNob = new DNetOb();
+			fNob->StorePass( value);
+			}
+			
+			
+		 }
 		}
 	if (!execapp) return; // ??
 	
@@ -414,8 +546,11 @@ void DSeqChildApp::CollectOptions( DList* optList)
 	while (*cp && !isspace(*cp)) cp++;
 	if (*cp) *cp++= 0;
 	MemFree( fName);
-	fName= CollectFilePath( execapp, false, action);
-	
+	if (fCallMethod == kLocalexec)
+		fName= CollectFilePath( execapp, false, action);
+	else
+		fName= StrDup( execapp);
+		
 		// substitute full file paths in cmdline 
 	{
 		while (*cp && !isspace(*cp)) cp++;
@@ -430,7 +565,12 @@ void DSeqChildApp::CollectOptions( DList* optList)
 				char savec, *np= ep; 
 				while (isgraph(*ep)) ep++; 
 				savec= *ep; *ep= 0; // skip past path:filename
-				newpath= gApplication->ConvertStdFilePath(np);
+				
+				// check for special infile (for ChooseFile...)
+				if (fInfile && StrICmp( np,"infile")==0)  
+					newpath= StrDup( fInfile->GetName());
+				else
+					newpath= gApplication->ConvertStdFilePath(np);
 				*ep= savec;
 				if (newpath && *newpath) {
 					char* dquote= NULL;
@@ -472,14 +612,15 @@ void DSeqChildApp::CollectOptions( DList* optList)
 	MemFree( execapp);
 
 	
-	for (i=0; i<n; i++) {
+	nopts= optList->GetSize();
+	for (i=0; i<nopts; i++) {
 			// pass 2, collect only hidden control vars == DSeqChildApp vars
 			
 		cont= (DControlStyle*) optList->At(i);
 		item = (char*)cont->Varname();
 		value= (char*)cont->Value();
 		kind= cont->fKind;
-		
+
 		if (item && value && kind == DControlStyle::kHidden) { 
 				// !? ignore all controls w/ NULL value !?
 
@@ -516,17 +657,24 @@ void DSeqChildApp::CollectOptions( DList* optList)
 			else if (StrICmp(item,"minseq")==0) {
 				fMinseq= atoi(value);
 				}
+
+			else if (StrICmp(item,"maxseq")==0) {
+				fMaxseq= atoi(value);
+				}
 											
 			else if (StrNICmp(item,"infile",6)==0) {
+				value= SubstituteAppID( StrDup(value)); //??
 				newpath= CollectFilePath( value, false, action);
 				cfile= new DChildFile( newpath, DChildFile::kInput, DChildFile::kDeleteWhenDone,
 																DChildFile::kNoAction, "r", "TEXT", "Spup");
 				AddFile(cfile);
 				fInfile= cfile; 
 				MemFree( newpath);
+				MemFree( value);
 				}
 
 			else if (StrNICmp(item,"stdin",5)==0) {
+				value= SubstituteAppID( StrDup(value)); //??
 				noStdin= false;
 				newpath= CollectFilePath( value, false, action);
 				cfile= new DChildFile( newpath, DChildFile::kStdin, DChildFile::kDeleteWhenDone,
@@ -534,9 +682,11 @@ void DSeqChildApp::CollectOptions( DList* optList)
 				fInfile= cfile;  
 				AddFile(cfile);
 				MemFree( newpath);
+				MemFree( value);
 				}
 
 			else if (StrNICmp(item,"stderr",6)==0) {
+				value= SubstituteAppID( StrDup(value)); //??
 				noStderr= false;
 				action = DChildFile::kOpenText;
 				newpath= CollectFilePath( value, true, action);
@@ -544,9 +694,11 @@ void DSeqChildApp::CollectOptions( DList* optList)
 																action, "r", "TEXT", "Spup");
 				AddFile(cfile);
 				MemFree( newpath);
+				MemFree( value);
 				}
 
 			else if (StrNICmp(item,"stdout",6)==0) {
+				value= SubstituteAppID( StrDup(value)); //??
 				noStdout= false;
 				action = DChildFile::kOpenText;
 				newpath= CollectFilePath( value, true, action);
@@ -554,15 +706,21 @@ void DSeqChildApp::CollectOptions( DList* optList)
 																action, "r", "TEXT", "Spup");
 				AddFile(cfile);
 				MemFree( newpath);
+				MemFree( value);
 				}
-					
+
 			else if (StrNICmp(item,"outfile",7)==0) {
+				char *ftype;
+				value= SubstituteAppID( StrDup(value)); //??
 				action = DChildFile::kOpenText;
 				newpath= CollectFilePath( value, true, action);
-				cfile= new DChildFile( newpath, DChildFile::kOutput, DChildFile::kDeleteWhenDone,
-																action, "r", "TEXT", "Spup");
-				AddFile(cfile);
+				if (fSaveFiletype) ftype= StrDup(fFileType); // LEAK!  need to delete DFile.fType !!
+				else ftype= "TEXT"; 
+				cfile= new DChildFile( newpath, DChildFile::kOutput, fDeleteWhenDone,
+																action, "r", ftype, "Spup");
+				AddFile( cfile);
 				MemFree( newpath);
+				MemFree( value);
 				}
 								
 			}	
@@ -589,7 +747,7 @@ void DSeqApps::CallChildApp(short menucmd, DSeqList* aSeqList)
 		if (child->fMenucmd == menucmd) {
 
 			if (child->fForm || child->fFormName) {
-				if (!child->fForm) {
+				if (1) { // !child->fForm) // ?? always read form?
 					//doc->Open(child->fFormName);
 					char* fbuf;
 					ulong flen;
@@ -602,6 +760,7 @@ void DSeqApps::CallChildApp(short menucmd, DSeqList* aSeqList)
 					ff.Close();
 					fbuf[flen]= 0;
 					child->fFormLength= flen;
+					MemFree( child->fForm); 
 					child->fForm= fbuf;
 					}
 					//?? child->LaunchAfterForm( aSeqList);
@@ -625,16 +784,16 @@ void DSeqApps::CallChildApp(short menucmd, DSeqList* aSeqList)
 }
 
 
+char * DSeqApps::kAppSection = "apps";
 
 // static
-void DSeqApps::SetUpMenu(short menuId, DMenu*& aMenu) 
+void DSeqApps::SetUpMenu( short menuId, DMenu*& aMenu, char* menuPrefs) 
 {
-	char  * kAppSection = "apps";
+	static short menuitem= kChildMenuBaseID;
 	long 	atsection;
 	ulong sectlen = 0;
 	char	* value, * item, * appsection, * appvalues, * sections,
 				* newpath,  * cp;
-	short menuitem= kChildMenuBaseID;
 	DSeqChildApp 	* child;
 	DChildFile 		* cfile;
 	Boolean 	noStderr= true, noStdout= true, noStdin= true;
@@ -643,7 +802,7 @@ void DSeqApps::SetUpMenu(short menuId, DMenu*& aMenu)
 	//DWindow::SetUpMenu(menuId, aMenu);
 	if (!aMenu) aMenu = gApplication->NewMenu( menuId, "ChildApps");
 
-	sections= gApplication->GetPrefSection( kAppSection, sectlen);
+	sections= gApplication->GetPrefSection( menuPrefs, sectlen);
 	atsection= 0;
 	while (atsection<sectlen) {
 		appsection= sections + atsection;
@@ -654,7 +813,7 @@ void DSeqApps::SetUpMenu(short menuId, DMenu*& aMenu)
 			child= new DSeqChildApp();
 			// child is stored in DChildAppManager::gChildList
 			
-			value= gApplication->GetPref( appsection, kAppSection);
+			value= gApplication->GetPref( appsection, menuPrefs);
 			if (!value) value= StrDup( appsection);
 			aMenu->AddItem( menuitem, value);
 			child->fMenuname= value;
@@ -671,16 +830,17 @@ void DSeqApps::SetUpMenu(short menuId, DMenu*& aMenu)
 				
 				if (!value)
 					;
+				else if (StrICmp(item,"form")==0) {
+						// FORM IS ONLY TAG NOW USED !!  
+					cp= value; while (isspace(*cp) || *cp == '$') cp++;
+					child->fFormName= gApplication->ConvertStdFilePath(cp);
+					MemFree( value);
+					}
 				else if (StrICmp(item,"desc")==0)  
 					child->fDescription= value;
 				else if (StrICmp(item,"path")==0) {
 					cp= value; while (isspace(*cp) || *cp == '$') cp++;
 					child->fName= gApplication->ConvertStdFilePath(cp);
-					MemFree( value);
-					}
-				else if (StrICmp(item,"form")==0) {
-					cp= value; while (isspace(*cp) || *cp == '$') cp++;
-					child->fFormName= gApplication->ConvertStdFilePath(cp);
 					MemFree( value);
 					}
 				else if (StrICmp(item,"help")==0) {
@@ -693,6 +853,10 @@ void DSeqApps::SetUpMenu(short menuId, DMenu*& aMenu)
 					child->fSeqformat= value;
 				else if (StrICmp(item,"minseq")==0) {
 					child->fMinseq= atoi(value);
+					MemFree( value);
+					}
+				else if (StrICmp(item,"maxseq")==0) {
+					child->fMaxseq= atoi(value);
 					MemFree( value);
 					}
 			
@@ -829,9 +993,12 @@ void DSeqApps::SetUpMenu(short menuId, DMenu*& aMenu)
 			
 				atvalue += StrLen(item)+1;
 				}
-			
+
+#if 0			
+	// not w/ CollectOptions() doing same thing !
 			if (noStderr) child->AddFile(DChildFile::kStderr, NULL);
 			if (noStdout) child->AddFile(DChildFile::kStdout, NULL);
+#endif
 			
 			MemFree( appvalues);
 			}

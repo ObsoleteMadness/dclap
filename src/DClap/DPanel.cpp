@@ -112,7 +112,7 @@ void DPanel::SetSlateBorder(Boolean turnon)
 
 //void DPanel::Draw() { } // abstract class, user must subclass
 
-void DPanel::Scroll(Boolean vertical, DView* scrollee, short newval, short oldval)
+void DPanel::Scroll(Boolean vertical, DView* scrollee, long newval, long oldval)
 {
 }
 

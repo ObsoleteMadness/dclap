@@ -1,0 +1,347 @@
+{\rtf1\mac\deff2 {\fonttbl{\f0\fswiss Chicago;}{\f2\froman New York;}{\f3\fswiss Geneva;}{\f4\fmodern Monaco;}{\f13\fnil Zapf Dingbats;}{\f14\fnil Bookman;}{\f16\fnil Palatino;}{\f18\fnil Zapf Chancery;}{\f19\fnil Souvenir;}{\f20\froman Times;}
+{\f21\fswiss Helvetica;}{\f22\fmodern Courier;}{\f23\ftech Symbol;}{\f26\fnil Lubalin Graph;}{\f33\fnil Avant Garde;}{\f34\fnil New Century Schlbk;}{\f156\fnil Garamond;}{\f2515\fnil MT Extra;}{\f32525\fnil VT100;}}{\colortbl\red0\green0\blue0;
+\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;\red255\green0\blue0;\red255\green255\blue0;\red255\green255\blue255;}{\stylesheet{\f20 \sbasedon222\snext0 Normal;}{\s2 \f22\fs20 \sbasedon0\snext2 computer;}{
+\s3\sb160\sa100 \b\f20\fs28 \sbasedon0\snext3 head1;}{\s4\sb60\sa60 \b\i\f20 \sbasedon0\snext4 head2;}}\widowctrl\ftnbj\fracwidth \sectd \sbknone\linemod0\linex0\cols1\endnhere \pard\plain \f20 \par 
+\par 
+\pard \qc {\fs72 How to build a GopherPup\par 
+}\pard \qc \par 
+Don Gilbert\par 
+January 1995\par 
+\pard \qc email: gopherpup@bio.indiana.edu\par 
+\pard \par 
+GopherPup is an Internet Gopher+ client with extensions to \par 
+\pard \fi-620\li980\tx2160 (a)\tab display rich text documents, including pictures,  and\par 
+(b)\tab allow network hypertext links inside documents it displays\par 
+\pard \par 
+This document includes discussion of \par 
+\pard \fi-720\li1080\tldot\tx980\tldot\tx2160 i \tab the Gopher+ protocol extentions used between GopherPup and gopher+ servers\par 
+\pard \fi-720\li1080\tldot\tx980\tldot\tx2160 ii\tab how to create your own gopherpup hyper-rich-text documents\par 
+iii\tab Gopher+ server modifications to support GopherPup\par 
+iv\tab suggestions on how to add hypertext to other gopher+ clients\par 
+v\tab GopherPup source code and how to build it\par 
+vi\tab Current bugs and problems with GopherPup\par 
+vii\tab why not use Mosaic/WWW instead of extending Gopher+ protocol?\par 
+\pard \fi-620\li980\tx2160 \par 
+\pard\plain \s3\sb160\sa100 \b\f20\fs28 I. Gopher+ Protocol Extensions for Hypertext\par 
+\pard\plain \f20 The
+ basic protocol extensions used in GopherPup were outlined in a Usenet article in November 1993 <usenet ref>,  available as <gopher+link>.   The idea is to include network hypertext capabilities in the gopher+ protocol as simply as possible.  For that, I c
+hose to use the currently defined {\b gopher-menu} and {\b gopher+-menu} data types.  These data types, when included as a block extension {\b +MENU}
+, can be associated with any document served by a gopher+ server.   In order to place specific link items within a document, another set of block extensions is needed, which are associated with each item in a +MENU block.  These {\i placing }extensions I
+\rquote ve called +MENUSTRING,  +MENURECT, +MENUBYTES,  and others may be included as seems important.  \par 
+\par 
+Another advantage of this method is that these gopher+menu data can be save to local disk files associated with a document, where users can access them in the same way as from a remote server.\par 
+\par 
+Here is the general scheme of a client-server transaction that includes +MENU data.  \par 
+\par 
+Clien
+t connects to server and queries for a gopher-menu or gopher+-menu.  Server responds with requested data.  If gopher+-menu data is returned, the server will send any +MENU block extensions associated with any of its documents.  If gopher-menu is returned, 
+no +MENU data is returned, and it is the client\rquote s responsibility to ask for more information (\ldblquote !\rdblquote ) on an item to see if it has any +MENU extensions.\par 
+\par 
+The format that the server sends gopher+-menu data including +MENU blocks is as follows (the bars indicate tab characters):\par 
+\par 
+{\fs20 +-1\par 
+}\pard \tb2160\tx2340\tb4860\tx5040\tb6120\tx6300\tb6660\tx6840 {\fs20 +INFO:  0MainDoc1\tab 0/Some/Path/0MainDoc1\tab my.host.edu\tab 70\tab +\par 
+}\pard \tx2340\tx5040\tx6300\tx6840 {\fs20 +ADMIN:\par 
+}\pard \tx360\tx5040\tx6300\tx6840 {\fs20 \tab Admin: blah blah\par 
++VIEWS:\par 
+\tab application/rtf En_US: <12k>\par 
+\tab text/plain En_US <8k>\par 
++MENU:\par 
+}\pard \li360\tb2160\tx2340\tb4860\tx5040\tb6120\tx6300\tb6660\tx6840 {\fs20 +INFO:  0LinkDoc1\tab 0/Some/Path/LinkDoc1\tab my.host.edu\tab 70\tab +\par 
+}\pard \tx360\tx5040\tx6300\tx6840 {\fs20 \tab +MENUSTRING: \ldblquote locate at this text in MainDoc1\rdblquote \par 
+}\pard \li360\tb2160\tx2340\tb4860\tx5040\tb6120\tx6300\tb6660\tx6840 {\fs20 +INFO:  1LinkMenu1\tab 1/Some/Path/LinkMenu1\tab my.host.edu\tab 70\tab +\par 
+}\pard \tx360\tx5040\tx6300\tx6840 {\fs20 \tab +MENUSTRING: \ldblquote locate at this other text in MainDoc1\rdblquote \par 
+}\pard \li360\tb2160\tx2340\tb4860\tx5040\tb6120\tx6300\tb6660\tx6840 {\fs20 +INFO:  7LinkQuery\tab 7Some/Path/LinkQuery\tab my.host.edu\tab 70\tab +\par 
+}\pard \tx360\tx5040\tx6300\tx6840 {\fs20 \tab +MENUSTRING: \ldblquote locate at this even different text in MainDoc1\rdblquote \par 
+\tab +QUERYSTRING:  \ldblquote search gopher index with this string\rdblquote \par 
+}\pard \li360\tb2160\tx2340\tb4860\tx5040\tb6120\tx6300\tb6660\tx6840 {\fs20 +INFO:  1LinkMenu2\tab 1/Some/Path/LinkMenu2\tab my.host.edu\tab 70\tab +\par 
+}\pard \tx360\tx5040\tx6300\tx6840 {\fs20 \tab +MENUSTRING: \ldblquote locate somewhere else in MainDoc1\rdblquote \par 
+\par 
+}\pard \tb2160\tx2340\tb4860\tx5040\tb6120\tx6300\tb6660\tx6840 {\fs20 +INFO:  0Doc2\tab 0/Some/Path/Doc2\tab my.host.edu\tab 70\tab +\par 
+}\pard \tx2340\tx5040\tx6300\tx6840 {\fs20 +ADMIN:\par 
+}\pard \tx360\tx5040\tx6300\tx6840 {\fs20 \tab Admin: blah blah\par 
++VIEWS:\par 
+\tab application/rtf En_US: <12k>\par 
+\tab text/plain En_US <8k>\par 
++MENU:\par 
+}\pard \li360\tb2160\tx2340\tb4860\tx5040\tb6120\tx6300\tb6660\tx6840 {\fs20 +INFO:  0LinkDoc1\tab 0/Some/Path/LinkDoc1\tab my.host.edu\tab 70\tab +\par 
+}\pard \tx360\tx5040\tx6300\tx6840 {\fs20 \tab +MENUSTRING: \ldblquote locate at etc in MainDoc1\rdblquote \par 
+}\pard \li360\tb2160\tx2340\tb4860\tx5040\tb6120\tx6300\tb6660\tx6840 {\fs20 +INFO:  1LinkMenu1\tab 1/Some/Path/LinkMenu1\tab my.host.edu\tab 70\tab +\par 
+}\pard \tx360\tx5040\tx6300\tx6840 {\fs20 \tab +MENUSTRING: \ldblquote locate at etc in MainDoc1\rdblquote \par 
+}\pard \li360\tb2160\tx2340\tb4860\tx5040\tb6120\tx6300\tb6660\tx6840 {\fs20 +INFO:  0LinkDoc2\tab 0/Some/Path/LinkDoc2\tab my.host.edu\tab 70\tab +\par 
++INFO:  1LinkMenu2\tab 1/Some/Path/LinkMenu2\tab my.host.edu\tab 70\tab +\par 
+}\pard \tx360\tx5040\tx6300\tx7020 {\fs20 \par 
+}\pard \tb2160\tx2340\tb4860\tx5040\tb6120\tx6300\tb6660\tx6840 {\fs20 +INFO:  0Doc3\tab 0/Some/Path/Doc3\tab my.host.edu\tab 70\tab +\par 
+}\pard {\i\fs20 [ et cetera ... ]\par 
+}{\fs20 \par 
+\par 
+}The basic idea here is that any document can have an associated gopher+-menu structure.  The current U.Minnesota gopherd server can easily include this data by means of its block extensions method.  Data in the format of a \ldblquote .cache\rdblquote 
+ or \ldblquote .cache+\rdblquote  file can be copied to a a file to be associated with a document (e.g., MainDoc1.gmenu, associated with MainDoc1), or one can create such a .gmenu document by hand.  \par 
+\par 
+The document maintainer can then edit that file and put in +MENUSTRING and related locating extensions.  This will produce a MainDoc1.gmenu file looking like this, for instance:\par 
+\par 
+\pard \tb2160\tx2340\tb4860\tx5040\tb6120\tx6300\tb6660\tx6840 {\fs20 +INFO:  0LinkDoc1\tab 0/Some/Path/LinkDoc1\tab my.host.edu\tab 70\tab +\par 
+}\pard \tx5040\tx6300\tx6840 {\fs20 +MENUSTRING: \ldblquote locate at this text in MainDoc1\rdblquote \par 
+}\pard \tb2160\tx2340\tb4860\tx5040\tb6120\tx6300\tb6660\tx6840 {\fs20 +INFO:  1LinkMenu1\tab 1/Some/Path/LinkMenu1\tab my.host.edu\tab 70\tab +\par 
+}\pard \tx360\tx5040\tx6300\tx6840 {\fs20 +MENUSTRING: \ldblquote locate at this other text in MainDoc1\rdblquote \par 
+}\pard \tb2160\tx2340\tb4860\tx5040\tb6120\tx6300\tb6660\tx6840 {\fs20 +INFO:  7LinkQuery\tab 7Some/Path/LinkQuery\tab my.host.edu\tab 70\tab +\par 
+}\pard \tx360\tx5040\tx6300\tx6840 {\fs20 +MENUSTRING: \ldblquote locate at this even different text in MainDoc1\rdblquote \par 
++QUERYSTRING:  \ldblquote search gopher index with this string\rdblquote \par 
+}\pard \tb2160\tx2340\tb4860\tx5040\tb6120\tx6300\tb6660\tx6840 {\fs20 +INFO:  1LinkMenu2\tab 1/Some/Path/LinkMenu2\tab my.host.edu\tab 70\tab +\par 
+}\pard \tx360\tx5040\tx6300\tx6840 {\fs20 +MENUSTRING: \ldblquote locate at etc in MainDoc1\rdblquote \par 
+}\pard \par 
+The gopherd server should have its configuration file modified to include the block extension type \ldblquote MENU\rdblquote , with some suitable filename suffix (e.g., .gmenu).   On my server, I have a /usr/local/etc/gopherd.conf that has this entry:
+\par 
+\pard\plain \s2\sb100 \f22\fs20 \tab blockext: .gmenu MENU\par 
+\pard\plain \f20 \par 
+Then when gopherd serves out menu information, it will provide it in the above format with any MENU blocks right-shifted by one space.\par 
+\par 
+
+The +QUERYSTRING is another extension which can be used in conjunction with the +MENU blocks.  Its function is to provide a given string that will be used to search a gopher Index database (type 7).  That way, a document can easily include hypertext refere
+nces to data in searchable databases.  More about this later.\par 
+\par 
+\par 
+When sent to a client, the client can use the same general method of parsing the +MEN
+U block as it uses to parse standard gopher-menu and gopher+-menu data.    Then it parses the +MENUSTRING and related placement extenstions, using that information to place the +INFO link at a particular word, phrase or position in the document.   The clie
+nt software can highlight these hotspots in various ways (underline, color, or in a character-mode client, perhaps as extra symbols in the text like [1]), so the person can see which areas have hypertext links.\par 
+\par 
+\par 
+\pard\plain \s3\sb160\sa100 \b\f20\fs28 II. Making Hypertext documents for serving to GopherPup\par 
+\pard\plain \f20 \par 
+
+GopherPup now includes the ability to display documents that are in Microsoft standard Rich-Text-Format (RTF).   This format was chosen because it is an existing, widely available standard for storing fully formatted documents (including font, paragraph an
+d document styling and pictures).    It is suitable for exchange of  scientific documents, as it handles symbol fonts, super and subscripting, and the other formatting characteristics needed in most scientific and scholarly documents.   Also 
+importantly, the most commonly used wordprocessors on the common computing platforms (Macintosh and MS-DOS/MS-Windows) will read and write RTF format.  \par 
+\par 
+The primary step in creating network hypertext documents is then as simple as writing the document in your wordprocessor, and saving it in RTF format (see the \ldblquote Save As\rdblquote 
+ or similar option in your wordprocessor for saving in this format). \par 
+\par 
+The next step is to associate network links with words or images in your document.  This current release of GopherPup i
+s sparse in its support for associating link data with document parts.  Currently this involves (a) creating a separate text file that has  gopher+-menu data, (b) inserting +MENUSTRING statements with each +INFO statement.  Alternately, if you save a hyper
+text gopher document retrieved thru gopherpup, it will create a \ldblquote .go4\rdblquote  gopher+-menu document including the +MENUSTRING statements.\par 
+\par 
+\pard\plain \s4\sb60\sa60 \b\i\f20 II.a) The GopherPup .go4 data file.\par 
+\pard\plain \f20 GopherPup will now look for link data associated with any document it opens from your lo
+cal disk drives.  The standard way to open a local disk file in GopherPup is to choose the File/Open command, and use the system-specific file chooser to select a document to view.  When you make such a selection, e.g., {\f21\fs20 MyThesis.rtf }or{
+\f21\fs20  MyThesis.text}, the program now will look for an associated file with the suffix \ldblquote .go4\rdblquote , e.g., {\f21\fs20 MyThesis.go4.  }
+ The program looks in such a file for gopher+-menu data and if found, will use it to mark hypertext links in the selected document. \par 
+\par 
+You can create an initial .go4 da
+ta file by saving gopher menu windows from GopherPup (use the File/Save menu when a gopher menu window is the active window).  Such a file can be edited with a standard text editor application.  It consists of lines such as described above that are the gop
+her+-menu data:\par 
+\par 
+\pard \tb2160\tx2340\tb4860\tx5040\tb6120\tx6300\tb6660\tx6840 {\fs20 +INFO:  0LinkDoc1\tab 0/Some/Path/LinkDoc1\tab my.host.edu\tab 70\tab +\par 
++INFO:  1LinkMenu1\tab 1/Some/Path/LinkMenu1\tab my.host.edu\tab 70\tab +\par 
++INFO:  7LinkQuery\tab 7Some/Path/LinkQuery\tab my.host.edu\tab 70\tab +\par 
++INFO:  1LinkMenu2\tab 1/Some/Path/LinkMenu2\tab my.host.edu\tab 70\tab +\par 
+}\pard \par 
+Protocols other than Gopher are supported in this format with the addition of +URL: lines.  Currently GopherPup requires a +INFO: line for each item, then additional Gopher+ statements will add to and modify that.   This is an example:\par 
+\pard \tb2160\tx2340\tb4860\tx5040\tb6120\tx6300\tb6660\tx6840 {\fs20 +INFO:  0ItemTitle\tab any/path\tab any.host\tab 0\par 
+}\pard {\fs20 +URL: http://real.host/real/path/here\par 
+}\pard\plain \s4\sb60\sa60 \b\i\f20 {\plain \f20 \par 
+}II.b)  Linking with +MENUSTRING statements\par 
+\pard\plain \f20 \par 
+Currently only the +MENUSTRING: \ldblquote some word or phrase\rdblquote  method of linking a gopher item to a document location is supported in GopherPup.  You need to edit the gopher+-menu \ldblquote .go4\rdblquote 
+ file you created above with a text editor and insert these statements, one following each \ldblquote +INFO\rdblquote  statement.  The syntax of this statement is\par 
+\pard\plain \s2\sl360 \f22\fs20 +MENUSTRING: word\par 
+\pard \s2 +MENUSTRING: \ldblquote a phrase in double-quotes\rdblquote \par 
++MENUSTRING: \lquote a phrase in single quotes\rquote \par 
+\pard\plain \f20 \par 
+GopherPup will search a document and mark all matches to a given +MENUSTRING as links to the associated +INFO gopher item.   \par 
+\par 
+\pard\plain \s4\sb60\sa60 \b\i\f20 II.c)  Planned MENU locating statements\par 
+\pard\plain \f20 Future versions of gopherpup should expand on these capabilities.   It is also hoped th
+at a later version of gopherpup will included means to directly link gopher items to a displayed document, bypassing need to use a text editor.  Suggested locating statements are \par 
+\par 
+\pard \fi-360\li360 {\fs20 +MENUSTRING:   "some string"  repeat-value\par 
+\tab used to locate a network link at a string in a text document.   A phrase with embedded spaces should be enclosed in quote (\lquote ) or double quote (\ldblquote 
+) characters.  An optional repeat-value specifies which occurence of the string to match, from the top of the text. The repeat value is not currently implemented in gopherpup -- all instances of the menustring are matched.\par 
++MENUSTRING:  "bob was here"   3\par 
+\par 
++MENULINE:  start-paragraph start-char  stop-paragraph stop-char\par 
+\tab 
+specifies the item's location as a line number and character range in a text document.   Start-paragraph indexes a paragraph, from 0 at top, and 'start-char' indexes a character within that line.  Likewise Stop-paragraph and stop-char indicate the end of 
+the index.   \par 
++MENULINE:  100  500 100  515}\par 
+{\fs20 \par 
++MENURECT: left  top  right bottom\par 
+\tab specifies the item's pixel location rectangle on a graphics document.\par 
++MENURECT: 300 0 400 100\par 
+\par 
++MENULINERECT: start-paragraph start-char  left  top  right bottom\par 
+\tab This is a combinary of +menuline and +menurect, to index a rectangle within a paragraph.  \par 
++MENULINERECT: 100  500  300 0 400 100\par 
+\par 
++MENUBYTES: startbyte  stopbyte\par 
+\tab specifies the item's location as a byte range in a text document.   If 'stopbyte' is missing, only the 'startbyte' location is indexed for the item location.\par 
++MENUBYTES: 100  500\par 
+\par 
++ISMAP:\par 
+\tab Indicates the item is a queryable graphic map, and x-y coordinates of mouse clicks will be sent to the item server.\par 
+\par 
+\par 
+\par 
+}\pard\plain \s4\sb60\sa60 \b\i\f20 II.d)  NetDoc formats -- Gopher links combined with document data\par 
+\pard\plain \f20 \par 
+As an alternative to having a separate .{\i go4}
+ data file of link statements for each document, GopherPup understands a compount document type where the link statements are prepended to the other data.  This method allows documents with any kind of data that GopherPup can display, including binary form
+ats such as PICT and GIF, to contain network links.  They are typed as NetDoc/Text, NetDoc/RTF, NetDoc/PICT,  NetDoc/GIF, et cetera.  The format of these NetDoc types is to start with the line\par 
+\par 
++MENU:\par 
+\par 
+followed by as many Gopher+ link statements as described above as needed, then the line \par 
+\par 
++DATA:\par 
+\par 
+is a key that the document data follows to the end of the file.\par 
+\par 
+Here is an example NetDoc header\par 
+\par 
+\pard \fi-360\li360 {\fs20 +MENU:\par 
+ +info: 1GopherPup home\tab 1/IUBio-Software+Data/util/gopher/gopherpup\tab ftp.bio.indiana.edu\tab 70\tab +\par 
+ +menustring: ftp.bio.indiana.edu:/util/gopher/gopherpup\par 
+ +comment:\par 
+ +comment: To read this with a standard wordprocessor, strip out the lines down thru\par 
+ +comment: the "+DATA:" line, so that the first line starts with "\{ \\ rtf1"\par 
+ +comment:\par 
+ +info: 1DCLAP home\tab 1/IUBio-Software+Data/util/dclap\tab ftp.bio.indiana.edu\tab 70\tab +\par 
+ +menustring: ftp.bio.indiana.edu:/util/dclap\par 
+ +info: 1IUBio Archive\tab \tab ftp.bio.indiana.edu\tab 70\tab +\par 
+ +menustring: "IUBio Biology Archive"\par 
+ +info: 7GenBank sequence search\tab 7/.indices/genbank\tab ftp.bio.indiana.edu\tab 70\tab +\par 
+ +menustring: "fetch a sequence entry from Genbank"\par 
+ +info: 1RTF Info\tab 1/IUBio-Software+Data/util/rtf\tab ftp.bio.indiana.edu\tab 70\tab +\par 
+ +menustring:  "Rich Text Format"\par 
+ +info: 1RTF (Rich Text Format) utilities\tab 1/RTF\tab ftp.primate.wisc.edu\tab 70\tab +\par 
+ +menustring:  ftp.primate.wisc.edu:/pub/RTF\par 
+ +info: 0Go+hypertext-method\tab 0/IUBio-Software+Data/util/gopher/go+menu-article.txt\tab ftp.bio.indiana.edu\tab 70\tab +\par 
+ +menustring:  "network hypertext links"\par 
+ +comment: new gopherpup "mailto" kind 'm'\par 
+ +info: mGopherPup bug report\tab GopherPup@Bio.Indiana.Edu\tab localhost\tab 0\par 
+ +menustring: GopherPup@Bio.Indiana.Edu\par 
+ +info: 1NCBI Gopher\tab \tab ncbi.nlm.nih.gov\tab 70\par 
+ +menustring: "National Center for Biotechnology Information"\par 
+ +info: 1ncbi_tools\tab 1/toolbox/ncbi_tools\tab ncbi.nlm.nih.gov\tab 70\par 
+ +menustring: ncbi.nlm.nih.gov:/toolbox\par 
+ +info: 1Gopher help from U.Minnesota (USA)\tab \tab gopher.micro.umn.edu\tab 70\tab +\par 
+ +menustring: gopher.micro.umn.edu\par 
+ +comment:\par 
++DATA:\par 
+}\pard {\fs20 \{\\rtf1\\mac\\deff2 \{\\fonttbl\{\\f0\\fswiss Chicago;\}\{\\f2\\froman New York;\}\{\\f3\\fswiss Geneva;\}\{\\f4\\fmodern Monaco;\}\{\\f13\\fnil Zapf Dingbats;\}\{\\f14\\fnil Bookman;\}\{\\f16\\fnil Palatino;\}\{\\f18\\fnil Zapf Chancery;\}
+\{\\f19\\fnil Souvenir;\}\{\\f20\\froman Times;\}\par 
+}{\i\fs20 [... and more rtf data... ]\par 
+}\pard\plain \s3\sb160\sa100 \b\f20\fs28 \par 
+III. Gopher+ server modifications to support GopherPup\par 
+\pard\plain \f20 All of the current extensions to GopherPup will work with the current gopher+ GopherD server from University of Minnesota, I believe.  I use one minor extension, but it isn\rquote t essential.  At this point, I haven\rquote 
+t tested other gopher+ servers, such as the Macintosh one.  \par 
+\par 
+The one extension I\rquote ve added to server sof
+tware for these methods, is to allow the combined MENU information and document DATA to be built from two separate files, and sent as one chunk to the client.  This extention allows one to support both non-hypertext and hypertext formats from the same data
+ files.  For instance, one set of documents at IUBio server is available in the following formats:  image/pict, netdoc/pict, image/gif, netdoc/gif, and text/html.  The two pict forms use one data file, and the netdoc form is created by prepending a +MENU: 
+block (as in \'a4II.d above).  The other three forms are created from one gif file and the same menu block (for netdoc/gif) or with an HTML wrapper (for text/html).\par 
+\pard\plain \s3\sb160\sa100 \b\f20\fs28 \par 
+IV. Suggestions for adding hypertext support to other gopher+ clients\par 
+\pard\plain \f20 \par 
+
+The protocol extentions that are outlined here, and embodied in the GopherPup client, are readily transferable to other gopher+ clients.  The basic data here is the same gopher+-menu data already parsed by these clients.  A gopher+ server should need no mo
+dification to send MEN
+U data associated with a document, if it follows the U.Minnesota model of block extensions.  It is my intension, and suggestion for others, to provide at least both plain text and Rich Text Format versions of documents for network information servers, sinc
+e it is usually trivial to produce both forms from a wordprocessor.  Thus it isn\rquote 
+t necessary for other clients to support RTF display (which is the hard part here -- it took me rougly one day to add just the hypertext portion to my gopher client).  Other c
+lients might also care to support other document formats.  This method of MENU extensions can be applied to various text and graphics formats.\par 
+\par 
+For a client to support MENU hypertext links it basically needs to add recognition of the {\ul +MENU:} block extention, and extension locator statements like {\ul +MENUSTRING:}
+.  For a graphics mode client, this would involve highlighting the located strings in a document on display, and responding to user interactions (mouse clicks) with the highlighted item by fetching it fro
+m the server, basically in the same way as for gopher items that are displayed and selected from a menu.\par 
+\par 
+For character-mode client, it might be easiest to insert markers into a display document to correspond to highlighting in a graphics client.  If the document text were \par 
+{\f21\fs20 \tab Please match }{\f21\fs20\ul this word}{\f21\fs20 , and then match this}{\f21\fs20\ul  second word,}{\f21\fs20  \par 
+}then formats such as \par 
+{\f21\fs20 \tab Please match this word\{a\}, and then match this second word\{b\}, \par 
+}or\par 
+{\f21\fs20 \tab Please match this word[1], and then match this second word[2], }\par 
+would display easily, and the client could respond to typing of letters or numbers as selection events for the linked items.\par 
+\par 
+\pard\plain \s3\sb160\sa100 \b\f20\fs28 V. GopherPup source code and how to build it\par 
+\pard\plain \f20 
+Source code for GopherPup is freely available for non-commercial distribution and use, as are program executables for the major platforms available to the author.    It may be modified and enhanced for those who wish to.  The source code is available at <f
+tp://iubio.bio.indiana.edu:/util/dclap/src/> with associated source code in /util/dclap/from-ncbi/, documents in /util/dclap/docs/, and program executables in /util/dclap/apps/.\par 
+\par 
+An interesting feature of the GopherPup software is that it is written based on a cross-platform development library.  This means that \ldblquote one-size-fits-all\rdblquote 
+, or at least it tries to.  Additions and changes to the program are readily available on the common computing platforms of Macintosh, MS Windows and X/Motif Windows.\par 
+\par 
+The cross platform development library includes an ANSI-C interface to Macintosh, MS-Windows, and X/Motif Windows graph
+ic and system environments.  The C library is called NCBI Toolkit, with VIBRANT the graphic user interface portion.   These parts are written by biocomputing scientists at the National Center for Biotechnology Information (NCBI).  The remainder of the fram
+ework for GopherPup is a C++ object oriented, class application library (DCLAP), which is still fairly young.  It is based loosely on the Apple Computer MacApp development library (the parent of GopherPup, GopherApp was written to MacApp).  \par 
+\par 
+\pard\plain \s3\sb160\sa100 \b\f20\fs28 \par 
+VI. Current bugs and undeveloped features of GopherPup\par 
+\pard\plain \f20 \par 
+\pard \fi-280\li260 {\ul General:\par 
+}\tab \endash  RTF and HTML, and in general the rich-text display, need much bug chasing.\par 
+\tab \endash  HTML Forms are not supported yet (a first hack at it is in progress).\par 
+\tab \endash  Memory management is improved but still needs much work -- documents are not flushed & loaded as sensibly as they should be.  \par 
+\par 
+{\ul Mac: \par 
+}\tab \endash  seems generally stable, but not completely\par 
+\par 
+{\ul XMotif: \par 
+}\tab \endash  somewhat usable, though it still tends to crash.\par 
+\tab \endash  no printing.  This lack is fundamental to the XWindow support of Vibrant/DCLAP.\par 
+\par 
+{\ul MS-Windows: \par 
+}\tab \endash 
+ freezes fairly frequently still.  When not frozen, all the features are there.   The 32 bit version seems much more stable -- several of the 16bit version crashes are known due to the small word size of that system for memory allocations, etc.  \par 
+\pard \par 
+\pard \fi-280\li260 [more bugs are known, just not documented here...]\par 
+\pard\plain \s3\sb160\sa100 \b\f20\fs28 \par 
+VII. Why not just use Mosaic?\par 
+\pard\plain \f20 \par 
+Internet Gopher and the network information systems that goes under names of WWW, the Web,  HTTP and HTML are both capable of being good network 
+information clients, and in very similar manners.  Many of the features that were pioneered in gopher are now being added to WWW/Mosaic client-servers.  Many of the same problems are now being addressed.  My opinion is that Gopher has good features that sh
+ould not be lost sight of due to a desire for hypertext, and a pretty (inter)face.\par 
+\par 
+The hypertext markup language (HTML) has advantages and disadvantages over the method discussed here.  One basic difference is that HTML is an in-line markup language, where hypertext links are inserted in the document.  The form described here doesn
+\rquote t change documents themselves, but adds a secondary data file, or is appended at the start of the data.  In some cases this nicer, as it leaves the original document in its orig
+inal form, without confusing the text with network link codes.    GopherPup has been developed to allow translators to display various document formats, and as well to permit adding network links to any of these formats, whether they are simple text or som
+e binary image format.\par 
+\par 
+
+The HTML document format as implemented in Mosaic and other WWW browsers does not provide enough support for the formatting features needed for scientific documents.  Symbol and other fonts, super and subscripts, various formatting capabilities that any co
+mmon wordprocessor can display are essential for electronic publication of scientific documents.  Also, to get wordprocessing documents into HTML format involves various difficulties.  The RTF format chosen for GopherPup is better s
+uited to display of scholarly articles, and has the great benefit of being readily produced by many or most of the commonly used wordprocessing programs.    As well, GopherPup has the markup features needed to allow you to very simply add network links to 
+any part of a displayed document, by selecting words or portions of the display and dragging a network link item to that selection.\par 
+\par 
+The RTF support also includes support of embedded pictures, including both vector and bitmap forms.  Vector pictures are no
+t supported in Mosaic/www, but are very useful for scientific data (frequently graphs) both because they are independent of resolution of the display/output device, and also because they can be re-edited to different sizes or components can be changed easi
+ly.  In one example of genetic map drawings, I have compared the same maps in formats suitable for Mosaic browsers (GIF) and for GopherPup (PICT).  The low-weight, high-resolution vector map wins hands down any speed contests, at about 5 times faster in fe
+tching and displaying the same map, making it much more suitable to set up interactive graphic browsing services with GopherPup. \par 
+\par 
+
+The hypertext transport protocol (HTTP) is essentially the same in functionality to the Internet Gopher protocol, it just works with different codes.  Since gopher servers can also server HTML documents if those are preferred, there seems no compelling rea
+son to run an HTTP server.  \par 
+\line Gopher already has mature support for client-server handling of multiple-format documents (Goph
+er+ VIEWS).  This allows for instance a server to provide both a fancy, picture-rich document  and a simple, plain text one that can provide the same basic information.  But this choice of formats lets gopher serve a wider range of client and network trans
+port capabilities.\par 
+\par 
+Mosaic and other  so-called web browsers tend to be \ldblquote kitchen-sink\rdblquote 
+ clients.  They try to speak many network protocols, but are masters only of HTTP/HTML.   In part this means that people using these browsers get a poor impression of met
+hods other than HTTP/HTML, because the browser only poorly support other methods.   This is basically why I avoid using the terms \ldblquote web\rdblquote  and \ldblquote WWW\rdblquote 
+.   The advocates of HTML/HTTP browsers are claiming more than they deliver.   Gopher clients tend to concentrate on mastering one protocol, and rely on information servers to provide gateways to alternate protocols if desired.  \par 
+\par 
+The HTML/HTTP developers have long talked about the \ldblquote standard\rdblquote  that they developed.   It currently looks like it will be very difficult 
+for anyone to extend or improve that method, as they have a committee in charge of it.   In my estimation, standards are not born over night.  Where standard make sense, existing ones should be employed before inventing a new one.  Where new methods are ne
+eded, they should be developed and tested before calling them a standard.  That is why I\rquote 
+ve (a) concentrated on using existing formats like RTF and PICT that are already in wide use for document display, and (b) extended and experimented with the flexible 
+Gopher+ protocol to get it to do useful things, rather than try to do such with the restricted HTTP/HTML protocols.\par 
+\par 
+
+Both Internet Gopher and WWW are still evolving and changing rapidly.  It may well be that they converge on some set of features that all find useful.   GopherPup is one step to providing a complex client that supports the important information protocols. 
+ I\rquote ve hoped with GopherPup extentions to amend the parts of Gopher that many people find advantageous in Mosaic,  and perhaps provide in some small ways a better network client for some uses.\par 
+\par 
+
+The evolving GopherPup now supports local gophering -- browsing and (soon) searching of local data with the same simple methods that apply to remote services.  With this addition it will be feasible for information providers to offer both network services 
+and CDROM based information disks relying on one set of data and client/user-interface.\par 
+\par 
+\par 
+}

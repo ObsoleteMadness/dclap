@@ -8,6 +8,8 @@
 #include "DId.h"
 #include <stdio.h>
 
+#define NAMESTORE 
+
 #if defined(COMP_CWI) || defined(OS_NT)
 #define WIN32 
 #undef FAR
@@ -29,16 +31,22 @@ const char* DFileManager::kUntitled = "Untitled";
 
 char	DFileManager::fName[640];
 
+
+void DFileManager::SetFilename( const char* name) 
+{
+	if (name) StrNCpy( fName, name, 512); else fName[0]= '\0';
+}
+
 const char* DFileManager::GetInputFileName( const char* extension,  const char* mactype)
 {
-	Boolean okay= Nlm_GetInputFileName( (char*)fName, 256, (char*)extension, (char*)mactype);
+	Boolean okay= Nlm_GetInputFileName( (char*)fName, 512, (char*)extension, (char*)mactype);
 	if (okay) return fName;
 	else return NULL;
 }
 
 const char* DFileManager::GetOutputFileName( const char* defaultname) 
 {
-	Boolean okay=  Nlm_GetOutputFileName( (char*)fName, 256, (char*)defaultname);
+	Boolean okay=  Nlm_GetOutputFileName( (char*)fName, 512, (char*)defaultname);
 	if (okay) return fName;
 	else return NULL;
 }
@@ -47,7 +55,7 @@ const char* DFileManager::GetFolderName()
 {
 	// this is a quick hack -- currently this selects a file w/in a folder,
 	// then chops filename off -- confusing to users, need folder select dialog
-	Boolean okay= Nlm_GetInputFileName( (char*)fName, 256, NULL, NULL);
+	Boolean okay= Nlm_GetInputFileName( (char*)fName, 512, NULL, NULL);
 	if (okay) return DFileManager::PathOnlyFromPath(fName);
 	else return NULL;
 }
@@ -152,6 +160,10 @@ Boolean DFileManager::FileExists( const char* pathname)
 		return false;
 }
 
+Boolean DFileManager::Rename( const char* pathname, const char* newpathname)
+{
+		return Nlm_FileRename((char*)pathname, (char*)newpathname);
+}
 
 Boolean DFileManager::IsRelativePath(const char* path)
 {
@@ -222,6 +234,22 @@ char*	DFileManager::TempFolder( char* namestore)
 char*	DFileManager::TempFilename( char* namestore)
 {
 	return Nlm_TmpNam( namestore);
+}
+
+char*	DFileManager::TempFilenameonly( char* namestore)
+{
+	char * nameonly, * path;
+	if (!namestore) namestore= fName;
+	*namestore= 0;
+	
+	path= Nlm_TmpNam( namestore);
+	if (path) {
+		nameonly= Nlm_FileNameFind( path);
+		if (nameonly) StrCpy( namestore, nameonly);	
+		return namestore;
+		}
+	else
+		return path;
 }
 		
 Boolean DFileManager::CreateFolder( const char* pathname)
@@ -310,14 +338,18 @@ void DFileManager::ReplaceSuffix(char* filename, long maxname, const char* suffi
 
 //class DFile : public DObject
 
+
+char* DFile::fgType = NULL;
+char* DFile::fgSire = NULL;
 	
 DFile::DFile() 
 {
 	fFile= NULL;
 	fName= NULL;
+	fUseNameStore= false;
 	fMode= StrDup("r");
-	fType= NULL;
-	fSire= NULL;
+	fType= fgType;
+	fSire= fgSire;
 	fEof= true;
 }
 
@@ -327,9 +359,10 @@ DFile::DFile(const char* filename, const char* openmode,
 {
 	fFile= NULL;
 	fName= NULL;
+	fUseNameStore= false;
 	fMode= NULL;
-	fType= NULL;
-	fSire= NULL;
+	fType= fgType;
+	fSire= fgSire;
 	fEof= true;
 	Initialize( filename, openmode, type, creator);
 }
@@ -337,22 +370,52 @@ DFile::DFile(const char* filename, const char* openmode,
 void DFile::Initialize(const char* filename, const char* openmode,
 						const char* type, const char* creator)
 {
-	char* name= StrDup( (char*) filename); // do before free in case these are some of self's data
-	char* mode= StrDup( (char*) openmode);
+	char * name, * mode;
+	
 	if (fFile) Close(); 
-	if (fName) MemFree(fName);
-	if (fMode) MemFree(fMode);
+#ifdef NAMESTORE
+	Boolean freeName= (!fUseNameStore);
+	if (!filename) { 
+		fUseNameStore= true; 
+		*fNameStore= 0;
+		name= fNameStore; 
+		}
+	else {
+		fUseNameStore= (StrLen((char*) filename) < sizeof(fNameStore));
+		if (fUseNameStore) {
+			StrCpy(fNameStore, (char*) filename);
+			name= fNameStore;
+			}
+		else {
+			name= StrDup( (char*) filename); // do before free in case these are some of self's data
+			}
+		}
+	if (freeName) MemFree(fName);
 	fName= name;
+#else
+	name= StrDup( (char*) filename); // do before free in case these are some of self's data
+	MemFree(fName);
+	fName= name;
+#endif
+
+	mode= StrDup( (char*) openmode);
+	MemFree(fMode);
 	fMode= mode;
+	
 	fType= (char*)type;
 	fSire= (char*)creator;
+	if (!fType) fType= fgType;
+	if (!fSire) fSire= fgSire;
 	fEof= true;
 }
 	
 DFile::~DFile() 
 {
 	if (fFile) Close();
-	MemFree( fName);
+#ifdef NAMESTORE
+	if (!fUseNameStore) 
+#endif
+		MemFree(fName);
 	MemFree( fMode);
 }
 
@@ -378,7 +441,6 @@ Boolean DFile::suicide(short ownercount)
 
 Boolean DFile::Exists()
 {
-#if 1
 	if (fFile) return true; // this is only around if file exists
 	else if (!fName) return false;
 	else {
@@ -387,24 +449,6 @@ Boolean DFile::Exists()
 		else if (kind == DFileManager::kIsFolder) return false; //?? what to do?? false or true?
 		else return DFileManager::FileExists(fName); // try another test?
 		}
-#else
-	if (fFile) return true;
-	else if (!fName) return false;
-	else {
-		Boolean exists;
-			// !! can't use w/ fOpen mode -- wipes out data if "w" is mode
-		if (fMode && *fMode == 'r') {
-			fFile= Nlm_FileOpen(fName, fMode);
-			exists= (fFile != NULL);
-			}
-		else {
-			fFile= Nlm_FileOpen(fName, "r");
-			exists= (fFile != NULL);
-			Close();
-			}			
-		return exists;
-		}
-#endif
 }
 
 void DFile::Create(const char* filetype, const char* creator)
@@ -424,16 +468,39 @@ Boolean DFile::Delete()
 	return Nlm_FileRemove(fName);
 }
 
+
+void DFile::SetName(const char* newname)
+{
+	if (newname && *newname && StrCmp(newname, fName)!=0) {
+		Close();
+#ifdef NAMESTORE
+		if (!fUseNameStore) MemFree(fName);
+		fUseNameStore= (StrLen((char*) newname) < sizeof(fNameStore));
+		if (fUseNameStore) {
+			StrCpy(fNameStore, (char*) newname);
+			fName= fNameStore;
+			}
+		else {
+			fName= StrDup( (char*) newname); 
+			}
+#else
+		MemFree(fName);
+		fName= StrDup( (char*) newname); 
+#endif
+	}
+}
+
+
 Boolean DFile::Rename(const char* newname)
 {
-	//?? can we leave file open during this?
-	Boolean okay= Nlm_FileRename(fName, (char*)newname);
-	if (okay) {
-		MemFree(fName);
-		fName= StrDup(newname);
+	Boolean okay= false;
+	if (newname && *newname && StrCmp(newname, fName)!=0) {
+		okay= Nlm_FileRename(fName, (char*)newname);
+		if (okay) SetName( newname);
 		}
 	return okay;
 }
+
 
 void DFile::SetMode(const char* openmode)
 {

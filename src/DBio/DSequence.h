@@ -19,7 +19,7 @@ struct SearchRec {
 class DFile;
 
 class	DSequence : public DObject {
-private:		
+protected:		
 	char* 			fInfo; 				//sequence documentation 
 	char* 			fBases;				//the bases
 	char* 			fMasks;				//style masks
@@ -37,10 +37,14 @@ private:
 	Boolean 		fOpen:1;			//? seq is open in a view
 	Boolean 		fChanged:1;		//modified since updt
 	Boolean			fMasksOk:1;		//if fMasks is in a good state
-
+	Boolean 		fIsMega:1;		//object == DMegaSequence
+	Boolean			fShowORF:1;		//show ORF mask - only for DAsmView?
+	Boolean 		fShowRE:1;		//show RE cuts - "
+	Boolean			fShowTrace:1;	//show basecall trace - "
+	
 public:
-	static char* kConsensus;
-	static char	indelHard, indelSoft, indelEdge;
+	static char*  kConsensus;
+	static char	  indelHard, indelSoft, indelEdge;
 	
 	enum seqType {
 		kDNA 			= 1,
@@ -49,6 +53,7 @@ public:
 		kAmino 		= 4,
 		kOtherSeq	= 5
 		};
+  enum { kSearchNotFound = -1, kMaskOK = 'K', kMaskEmpty = -1 };
 	enum nucBits {
 		/* NucleicBits (values in 0..31):  
 				%00001 = A
@@ -88,33 +93,40 @@ public:
 	virtual DObject* Clone(); // override 
 	virtual void CopyContents( DSequence* fromSeq);
 	
-	char* Bases() const { return fBases; }
-	char* Masks() const { return fMasks; }
-	char* Name() const { return fName; }
-	char* Info() const { return fInfo; }
-	long 	LengthF() const { return fLength; }
-	short Kind() const { return fKind; }
-	short Index() const { return fIndex; }
-	char* KindStr() const;
-	Boolean Changed() const { return fChanged; }
-	unsigned long ModTime() const { return fModTime; }
-	unsigned long Checksum() const { return fChecksum; }
-	long Origin() const { return fOrigin; }
-	Boolean IsAmino() { return (fKind == kAmino); }
-	Boolean IsDeleted() { return fDeleted; }
+	virtual char* Bases() const { return fBases; }
+	virtual char* Masks() const { return fMasks; }
+	virtual char* Name() const { return fName; }
+	virtual char* Info() const { return fInfo; }
+	virtual long 	LengthF() const { return fLength; }
+	virtual short Kind() const { return fKind; }
+	virtual short Index() const { return fIndex; }
+	virtual char* KindStr() const;
+	virtual Boolean Changed() const { return fChanged; }
+	virtual unsigned long ModTime() const { return fModTime; }
+	virtual unsigned long Checksum() const { return fChecksum; }
+	virtual long Origin() const { return fOrigin; }
+	virtual Boolean IsAmino() { return (fKind == kAmino); }
+	virtual Boolean IsDeleted() { return fDeleted; }
+	virtual Boolean ShowORF() { return fShowORF; }
+	virtual Boolean ShowRE() { return fShowRE; }
+	virtual Boolean ShowTrace() { return fShowTrace; }
 	
-	void SetBases( char* theBases);
-	void UpdateBases( char* theBases, long theLength); // caller must know what he does  
-	void SetMasks( char* theMasks);
-	void FixMasks();
-	void SetInfo( char* theInfo);
-	void SetName( char* theName);
-	void SetKind( short theKind);
-	void SetIndex( short theIndex);
-	void SetTime( unsigned long theTime);
-	void SetOrigin( long theOrigin);
-	void SetDeleted( Boolean turnon) { fDeleted= turnon; }
-	
+	virtual void SetBases( char*& theBases, Boolean duplicate = false);
+	virtual void UpdateBases( char* theBases, long theLength); // caller must know what he does  
+	virtual void SetMasks( char*& theMasks, Boolean duplicate = false);
+	virtual void FixMasks();
+	virtual void SetInfo( char* theInfo);
+	virtual void SetName( char* theName);
+	virtual void SetKind( short theKind);
+	virtual void SetIndex( short theIndex);
+	virtual void SetTime( unsigned long theTime);
+	virtual void SetOrigin( long theOrigin);
+	virtual void SetDeleted( Boolean turnon) { fDeleted= turnon; }
+	virtual void SetChanged( Boolean turnon) { fChanged= turnon; }
+	virtual void SetShowORF( short turnon);
+	virtual void SetShowRE( short turnon);
+	virtual void SetShowTrace( short turnon);
+
 	virtual void SetSelection( long start, long nbases);
 	virtual void GetSelection( long& start, long& nbases);
 	virtual void ClearSelection();
@@ -130,7 +142,10 @@ public:
 	virtual DSequence* Translate(Boolean keepUnselected = true);
 	virtual DSequence* Slide( long slideDist);
 	virtual DSequence* Compress();
+	virtual DSequence* CompressFromMask(short masklevel);
 	virtual DSequence* LockIndels( Boolean doLock);
+	virtual DSequence* OnlyORF(char nonorf = '~');
+	virtual void SetORFmask(short masklevel, short frame);
 
 	virtual long Search( char* target, Boolean backwards);
 	virtual long SearchAgain(); 
@@ -144,7 +159,7 @@ public:
 	virtual void Modified();  //set fModTime
 	virtual void UpdateFlds(); 
 	
-	Boolean MasksOk() { return fMasksOk; }
+	virtual Boolean MasksOk() { return fMasksOk; }
 	virtual short MaskAt(long baseindex, short masklevel= 1);
 	virtual void  SetMaskAt(long baseindex, short masklevel= 1, short maskval= 1);
 	virtual void  FlipMaskAt(long baseindex, short masklevel= 1);
@@ -153,6 +168,7 @@ public:
 	virtual void  SetMask(short masklevel= 1, short maskval= 1); 
 	virtual void  FlipMask(short masklevel= 1); 
 	virtual void  ClearMask(short masklevel= 1) { SetMask(masklevel, 0); }
+	virtual Boolean IsMasked(unsigned char maskbyte, short masklevel);
 
 	virtual void DoWrite( DFile* aFile, short format);  // revise for ostream
 	virtual void DoWriteSelection( DFile* aFile, short format); // revise for ostream
@@ -161,8 +177,6 @@ public:
 
 extern char*	gDefSeqName;
 extern short  gLinesPerSeqWritten;
-	
-DSequence* MakeSequence(char* name, char* bases, char* info, long modtime);
-	
+		
 
 #endif

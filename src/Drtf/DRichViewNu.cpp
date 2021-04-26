@@ -684,7 +684,7 @@ void DRichView::ParseText(DParagraph* itemPtr, char* text, Boolean byPixels, Nlm
   					numRows,tabRow,returnRow,row;
   Uint2    	start;
   Boolean  	wrap;
-	char 	 	 * ptex, * newtex;
+	char 	 	* newtex;
 	ulong	 	maxsize, newsize;
 	
   if (itemPtr && text && *text != '\0') {
@@ -711,7 +711,6 @@ void DRichView::ParseText(DParagraph* itemPtr, char* text, Boolean byPixels, Nlm
   		maxsize= (ulong) (StrLen(text) + 50 + itemPtr->minLines);
   		newsize= 0;
   		newtex = (char*) MemNew (maxsize);
-     	ptex= newtex;
      	
       width = 0;
       inset = itemPtr->leftInset; /* pixLeft, pixFirst ?? */
@@ -1179,12 +1178,18 @@ void DRichView::FormatText( short item, DParagraph* itemPtr, Boolean byPixels)
 		this->ViewRect( r);
     needToParse = TRUE;
 		text = this->DataToChar(itemPtr->fDataPtr);
-    	
+  		
     if (needToParse && text && *text != '\0') {
-      ParseText(itemPtr, text, byPixels, r);
+	  	if (*text == '\n' && text[1] == '\0') {
+	      itemPtr->fText = text;
+	      itemPtr->numRows = 1;
+	   		}
+      else {
+      	ParseText(itemPtr, text, byPixels, r);
+      	MemFree(text);
+      	}
       itemPtr->notCached = FALSE;
       itemPtr->neverCached = FALSE;
-      MemFree(text);
     	} 
     else  
       itemPtr->fText = text;
@@ -1196,7 +1201,6 @@ void DRichView::FormatText( short item, DParagraph* itemPtr, Boolean byPixels)
       itemPtr->numRows = 1;
       itemPtr->notCached = FALSE;
       itemPtr->neverCached = FALSE;
-      needToParse = TRUE;
     	} 
     else if (fIsVirtual) {
       numRows = 0;

@@ -1,0 +1,38 @@
+<html>
+<!-- dclap [autoseq] -->
+<!-- ;child app calls using dialog forms -->
+
+<title>AutoSeq Base Calling</title>
+<b>AutoSeq</b> - An automatic base calling program
+by Reece Hart.
+<HR>
+
+<FORM 
+	METHOD=localexec 
+	ACTION="$apps:autoseq 
+	-i -o $infile -tfs $infile
+">
+<!-- need autoseq option to locate output folder -->
+
+Program options: <p>
+Choose ABI or SCF autosequencer trace file:
+<p>
+<INPUT TYPE="file" NAME="infile" VALUE="mytracefile">
+<p>
+
+<!-- A HREF=file:///$apps:autoseq.help Help with Clustal /A -->
+<INPUT TYPE=submit VALUE="Launch app"> 
+
+<INPUT TYPE=hidden NAME=seqformat VALUE="tracefile">
+<INPUT TYPE=hidden NAME=outfile5 VALUE="$infile.T  autoseq/ttrace">
+<INPUT TYPE=hidden NAME=outfile4 VALUE="$infile.G  autoseq/gtrace">
+<INPUT TYPE=hidden NAME=outfile3 VALUE="$infile.C  autoseq/ctrace">
+<INPUT TYPE=hidden NAME=outfile2 VALUE="$infile.A  autoseq/atrace">
+<INPUT TYPE=hidden NAME=outfile1 VALUE="$infile.tfs   autoseq/tfs">
+
+</FORM>
+<HR>
+</html>
+
+<!-- INPUT TYPE=hidden NAME=outfile1 VALUE="$apps:pseq  autoseq/pseq">
+

@@ -74,8 +74,8 @@ Window       Nlm_currentXWindow;
 GC           Nlm_currentXGC;
 Nlm_Uint4    Nlm_XbackColor;
 Nlm_Uint4    Nlm_XforeColor;
-Nlm_Int2     Nlm_XOffset;
-Nlm_Int2     Nlm_YOffset;
+Nlm_IntD     Nlm_XOffset;
+Nlm_IntD     Nlm_YOffset;
 Nlm_RegioN   Nlm_clpRgn;
 #endif
 
@@ -453,6 +453,45 @@ static Nlm_Boolean Nlm_GetTextMetrics (void)
 
 #ifdef DCLAP
 
+extern void Nlm_SetBackColor (Nlm_Uint4 color)
+{
+#ifdef WIN_MAC
+  Nlm_Uint2  bl;
+  Nlm_Uint2  gn;
+  Nlm_Uint2  rd;
+  Nlm_Uint1  colors [4];
+  RGBColor   foreColor;
+  GrafPtr    port;
+
+  if (hasColorQD) {
+    *((Nlm_Int4Ptr) colors) = color;
+    rd = (Nlm_Uint2) colors [1];
+    gn = (Nlm_Uint2) colors [2];
+    bl = (Nlm_Uint2) colors [3];
+    foreColor.red = rd << 8;
+    foreColor.green = gn << 8;
+    foreColor.blue = bl << 8;
+    RGBBackColor (&foreColor);
+  } else {
+    GetPort (&port);
+    if (port != NULL) {
+      BackColor ((Nlm_Int4) color);
+    }
+  }
+#endif
+#ifdef WIN_MSWIN
+  if (Nlm_currentHDC != NULL) {
+    SetBkColor (Nlm_currentHDC, color);
+    Nlm_RecreateBrushes ();
+  	}
+#endif
+
+#ifdef WIN_X
+	currentBkColor = color;
+	XSetBackground (Nlm_currentXDisplay, Nlm_currentXGC, currentBkColor);
+#endif
+}
+
 extern void Nlm_SelectBackColor (Nlm_Uint1 red, Nlm_Uint1 green, Nlm_Uint1 blue)
 {
 #ifdef WIN_MAC
@@ -597,8 +636,8 @@ static void Nlm_PointToolToPoinT (Nlm_PointTool src, Nlm_PointPtr dst)
     dst->y = src.v;
 #endif
 #ifdef WIN_MSWIN
-    dst->x = (Nlm_Int2) src.x;
-    dst->y = (Nlm_Int2) src.y;
+    dst->x = (Nlm_IntD) src.x;
+    dst->y = (Nlm_IntD) src.y;
 #endif
 #ifdef WIN_X
     dst->x = src.x;
@@ -637,10 +676,10 @@ static void Nlm_RectToolToRecT (Nlm_RectTool PNTR src, Nlm_RectPtr dst)
     dst->bottom = src->bottom;
 #endif
 #ifdef WIN_MSWIN
-    dst->left = (Nlm_Int2) src->left;
-    dst->top = (Nlm_Int2) src->top;
-    dst->right = (Nlm_Int2) src->right;
-    dst->bottom = (Nlm_Int2) src->bottom;
+    dst->left = (Nlm_IntD) src->left;
+    dst->top = (Nlm_IntD) src->top;
+    dst->right = (Nlm_IntD) src->right;
+    dst->bottom = (Nlm_IntD) src->bottom;
 #endif
 #ifdef WIN_X
     dst->left = src->x;
@@ -1665,6 +1704,10 @@ extern Nlm_FonT Nlm_GetFont (Nlm_CharPtr name, Nlm_Int2 size,
 				name= "Courier New";	  /* newCourier= TRUE; */			
 				}
 #endif
+#ifdef notnow_WIN_X
+	/* no underlined fonts in Motif/XWin !! */
+	if (undrln) bld= true;
+#endif
 #endif
     rsult = Nlm_FindFont (name, size, bld, itlc, undrln);
     if (rsult == NULL) {
@@ -1810,6 +1853,20 @@ extern void Nlm_SelectFont (Nlm_FonT f)
     Nlm_fontInUse = f;
   }
 }
+
+
+#if defined(DCLAP) && defined(WIN_X)
+void Nlm_DoUline( Nlm_PoinT pt1, Nlm_Int4 x2, Nlm_Int2 ascent)
+{
+  Nlm_FontData  fdata;
+	Nlm_GetFontData (Nlm_fontInUse, &fdata);
+	if ( fdata.undlin ) {
+    XDrawLine (Nlm_currentXDisplay, Nlm_currentXWindow, Nlm_currentXGC,
+               pt1.x - Nlm_XOffset, pt1.y + ascent - Nlm_YOffset,
+               x2 - Nlm_XOffset, pt1.y  + ascent - Nlm_YOffset);
+		}
+}
+#endif
 
 extern void Nlm_AssignPrinterFont (Nlm_FonT scrnFont, Nlm_FonT prtrFont)
 
@@ -2161,7 +2218,16 @@ extern void Nlm_PaintChar (Nlm_Char ch)
     Nlm_GetPen (&pt);
     XDrawString (Nlm_currentXDisplay, Nlm_currentXWindow, Nlm_currentXGC,
                  pt.x - Nlm_XOffset, pt.y - Nlm_YOffset, str, 1);
+#ifdef DCLAP
+	/* do uline... */
+    {
+		Nlm_Int4 ptx1 = pt.x + Nlm_CharWidth (ch);
+		Nlm_DoUline( pt, ptx1, 0);
+    pt.x = ptx1;
+		}
+#else
     pt.x += Nlm_CharWidth (ch);
+#endif
     Nlm_MoveTo (pt.x, pt.y);
   }
 #endif
@@ -2215,7 +2281,16 @@ extern void Nlm_PaintString (Nlm_CharPtr text)
       XDrawString (Nlm_currentXDisplay, Nlm_currentXWindow, Nlm_currentXGC,
                    pt.x - Nlm_XOffset, pt.y - Nlm_YOffset, text, len);
     }
+#ifdef DCLAP
+	/* do uline... */
+    {
+		Nlm_Int4 ptx1 = pt.x + Nlm_StringWidth (text);
+		Nlm_DoUline( pt, ptx1, 0);
+    pt.x = ptx1;
+		}
+#else
     pt.x += Nlm_StringWidth (text);
+#endif
     Nlm_MoveTo (pt.x, pt.y);
   }
 #endif
@@ -2402,7 +2477,7 @@ extern void Nlm_DrawText (Nlm_RectPtr r, Nlm_CharPtr text,
   Nlm_Int2   limit;
   Pixmap     pix;
   Nlm_PoinT  pt;
-  Nlm_Int2   width;
+  Nlm_IntD   width;
 
   if (r != NULL && Nlm_currentXDisplay != NULL &&
       Nlm_currentXWindow != 0 && Nlm_currentXGC != NULL) {
@@ -2446,6 +2521,13 @@ extern void Nlm_DrawText (Nlm_RectPtr r, Nlm_CharPtr text,
         XDrawString (Nlm_currentXDisplay, Nlm_currentXWindow, Nlm_currentXGC,
                      pt.x - Nlm_XOffset, pt.y + Nlm_Ascent () - Nlm_YOffset,
                      text, (int) len);
+#ifdef DCLAP
+				/* do uline... */
+		    {
+				Nlm_Int4 ptx1 = pt.x + Nlm_StringWidth (text);
+				Nlm_DoUline( pt, ptx1, Nlm_Ascent());
+				}
+#endif
         if (gray && pix != 0) {
           XFreePixmap (Nlm_currentXDisplay, pix);
           if (Nlm_currentXGC != NULL) {
@@ -2458,7 +2540,7 @@ extern void Nlm_DrawText (Nlm_RectPtr r, Nlm_CharPtr text,
 #endif
 }
 
-extern void Nlm_MoveTo (Nlm_Int2 x, Nlm_Int2 y)
+extern void Nlm_MoveTo (Nlm_IntD x, Nlm_IntD y)
 
 {
 #ifdef WIN_MAC
@@ -2475,7 +2557,7 @@ extern void Nlm_MoveTo (Nlm_Int2 x, Nlm_Int2 y)
 #endif
 }
 
-extern void Nlm_LineTo (Nlm_Int2 x, Nlm_Int2 y)
+extern void Nlm_LineTo (Nlm_IntD x, Nlm_IntD y)
 
 {
 #ifdef WIN_MAC
@@ -2527,7 +2609,7 @@ extern void Nlm_DrawLine (Nlm_PoinT pt1, Nlm_PoinT pt2)
 #endif
 }
 
-extern void Nlm_LoadPt (Nlm_PointPtr pt, Nlm_Int2 x, Nlm_Int2 y)
+extern void Nlm_LoadPt (Nlm_PointPtr pt, Nlm_IntD x, Nlm_IntD y)
 
 {
   if (pt != NULL) {
@@ -2593,9 +2675,9 @@ extern Nlm_Boolean Nlm_PtInRgn (Nlm_PoinT pt, Nlm_RegioN rgn)
   return rsult;
 }
 
-extern void Nlm_LoadRect (Nlm_RectPtr r, Nlm_Int2 lf,
-                          Nlm_Int2 tp, Nlm_Int2 rt,
-                          Nlm_Int2 bt)
+extern void Nlm_LoadRect (Nlm_RectPtr r, Nlm_IntD lf,
+                          Nlm_IntD tp, Nlm_IntD rt,
+                          Nlm_IntD bt)
 
 {
   if (r != NULL) {
@@ -2606,9 +2688,9 @@ extern void Nlm_LoadRect (Nlm_RectPtr r, Nlm_Int2 lf,
   }
 }
 
-extern void Nlm_UpsetRect (Nlm_RectPtr r, Nlm_Int2 lf,
-                           Nlm_Int2 tp, Nlm_Int2 rt,
-                           Nlm_Int2 bt)
+extern void Nlm_UpsetRect (Nlm_RectPtr r, Nlm_IntD lf,
+                           Nlm_IntD tp, Nlm_IntD rt,
+                           Nlm_IntD bt)
 
 {
   if (r != NULL) {
@@ -2619,7 +2701,7 @@ extern void Nlm_UpsetRect (Nlm_RectPtr r, Nlm_Int2 lf,
   }
 }
 
-extern void Nlm_OffsetRect (Nlm_RectPtr r, Nlm_Int2 dx, Nlm_Int2 dy)
+extern void Nlm_OffsetRect (Nlm_RectPtr r, Nlm_IntD dx, Nlm_IntD dy)
 
 {
   if (r != NULL) {
@@ -2630,7 +2712,7 @@ extern void Nlm_OffsetRect (Nlm_RectPtr r, Nlm_Int2 dx, Nlm_Int2 dy)
   }
 }
 
-extern void Nlm_InsetRect (Nlm_RectPtr r, Nlm_Int2 dx, Nlm_Int2 dy)
+extern void Nlm_InsetRect (Nlm_RectPtr r, Nlm_IntD dx, Nlm_IntD dy)
 
 {
   if (r != NULL) {
@@ -2985,7 +3067,7 @@ extern void Nlm_InvertRect (Nlm_RectPtr r)
 #endif
 }
 
-extern void Nlm_ScrollRect (Nlm_RectPtr r, Nlm_Int2 dx, Nlm_Int2 dy)
+extern void Nlm_ScrollRect (Nlm_RectPtr r, Nlm_IntD dx, Nlm_IntD dy)
 
 {
 #ifdef WIN_MAC
@@ -3908,10 +3990,9 @@ extern void Nlm_ClearRgn (Nlm_RegioN rgn)
   } 
 }
 
-extern void Nlm_LoadRectRgn (Nlm_RegioN rgn, Nlm_Int2 lf,
-                             Nlm_Int2 tp, Nlm_Int2 rt,
-                             Nlm_Int2 bt)
-
+extern void Nlm_LoadRectRgn (Nlm_RegioN rgn, Nlm_IntD lf,
+                             Nlm_IntD tp, Nlm_IntD rt,
+                             Nlm_IntD bt)
 {
   Nlm_RgnTool   ntool;
 #ifdef WIN_X
@@ -3935,7 +4016,7 @@ extern void Nlm_LoadRectRgn (Nlm_RegioN rgn, Nlm_Int2 lf,
   }
 }
 
-extern void Nlm_OffsetRgn (Nlm_RegioN rgn, Nlm_Int2 dx, Nlm_Int2 dy)
+extern void Nlm_OffsetRgn (Nlm_RegioN rgn, Nlm_IntD dx, Nlm_IntD dy)
 
 {
   Nlm_RgnTool  ntool;
@@ -4487,16 +4568,16 @@ extern void Nlm_CopyBits (Nlm_RectPtr r, Nlm_VoidPtr source)
   HBITMAP       hBitmap;
   HBITMAP       hOldBitmap;
   HDC           hMemoryDC;
-  Nlm_Int2      i;
-  Nlm_Int2      j;
+  Nlm_IntD      i;
+  Nlm_IntD      j;
   Nlm_Int4      mode;
   Nlm_Int4      num;
   Nlm_Boolean   odd;
   Nlm_Uint1Ptr  p;
   Nlm_Uint1Ptr  ptr;
   Nlm_Uint1Ptr  q;
-  Nlm_Int2      rop2;
-  Nlm_Int2      rows;
+  Nlm_IntD      rop2;
+  Nlm_IntD      rows;
 
   if (r != NULL && source != NULL && Nlm_currentHDC != NULL) {
     rows = (r->right - r->left - 1) / 8 + 1;
@@ -4564,16 +4645,16 @@ extern void Nlm_CopyBits (Nlm_RectPtr r, Nlm_VoidPtr source)
   }
 #endif
 #ifdef WIN_X
-  Nlm_Int2      cols;
-  Nlm_Int2      height;
-  Nlm_Int2      i;
-  Nlm_Int2      j;
+  Nlm_IntD      cols;
+  Nlm_IntD      height;
+  Nlm_IntD      i;
+  Nlm_IntD      j;
   Nlm_Int4      num;
   Pixmap        pixmap;
   Nlm_Uint1Ptr  ptr;
   Nlm_Uint1Ptr  q;
-  Nlm_Int2      rows;
-  Nlm_Int2      width;
+  Nlm_IntD      rows;
+  Nlm_IntD      width;
 
   if (r != NULL && source != NULL && Nlm_currentXDisplay != NULL &&
       Nlm_currentXWindow != 0 && Nlm_currentXGC != NULL) {

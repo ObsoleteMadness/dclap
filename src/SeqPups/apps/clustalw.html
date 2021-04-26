@@ -10,8 +10,8 @@ by Des Higgins and colleages.
 <FORM 
 	METHOD=localexec 
 	ACTION="$apps:clustalw 
-  /infile=$temp:clustal.inseq 
-  /outfile=$temp:clustal.outseq /output=gcg 
+  /infile=$temp:cl$$.inseq 
+  /outfile=$temp:cl$$.outseq /output=gcg 
   $align $tree $quick $boot $othercmd
 ">
 <! need some if ($val) print $val2 parsing in localexec action !>
@@ -29,11 +29,11 @@ Other options: <p>
 <!A HREF=file:///$apps:clustalw.help Help with Clustal /A>
 <INPUT TYPE=submit VALUE="Launch app"> 
 
-<INPUT TYPE=hidden NAME=infile VALUE="$temp:clustal.inseq">
+<INPUT TYPE=hidden NAME=infile VALUE="$temp:cl$$.inseq">
 <INPUT TYPE=hidden NAME=seqformat VALUE="nbrf">
 <INPUT TYPE=hidden NAME=minseq VALUE="2">
-<INPUT TYPE=hidden NAME=outfile2 VALUE="$temp:clustal.outseq  biosequence/msf">
-<INPUT TYPE=hidden NAME=outfile1 VALUE="$temp:clustal.dnd  biotree/newick">
+<INPUT TYPE=hidden NAME=outfile2 VALUE="$temp:cl$$.outseq  biosequence/msf">
+<INPUT TYPE=hidden NAME=outfile1 VALUE="$temp:cl$$.dnd  biotree/newick">
 
 </FORM>
 <HR>

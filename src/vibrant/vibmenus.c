@@ -855,7 +855,13 @@ static Nlm_Boolean Nlm_PulldownClick (Nlm_GraphiC m, Nlm_PoinT pt)
   return rsult;
 }
 
-static Nlm_Boolean Nlm_MacPopListClick (Nlm_GraphiC m, Nlm_PoinT pt)
+
+#ifdef DCLAP
+extern
+#else
+static
+#endif 
+Nlm_Boolean Nlm_MacPopListClick (Nlm_GraphiC m, Nlm_PoinT pt)
 
 {
   Nlm_ChoicE    c;

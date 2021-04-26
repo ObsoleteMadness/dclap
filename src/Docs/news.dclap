@@ -1,0 +1,28 @@
+Newsgroups: comp.sys.mac.oop.macapp3
+Subject: Re: MacApp Overview Available?
+Summary:
+Expires:
+References: <1994Jan22.015015.4414@morgan.cs.utah.edu>
+Sender:
+Followup-To:
+Distribution:
+Organization: Biology, Indiana University - Bloomington
+Keywords:
+
+Slightly off your question -- I'm writing a barebones C++
+app framework.  It is patterned loosely on MacApp, but is
+built around a cross-platform GUI library (Vibrant from NCBI).
+
+It runs on Mac, Motif/{unix,vms}, and MSWin* systems. It will be free.
+Maybe I'll have a prelim release ready in a few weeks.  It will be
+archived at {ftp,gopher}::ftp.bio.indiana.edu:/util/dclap.  You can pick
+up a class tree drawing and a demo app there now.
+
+* [the MSWin part is still conjecture - Vibrant runs on MSWin, but as
+I don't have a windoz box yet to test on, I don't know about dclap]
+
+In article <1994Jan22.015015.4414@morgan.cs.utah.edu> mjc%sanctum.cs.utah.edu@cs
+.utah.edu (Michael Clark) writes:
+>I am writing my thesis proposal on the topic of application frameworks
+>for OSF/Motif using C++. There are supprisingly few available for
+>Motif so I decided to include a brief discussion of MacApp and TCL in

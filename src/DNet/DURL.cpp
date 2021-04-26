@@ -6,7 +6,7 @@
 
 #include <DFile.h>
 #include "DTCP.h"
-#include "DGopher.h"
+#include "DNetObject.h"
 #include "DGoClasses.h"
 #include "DURL.h"
 
@@ -26,35 +26,49 @@ short DURL::IsURL( const char *line, char*& url, long maxline)
   char *cp, *lineend;
 	
   // don't crash on an empty argument 
-  if (line == NULL || *line == '\0') return(DGopher::kUnknownProt);
+  if (line == NULL || *line == '\0') return(DNetOb::kUnknownProt);
 	if (maxline) lineend = (char*)line + maxline;
 	else lineend= StrChr( (char*)line,'\0');
 	
+	
+	/// god damn over duplication -- combine this w/ NetOb's list of protos
+	
+	
 	for (cp= (char*)line; cp < lineend && *cp!= ':'; cp++) ;
-	if (*cp != ':') return(DGopher::kUnknownProt);
+	if (*cp != ':') { url= (char*)line; return(DNetOb::kUnknownProt); }
 	else if (cp[1] != '/' && cp[2] != '/') {
       // these are only ones that don't contain "://"  
-	  if (!Nlm_StrNICmp( (url=cp-4),"news",4))					return(DGopher::kNNTPprot);
-	  else if (!Nlm_StrNICmp( (url=cp-6),"mailto",6))		return(DGopher::kSMTPprot);
-	  else if (!Nlm_StrNICmp( (url=cp-5),"whois",5))		return(DGopher::kWhoisprot);
-	  else if (!Nlm_StrNICmp( (url=cp-6),"finger",6))		return(DGopher::kFingerprot);
-	  else if (!Nlm_StrNICmp( (url=cp-4),"nntp",4))			return(DGopher::kNNTPprot);
-	  else if (!Nlm_StrNICmp( (url=cp-9),"newspost",8))	return(DGopher::kUnsupportedProt);
-		else 	return(DGopher::kUnknownProt);
+	  if (!Nlm_StrNICmp( (url=cp-4),"news",4))					return(DNetOb::kNNTPprot);
+	  else if (!Nlm_StrNICmp( (url=cp-6),"mailto",6))		return(DNetOb::kSMTPprot);
+	  else if (!Nlm_StrNICmp( (url=cp-5),"whois",5))		return(DNetOb::kWhoisprot);
+	  else if (!Nlm_StrNICmp( (url=cp-6),"finger",6))		return(DNetOb::kFingerprot);
+	  else if (!Nlm_StrNICmp( (url=cp-4),"nntp",4))			return(DNetOb::kNNTPprot);
+	  else if (!Nlm_StrNICmp( (url=cp-9),"newspost",8))	return(DNetOb::kUnsupportedProt);
+		else 	{  
+	  	while (cp>line && isalpha(cp[-1])) cp--;
+	  	url= cp;
+	  	return(DNetOb::kUnknownProt); 
+	  	}
 		}
 
-  else if (!Nlm_StrNICmp( (url=cp-6),"gopher",6))		return(DGopher::kGopherprot);
-  else if (!Nlm_StrNICmp( (url=cp-4),"http",4))			return(DGopher::kHTTPprot);
-  else if (!Nlm_StrNICmp( (url=cp-3),"ftp",3))		 	return(DGopher::kFTPprot);
-  else if (!Nlm_StrNICmp( (url=cp-4),"file",4))	 		return(DGopher::kFileprot);
-  else if (!Nlm_StrNICmp( (url=cp-4),"wais",4))	 		return(DGopher::kWAISprot);
-  else if (!Nlm_StrNICmp( (url=cp-6),"telnet",6))		return(DGopher::kTelnetprot);
-  else if (!Nlm_StrNICmp( (url=cp-6),"tn3270",6))		return(DGopher::kTN3270prot);
-  else if (!Nlm_StrNICmp( (url=cp-6),"rlogin",6))	 	return(DGopher::kUnsupportedProt);
-  else if (!Nlm_StrNICmp( (url=cp-3),"afs",3))	 		return(DGopher::kUnsupportedProt);
-  else if (!Nlm_StrNICmp( (url=cp-8),"prospero",8))	return(DGopher::kUnsupportedProt);
+  else if (!Nlm_StrNICmp( (url=cp-6),"gopher",6))		return(DNetOb::kGopherprot);
+  else if (!Nlm_StrNICmp( (url=cp-4),"http",4))			return(DNetOb::kHTTPprot);
+  else if (!Nlm_StrNICmp( (url=cp-3),"bop",3))			return(DNetOb::kBOPprot);
+  else if (!Nlm_StrNICmp( (url=cp-3),"pop",3))			return(DNetOb::kPOPprot);
+  else if (!Nlm_StrNICmp( (url=cp-3),"ftp",3))		 	return(DNetOb::kFTPprot);
+  else if (!Nlm_StrNICmp( (url=cp-4),"file",4))	 		return(DNetOb::kFileprot);
+  else if (!Nlm_StrNICmp( (url=cp-4),"wais",4))	 		return(DNetOb::kWAISprot);
+  else if (!Nlm_StrNICmp( (url=cp-6),"telnet",6))		return(DNetOb::kTelnetprot);
+  else if (!Nlm_StrNICmp( (url=cp-6),"tn3270",6))		return(DNetOb::kTN3270prot);
+  else if (!Nlm_StrNICmp( (url=cp-6),"rlogin",6))	 	return(DNetOb::kUnsupportedProt);
+  else if (!Nlm_StrNICmp( (url=cp-3),"afs",3))	 		return(DNetOb::kUnsupportedProt);
+  else if (!Nlm_StrNICmp( (url=cp-8),"prospero",8))	return(DNetOb::kUnsupportedProt);
 		// !! Need also to support User-Added protocols via Type/Handler method !
-  else	return(DGopher::kUnknownProt);
+  else	{ 
+  	while (cp>line && isalpha(cp[-1])) cp--;
+  	url= cp;
+  	return(DNetOb::kUnknownProt); 
+  	}
 }
 
 
@@ -226,13 +240,13 @@ char* DURL::GetParts( const char* url, long whichparts, long urlsize)
 
 
 
-Boolean DURL::ParseURL( DGopher* go, const char *url, long urlsize, Boolean verbatim)
+Boolean DURL::ParseURL( DNetOb* nob, const char *url, long urlsize, Boolean verbatim)
 {
   char *cp, *ep, *qp, sep, *line, *newurl;
 	short prot;
 	Boolean isLocalhost;
 	
-  if (!go || url == NULL || *url == '\0') return false;
+  if (!nob || url == NULL || *url == '\0') return false;
   if (!urlsize) urlsize= StrLen(url);
 
 	  // can we do this space check safely?
@@ -243,7 +257,7 @@ Boolean DURL::ParseURL( DGopher* go, const char *url, long urlsize, Boolean verb
 	Nlm_MemCopy(line, newurl, urlsize);
   line[urlsize]= 0;
 	prot= IsURL( line, newurl);
-	if (prot <= DGopher::kUnknownProt) {
+	if (prot <= DNetOb::kUnknownProt) {
 		MemFree( line);
 		return false;
 		}
@@ -283,17 +297,17 @@ Boolean DURL::ParseURL( DGopher* go, const char *url, long urlsize, Boolean verb
 					break;
 				}
 			}
-		go->StoreProtocol( prot);
- 		go->StoreURL(newurl);
+		nob->StoreProtocol( prot);
+ 		nob->StoreURL(newurl);
 		cp= StrChr(newurl+3,':');
 		cp++;
 		if (*cp == '/') cp++;
 		if (*cp == '/') cp++;
 		while (isspace(*cp)) cp++;
-		if (prot == DGopher::kSMTPprot) {
+		if (prot == DNetOb::kSMTPprot) {
 			DecodeChars(cp);
-			go->fType= kMailType; // mailto gopher kind  
-			go->StorePath(cp);
+			nob->fType= kMailType; // mailto gopher kind  
+			nob->StorePath(cp);
 			MemFree( line);
 			return true;
 			}
@@ -305,7 +319,7 @@ Boolean DURL::ParseURL( DGopher* go, const char *url, long urlsize, Boolean verb
  		while (isspace(*ep)) ep++;
 		sep= *ep; *ep= 0;
 		isLocalhost = (ep - cp < 2); // || StrICmp( cp, "localhost")==0 );
-		go->StoreHost( cp);	
+		nob->StoreHost( cp);	
 		*ep= sep;
 		cp= ep; // NO: +1;
 
@@ -314,7 +328,7 @@ Boolean DURL::ParseURL( DGopher* go, const char *url, long urlsize, Boolean verb
 			while (isspace(*ep)) ep++;
 			while (isdigit(*ep)) ep++;
 			sep= *ep; *ep= 0;
-			go->StorePort( cp);	
+			nob->StorePort( cp);	
 			*ep= sep;
 			cp= ep; //+1;
 			}		
@@ -324,26 +338,26 @@ Boolean DURL::ParseURL( DGopher* go, const char *url, long urlsize, Boolean verb
 		qp= StrChr(cp, '?');
 		if (qp) {
 			*qp++= 0;
-			go->fQueryGiven= StrDup(qp);
+			nob->fQueryGiven= StrDup(qp);
 			}
 			
 		DecodeChars(cp);	// ???
 
 		switch (prot) {
-			case DGopher::kGopherprot: // gopher://host.name:70/00/path/to/data
+			case DNetOb::kGopherprot: // gopher://host.name:70/00/path/to/data
 				if (*cp) cp++;
 				if (*cp == 0) {
-					go->fType= kTypeFolder;  
-					go->StorePath(""); 
+					nob->fType= kTypeFolder;  
+					nob->StorePath(""); 
 					}
 				else {
-					go->fType= *cp;  
-					go->StorePath( cp+1); 
+					nob->fType= *cp;  
+					nob->StorePath( cp+1); 
 					}
 				break;
 				
-			case DGopher::kFTPprot: // file:///path:to:file
-			case DGopher::kFileprot: // file:///path:to:file
+			case DNetOb::kFTPprot: // file:///path:to:file
+			case DNetOb::kFileprot: // file:///path:to:file
 				if (*cp == '/') { 		 
 						// this leading slash is artifact of silly url syntax !!
 						// skip for all????? but sometimes (non-local) this is valid
@@ -362,46 +376,46 @@ Boolean DURL::ParseURL( DGopher* go, const char *url, long urlsize, Boolean verb
 #endif
 #endif
 					}
-				go->fType= kTypeFile;  // !! need ftp folder handling !?
-				go->StorePath( cp);  
+				nob->fType= kTypeFile;  // !! need ftp folder handling !?
+				nob->StorePath( cp);  
 				break;
 
-			case DGopher::kHTTPprot:	// http://host.name:80/path/to/data
-				go->fType= kTypeHtml;  
-				if (*cp == 0) go->StorePath( "/");
-				else go->StorePath( cp);  
+			case DNetOb::kHTTPprot:	// http://host.name:80/path/to/data
+				nob->fType= kTypeHtml;  
+				if (*cp == 0) nob->StorePath( "/");
+				else nob->StorePath( cp);  
 				break;
 
-			case DGopher::kTelnetprot:
-				go->fType= kTypeTelnet;  
-				go->StorePath( cp);  
+			case DNetOb::kTelnetprot:
+				nob->fType= kTypeTelnet;  
+				nob->StorePath( cp);  
 				break;
-			case DGopher::kTN3270prot:
-				go->fType= kTypeTn3270;  
-				go->StorePath( cp);  
+			case DNetOb::kTN3270prot:
+				nob->fType= kTypeTn3270;  
+				nob->StorePath( cp);  
 				break;
 
-			case DGopher::kFingerprot:
-			case DGopher::kWhoisprot:
-				go->fType= kTypeQuery;  
-				go->StorePath( cp);  
+			case DNetOb::kFingerprot:
+			case DNetOb::kWhoisprot:
+				nob->fType= kTypeQuery;  
+				nob->StorePath( cp);  
 				break;
 			
-			case DGopher::kWAISprot: // ?? or need Folder type or Waisdir & WaisDoc types?
+			case DNetOb::kWAISprot: // ?? or need Folder type or Waisdir & WaisDoc types?
 			default:
-				go->fType= kTypeFile;  
-				go->StorePath( cp);  
+				nob->fType= kTypeFile;  
+				nob->StorePath( cp);  
 				break;
 			}
 			
 				// set a usable title !?
-		const char *name= go->GetPath();
+		const char *name= nob->GetPath();
 		if ( name == NULL || *name == 0 || StrCmp(name, "/") == 0) 
-			name= go->GetHost();
+			name= nob->GetHost();
 		else 
 			name= gFileManager->FilenameFromPath(name);
 		if ( name && *name != 0 ) 
-			go->StoreName( (char*)name);  
+			nob->StoreName( (char*)name);  
 			 
 		}
 	

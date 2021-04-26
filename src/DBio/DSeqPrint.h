@@ -71,7 +71,14 @@ public:
 };
 
 
-enum { kSeqPrintPrefInit, kSeqPrintPrefDialog, kAlnPrintPrefDialog, kREMapPrefDialog };
+class	DAsmPrintDoc : public DSeqPrintDoc {
+public:
+	DAsmPrintDoc( long id, DSeqDoc* itsDoc, DSeqList* itsSeqList, long firstbase, long nbases);
+};
+
+
+enum { kSeqPrintPrefInit, kSeqPrintPrefDialog, kAlnPrintPrefDialog, kREMapPrefDialog,
+			 kAsmPrefDialog };
 
 void SeqPrintPrefs(short id);
 

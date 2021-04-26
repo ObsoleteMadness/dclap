@@ -1,0 +1,197 @@
+#	makefile for dclap C++ library routines
+## only Gnu gcc/g+ has been tested...
+#.....
+# dgg note -- remember to set 
+#  setenv LD_LIBRARY_PATH /usr/lib:/usr/openwin/lib
+# for motif link to work !
+
+# default flags for compiling and loading
+
+#------------------------ dgg changed these to fit his local setup ....
+#SUFFIXLCL = $(LCL)
+SUFFIXLCL = gcc
+CPFLAGS1 = -c -O
+CFLAGS1 = -c -O
+LDFLAGS1 = -O
+CC = gcc
+CPP = g++
+RAN = ranlib
+AR=ar
+OTHERLIBS = -lm
+
+OURLIBS = -lvibrant -ldclap -lncbi 
+NETLIBS = -ldnet  
+VIBLIBS = -lXm -lXmu -lXt -lX11
+VIBFLAG = -I/usr/local/motif/include -DWIN_MOTIF
+ 
+
+#------------------------- dgg
+
+
+SUFFIXENV = unx
+LIBNCBI = libncbi.a
+LIBVIB = libvibrant.a
+LIBDNET =  libdnet.a
+LIBDCLAP = libdclap.a
+
+INCPATH = ../include
+LIBPATH = ../lib
+CFLAGS = $(CFLAGS1) -I$(INCPATH) $(VIBFLAG)
+CPFLAGS = $(CPFLAGS1) -I$(INCPATH) $(VIBFLAG)
+LDFLAGS = $(LDFLAGS1) -I$(INCPATH) -L$(LIBPATH) $(VIBFLAG)
+
+##
+## some things to make
+##
+
+# ncbi corelib & vibrant sources needed for dclap & apps
+## leave out these for vibrant apps: ncbimain.c ncbimsg.c
+
+SRCNCBI =	dgg.c ncbibs.c ncbierr.c ncbienv.c ncbifile.c ncbiprop.c \
+	ncbimath.c ncbimem.c ncbimisc.c ncbistr.c ncbitime.c ncbisgml.c 
+	
+SRCVIB =	vibbutns.c vibextra.c vibfiles.c vibgroup.c \
+	viblists.c vibmenus.c vibprmpt.c \
+	vibsbars.c vibslate.c vibtexts.c \
+	vibutils.c vibwndws.c ncbidraw.c \
+	drawing.c mapping.c picture.c viewer.c \
+	document.c table.c palette.c
+
+SRCDCLAP =  \
+	DAboutBox.cc    DDialogText.cc  DObject.cc      DTaskCentral.cc DView.cc \
+	DApplication.cc DList.cc        DPanel.cc       DTaskMaster.cc  DViewCentral.cc \
+	DControl.cc     DMenu.cc        DTask.cc        DUtil.cc        DWindow.cc	\
+	DIconLib.cc	DFile.cc	DTableView.cc
+
+SRCDNET = \
+	DGopher.cc		DGopherList.cc		DSendMailDialog.cc \
+	DGopherClasses.cc	DGopherPlus.cc		DTCP.cc \
+	DGopherDoc.cc		DGopherInit.cc		DSMTPclient.cc	\
+	dnet-tcp.c		DGopherPrefs.cc		DGopherAskDoc.cc
+
+SRCAPP = MyApp.cc
+SRCMAIL = MailHelp.cc
+SRCGOPHER = GopherPup.cc
+
+OBJAPP = MyApp.o
+OBJMAIL = MailHelp.o
+OBJGOPHER = GopherPup.o
+
+EXEAPP = GopherPup
+#MyApp MailHelp 
+
+# objects needed for versions of asntool and entrez
+
+OBJNCBI =	dgg.o ncbibs.o ncbierr.o ncbienv.o ncbifile.o ncbiprop.o \
+	ncbimath.o ncbimem.o ncbimisc.o ncbistr.o ncbisgml.o ncbitime.o 
+
+OBJVIB =	vibbutns.o vibextra.o vibfiles.o vibgroup.o \
+	viblists.o vibmenus.o vibprmpt.o \
+	vibsbars.o vibslate.o vibtexts.o \
+	vibutils.o vibwndws.o ncbidraw.o \
+	drawing.o mapping.o picture.o viewer.o \
+	document.o table.o palette.o
+
+OBJDCLAP = \
+	DAboutBox.o    DDialogText.o  DObject.o      DTaskCentral.o DView.o \
+	DApplication.o DList.o        DPanel.o       DTaskMaster.o  DViewCentral.o \
+	DControl.o     DMenu.o        DTask.o        DUtil.o        DWindow.o	\
+	DIconLib.o     DFile.o		DTableView.o
+
+OBJDNET = \
+	DGopher.o		DGopherList.o		DSendMailDialog.o \
+	DGopherClasses.o	DGopherPlus.o		DTCP.o \
+	DGopherDoc.o		DGopherInit.o		DSMTPclient.o \
+	dnet-tcp.o		DGopherPrefs.o		DGopherAskDoc.o
+
+
+
+## All things to make
+##
+all : nocopy copy
+
+nocopy : sources  $(LIBNCBI) $(LIBVIB) $(LIBDCLAP) $(LIBDNET) $(EXEAPP)
+#nocopy : sources  $(LIBNCBI) $(LIBVIB) $(LIBDCLAP) 
+
+sources : $(SRCNCBI) $(SRCVIB) $(SRCDCLAP) $(SRCDNET) $(SRCAPP) $(SRCMAIL) $(SRCGOPHER)
+#sources : $(SRCNCBI) $(SRCVIB) $(SRCDCLAP)
+
+## To clean out the directory without removing make
+##
+clean :
+	- rm -f *.[acho]
+
+## Implicit actions
+##
+
+.c.o :
+	$(CC) $(CFLAGS) $<
+	
+# damn, I use .cp for C++ suffix, gcc wants .cc
+.cc.o :
+	$(CPP) $(CPFLAGS) $<
+
+## get all the source files
+##
+
+copy :
+	- chmod +w ../include/*
+	- chmod +w *
+	cp ../corelib/*.h ../include
+	cp ../corelib/ncbilcl.$(SUFFIXLCL) ../include/ncbilcl.h
+	cp ../corelib/*.c .
+	- chmod +w *.c
+#	cp ../corelib/ncbimain.$(SUFFIXENV) ncbimain.c
+	cp ../corelib/ncbienv.$(SUFFIXENV) ncbienv.c
+	cp ../vibrant/*.h ../include
+	cp ../vibrant/*.c .
+	cp ../DClap/*.h ../include
+	cp ../DNet/*.h ../include
+	cp ../DClap/*.cp .
+	cp ../DNet/*.cp .
+	cp ../DNet/*.c .
+	cp ../DApp/*.* .
+	echo "Please rename build/*.cp files to build/*.cc for silly g++"
+	chmod +w ../include/*
+	chmod +w *
+
+## make libraries
+##
+
+$(LIBNCBI) : $(OBJNCBI)
+	- rm -f $(LIBNCBI)
+	$(AR) cru $(LIBNCBI) $(OBJNCBI)
+	cp $(LIBNCBI) ../lib
+	$(RAN) ../lib/$(LIBNCBI)
+
+$(LIBVIB) : $(OBJVIB)
+	- rm -f $(LIBVIB)
+	$(AR) cru $(LIBVIB) $(OBJVIB)
+	cp $(LIBVIB) ../lib
+	$(RAN) ../lib/$(LIBVIB)
+
+$(LIBDCLAP) : $(OBJDCLAP)
+	- rm -f $(LIBDCLAP)
+	$(AR) cru $(LIBDCLAP) $(OBJDCLAP)
+	cp $(LIBDCLAP) ../lib
+	$(RAN) ../lib/$(LIBDCLAP)
+
+$(LIBDNET) : $(OBJDNET)
+	- rm -f $(LIBDNET)
+	$(AR) cru $(LIBDNET) $(OBJDNET)
+	cp $(LIBDNET) ../lib
+	$(RAN) ../lib/$(LIBDNET)
+
+
+
+# MyApp
+
+MyApp : $(OBJAPP)
+	$(CPP) -o MyApp $(LDFLAGS) $(OBJAPP) $(OURLIBS) $(NETLIBS) $(VIBLIBS) $(OTHERLIBS)
+
+MailHelp : $(OBJMAIL)
+	$(CPP) -o Mailhelp $(LDFLAGS) $(OBJMAIL) $(OURLIBS) $(NETLIBS) $(VIBLIBS) $(OTHERLIBS)
+
+GopherPup : $(OBJGOPHER)
+	$(CPP) -o GopherPup $(LDFLAGS) $(OBJGOPHER) $(OURLIBS) $(NETLIBS) $(VIBLIBS) $(OTHERLIBS)
+

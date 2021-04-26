@@ -13,25 +13,28 @@ class DFile;
 class DApplication : public DTaskMaster
 {	
 public:
-	enum filetasks {cFileMenu=40, kAbout,kNew,kOpen,kClose,kSave,kSaveAs,kPrint,kHelp,kQuit,
-										kOpenAFile, kPrintAFile};
-	enum edittasks {cEditMenu=60, kUndo,kCut,kCopy,kPaste,kClear,kSelectAll,kShowClipboard,
-									kFind,kFindAgain};
-	enum windowtasks {cWindowMenu= 80, kPrevWindow,kNextWindow,kChooseWindow,kDeleteDeadWindow};
+	enum filetasks {cFileMenu=40, kAbout,kNew,kOpen,kClose,kSave,kSaveAs,kSaveACopy,
+					kPrint,kHelp,kQuit,kOpenAFile, kPrintAFile};
+	enum edittasks {cEditMenu=60, kUndo,kCut,kCopy,kPaste,kClear,kSelectAll,
+					kShowClipboard, kFind,kFindAgain};
+	enum windowtasks {cWindowMenu= 80, kPrevWindow,kNextWindow,kChooseWindow,
+					kDeleteDeadWindow};
 	
 	static char* kName;
 	static char* kVersion;
 	static char* kHelpfolder;
 	static Nlm_RecT	fgAppWinRect;
 	static short HandleSpecialEvent( long inEvent, long outReply, long inNumber);
-
+	
 	Boolean fDone;								// true when Quit requested...
+	Boolean fDidOpenStartDoc;
 	char* fPathname;
 	char* fShortname;
 	char* fAboutLine;
 	DWindow* fAppWindow;
 	char*	fAcceptableFileTypes;	// mac, ?? other file type ids
 	char*	fFileSuffix;					// unix, msdos file suffix
+	char*	fAppID;				// == processnum or the like, use as unique id value for process
 	
 	DApplication();
 	~DApplication();	
@@ -42,6 +45,7 @@ public:
 	virtual void	ProcessTasks(void);
 	//virtual void	Idle(EventRecord *macEvent);
 	virtual	void	Quit(void);
+	virtual const char* AppID() { return fAppID; }
 	
 	virtual const char*	Pathname(void);
 	virtual const char*	Shortname(void);
@@ -73,12 +77,9 @@ public:
 	virtual	Boolean ChooseFile(DFile*& openedFile, char* filesuffix, char* acceptableTypeIDs);
 	virtual void OpenDocument(DFile* aFile);
 	virtual void OpenDocument(char* pathname);
-
-	//virtual void	CreateDocument(void);
-	//virtual void OpenNew(long itsCommandNumber);
-	//virtual void OpenOld(long itsOpenCommand, DList* aFileList);
-	//virtual void PrintDocuments(DList* aFileList);
-
+	virtual Boolean GotStartDocs();
+	virtual Boolean OpenStartDocs();
+	
 		// should these be integrated w/ DTaskMaster/DTaskCentral, as TasksAvail() ????
 	Boolean	EventsAvail();
 	void	FlushEvents();

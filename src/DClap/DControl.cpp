@@ -70,6 +70,23 @@ DPrompt::DPrompt(long id, DView* itsSuperior, char* title, short pixwidth, short
 
 
 
+class DString2 : public DObject
+{
+	char * fStr, * fStr2;
+public:
+	DString2(): fStr(NULL), fStr2(NULL) { }
+	DString2(const char* s1, const char* s2= NULL) { 
+		fStr= StrDup((char*) s1); 
+		fStr2= StrDup((char*) s2); 
+		}
+	virtual ~DString2() { MemFree(fStr); MemFree(fStr2); }
+	virtual const char* Get() { return fStr; }
+	virtual const char* Get2() { return fStr2; }
+	virtual void Set(const char* s) { MemFree(fStr); fStr= StrDup((char*) s); }
+	virtual void Set2(const char* s2) { MemFree(fStr2); fStr2= StrDup((char*) s2); }
+};
+
+
 
 //class DPopupList : public DView
 	
@@ -95,7 +112,7 @@ DPopupList::~DPopupList()
 	// dammit, DList( , kDeleteObjects) is NOT WORKING !! (not called obj destructors)
 	short i, n= fItemList->GetSize();
 	for (i=0; i<n; i++) {
-		DString* st= (DString*) fItemList->At(i);
+		DString2* st= (DString2*) fItemList->At(i);
 		delete st;
 		}
 	delete fItemList;
@@ -113,46 +130,43 @@ void  DPopupList::SetItemState(short item, Boolean enable)
 }
 #endif
 
-void  DPopupList::AddItem(char* title) 
+void  DPopupList::AddItem(char* title, char* value) 
 {
-	DString* s= new DString(title);
+	DString2* s= new DString2(title, value);
 	fItemList->InsertLast(s);
 	Nlm_PopupItem(fPopup, title);
 }
  
-char* DPopupList::GetItemTitle( short item, char* title, ulong maxsize) 
+char* DPopupList::GetItemTitleOrValue( short item, char* title, ulong maxsize, 
+		Boolean getval2) 
 { 
-  	if (item>0) {
-	  DString* s= (DString*) fItemList->At(item-1);
+  if (item>0) {
+	  DString2* s= (DString2*) fItemList->At(item-1);
 	  if (s) {
-		char *cp= (char*) s->Get();
-		if (title==NULL) {
-		  maxsize= StrLen(cp) + 1;
-		  title= (char*) MemNew(maxsize);
-		  }
-		StrNCpy(title, cp, maxsize);
+			char *cp;
+			if (getval2) cp= (char*) s->Get2();
+			else cp= (char*) s->Get();
+			if (title==NULL) {
+			  maxsize= StrLen(cp) + 1;
+			  title= (char*) MemNew(maxsize);
+			  }
+			StrNCpy(title, cp, maxsize);
+			}
 		}
-	}
 	return title;
 }
+
 
 char* DPopupList::GetSelectedItem( short& item, char* name, ulong namesize) 
 { 
 	item= GetValue(); 
-#if 1
-	return this->GetItemTitle( item, name, namesize);
-#else
-  if (name && namesize) {
-  	*name= 0;
-  	if (item) {
-  		DString* s= (DString*) fItemList->At(item-1);
-  		StrNCpy(name, (char*)s->Get(), namesize);
-  		}
-  	}
-#endif
-  return name;
-	// this fails for MOTIF ... urgh
-	//return GetItemTitle(item, name, namesize); 
+	return this->GetItemTitleOrValue( item, name, namesize, false);
+}
+
+char* DPopupList::GetSelectedValue( short& item, char* name, ulong namesize) 
+{ 
+	item= GetValue(); 
+	return this->GetItemTitleOrValue( item, name, namesize, true);
 }
 
 

@@ -24,11 +24,11 @@ public:
 class	DKeys	: public	DObject
 {
 public:
-	char	current()		{ return Nlm_currentKey; }
-	Boolean	shift()		{ return Nlm_shftKey; }
-	Boolean	control()	{ return Nlm_ctrlKey; }
-	Boolean	option()	{ return Nlm_optKey; }
-	Boolean	command()	{ return Nlm_cmmdKey; }
+	char	current();
+	Boolean	shift();
+	Boolean	control();
+	Boolean	option();
+	Boolean	command();
 };
 
 
@@ -156,7 +156,7 @@ extern	DPrefManager*		gPrefManager;
 extern  DKeyCallback* 	gKeyHandlerObject;
 
 
-extern Nlm_FonT gTextFont; 
+extern Nlm_FonT gTextFont, gItalicTextFont, gBoldTextFont, gUlineTextFont; 
 extern char		*	gTextFontName;
 extern short  	gTextFontSize;
 extern short		gTextTabStops;

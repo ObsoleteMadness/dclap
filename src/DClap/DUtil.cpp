@@ -30,6 +30,9 @@ DErrorManager*	gErrorManager = NULL;
 DPrefManager*		gPrefManager = NULL;
 
 Global Nlm_FonT gTextFont   	= NULL; //Nlm_programFont; << not initialized at this point.
+Global Nlm_FonT gItalicTextFont= NULL;  
+Global Nlm_FonT gBoldTextFont  = NULL; 
+Global Nlm_FonT gUlineTextFont = NULL; 
 Global char	 	* gTextFontName = NULL;
 Global short  	gTextFontSize = 12;
 Global short		gTextTabStops = 4;
@@ -76,6 +79,25 @@ void DErrorManager::TurnOn()
 }
  
 
+//class DKeys
+
+char	DKeys::current()		{ return Nlm_currentKey; }
+Boolean	DKeys::shift()		{ return Nlm_shftKey; }
+Boolean	DKeys::control()	{ return Nlm_ctrlKey; }
+Boolean	DKeys::option()		{ return Nlm_optKey; }
+Boolean	DKeys::command()	
+{ 
+#ifdef WIN_MAC
+	return Nlm_cmmdKey; 
+#endif
+#ifdef WIN_MSWIN
+	return Nlm_ctrlKey; // or alt !!??
+#endif
+#ifdef WIN_MOTIF
+	return Nlm_cmmdKey; 
+#endif
+	return Nlm_ctrlKey; 
+}
 
 
 //class DKeyCallback
@@ -255,6 +277,9 @@ DClapGlobals::DClapGlobals()
 	gViewCentral= new DViewCentral(); 	// DViewCentral.h
 
 	gTextFont   	= Nlm_programFont;  
+	gItalicTextFont = Nlm_programFont;  
+	gBoldTextFont  	= Nlm_programFont;  
+	gUlineTextFont 	= Nlm_programFont;  
 }
 
 

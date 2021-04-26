@@ -19,6 +19,7 @@ class DMenu;
 class DSeqFormatPopup;
 class DAlnModePopup;
 class DAlnColorPopup;
+class DPopupList;
 
 class	DSeqDoc : public DWindow, public DSaveHandler, public DPrintHandler
 {
@@ -27,7 +28,7 @@ public:
 	enum sdTasks  { 
 		kSeqdoc = 310, 
 		kSeqMenu, kInternetMenu, 
-		cSeqPrefs, cNewSeq, cEditSeq, cSaveSel,
+		cSeqPrefs, cNewSeq, cEditSeq, cSaveSel, cRevert,
 		cRevSeq,cCompSeq,cRevCompSeq,cDna2Rna,cRna2Dna,cToUpper,cToLower,cDegap,
 		cLockIndels,cUnlockIndels,cConsensus,cTranslate, cDistance, cSimilarity,
 		cPrettyPrint,cREMap,cDotPlot,cNAcodes, cAAcodes,
@@ -40,13 +41,22 @@ public:
 
 		kViewKindMenu, kViewByDefault,kViewByDate,kViewBySize,kViewByName,kViewByKind,kViewAsText,
 		kSeqMaskMenu, cMaskSelCommon,cMaskSelORF, cMaskSelAll,cMaskInvert,cMaskClear,
-		cSel2Mask, cMask2Sel, cMaskOrSel, cMaskAndSel,
+		cSel2Mask, cMask2Sel, cMaskOrSel, cMaskAndSel, cMaskReplicate, cMaskCompress,
 		kModePopup, kColorPopup,
 	  kLockButHit, kColorButHit, kMonoButHit 
 		};
 
+	enum  selectionFlags { 
+		kSeqSel = 1, kNoSeqSel = 0,
+		kMaskSel = 2, kNoMaskSel= 0,
+		kIndexSel = 4, kNoIndexSel = 0,
+		kAllIfNone = 8, kNoneIfNone = 0,
+		kEqualCount = 16, kUnequalCount = 0,
+		};
+  
 	static Boolean fgTestSeqFile, fgLockText, fgStartDoc;
 	static short fgViewMode,fgUseColor,fgMatKind,fgDistCor;
+	static char *fgSire;
 	static Nlm_RecT	fgWinRect;
 	static void GetGlobals();
 	static void SaveGlobals();
@@ -58,9 +68,9 @@ public:
 	DAlnHIndex 	* fAlnHIndex;
 	DAlnITitle	*	fAlnITitle;
 	DPrompt	*	fHeadline; 				//seqlist header
-	DSeqFormatPopup	* fFormatPop; 			//seq output format
-	DAlnModePopup	* fModePop;
-	DAlnColorPopup	* fColorPop;
+	DPopupList	* fFormatPop; 			//seq output format
+	DPopupList	* fModePop;
+	DPopupList	* fColorPop;
 	DPrompt	*	fSeqMeter; 				//list base#, other info?
 
 	long			fUpdateTime;			//time of last .showreverted/.updateFlds 
@@ -84,6 +94,7 @@ public:
 	virtual void Open();
 	virtual void Open(DFile* aFile);
 	virtual void Close();
+	virtual void Revert();
 	virtual void ResizeWin();
 	virtual void Activate();
 	virtual void Deactivate();
@@ -97,8 +108,6 @@ public:
 	virtual void MakeGlobalsCurrent();
 	virtual void SortView( DSeqList::Sorts sortorder);
 	virtual void ToTextDoc();
-
-////		
 	
 	virtual void AddSeqToList(DSequence* item);
 	virtual void AddNewSeqToList();
@@ -106,18 +115,11 @@ public:
 		if (fSeqList) return fSeqList->IsEmpty();
 		else return true;
 		}
-	 
-	//virtual void DoSeqSelectCommand(); //override this to open sequences selected w/ dblclk
-	//virtual void ShowReverted(); // override 
-	//virtual void DoMakeViews(Boolean forPrinting); // override 
-					
-////
-
+	 					
 				// revise for iostreams !?
 	virtual short SelectionToFile(Boolean AllatNoSelection, 
 													char* aFileName, short seqFormat); //return # written 
-
-	virtual void GetSelection(Boolean equalCount, Boolean allAtNoSelection,
+	virtual void GetSelection( long selectFlags, 
 														DSeqList*& aSeqList, long& start, long& nbases);
 	virtual void FirstSelection( DSequence*& aSeq, long& start, long& nbases);		
 	virtual void OpenSeqedWindow(DSequence* aSeq);
@@ -128,13 +130,17 @@ public:
 	virtual void MakeAlnPrint();
 	virtual void Print(); 
 	virtual void DistanceMatrix(short form);
-	
-	//virtual void DoEvent(EventNumber eventNumber, TEventHandler source; TEvent event) // override 
-	//virtual void DoMenuCommand(short aCommandNumber); // override 
-	//virtual void DoSetupMenus(); // override 
+	virtual void NotDirty();
 
-private: 		 
-	void AddSeqAtToList( short aRow, long start1, long nbases1, 
+protected:
+	virtual void AddViews(); 
+	virtual void AddTopViews(DView* super);
+	virtual void AddModePopup(DView* super);
+	virtual void AddAlnIndex(DView* super, short width, short height);
+	virtual void AddAlnView(DView* super, short width, short height);
+	virtual void AddSeqAtToList( long aRow, long start1, long nbases1, 
+										DSeqList*& aSeqList, long& start, long& nbases);
+	virtual void AddMaskedSeqToList( long aRow, short masklevel,
 										DSeqList*& aSeqList, long& start, long& nbases);
 };
 

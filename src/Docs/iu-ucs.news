@@ -1,0 +1,24 @@
+Local hacker looking for spare MSWin computer.
+
+I'm writing a barebones C++ application framework.  It is
+patterned loosely on Apple Computer's MacApp, but is built
+around a cross-platform GUI library (Vibrant from NCBI).
+
+Does anyone here have an MS-Windows computer they would loan me
+for a week or two, to test the mswin end of this?  I'd also
+need Borland's or Microsoft's C/C++ compiler for Windows on
+it.
+
+The framework is working now on Mac and Motif/Unix (with some
+bugs of course).  I've moved my Internet Gopher client, a
+fairly complex app, from MacApp to this.
+
+This software source will be freely available to IU and the
+public. You can see a demo application by {ftp,gopher} to
+ftp.bio.indiana.edu, folder /util/dclap/preview.  I may have
+an early release of GopherPup (son of GopherApp) there in a
+few days (mac & motif only).
+
+Thanks,  Don
+
+

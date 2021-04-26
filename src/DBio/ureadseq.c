@@ -27,6 +27,73 @@
 
 
 
+#ifdef DCLAP
+#include <ncbi.h> /* for ncbimem.h */
+
+#	define MALLOC(size)			(char*)Nlm_MemNew(size)
+#	define REALLOC(p,size) 	p= (char*)Nlm_MemMore(p,size)
+# define FREE(p)					Nlm_MemFree(p)
+# define MEMCPY(d,t,n)		Nlm_MemCopy( d, t, n)
+ 
+#else
+
+#	define MALLOC(size)			(char*)malloc(size)
+#	define REALLOC(p,size) 	p= (char*)realloc(p,size)
+# define FREE(p)					free(p)
+# define MEMCPY(d,t,n)		memcpy( d, t, n)
+#endif
+
+#ifndef Local
+# define Local      static    /* local functions */
+#endif
+
+#define kStartLength 10240 	/* 500  500000 to temp fix Unix bug */
+long 	aStartLength = kStartLength;
+
+const char *aminos      = "ABCDEFGHIKLMNPQRSTVWXYZ*";
+const char *primenuc    = "ACGTU";
+const char *protonly    = "EFIPQZ";
+
+const char kNocountsymbols[5]  = "_.-?";
+const char stdsymbols[6]  = "_.-*?";
+const char allsymbols[32] = "_.-*?<>{}[]()!@#$%^&=+;:'/|`~\"\\";
+static const char *seqsymbols   = allsymbols;
+
+const char nummask[11]   = "0123456789";
+const char nonummask[11] = "~!@#$%^&*(";
+
+FILE	* gFile;
+long	gLinestart = 0;
+
+
+
+/*
+    use general form of isseqchar -- all chars + symbols.
+    no formats except nbrf (?) use symbols in data area as
+    anything other than sequence chars.
+*/
+
+
+
+                          /* Local variables for readSeq: */
+struct ReadSeqVars {
+  short choice, err, nseq, memstep;
+  long  seqlen, maxseq, seqlencount, estlen;
+  short topnseq;
+  long  topseqlen;
+  const char *fname;
+  char *seq, *seqid, matchchar;
+  boolean allDone, done, filestart, addit;
+  FILE  *f;
+  long  linestart;
+  char  s[256], *sp;
+
+  int (*isseqchar)(int);  
+	ReadWriteProc	reader;
+};
+
+
+
 int Strcasecmp(const char *a, const char *b)  /* from Nlm_StrICmp */
 {
   int diff, done;
@@ -57,62 +124,6 @@ int Strncasecmp(const char *a, const char *b, long maxn) /* from Nlm_StrNICmp */
     }
   return 0;
 }
-
-
-
-#	define MALLOC(size)			(char*)malloc(size)
-#	define REALLOC(p,size) 	p= (char*)realloc(p,size)
-# define FREE(p)					free(p)
-
-#ifndef Local
-# define Local      static    /* local functions */
-#endif
-
-#define kStartLength 500 	/* 500000 to temp fix Unix bug */
-
-const char *aminos      = "ABCDEFGHIKLMNPQRSTVWXYZ*";
-const char *primenuc    = "ACGTU";
-const char *protonly    = "EFIPQZ";
-
-const char kNocountsymbols[5]  = "_.-?";
-const char stdsymbols[6]  = "_.-*?";
-const char allsymbols[32] = "_.-*?<>{}[]()!@#$%^&=+;:'/|`~\"\\";
-static const char *seqsymbols   = allsymbols;
-
-const char nummask[11]   = "0123456789";
-const char nonummask[11] = "~!@#$%^&*(";
-
-FILE	* gFile;
-long	gLinestart = 0;
-
-
-
-
-/*
-    use general form of isseqchar -- all chars + symbols.
-    no formats except nbrf (?) use symbols in data area as
-    anything other than sequence chars.
-*/
-
-
-
-                          /* Local variables for readSeq: */
-struct ReadSeqVars {
-  short choice, err, nseq;
-  long  seqlen, maxseq, seqlencount;
-  short topnseq;
-  long  topseqlen;
-  const char *fname;
-  char *seq, *seqid, matchchar;
-  boolean allDone, done, filestart, addit;
-  FILE  *f;
-  long  linestart;
-  char  s[256], *sp;
-
-  int (*isseqchar)(int);  
-	ReadWriteProc	reader;
-};
-
 
 
 #define EOFreader(V)	(boolean)(*V->reader)((char *)NULL, 0L, kRSFile_Eof)
@@ -150,6 +161,11 @@ Local long  readWriteFromFile(char* line, long maxline, short action)
 		fseek( gFile, maxline, 0);
 		return 0;
 
+	case kRSFile_End:
+		fseek( gFile, 0, 2);
+		geof= true;
+		return 0;
+
 	case kRSFile_Rewind:
 		rewind(gFile);
 		geof= false;
@@ -165,18 +181,51 @@ Local long  readWriteFromFile(char* line, long maxline, short action)
 
 
 
+enum seqflag { 
+	primenucflag = 1,
+	dnanucflag = 2,
+	rnanucflag = 4,
+	aminoflag = 8,
+	protonlyflag = 0x10,
+	seqsymflag = 0x20
+	};
+
+char seqflags[128] = {
+  0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,
+  0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,
+/*    ,  ! ,  " ,  # ,  $ ,  % ,  & ,  ' ,  ( ,  ) ,  * ,  + ,  , ,  - ,  . ,  / ,*/
+  0x0 ,0x20,0x20,0x20,0x0 ,0x0 ,0x20,0x20,0x20,0x20,0x28,0x20,0x0 ,0x20,0x20,0x20,
+/*  0 ,  1 ,  2 ,  3 ,  4 ,  5 ,  6 ,  7 ,  8 ,  9 ,  : ,  ; ,  < ,  = ,  > ,  ? ,*/
+  0x0, 0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x0 ,0x20,0x20,0x20,0x20,0x20,0x20,
+/*  @ ,  A ,  B ,  C ,  D ,  E ,  F ,  G ,  H ,  I ,  J ,  K ,  L ,  M ,  N ,  O ,*/
+  0x20,0x9 ,0x8 ,0x9 ,0x8 ,0x18,0x18,0x9 ,0x8 ,0x18,0x0 ,0x8 ,0x8 ,0x8 ,0x8 ,0x0 ,
+/*  P ,  Q ,  R ,  S ,  T ,  U ,  V ,  W ,  X ,  Y ,  Z ,  [ ,  \ ,  ] ,  ^ ,  _ ,*/
+  0x18,0x18,0x8 ,0x8 ,0xB ,0x5 ,0x8 ,0x8 ,0x8 ,0x8 ,0x18,0x20,0x20,0x20,0x20,0x20,
+/*  ` ,  a ,  b ,  c ,  d ,  e ,  f ,  g ,  h ,  i ,  j ,  k ,  l ,  m ,  n ,  o ,*/
+  0x20,0x9 ,0x8 ,0x9 ,0x8 ,0x18,0x18,0x9 ,0x8 ,0x18,0x0 ,0x8 ,0x8 ,0x8 ,0x8 ,0x0 ,
+/*  p ,  q ,  r ,  s ,  t ,  u ,  v ,  w ,  x ,  y ,  z ,  { ,  | ,  } ,  ~ ,   ,*/
+  0x18,0x18,0x8 ,0x8 ,0xB ,0x5 ,0x8 ,0x8 ,0x8 ,0x8 ,0x18,0x20,0x20,0x20,0x20,0x0 
+};
+
+boolean isprimenuc(char c) { return (c>127||c<0)?false:seqflags[c] & primenucflag; }
+boolean isdnanuc(char c) { return (c>127||c<0)?false:seqflags[c] & dnanucflag; }
+boolean isrnanuc(char c) { return (c>127||c<0)?false:seqflags[c] & rnanucflag; }
+boolean isamino(char c) { return (c>127||c<0)?false:seqflags[c] & aminoflag; }
+boolean isprotonly(char c) { return (c>127||c<0)?false:seqflags[c] & protonlyflag; }
+boolean isseqsym(char c) { return (c>127||c<0)?false:seqflags[c] & seqsymflag; }
+
 
 int isSeqChar(int c)
 {
  /*  return (isalpha(c) || strchr(seqsymbols,c)); */
-  if (isalpha(c) || strchr(seqsymbols,c)) return c;
+  if (isalpha(c) || isseqsym(c)) return c;
   else return 0;
 }
 
 int isGCGSeqChar(int c)
 {
  /*  return (isalpha(c) || strchr(seqsymbols,c)); */
-  if (isalpha(c) || strchr(seqsymbols,c))  {
+  if (isalpha(c) || isseqsym(c))  {
     if (c == '.') return '-'; /* do the indel translate */
     else return c;
     }
@@ -186,7 +235,7 @@ int isGCGSeqChar(int c)
 int isSeqNumChar(int c)
 {
   /* return (isalnum(c) || strchr(seqsymbols,c)); */
-  if (isalnum(c) || strchr(seqsymbols,c)) return c;
+  if (isalnum(c) || isseqsym(c)) return c;
   else return 0;
 }
 
@@ -250,31 +299,53 @@ Local void addseq(char *s, struct ReadSeqVars *V)
   if (V->addit) while (*s != 0) {
     if ((seqc= (V->isseqchar)(*s)) != 0) {
       if (V->seqlen >= V->maxseq) {
-        V->maxseq += kStartLength;
-#ifdef NOTmacintosh
-				SetPtrSize( (Ptr)V->seq, V->maxseq+1);
-				if (MemError() != 0) {
-          V->err = eMemFull;
-          return;
-          }
+        V->maxseq += aStartLength;
+        V->memstep++;
+/* revise this to 
+  (a) store all of long seq on disk file (tmpnam()),
+  	  -- offload to disk instead of realloc until done reading
+  (b) increase aStartLength if seq is getting large -- larger chunksize
+  (c) check ftell(V->f) to get max seq size, reduce if see it is multiseq file?
+*/
+#if 1
+				if (V->memstep % 10 == 0) {
+					/* fix for memory fragmenting... write to disk, free, then malloc. */
+					FILE * tmpf= tmpfile();
+					fwrite( V->seq, 1, V->seqlen+1, tmpf);
+					FREE(V->seq);
+					ptr = MALLOC(V->maxseq+1);
+					rewind( tmpf);
+					fread( ptr, 1, V->seqlen+1, tmpf);
+					fclose( tmpf); /* deleted here !? */
+					V->seq= ptr;
+					}
+				else {
+					ptr = V->seq;
+	    		REALLOC(ptr, V->maxseq+1); 
+	    		}
 #else
-        ptr = (char*) realloc(V->seq, V->maxseq+1);
+				ptr = V->seq;
+    		REALLOC(ptr, V->maxseq+1); /* mac fills mem - not releasing old ptr !? */
+#endif
         if (ptr==NULL) {
           V->err = eMemFull;
           return;
           }
         else V->seq = ptr;
-#endif
 				}
-      V->seq[(V->seqlen)++] = seqc; /* *s */
+#ifdef TRANSLATE
+      V->seq[(V->seqlen)++] = gTranslate[seqc];
+#else
+      V->seq[(V->seqlen)++] = seqc;
+#endif
       }
     s++;
     }
 }
 
 Local void countseq(char *s, struct ReadSeqVars *V)
- /* this must count all valid seq chars, for some formats (paup-sequential) even
-    if we are skipping seq... */
+ /* this must count all valid seqq chars, for some formats (paup-sequential) even
+    if we are skipping seqq... */
 {
   while (*s != 0) {
     if ((V->isseqchar)(*s)) {
@@ -375,7 +446,7 @@ Local boolean endStrider( boolean *addend, boolean *ungetend, struct ReadSeqVars
 }
 
 Local void readStrider(struct ReadSeqVars *V)
-{ /* ? only 1 seq/file ? */
+{ /* ? only 1 seqq/file ? */
 
   while (!V->allDone) {
     getline(V);
@@ -451,14 +522,14 @@ Local boolean endNBRF( boolean *addend, boolean *ungetend, struct ReadSeqVars *V
 {
   char  *a;
 
-  if ((a = strchr(V->s, '*')) != NULL) { /* end of 1st seq */
+  if ((a = strchr(V->s, '*')) != NULL) { /* end of 1st seqq */
     /* "*" can be valid base symbol, drop it here */
     *a = 0;
     *addend = true;
     *ungetend= false;
     return(true);
     }
-  else if (*V->s == '>') { /* start of next seq */
+  else if (*V->s == '>') { /* start of next seqq */
     *addend = false;
     *ungetend= true;
     return(true);
@@ -561,7 +632,7 @@ Local void readZuker(struct ReadSeqVars *V)
 Local boolean endFitch( boolean *addend, boolean *ungetend, struct ReadSeqVars *V)
 {
   /* this is a somewhat shaky end,
-    1st char of line is non-blank for seq. title
+    1st char of line is non-blank for seqq. title
   */
   *addend = false;
   *ungetend= true;
@@ -672,7 +743,7 @@ Local void readOlsen(struct ReadSeqVars *V)
         }
       }
 
-    else if ((sk = strstr(V->s, "): "))!=0) {  /* seq info header line */
+    else if ((sk = strstr(V->s, "): "))!=0) {  /* seqq info header line */
   /* 18aug92: correct for diff seqs w/ same name -- use number, e.g. */
   /*   3 (Agr.tume):  agrobacterium.prna  18-JUN-1987 16:12 */
   /* 328 (Agr.tume):  agrobacterium.prna XYZ  19-DEC-1992   */
@@ -744,7 +815,7 @@ Local void readMSF(struct ReadSeqVars *V)
         }
       }
 
-    else if (NULL != (si = strstr(V->s, "Name: "))) {  /* seq info header line */
+    else if (NULL != (si = strstr(V->s, "Name: "))) {  /* seqq info header line */
       /* Name: somename      Len:   100  Check: 7009  Weight:  1.00 */
 
       (V->nseq)++;
@@ -808,7 +879,7 @@ Local void readPAUPinterleaved(struct ReadSeqVars *V)
       if (strchr(si,';')) indata= false;
 
       if (isalnum(*si))  {
-        /* valid data line starts w/ a left-justified seq name in columns [0..8] */
+        /* valid data line starts w/ a left-justified seqq name in columns [0..8] */
         if (first) {
           (V->nseq)++;
           if (V->nseq >= V->topnseq) first= false;
@@ -890,7 +961,7 @@ Local void readPAUPsequential(struct ReadSeqVars *V)
       skipwhitespace(si);
       if (strchr(si,';')) indata= false;
       if (isalnum(*si))  {
-        /* valid data line starts w/ a left-justified seq name in columns [0..8] */
+        /* valid data line starts w/ a left-justified seqq name in columns [0..8] */
         if (atname) {
           (V->nseq)++;
           V->seqlencount = 0;
@@ -968,7 +1039,7 @@ Local void readPhylipInterleaved(struct ReadSeqVars *V)
     skipwhitespace(si);
     if (*si != 0) {
 
-      if (first) {  /* collect seq names + seq, as fprintf(outf,"%-10s  ",seqname); */
+      if (first) {  /* collect seqq names + seqq, as fprintf(outf,"%-10s  ",seqname); */
         (V->nseq)++;
         if (V->nseq >= V->topnseq) first= false;
         sj= V->s+10;  /* past name, start of data */
@@ -1129,18 +1200,19 @@ Local void readSeqMain(
 
   V->filestart= false;
   V->seq[V->seqlen] = 0; /* stick a string terminator on it */
+	REALLOC(V->seq, V->seqlen+1); /* and resize it down to true length */
 }
 
 
 char *readSeqFp(
       const short whichEntry,  /* index to sequence in file */
-      FILE  *fp,   /* pointer to open seq file */
+      FILE  *fp,   /* pointer to open seqq file */
       const long  skiplines,
       const short format,      /* sequence file format */
-      long  *seqlen,     /* return seq size */
+      long  *seqlen,     /* return seqq size */
       short *nseq,       /* number of seqs in file, for listSeqs() */
       short *error,      /* return error */
-      char  *seqid)      /* return seq name/info */
+      char  *seqid)      /* return seqq name/info */
 {
   struct ReadSeqVars V;
 
@@ -1157,12 +1229,14 @@ char *readSeqFp(
   V.fname  = NULL;  /* don't know */
   V.seq    = (char*) MALLOC(kStartLength+1);
   V.maxseq = kStartLength;
+  V.memstep= 0;
+  aStartLength= kStartLength;
   V.seqlen = 0;
   V.seqid  = seqid;
 
   V.f = fp;
   V.filestart= (ftell( fp) == 0); 
-  /* !! in sequential read, must remove current seq position from choice/whichEntry counter !! ... */
+  /* !! in sequential read, must remove current seqq position from choice/whichEntry counter !! ... */
   if (V.filestart)  V.nseq = 0;
   else V.nseq= *nseq;  /* track where we are in file...*/
 
@@ -1174,6 +1248,13 @@ char *readSeqFp(
   else if (V.choice <= 0) V.choice = 1; /* default ?? */
   V.addit = (V.choice > 0);
   V.allDone = false;
+
+#if 0
+ 	gLinestart= (*V.reader)((char*)NULL, 0L, kRSFile_Tell);
+  (*V.reader)((char*)NULL, 0L, kRSFile_End);
+ 	V.maxseq= (*V.reader)((char*)NULL, 0L, kRSFile_Tell);
+  (*V.reader)((char*)NULL, gLinestart, kRSFile_Seek);
+#endif
 
   readSeqMain(&V, skiplines, format);
 
@@ -1188,10 +1269,10 @@ char *readSeq(
       const char  *filename,   /* file name */
       const long  skiplines,
       const short format,      /* sequence file format */
-      long  *seqlen,     /* return seq size */
+      long  *seqlen,     /* return seqq size */
       short *nseq,       /* number of seqs in file, for listSeqs() */
       short *error,      /* return error */
-      char  *seqid)      /* return seq name/info */
+      char  *seqid)      /* return seqq name/info */
 {
   struct ReadSeqVars V;
 
@@ -1205,6 +1286,8 @@ char *readSeq(
   V.fname  = filename;  /* don't need to copy string, just ptr to it */
   V.seq    = (char*) MALLOC( kStartLength+1);
   V.maxseq = kStartLength;
+  V.memstep= 0;
+  aStartLength= kStartLength;
   V.seqlen = 0;
   V.seqid  = seqid;
 
@@ -1222,6 +1305,12 @@ char *readSeq(
   V.filestart= true;
 	gFile= V.f; gLinestart = 0;
 	V.reader = readWriteFromFile;
+#if 0
+ 	gLinestart= (*V.reader)((char*)NULL, 0L, kRSFile_Tell);
+  (*V.reader)((char*)NULL, 0L, kRSFile_End);
+ 	V.maxseq= (*V.reader)((char*)NULL, 0L, kRSFile_Tell);
+  (*V.reader)((char*)NULL, gLinestart, kRSFile_Seek);
+#endif
 
   readSeqMain(&V, skiplines, format);
 
@@ -1239,10 +1328,10 @@ char *readSeqCall(
 	    ReadWriteProc reader,
       const long  skiplines,
       const short format,      /* sequence file format */
-      long  *seqlen,     /* return seq size */
+      long  *seqlen,     /* return seqq size */
       short *nseq,       /* number of seqs in file, for listSeqs() */
       short *error,      /* return error */
-      char  *seqid)      /* return seq name/info */
+      char  *seqid)      /* return seqq name/info */
 {
   struct ReadSeqVars V;
 
@@ -1256,6 +1345,8 @@ char *readSeqCall(
   V.fname  = NULL;  /* don't know */
   V.seq    = (char*) MALLOC( kStartLength+1);
   V.maxseq = kStartLength;
+  V.memstep= 0;
+  aStartLength= kStartLength;
   V.seqlen = 0;
   V.seqid  = seqid;
   *V.seqid = '\0';
@@ -1272,6 +1363,12 @@ char *readSeqCall(
 	gFile= NULL; gLinestart = 0;
 	V.reader = reader;
  	V.filestart= (0 == (*reader)((char*)NULL, 0L, kRSFile_Tell));
+#if 0
+ 	gLinestart= (*V.reader)((char*)NULL, 0L, kRSFile_Tell);
+  (*V.reader)((char*)NULL, 0L, kRSFile_End);
+ 	V.maxseq= (*V.reader)((char*)NULL, 0L, kRSFile_Tell);
+  (*V.reader)((char*)NULL, gLinestart, kRSFile_Seek);
+#endif
 
   readSeqMain(&V, skiplines, format);
 
@@ -1485,7 +1582,7 @@ short seqFileFormatCall(
         seqset key is Bioseq-set ::=
         ?? can't read these yet w/ ncbi tools ??
           Seq-submit ::=
-          Bioseq ::=  << fails both bioseq-seq and seq-entry parsers !
+          Bioseq ::=  << fails both bioseq-seqq and seq-entry parsers !
       */
       if (strstr(sp,"Bioseq-set")) format= kASNseqset;
       else if (strstr(sp,"Seq-entry")) format= kASNseqentry;
@@ -1545,7 +1642,7 @@ short seqFileFormatCall(
     nlines= 0;
     ReadOneLine(sp);
     sscanf( sp, "%d%d", &nspp, &nlen);
-    ReadOneLine(sp); /* 1st seq line */
+    ReadOneLine(sp); /* 1st seqq line */
     for (ps= sp+10, ilen=0; *ps!=0; ps++) if (isprint(*ps)) ilen++;
 
     for (i= 1; i<nspp; i++) {
@@ -1704,7 +1801,18 @@ short getseqtype( const char *seq, const long seqlen)
 
   maxtest = (short) min(300, seqlen);
   for (i = 0; i < maxtest; i++) {
-		c = to_upper(*sp);  sp++;
+#if 1
+		c =  *sp;  sp++;
+    if (isprotonly(c)) po++;
+    else if (isprimenuc(c)) {
+      na++;
+      if (isdnanuc(c)) nt++;
+      else if (isrnanuc(c)) nu++;
+      }
+    else if (isamino(c)) aa++;
+    else if (isseqsym(c)) ns++;
+    else if (isalpha(c)) no++;
+#else
     if (strchr(protonly, c)) po++;
     else if (strchr(primenuc,c)) {
       na++;
@@ -1714,6 +1822,7 @@ short getseqtype( const char *seq, const long seqlen)
     else if (strchr(aminos,c)) aa++;
     else if (strchr(seqsymbols,c)) ns++;
     else if (isalpha(c)) no++;
+#endif
     }
 
   if ((no > 0) || (po+aa+na == 0)) return kOtherSeq;
@@ -1751,6 +1860,17 @@ void GetSeqStats( const char* seq, const long seqlen,
 				chk = crctab[((int)chk ^ c) & 0xff] ^ (chk >> 8);
 			
 				basec++;
+#if 1
+		    if (isprotonly(c)) po++;
+		    else if (isprimenuc(c)) {
+		      na++;
+		      if (isdnanuc(c)) nt++;
+		      else if (isrnanuc(c)) nu++;
+		      }
+		    else if (isamino(c)) aa++;
+		    else if (isseqsym(c)) ns++;
+		    else if (isalpha(c)) no++;
+#else				
 				if (strchr( protonly, c)) po++;
 				else if (strchr(primenuc, c)) {
 					na++;
@@ -1760,6 +1880,7 @@ void GetSeqStats( const char* seq, const long seqlen,
 				else if (strchr(aminos, c))  aa++;  
 				else if (strchr(seqsymbols, c)) ns++;
 				else if (isalpha(c)) no++;
+#endif
 				}
 			}
 	  /* checks= chk ^ 0xffffffffL; */
@@ -1794,11 +1915,7 @@ char* compressSeq( const char gapc, const char *seq, const long seqlen, long *ne
       i++;
       }
   *b= '\0';
-#ifdef NOTmacintosh
-	SetPtrSize( (Ptr)newseq, i+1);
-#else
 	REALLOC(newseq, i+1);
-#endif
   *newlen= i;
   return newseq;
 }
@@ -1843,7 +1960,7 @@ short writeSeqCall(
 #define kMaxseqwidth  250
 
   boolean baseonlynum= false; /* nocountsymbols -- only count true bases, not "-" */
-  short  numline = 0; /* only true if we are writing seq number line (for interleave) */
+  short  numline = 0; /* only true if we are writing seqq number line (for interleave) */
   boolean numright = false, numleft = false;
   boolean nameright = false, nameleft = false, dumb = true;
   short   namewidth = 8, numwidth = 8;
@@ -1911,7 +2028,7 @@ short writeSeqCall(
       strcpy(endstr,"\n"); /* end w/ extra blank line */
       break;
 
-    case kOlsen:  /* Olsen seq. editor takes plain nucs OR Genbank  */
+    case kOlsen:  /* Olsen seqq. editor takes plain nucs OR Genbank  */
     case kGenBank:
       sprintf(outbuf,"LOCUS       %s       %d bp\n", idword, seqlen);  FPUTS(outbuf);
       sprintf(outbuf,"DEFINITION  %s  %d bases  %X checksum\n",  

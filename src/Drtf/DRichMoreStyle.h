@@ -69,6 +69,7 @@ public:
 	 	kEditText,
 	 	kDialogScrollText,
 	 	kPasswordText,
+		kFileChooser,
 	 	kHidden,
 		kForm,
 		kControlKindEnd
@@ -82,13 +83,16 @@ public:
 	short		fWidth, fHeight; 
 	short 	fSelected; // for kCheckBox, kRadio, kPopup
 	Boolean fInstalled;
+	char	* fData2;	
+	ulong		fSize2;
 	
 	DControlStyle(DView* super);
 	DControlStyle(DView* super, short kind, void* data, ulong dsize, Boolean owndata= true);
   virtual ~DControlStyle();
   virtual void Draw(Nlm_RecT area);
-	virtual void SetData( short kind, void* data, ulong dsize, Boolean owndata);
-	virtual void ControlData( char* varName, char* defaultText);
+	virtual void SetData( short kind, void* data, ulong dsize, Boolean owndata,
+					void* data2 = NULL, ulong dsize2 = 0);
+	virtual void ControlData( char* varName, char* defaultText, char* text2=NULL);
   virtual Boolean CanDraw();
 	virtual void Install();
 	virtual const char* Varname();
@@ -144,6 +148,15 @@ public:
 	DRadioCStyle(DView* super): DControlStyle(super) { fKind= kRadioButton; }
 	virtual void Install();
 	virtual const char* Value();
+};
+
+class DFileCStyle : public DControlStyle {
+public:
+	DView* fNamebox;
+	DFileCStyle(DView* super): DControlStyle(super), fNamebox(NULL) { fKind= kFileChooser; }
+	virtual void Install();
+	virtual const char* Value();
+	virtual void Draw( Nlm_RecT area);
 };
 
 class DPopupCStyle : public DControlStyle {

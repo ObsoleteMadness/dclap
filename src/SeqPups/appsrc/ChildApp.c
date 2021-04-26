@@ -12,25 +12,30 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 #undef DEBUG
 
 /* use this only w/ Mac apps */
 #define MACINTOSH 1
 #include <EPPC.h> /* Apple highlevel events */
+#include <quickdraw.h> 
+#include <dialogs.h> 
 
 void  BeFriendly();   // use for multiprocessing
 Boolean StopKey();		// check if user wants to quit in middle
 
-
+extern "C" int RealMain( int argc, char *argv[]);
+extern "C" int ccommand(char **argv[]);
 
 #ifdef DEBUG
 char* long2str( long val)
 {
-	static char buf[4];
+	static char buf[5];
   buf[0]= (val >> 24) & 0xff;
   buf[1]= (val >> 16) & 0xff;
   buf[2]= (val >> 8) & 0xff;
   buf[3]= val & 0xff;
+  buf[4]= 0;
 	return buf;	
 }
 #endif
@@ -65,7 +70,7 @@ main(int argc, char *argv[])
 	enum { kMaxBuflen = 512 };
 	Boolean	doloop = true, flag;
 	char 	**myargv, * cmdline;
-	int		i, err, try, myargc = argc;	
+	int		i, err, trynum, myargc = argc;	
 	long	time;
 	unsigned long msgRefcon, buflen;
 	EventRecord evt;
@@ -86,17 +91,17 @@ main(int argc, char *argv[])
   fprintf(stdout, "+debug: Test output from ChildApp.c --\n+debug: where is stdout going to??\n");
 #endif
 
-	try= 0;
+	trynum= 0;
 	buflen= kMaxBuflen;
 	cmdline= (char*) malloc(buflen+1);
 	memset(cmdline,0,buflen+1);
-	while (WaitNextEvent( highLevelEventMask, &evt, 2, NULL) || try<3)  { 
-		try++;	
+	while (WaitNextEvent( highLevelEventMask, &evt, 2, NULL) || trynum<3)  { 
+		trynum++;	
 		err= AcceptHighLevelEvent( &sender, &msgRefcon, cmdline, &buflen);
 
-#ifdef DEBUG
-		fprintf(stderr, " HL Event %s ", long2str(evt.message));
-		fprintf(stderr, " HL message %s ", long2str(msgRefcon));
+#ifdef NOT_DEBUG
+		fprintf(stderr, " HL Event '%s' ", long2str(evt.message));
+		fprintf(stderr, " HL message '%s' ", long2str(msgRefcon));
 		fprintf(stderr, " error= %d \n", err);
 #endif	
 	
@@ -123,6 +128,21 @@ main(int argc, char *argv[])
 	    cp= cmdline; 
 	    maxp= cmdline + buflen;
 	    
+			{
+			enum { kDlogID = 100 };
+			WindowPtr wPort;
+			char buf[kMaxBuflen];
+			CursHandle hCurs;
+			
+			memset(buf,0,kMaxBuflen);
+			sprintf( buf, "Running %s ...", cmdline);
+			paramtext( buf, "1", "2", "3");
+			wPort= GetNewDialog( kDlogID, NULL, (GrafPtr)-1);
+			if (wPort) DrawDialog( wPort);
+			hCurs = GetCursor(watchCursor);
+  		if (hCurs) SetCursor(*hCurs);
+			}
+
 #ifdef DEBUG 
 fprintf(stderr, " Cmdline: '%s' \n", cmdline);
 #endif
@@ -184,6 +204,7 @@ for (i=0; i<myargc; i++) fprintf(stderr, "arg[%d]= '%s'\n", i, myargv[i]);
 	    if (sin) freopen( sin, "r", stdin);
 	    if (serr) freopen( serr, "a", stderr);  
 			if (sout) freopen( sout, "a", stdout);  //where oh where is stdout going !????
+    			
 			
 			err= RealMain(myargc, myargv);
 
@@ -199,15 +220,11 @@ fprintf(stderr, "+error: Test stderr from ChildApp.c --\n+error: where is stderr
 		}
 	}
 
-#if 1		
 	do {
   	myargc = ccommand( &myargv);
-		
 		err= RealMain( myargc, myargv);
 		fflush(stdout);
 		} while (doloop);
-		
-#endif
 }
 
 

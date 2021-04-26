@@ -63,6 +63,14 @@ public:
 	virtual	DSequence* ChangeToNew( DSequence* oldSeq);
 };
 
+
+class DSeqCompressMaskCmd : public DSeqChangeCmd {
+public: 
+	DSeqCompressMaskCmd( DSeqDoc* itsAlnDoc, DView* itsView, DSeqList* itsSeqs): 
+		DSeqChangeCmd("mask-compress", itsAlnDoc,itsView,itsSeqs) {}
+	virtual	DSequence* ChangeToNew( DSequence* oldSeq);
+};
+
 class DSeqDna2RnaCmd : public DSeqChangeCmd {
 public: 
 	DSeqDna2RnaCmd( DSeqDoc* itsAlnDoc, DView* itsView, DSeqList* itsSeqs): 
@@ -125,9 +133,9 @@ public:
 	Nlm_Boolean	fSlideAll;
 	
 	DAlnSlider();
-	DAlnSlider( DSeqDoc* itsDoc, DTableView* itsView, DAlnView* itsAlnView,  short oldRC);
+	DAlnSlider( DSeqDoc* itsDoc, DTableView* itsView, DAlnView* itsAlnView,  long oldRC);
 	virtual ~DAlnSlider();
-	virtual void IAlnSlider( DSeqDoc* itsDoc, DTableView* itsView, DAlnView* itsAlnView,  short oldRC);
+	virtual void IAlnSlider( DSeqDoc* itsDoc, DTableView* itsView, DAlnView* itsAlnView,  long oldRC);
 	virtual void Reset();
 	virtual void TrackFeedback( TrackPhase aTrackPhase,
 					const Nlm_PoinT& anchorPoint, const Nlm_PoinT& previousPoint,
@@ -146,9 +154,9 @@ class DAlnShifter : public DAlnSlider
 {
 public:
 	DAlnShifter();
-	DAlnShifter( DSeqDoc* itsDoc, DTableView* itsView, DAlnView* itsAlnView,  short oldRC);
+	DAlnShifter( DSeqDoc* itsDoc, DTableView* itsView, DAlnView* itsAlnView,  long oldRC);
 	virtual ~DAlnShifter();
-	virtual void IAlnSlider( DSeqDoc* itsDoc, DTableView* itsView, DAlnView* itsAlnView,  short oldRC);
+	virtual void IAlnSlider( DSeqDoc* itsDoc, DTableView* itsView, DAlnView* itsAlnView,  long oldRC);
 	virtual void DoItWork(); 
 	virtual void UndoWork(); 
 	virtual void DoSlide();
@@ -191,7 +199,7 @@ public:
 	enum { cAlnPaste = 31597 };
 	DSeqList * fClipList;
 	DSeqDoc  * fAlnDoc;
-	short    fInsRow;
+	long    fInsRow;
 	
 	DAlnPasteCommand(DSeqDoc* itsDoc);
 	virtual ~DAlnPasteCommand();

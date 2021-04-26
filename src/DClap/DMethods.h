@@ -12,10 +12,10 @@ class DSaveHandler
 	short fDirty;
 public:
 	DSaveHandler()   { fDirty= 0; }
-	short IsDirty()  { return fDirty; }
-	void  Dirty() 	 { fDirty++; }
-	void  UnDirty()  { if (fDirty) fDirty--; }
-	void  NotDirty() { fDirty= 0; }
+	virtual short IsDirty()  { return fDirty; }
+	virtual void  Dirty() 	 { fDirty++; }
+	virtual void  UnDirty()  { if (fDirty) fDirty--; }
+	virtual void  NotDirty() { fDirty= 0; }
 	virtual void Save(DFile* f) {}
 	virtual short DirtySaveCancelled(char* doctitle=NULL);
 };

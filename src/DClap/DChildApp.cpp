@@ -8,6 +8,10 @@
 // for DChildDlogDoc
 #include "Dvibrant.h"
 #include "DWindow.h"
+#include "DNetObject.h"
+#include "DURL.h"
+#include "DRichMoreStyle.h"
+#include "DBOPclient.h"
 
 
 #undef DEBUG
@@ -33,14 +37,18 @@
 //class DChildFile : public DFile
 
 
-DChildFile::DChildFile( const char* filename, short kind, Boolean deleteWhenDone,
-	short doneAction, const char* openmode, const char* ftype, const char* fcreator) :
+DChildFile::DChildFile( const char* filename, short kind,
+	Boolean deleteWhenDone,
+	short doneAction, const char* openmode, 
+	const char* ftype, const char* fcreator) :
 	DFile( filename, openmode, ftype, fcreator),
 	fAction(doneAction), fKind(kind), fDelete( deleteWhenDone)
 {
+	//fName2= StrDup(filename); // fix probs w/ fName getting corrupted !!!!???
 	if (!openmode) switch (fKind) {
 		case kInput: 
 		case kStdin:  fMode= StrDup("r"); break;	//?? we really open "w" not "r" ??
+		default:
 		case kOutput: fMode= StrDup("r"); break;  //?? we really open "r" not "w" !? 
 		case kStdout: fMode= StrDup("r"); break;  // was "a", ??? "w" or "a"
 		case kStderr: fMode= StrDup("r"); break;  // was "a", ??? "w" or "a"
@@ -49,6 +57,7 @@ DChildFile::DChildFile( const char* filename, short kind, Boolean deleteWhenDone
 
 DChildFile::~DChildFile()
 {
+	MemFree(fName2);
 #ifndef DEBUG
 	if (fDelete) this->Delete();
 #endif
@@ -72,8 +81,8 @@ DChildApp::DChildApp() :
 	DTaskMaster(0),
 	fName(NULL), fCmdline(NULL), 
 	fStdin(NULL), fStdout(NULL), fStderr(NULL),
-	fLaunched(0), fResult(0), fReusable(false),
-	fProcessNum(0), fFiles(NULL)
+	fLaunched(0), fResult(0), fReusable(false), fCallMethod(kNone),
+	fProcessNum(0), fFiles(NULL), fNob(NULL), fBopper(NULL)
 {
   if (!DChildAppManager::gChildList) DChildAppManager::gChildList= new DList();
 	DChildAppManager::gChildList->InsertLast( this); // do this here so caller doesn't forget
@@ -85,12 +94,13 @@ DChildApp::DChildApp( char* appname, char* cmdline,
 	DTaskMaster(0),
 	fName(NULL), fCmdline(NULL), 
 	fStdin(NULL), fStdout(NULL), fStderr(NULL),
-	fLaunched(0), fResult(0), fReusable(false),
-	fProcessNum(0), fFiles(NULL)
+	fLaunched(0), fResult(0), fReusable(false), fCallMethod(kNone),
+	fProcessNum(0), fFiles(NULL), fNob(NULL), fBopper(NULL)
 {
 	fName= StrDup( appname);
 	fCmdline= StrDup( cmdline);
-	fFiles= new DList();
+	
+	//fFiles= new DList();
 
 	// this is called for launching docs as well as apps,
 	// don't do the stdout/stderr stuff if this is doc
@@ -103,33 +113,35 @@ DChildApp::DChildApp( char* appname, char* cmdline,
 }
 
 
-#if 0
-DChildApp* DChildAppManager::newChildApp( char* appname, char* cmdline, 
-	Boolean Stdout, char* Stdinfile, Boolean Stderr)
-{  
-	DChildApp* aChild= new DChildApp( char* appname, char* cmdline, 
-		Boolean Stdout, char* Stdinfile, Boolean Stderr);
-	gChildList->InsertLast( aChild); // !! must do this here or ?? in DChildapp constructors?
-	return aChild;
-}
-#endif
-
-
 DChildApp::~DChildApp()
 {
+	ClearFiles();
+	if (fFiles) delete fFiles; fFiles= NULL;
 	MemFree( fName);
 	MemFree( fCmdline);
-	if (fFiles) {
-		short i, n= fFiles->GetSize();
-		for (i=0; i<n; i++) {
-			DChildFile* afile= (DChildFile*) fFiles->At(i);
-			delete afile;
-			}
-		delete fFiles;
-		}
+	if (fNob) delete fNob;
+	if (fBopper) delete fBopper;
 	DChildAppManager::gChildList->Delete( this); //need here to balance constructor Insert()
 }
 
+void DChildApp::ClearFiles()
+{
+	if (fFiles) {
+		short i, n= fFiles->GetSize();
+#if 0
+			// ?? is this causing trashed DChildFiles ??
+		for (i=n-1; i>=0; i--) {
+			DChildFile* afile= (DChildFile*) fFiles->At(i);
+			delete afile;
+			}
+#endif
+#if 1
+		fFiles->DeleteItemsAt(0,n);
+#else
+		delete fFiles; fFiles= NULL;
+#endif
+		}
+}
 
 
 void DChildApp::AddInputBuffer( short filekind, char* buffer, ulong buflen)
@@ -157,6 +169,7 @@ void DChildApp::AddInputBuffer( short filekind, char* buffer, ulong buflen)
 void DChildApp::AddFile( DChildFile* aFile)
 {
 		// ?? need to check if fFiles already has one of stdio types ??
+	if (!fFiles) 	fFiles= new DList();
 	fFiles->InsertLast( aFile);
 	switch (aFile->fKind) {
 		case DChildFile::kStdin:  
@@ -186,6 +199,7 @@ void DChildApp::AddFile( short filekind, char* name)
 			aFile= new DChildFile( name, filekind, false, DChildFile::kNoAction);
 			break;
 		
+		default:
 		case DChildFile::kOutput:   
 		case DChildFile::kStdout:  
 			aFile= new DChildFile( name, filekind, false);
@@ -228,15 +242,91 @@ public:
 };
 
 
-	
 Boolean DChildApp::Launch()
+{
+	fResult= 0;
+	gCursor->watch();
+	switch (fCallMethod) {
+		case kLocalexec:
+			(void) LaunchLocal();
+			break;
+		case kBOPexec:
+			(void) LaunchBop();
+			break;
+		case kHTTPget:
+		case kHTTPpost:
+		default:
+			break;
+		}	
+	gCursor->arrow();
+	return  fResult;
+}
+
+
+Boolean DChildApp::LaunchBop()
+{
+	char * aHost, * aUser, * aPass, * aPath;
+	long	aPort;
+	fResult= 0;
+	
+	if (!fNob) fNob = new DNetOb();
+	if (!DURL::ParseURL( fNob, fName)) ; // ?? error
+	aHost= (char *)fNob->GetHost(); if (!aHost||!*aHost) aHost= DBOP::gHost;
+	aPort= fNob->fPort;  if (!aPort) aPort= DBOP::gPort;
+	aPath= (char *)fNob->GetPath();
+
+	//if (!aHost || (!aPath && !fCmdline)) return fResult;
+	if ((!aPath && !fCmdline)) return fResult;
+
+	aUser= (char *)fNob->GetUser(); if (!aUser||!*aUser) aUser= DBOP::gUsername;
+	aPass= (char *)fNob->GetPass(); if (!aPass||!*aPass) aPass= DBOP::gPassword;
+	
+	if (!fBopper) fBopper= new DBOP( aUser, aPass, aHost, aPort);
+	else fBopper->ResetHost( aUser, aPass, aHost, aPort);
+
+	if (*aPath == '/') aPath++; // default / is leftover from URL syntax
+	long len= 2 + StrLen(aPath) + StrLen(fCmdline);
+	char* cmdline = (char*) MemNew( len);
+	*cmdline= 0;
+	if (aPath) { 
+		StrCat( cmdline, aPath);
+		StrCat( cmdline, " ");
+		}
+	if (fCmdline) StrCat( cmdline, fCmdline);
+	fLaunched++;
+	fResult= fBopper->Execute( cmdline, fFiles);
+	fProcessNum= fBopper->ProcessNum();
+	MemFree( cmdline);
+	
+	if (fProcessNum) {
+		// ?? save user/pass from fBopper (which can ask for new)??
+		if (!StrCmp(fBopper->GetUser(),fNob->GetUser()))
+			fNob->StoreUser( (char*)fBopper->GetUser());
+		if (!StrCmp(fBopper->GetPass(),fNob->GetPass()))
+			fNob->StorePass( (char*)fBopper->GetPass());
+		if (!StrCmp(fBopper->GetHost(),fNob->GetHost()))
+			fNob->StoreHost( (char*)fBopper->GetHost());
+		if ( fBopper->gPort != fNob->fPort)
+			fNob->fPort= fBopper->gPort;
+		}
+	
+	DStatusTask* statme = new DStatusTask();
+	PostTask( statme);
+		 
+	return fResult;
+}
+	
+
+Boolean DChildApp::LaunchLocal()
 {
 		// ?? want special handling for stdin/stdout/stderr files !!
 		// !! must assume OtherFiles are already handled, either in cmdline or by child app !!
 	fResult= 0;
+	
 	if (fName || fCmdline) {
 		fLaunched++;
-		fResult= Dgg_LaunchApp( fName, fCmdline, (char*)fStdin, (char*)fStdout, (char*)fStderr);
+		fResult= Dgg_LaunchApp( fName, fCmdline, (char*)fStdin, 
+									(char*)fStdout, (char*)fStderr);
 
 		if (fResult) {
 #ifdef WIN_MAC
@@ -256,13 +346,13 @@ Boolean DChildApp::Launch()
 			PostTask( statme);
 #endif
 #endif
-
 			//gChildList->InsertLast( this); // done in constructor;
 			// can we assume only one copy of this in list ??
 			} 
 		}
 	return fResult;
 }
+
 
 
 void DChildApp::FileAction(DChildFile* aFile)
@@ -285,15 +375,24 @@ void DChildApp::FileAction(DChildFile* aFile)
 void DChildApp::Finished()
 {
 	fLaunched--; // ?? or use this as counter?
+	gCursor->watch();
+	if (fCallMethod == kBOPexec && fBopper) {
+		fBopper->GetOutput( fProcessNum, fFiles);
+		fBopper->Delete( fProcessNum);
+		fBopper->Quit(); // ??
+		}
 	if (fFiles) {
+		DChildFile* aFile;
 		short i, n= fFiles->GetSize();
-		for (i=0; i<n; i++) {
-			DChildFile* aFile= (DChildFile*) fFiles->At(i);
+		for (i=n-1; i>=0; i--) {
+			aFile= (DChildFile*) fFiles->At(i);
 			if (aFile->Exists() && aFile->LengthF()>0) 
 				FileAction( aFile);
 			aFile->ClearStorage();
 			}
+		ClearFiles();
 		}
+	gCursor->arrow();
 }
 
 
@@ -324,8 +423,21 @@ void DExternalHandler::Finished()
 
 //static
 DList* DChildAppManager::gChildList = NULL; // new DList(); << bad on SGI // of DChildApp
+long DChildAppManager::gLastTime = 0;
 
 DChildAppManager* gChildAppManager = new DChildAppManager();
+
+enum { 
+#ifdef WIN_MAC
+	kStatDelay = 1200 // 60ths of second to minutes
+#endif
+#ifdef WIN_MSWIN
+	kStatDelay = 10000 // milliseconds to minutes 
+#endif
+#ifdef WIN_MOTIF
+	kStatDelay = 1200 //  60ths of second to minutes 
+#endif
+	};
 
 DChildAppManager::DChildAppManager() :
 	DTaskMaster( kChildManagerTask)
@@ -401,24 +513,39 @@ short DChildAppManager::BuryDeadChildApp( long theEvent)
 //static
 Boolean DChildAppManager::CheckStatus()
 {	
-	short i, n= gChildList->GetSize();
-	for (i=n-1; i>=0; i--) {
-		DChildApp* child= (DChildApp*) gChildList->At(i);
-		if (child && child->fProcessNum) {
+	short i, n = gChildList->GetSize();
+	long now= gUtil->time();
+	if (now - gLastTime > kStatDelay) {
+		gLastTime= now;
+		for (i=n-1; i>=0; i--) {
+			DChildApp* child= (DChildApp*) gChildList->At(i);
+			if (child && child->fProcessNum) {
+			
+				if (child->fCallMethod == DChildApp::kLocalexec) {
 #ifdef WIN_MSWIN
 #ifndef WIN16
-      long waitresult= ! WAIT_TIMEOUT;
-      HANDLE hobj= OpenProcess( SYNCHRONIZE, false, child->fProcessNum);
-      if (hobj) waitresult= WaitForSingleObject( hobj, 0);
-      if (waitresult != WAIT_TIMEOUT) {
-    	  child->Finished();
-		    if (!child->fReusable) delete child; 
-    	  n--;
-    		}
+		      long waitresult= ! WAIT_TIMEOUT;
+		      HANDLE hobj= OpenProcess( SYNCHRONIZE, false, child->fProcessNum);
+		      if (hobj) waitresult= WaitForSingleObject( hobj, 0);
+		      if (waitresult != WAIT_TIMEOUT) {
+		    	  child->Finished();
+				    if (!child->fReusable) delete child; 
+		    	  n--;
+	    		}
 #endif
 #endif
-      }
-    	else n--; //??
+					}
+				else if (child->fCallMethod == DChildApp::kBOPexec && child->fBopper) {
+					if (child->fBopper->CheckStatus(child->fProcessNum)
+								>= DBOP::kProcDone) {
+		    	  child->Finished();
+				    if (!child->fReusable) delete child; 
+		    	  n--;
+						}
+					}
+	      }
+	    	else n--; //??
+			}
 		}
 	return (n > 0);
 }
@@ -638,6 +765,31 @@ void DChildDlogDoc::ResizeWin()
 
 Nlm_Boolean DChildDlogDoc::IsMyAction(DTaskMaster* action) 
 {
+	char buf[512];
+
+	if (action->Id() >= DControlStyle::kControlKindStart
+		&& action->Id() <= DControlStyle::kControlKindEnd)
+		{
+		switch (action->Id()) {
+		
+			case DControlStyle::kFileChooser:
+				{
+				DFileCStyle* cs= (DFileCStyle*) ((DView*)action)->fKind;
+				const char* name= DFileManager::GetInputFileName( NULL, NULL);
+				if (name) cs->fNamebox->SetTitle( (char*)name);
+				}
+				return true;
+				
+			//kButton, kSubmitButton,  kResetButton, 	kRadioButton, kCheckBox,
+	 		//kPopup, kPrompt, 	kEditText, 	kDialogScrollText,
+	  	//kPasswordText, 
+			default:
+				//dlog checkboxes, radios, edittext, etc all call here when actioned!
+				//Message(MSG_OK,"DControlStyle::message not ready.");
+				return true;
+			}
+		}
+		
 	switch(action->Id()) {
 	
 		case cOKAY:

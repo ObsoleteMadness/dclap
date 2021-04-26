@@ -1,0 +1,30 @@
++INFO: 0GopherPup.start	GopherPup.start	localhost	21	+
++URL:  file:///GopherPup.start 
++INFO: 1IUBio-Archive		ftp.bio.indiana.edu	71	+
++INFO: hIUBio-Archive via HTTP	/	iubio.bio.indiana.edu	80	+
++URL:  http://iubio.bio.indiana.edu/ 
++INFO: hVirtual Library @ CERN	/hypertext/DataSources/bySubject/Overview.html	info.cern.ch	80	+
++URL:  http://info.cern.ch/hypertext/DataSources/bySubject/Overview.html 
++INFO: 0IUBio Archive via RTF NetDoc	0/This-Gopher/gopup/IUBio-door	ftp.bio.indiana.edu	71	+
++MENUSTRING: "IUBio Archive, Indiana University"
++INFO: 0FlyBase-door	0/This-Gopher/gopup/FlyBase-door	ftp.bio.indiana.edu	71	+
++INFO: 0IUBio-door	0/This-Gopher/gopup/IUBio-door	ftp.bio.indiana.edu	71	+
++INFO: hBioPages @ harvard	/biopages.html	golgi.harvard.edu	80	+
++URL:  http://golgi.harvard.edu/biopages.html 
++INFO: 1FlyBase gene maps	1/Flybase/maps/grmaps	ftp.bio.indiana.edu	71	+
++INFO: hHTML @ Cica.Indiana.Edu	/	www.cica.indiana.edu	80	+
++URL:  http://www.cica.indiana.edu/ 
++INFO: hHTML @ Indiana.Edu	/	www.indiana.edu	80	+
++URL:  http://www.indiana.edu/ 
++INFO: hFlybase @ Harvard	/	morgan.harvard.edu	80	+
++URL:  http://morgan.harvard.edu/ 
++INFO: hhoohoo.ncsa.uiuc.edu	/	hoohoo.ncsa.uiuc.edu	80	+
++URL:  http://hoohoo.ncsa.uiuc.edu 
++INFO: hHTML forms overview & tests @ NCSA	/SDG/Software/Mosaic/Docs/fill-out-forms/overview.html	www.ncsa.uiuc.edu	80	+
++URL:  http://www.ncsa.uiuc.edu/SDG/Software/Mosaic/Docs/fill-out-forms/overview.html 
++INFO: h/General/NCSAHome.html	/General/NCSAHome.html	www.ncsa.uiuc.edu	80	+
++URL:  http://www.ncsa.uiuc.edu/General/NCSAHome.html 
++INFO: 1University of Minnesota Mother Gopher		gopher.micro.umn.edu	70	+
++MENUSTRING: "University of Minnesota Gopher"
++INFO: 1Washington & Lee Univ.		liberty.uc.wlu.edu	70	+
++MENUSTRING: "Washington & Lee University"

@@ -232,7 +232,8 @@ void DList::FreeAllObjects()
 	for (i= 0; i<n; i++) {
 		DObject* obj= At(i);
 		if (obj) {
-		  if (obj->GetOwnerCount() <= 1) delete obj;
+		  if (obj->GetOwnerCount() <= 1) delete obj; 
+		  	// ^^^^ BIG MEM LEAK !! THIS delete DOESN"T CALL DESTRUCTOR !
 		  else obj->suicide(); // this alone doens't call obj destructors !!
 		  }
 		}

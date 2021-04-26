@@ -6,6 +6,7 @@
 // 
 
 #include "DTableView.h"
+#include "DTabSelect.h"
 #include <DPanel.h>
 #include <DUtil.h>
 #include <DApplication.h>
@@ -17,120 +18,19 @@
 
 
 
-DTabSelector::DTabSelector( DTableView* itsTable)
-{
-	ITabSelector( itsTable); // in constructor !?
-}
-
-DTabSelector::~DTabSelector() 
-{
-#if 0
-	fOldSelection= Nlm_DestroyRgn( fOldSelection);
-	fNewSelection= Nlm_DestroyRgn( fNewSelection);
-#endif
-}
-
-void DTabSelector::ITabSelector( DTableView* itsTable)
-{
-	ITracker( cTabSelCmd, itsTable, "selection", true, false, itsTable); 
-	// ITracker() calls Reset()
-}
-
-
-void DTabSelector::Reset()
-{
-	DTracker::Reset();
-	fDoExtend= gKeys->shift();
-#if 1
-	fOldSelection= ((DTableView*)fView)->GetSelRect();
-	fNewSelection= fOldSelection;
-#else
-	fOldSelection= Nlm_NewRgn(); 
-	fNewSelection= Nlm_NewRgn();  
-	CopyRgn( ((DTableView*)fView)->fSelections, fOldSelection);
-	CopyRgn( fOldSelection, fNewSelection);
-#endif
-}
-
-
-void DTabSelector::DoItWork()  
-{
-	if (fMovedOnce || fDoExtend) {
-		((DTableView*)fView)->SelectCells( fNewSelection, 
-				fDoExtend, DTableView::kHighlight, DTableView::kSelect);
-		}
-}
-
-void DTabSelector::UndoWork()  
-{
-#if 1
-	Nlm_RecT tmpRect= fNewSelection;
-	fNewSelection= fOldSelection;
-	fOldSelection= tmpRect;
-#else
-	Nlm_RgN tmpRgn= fNewSelection;
-	fNewSelection= fOldSelection;
-	fOldSelection= tmpRgn;
-#endif
-	DoItWork();
-}
-
-
-void DTabSelector::DoIt()  
-{
-	DCommand::DoIt();
-	
-	Nlm_PoinT pt1, pt2;
-	Nlm_RecT	selr;
-		// +1 is messy fix to stop left/top -1 creap !
-	pt1.x= MIN( fAnchorPoint.x+1, fNextPoint.x);
-	pt2.x= MAX( fAnchorPoint.x-1, fNextPoint.x);
-	pt1.y= MIN( fAnchorPoint.y+1, fNextPoint.y);
-	pt2.y= MAX( fAnchorPoint.y-1, fNextPoint.y);
-
-	((DTableView*)fView)->PointToCell( pt1, selr.top, selr.left);
-	((DTableView*)fView)->PointToCell( pt2, selr.bottom, selr.right);
-	selr.bottom++;
-	selr.right++;
-	fNewSelection= selr;
-	if (!fDoExtend) fDoExtend= gKeys->shift(); // give'em another chance to shift
-	
-	DoItWork();
-}
-
-void DTabSelector::Undo()  
-{
-	DCommand::Undo();
-	Boolean saveext= fDoExtend;
-	fDoExtend= false;
-	UndoWork();
-	fDoExtend= saveext;
-}
-
-void DTabSelector::Redo()  
-{
-	DCommand::Redo();
-	UndoWork();
-}
-
-
-
-
-
 
 
 //class DTableView : public DPanel
 
 
 DTableView::DTableView(long id, DView* itsSuperior, short pixwidth, short pixheight, 
-												short nrows, short ncols, short itemwidth, short itemheight,
+												long nrows, long ncols, short itemwidth, short itemheight,
 												Boolean hasVscroll, Boolean hasHscroll):
 		DAutoPanel( id, itsSuperior, pixwidth, pixheight, hasVscroll, hasHscroll),
 		fItemWidth(itemwidth), fItemHeight(itemheight),
+		fSelection(NULL), fHScrollScale(1), fVScrollScale(1),
 		fTop(0), fLeft(0), fColsDrawn(0), fMaxRows(nrows), fMaxCols(ncols), 
-		fSelectedRow(kNoSelection), fSelectedCol(kNoSelection),
-		fCanSelectRow(true), fCanSelectCol(false),fIsPrinting(false),
-		fWidths(NULL), fHeights(NULL),
+		fIsPrinting(false), fWidths(NULL), fHeights(NULL),
 		fFont(Nlm_programFont)
 {
 	Nlm_BaR sb;
@@ -138,10 +38,10 @@ DTableView::DTableView(long id, DView* itsSuperior, short pixwidth, short pixhei
   fHasVbar= (sb != NULL);
   sb = Nlm_GetSlateHScrollBar((Nlm_SlatE) GetNlmObject());
   fHasHbar= (sb != NULL);
+	fSelection= new DTabSelection( this, fMaxRows, fMaxCols);
+	
   FindLocation();
   SetTableSize( fMaxRows, fMaxCols);
-	SetEmptySelection(false); 
-	
 	fTabSelector= new DTabSelector( this);
 	//fTabSelector->ITabSelector( this);
 	fCurrentTracker= fTabSelector;
@@ -149,89 +49,24 @@ DTableView::DTableView(long id, DView* itsSuperior, short pixwidth, short pixhei
 		
 DTableView::~DTableView()
 {
-	if (fWidths) MemFree(fWidths);
-	if (fHeights) MemFree(fHeights);
+	MemFree(fWidths);
+	MemFree(fHeights);
 	//if (fTabSelector) delete fTabSelector; //<< causing Motif crashes !?
 }
 
-void DTableView::SetCanSelect(Boolean canrow, Boolean cancol)
-{
-	fCanSelectRow= canrow;
-	fCanSelectCol= cancol;
-}
 
 
-static Boolean didscroll;
-
-void DTableView::SelectCells( short row, short col, 
-						Nlm_Boolean extend, Nlm_Boolean highlight, Nlm_Boolean select)
-{
-	if (row>=fMaxRows || row<0 || col>=fMaxCols || col<0) return;
-
-	if (highlight) InvertSelection(); // hide old
-	if (fCanSelectRow) fSelectedRow= row; 
-	if (fCanSelectCol) fSelectedCol= col;
-		 
-	if (!select) ; // deselect cells !!
-	
-	if (extend) {
-		if (fSelrect.top == kNoSelection) fSelrect.top= row;
-		else if (fSelrect.top > row) fSelrect.top= row;
-		if (fSelrect.bottom <= row) fSelrect.bottom= row+1; 
-	
-		if (fSelrect.left == kNoSelection) fSelrect.left= col;
-		else if (fSelrect.left > col) fSelrect.left= col;
-		if (fSelrect.right <= col) fSelrect.right= col+1; 
-		}
-	else {
-		fSelrect.left= col;
-		fSelrect.right= col+1; 
-		fSelrect.top= row;
-		fSelrect.bottom= row+1; 
-		}
-		
-	didscroll= false;
-	ScrollIntoView( fSelrect);
-	if (!didscroll && highlight) InvertSelection(); // show new
-}
-
-void DTableView::SelectCells( Nlm_RecT selrect,  
-						Nlm_Boolean extend, Nlm_Boolean highlight, Nlm_Boolean select)
-{
-	if (selrect.top>= fMaxRows || selrect.bottom<0 
-	 || selrect.left>=fMaxCols || selrect.right<0) return;
-	selrect.left= Max(0,selrect.left);
-	selrect.right= Min(fMaxCols, selrect.right);
-	selrect.top= Max(0,selrect.top);
-	selrect.bottom= Min(fMaxRows, selrect.bottom);
-	
-	if (highlight) InvertSelection();  
-	if (fCanSelectRow) fSelectedRow= selrect.top; 
-	if (fCanSelectCol) fSelectedCol= selrect.left;
-	
-	if (extend)  {
-		if (fSelrect.top == kNoSelection) fSelrect.top= selrect.top;
-		if (fSelrect.bottom == kNoSelection) fSelrect.bottom= selrect.bottom;
-		if (fSelrect.left == kNoSelection) fSelrect.left= selrect.left;
-		if (fSelrect.right == kNoSelection) fSelrect.right= selrect.right;
-	  Nlm_UnionRect( &fSelrect, &selrect, &fSelrect);
-	  }
-	else   
-		fSelrect= selrect; // ?? add +1 to .right & .bottom ??
-
-	didscroll= false;
-	ScrollIntoView( fSelrect);
-	if (!didscroll && highlight) InvertSelection();  
-}
 
 
-void DTableView::ScrollIntoView(Nlm_RecT itemr)
+
+Nlm_Boolean DTableView::ScrollIntoView(Nlm_RecT itemr)
 {
 	enum { horizontal= false, vertical= true };
 	short	lastitem;
 	long	atpix;
 	Nlm_BaR sb;
-
+	Boolean didscroll= false;
+	
 	 // fItemWidth << this isn't accurate for variable width/height.
 	if (fWidths) {
 		for (lastitem= fLeft, atpix= 0; lastitem< fMaxCols; lastitem++) { 
@@ -247,7 +82,11 @@ void DTableView::ScrollIntoView(Nlm_RecT itemr)
 		sb = Nlm_GetSlateHScrollBar((Nlm_SlatE) GetNlmObject());
 		if (sb) { 
 			//Nlm_ResetClip(); // ! TEST: are we losing scrollbar update due to cliprect?
-			Nlm_SetValue(sb, Max(0, itemr.left - 1));  // calls our scroll funct
+			long barval= itemr.left;
+#if 1
+			if (fHScrollScale > 1)  barval /= fHScrollScale;
+#endif
+			Nlm_SetValue(sb, Max(0, barval - 1));  // calls our scroll funct
 			}
 		}
 	
@@ -263,60 +102,17 @@ void DTableView::ScrollIntoView(Nlm_RecT itemr)
 	if (itemr.top > lastitem || itemr.top < fTop) {
 	 	didscroll= true;
 		sb = Nlm_GetSlateVScrollBar((Nlm_SlatE) GetNlmObject());
-		if (sb) Nlm_SetValue(sb,  Max(0, itemr.top - 1));  
+		if (sb) {
+			long barval= itemr.top;
+#if 1
+			if (fVScrollScale > 1)  barval /= fVScrollScale;
+#endif
+			Nlm_SetValue(sb,  Max(0, barval - 1));  
+			}
 		}
+		
+	return didscroll;
 }
-
-
-void DTableView::SetEmptySelection(Boolean redraw)
-{
-	if (redraw) {
-		//InvertSelection();
-		InvalidateSelection();
-		}
-	fSelectedRow = kNoSelection;
-	fSelectedCol = kNoSelection;
-	//Nlm_SetRect
-	Nlm_LoadRect( &fSelrect, kNoSelection, kNoSelection, kNoSelection, kNoSelection);
-}
-
-void DTableView::InvalidateSelection()
-{
-	Nlm_RecT r, r2;
-	if (!Nlm_EmptyRect(&fSelrect)) {
-		r2= fSelrect;
-		GetCellRect( r2, r);
-		InvalRect( r);
-		}
-	else if (fSelectedRow>=0 && fSelectedCol>=0) {
-		GetCellRect( fSelectedRow, fSelectedCol, r);
-		InvalRect( r);
-		}
-	else if (fSelectedRow>=0) {
-		GetRowRect( fSelectedRow, r);
-		InvalRect( r);
-		}
-	else if (fSelectedCol>=0) {
-		GetRowRect( fSelectedCol, r);
-		InvalRect( r);
-		}
-}
-
-
-Boolean DTableView::IsSelected()
-{
-	return (!Nlm_EmptyRect( &fSelrect));
-	//return (fSelectedRow == kNoSelection && fSelectedCol == kNoSelection);
-} 
-
-
-Boolean DTableView::IsSelected(short row, short col)
-{
-	Nlm_PoinT pt;
-	pt.y= row; pt.x= col;
-	Boolean issel= Nlm_PtInRect( pt, &fSelrect);
-	return issel;
-}  
 
 
 
@@ -326,9 +122,9 @@ void DTableView::SetTableFont( Nlm_FonT itsFont)
 	fFont= itsFont;
 }
 
-void DTableView::SetTableSize( short rows, short cols)
+void DTableView::SetTableSize( long rows, long cols)
 {
-	short i;
+	long i;
 	
 	if (fWidths && cols!=fMaxCols) {
 		fWidths= (short*)MemMore( fWidths, (cols+1) * sizeof(short));
@@ -342,56 +138,45 @@ void DTableView::SetTableSize( short rows, short cols)
 	
 	fMaxRows= rows; 
 	fMaxCols= cols;
+	fSelection->SetTableSize( rows, cols);
 
 	SetScrollPage();
 }
 
-void DTableView::ChangeRowSize( short atrow, short deltarows)
+void DTableView::ChangeRowSize( long atrow, long deltarows)
 {
 	Boolean needupdate;
-	short newrows= Max(0, fMaxRows + deltarows);
-#if 1
+	long newrows= Max(0, fMaxRows + deltarows);
 	Nlm_RecT  r;
 	ViewRect(fRect); 
 	Nlm_InsetRect( &fRect, 1, 1);
 	GetRowRect( atrow, r, (fMaxRows - atrow));
 	needupdate= Nlm_SectRect( &r, &fRect, &r);
+	//fSelection->ChangeRowSize( atrow, deltarows); // done thru SetTableSize
 	SetTableSize( newrows, fMaxCols);
 	if (needupdate) this->InvalRect( r);
-#else
-	short viewrows=  (fRect.bottom - fRect.top) / fItemHeight;
-	needupdate= (atrow >= fTop && atrow <= viewrows);
-		// ^^ needs work
-	SetTableSize( newrows, fMaxCols);
-	if (needupdate) {
-		//this->Invalidate(); // locate just update rect??	
-		Nlm_RecT r;
-		short nrows= viewrows - atrow;
-		GetRowRect( atrow, r, nrows);
-		this->InvalRect( r);
-		}
-#endif
 }
 
-void DTableView::ChangeColSize( short atcol, short deltacols)
+void DTableView::ChangeColSize( long atcol, long deltacols)
 {
-	short newcols= Max(0, fMaxCols + deltacols);
+	long newcols= Max(0, fMaxCols + deltacols);
 	Boolean needupdate= (atcol >= fLeft && atcol <= (fRect.right - fRect.left) / fItemWidth);
 		// ^^ needs work
+	//fSelection->ChangeColSize( atcol, deltacols);// done thru SetTableSize
 	SetTableSize( fMaxRows, newcols);
 	if (needupdate) {
 		//this->Invalidate(); // locate just update rect??	
 		Nlm_RecT r;
-		short ncols= ((fRect.right - fRect.left) / fItemWidth) - atcol;
+		long ncols= ((fRect.right - fRect.left) / fItemWidth) - atcol;
 		GetColRect( atcol, r, ncols);
 		this->InvalRect( r);
 		}
 }
 
 		
-void DTableView::SetItemWidth(short atcol, short ncols, short itemwidth)
+void DTableView::SetItemWidth(long atcol, long ncols, short itemwidth)
 {
-	short i;
+	long i;
 	if (ncols >= fMaxCols && !fWidths) {
 		fItemWidth= itemwidth;
 		}
@@ -401,16 +186,16 @@ void DTableView::SetItemWidth(short atcol, short ncols, short itemwidth)
 			fWidths= (short*)MemNew( (fMaxCols+1)*sizeof(short));
 			for (i= 0; i<=fMaxCols; i++) fWidths[i]= fItemWidth;
 			}
-		short ncol= Min(fMaxCols, atcol+ncols);
+		long ncol= Min(fMaxCols, atcol+ncols);
 		for (i= atcol; i<ncol; i++) fWidths[i]= itemwidth;
     fItemWidth= Max( fItemWidth, itemwidth);
 		}
   SetScrollPage();
 }
 
-void DTableView::SetItemHeight(short atrow, short nrows, short itemheight)
+void DTableView::SetItemHeight(long atrow, long nrows, short itemheight)
 {
-	short i;
+	long i;
 	if (nrows >= fMaxRows && !fHeights) {
 		fItemHeight= itemheight;
 		}
@@ -419,7 +204,7 @@ void DTableView::SetItemHeight(short atrow, short nrows, short itemheight)
 			fHeights= (short*)MemNew( (fMaxRows+1)*sizeof(short));
 			for (i= 0; i<=fMaxRows; i++) fHeights[i]= fItemHeight;
 			}
-		short nrow= Min(fMaxRows, atrow+nrows);
+		long nrow= Min(fMaxRows, atrow+nrows);
 		for (i= atrow; i<nrow; i++) fHeights[i]= itemheight;
 #if 0
     if (itemheight) fItemHeight= MIN( fItemHeight, itemheight);
@@ -430,24 +215,68 @@ void DTableView::SetItemHeight(short atrow, short nrows, short itemheight)
   SetScrollPage();
 }
 		
+
+long DTableView::GetItemWidth(long atcol)
+{
+	if (fWidths && atcol >= 0 && atcol < fMaxCols) 
+		return fWidths[atcol];
+	else 
+		return fItemWidth;
+}
+
+long DTableView::GetItemHeight(long atrow)
+{
+	if (fHeights && atrow >= 0 && atrow < fMaxRows) 
+		return fHeights[atrow];
+	else 
+		return fItemHeight;
+}
+
+		
 void DTableView::SetScrollPage()
 {
 	// set paging size of hor/vert sbars.. need to do on open & on resize
 	Nlm_BaR sb;
-	short pgDn, pg, maxn;
+	long pgDn, pg, maxn;
 	if (fHasHbar) {
-		pg= (fRect.right - fRect.left) / fItemWidth;
-		pgDn= Max(1, pg - 1);
-		maxn= Max( fMaxCols - pgDn, 1);
 		sb = Nlm_GetSlateHScrollBar((Nlm_SlatE) GetNlmObject());
-		if (sb) Nlm_SetRange(sb, pgDn, pgDn, maxn);
+		if (sb) {
+			pg= (fRect.right - fRect.left) / fItemWidth;
+			pgDn= Max(1, pg - 1);
+			maxn= Max( fMaxCols - pgDn, 1);
+
+#if 1
+		// test fix for long int range !			
+			if (fMaxCols > SHRT_MAX) {
+				fHScrollScale= (fMaxCols + SHRT_MAX-1) / SHRT_MAX;
+				pg /= fHScrollScale;
+				pgDn /= fHScrollScale;
+				maxn /= fHScrollScale;
+				}
+			else fHScrollScale= 1;
+#endif
+			Nlm_SetRange(sb, pgDn, pgDn, maxn);
+			}
 		}
+		
 	if (fHasVbar) {
-		pg= (fRect.bottom - fRect.top) / fItemHeight;
-		pgDn= Max(1, pg - 1);
-		maxn= Max( fMaxRows - pgDn, 1);
 		sb = Nlm_GetSlateVScrollBar((Nlm_SlatE) GetNlmObject());
-		if (sb) Nlm_SetRange(sb, pgDn, pgDn, maxn);
+		if (sb) {
+			pg= (fRect.bottom - fRect.top) / fItemHeight;
+			pgDn= Max(1, pg - 1);
+			maxn= Max( fMaxRows - pgDn, 1);
+#if 1
+		// test fix for long int range !			
+			if (fMaxRows > SHRT_MAX) {
+				fVScrollScale= (fMaxRows + SHRT_MAX-1) / SHRT_MAX;
+				pg /= fVScrollScale;
+				pgDn /= fVScrollScale;
+				maxn /= fVScrollScale;
+				}
+			else fVScrollScale= 1;
+#endif
+			Nlm_SetRange(sb, pgDn, pgDn, maxn);
+			}
 		}
 }
 
@@ -497,13 +326,14 @@ void DTableView::Resize(DView* superview, Nlm_PoinT sizechange)
 	FindLocation();
 }
 
-void DTableView::Scroll(Boolean vertical, DView* scrollee, short newval, short oldval)
+void DTableView::Scroll(Boolean vertical, DView* scrollee, long newval, long oldval)
 {
 	Nlm_RecT	r = fRect;
-	short delta, i;
-	short diff= newval-oldval;
+	long delta, i, diff;
 	this->Select(); // need for motif !
 	if (vertical) {
+		if (fVScrollScale>1) { newval *= fVScrollScale; oldval *= fVScrollScale; }
+		diff= newval-oldval;
 
 	  if (fHeights) {
 	    delta= 0;
@@ -519,11 +349,14 @@ void DTableView::Scroll(Boolean vertical, DView* scrollee, short newval, short o
 
 		fTop += diff;
 		Nlm_ScrollRect (&r, 0, -delta);
-		if (diff<0) r.bottom= r.top - delta + Min(10,-delta/2);
-		else r.top= r.bottom - delta - Min(10,delta/2);
+		if (diff<0) r.bottom= r.top - delta; // + Min(10,-delta/2);
+		else r.top= r.bottom - delta; // - Min(10,delta/2);
 		}
 		
 	else {
+		if (fHScrollScale>1) { newval *= fHScrollScale; oldval *= fHScrollScale; }
+		diff= newval-oldval;
+
 #if 1
 	  if (fWidths) {
 	    delta= 0;
@@ -539,8 +372,8 @@ void DTableView::Scroll(Boolean vertical, DView* scrollee, short newval, short o
 			
 		fLeft += diff;
 		Nlm_ScrollRect (&r, -delta, 0);
-		if (diff<0) r.right= Min(r.right, r.left - delta + Min(20,-delta/2));
-		else r.left= Max(r.left, r.right - delta - Min(20,delta/2));
+		if (diff<0) r.right= Min(r.right, r.left - delta); // + Min(fItemWidth,-delta/2));
+		else r.left= Max(r.left, r.right - delta); // - Min(fItemWidth,delta/2));
 #else
 		if (fWidths) {
 			// fix later, for now redraw all w/o bitscroll
@@ -560,9 +393,9 @@ void DTableView::Scroll(Boolean vertical, DView* scrollee, short newval, short o
 }
 			
 
-void DTableView::GetRowRect( short row, Nlm_RecT& r, short nrows)
+void DTableView::GetRowRect( long row, Nlm_RecT& r, long nrows)
 {
-	short i;
+	long i;
 	r= fRect;
 	if (fHeights) {
 		for (i= fTop; i<row; i++) r.top += fHeights[i];
@@ -575,9 +408,9 @@ void DTableView::GetRowRect( short row, Nlm_RecT& r, short nrows)
 		}
 }
 
-void DTableView::GetColRect( short col, Nlm_RecT& r, short ncols)
+void DTableView::GetColRect( long col, Nlm_RecT& r, long ncols)
 {
-	short i;
+	long i;
 	r= fRect;
 	if (fWidths) {
 		for (i= fLeft; i<col; i++) r.left += fWidths[i];
@@ -590,9 +423,9 @@ void DTableView::GetColRect( short col, Nlm_RecT& r, short ncols)
 		}
 }
 
-void DTableView::GetCellRect( short row, short col, Nlm_RecT& r)
+void DTableView::GetCellRect( long row, long col, Nlm_RecT& r)
 {
-	short i;
+	long i;
 	r= fRect;
 	if (fWidths) {
 		for (i= fLeft; i<col; i++) r.left += fWidths[i];
@@ -614,7 +447,7 @@ void DTableView::GetCellRect( short row, short col, Nlm_RecT& r)
 
 void DTableView::GetCellRect(Nlm_RecT cellr, Nlm_RecT& r)
 {
-	short i;
+	long i;
 	r= fRect;
 	if (fWidths) {
 		for (i= fLeft; i<cellr.left; i++) r.left += fWidths[i];
@@ -638,38 +471,7 @@ void DTableView::GetCellRect(Nlm_RecT cellr, Nlm_RecT& r)
 }
 
 	
-short DTableView::GetSelectedRow()
-{ 
-	return fSelectedRow; 
-}
 
-short DTableView::GetSelectedCol() 
-{ 
-	return fSelectedCol; 
-}
-
-void DTableView::GetFirstSelectedCell( short& row, short& col)
-{ 
-#if 0
-	row= fSelectedRow; 
-	col= fSelectedCol; 
-#else
-	row= fSelrect.top;
-	col= fSelrect.left;
-#endif
-}
-
-void DTableView::GetLastSelectedCell( short& row, short& col)
-{ 
-#if 0
-	row= fSelectedRow; 
-	col= fSelectedCol; 
-#else
-	row= fSelrect.bottom;
-	col= fSelrect.right;
-#endif
-}
-	
 
 
 #ifdef WIN_MOTIF
@@ -687,8 +489,8 @@ extern Window       Nlm_currentXWindow;
 extern GC           Nlm_currentXGC;
 extern Nlm_Uint4    Nlm_XbackColor;
 extern Nlm_Uint4    Nlm_XforeColor;
-extern Nlm_Int2     Nlm_XOffset;
-extern Nlm_Int2     Nlm_YOffset;
+extern Nlm_IntD     Nlm_XOffset;
+extern Nlm_IntD     Nlm_YOffset;
 extern Nlm_RegioN   Nlm_clpRgn;
 
 #endif
@@ -752,51 +554,81 @@ void DTableView::InvertRect( Nlm_RecT& r)
 	if (w) Nlm_UseWindow (w); 
 }
 
-void DTableView::InvertSelection()
-{	
-	Nlm_RecT r, r2;
-	if (!Nlm_EmptyRect(&fSelrect)) {
-		r2= fSelrect;
-		//r2.bottom--;
-		//r2.right--;
-		GetCellRect( r2, r);
-		}
-	else if (fSelectedRow>=0 && fSelectedCol>=0) 
-		GetCellRect( fSelectedRow, fSelectedCol, r);
-	else if (fSelectedRow>=0) 
-		GetRowRect( fSelectedRow, r);
-	else if (fSelectedCol>=0) 
-		GetRowRect( fSelectedCol, r);
-  else
-	  return;
-	InvertRect( r);
-}
 
 
-
-void DTableView::DoubleClickAt(short row, short col)
+void DTableView::GetPixRgn(Nlm_RecT cellrect, Nlm_RegioN cellrgn, Nlm_RegioN pixrgn)
 {
-}
-
-
-void DTableView::SingleClickAt(short row, short col)
-{
+	long i;
 	Nlm_PoinT pt;
-	pt.x= col; pt.y= row;
-	if (Nlm_PtInRect( pt, &fSelrect) && !gKeys->shift()) {
-		SetEmptySelection( true);
+	Nlm_RecT  r;
+	
+	r= fRect;
+	Nlm_RegioN ptrgn= Nlm_CreateRgn();
+	if (fHeights) for (i= fTop; i<cellrect.top; i++) r.top += fHeights[i];
+	else r.top += (cellrect.top-fTop) * fItemHeight;
+	
+	for (long irow= cellrect.top; irow<=cellrect.bottom; irow++) {
+		r.left= fRect.left;
+		if (fWidths) for (i= fLeft; i<cellrect.left; i++) r.left += fWidths[i];
+		else r.left += (cellrect.left-fLeft) * fItemWidth;
+		if (fHeights) r.bottom= r.top + fHeights[irow];
+		else r.bottom = r.top + fItemHeight;
+		
+		for (long jcol= cellrect.left; jcol<=cellrect.right; jcol++) {
+			pt.y= irow; pt.x= jcol;
+			if (fWidths) r.right= r.left + fWidths[jcol];
+			else r.right= r.left + fItemWidth;
+			if (Nlm_PtInRgn( pt, cellrgn)) {
+				Nlm_LoadRectRgn( ptrgn, r.left, r.top, r.right, r.bottom);
+				Nlm_UnionRgn( pixrgn, ptrgn, pixrgn);
+				}
+			r.left= r.right;
+			}
+		r.top= r.bottom;
 		}
+	ptrgn= Nlm_DestroyRgn(ptrgn);
+}
+
+
+void DTableView::InvertRgn( Nlm_RegioN pixrgn)
+{	
+	Nlm_WindoW w= Nlm_SavePort( fNlmObject);
+#ifdef WIN_MOTIF
+	this->Select();
+#endif
+  Nlm_InvertRgn(pixrgn);
+	if (w) Nlm_UseWindow (w); 
+}
+
+
+
+
+
+void DTableView::DoubleClickAt(long row, long col)
+{
+}
+
+
+void DTableView::SingleClickAt(long row, long col)
+{
+	if ( fSelection->IsSelected(row, col) && !gKeys->shift()) 
+		fSelection->SetEmptySelection( true);
 	else {
-		SelectCells(  row, col, gKeys->shift(), kHighlight, kSelect);
+		long ext;
+		if (gKeys->shift()) ext= DTabSelection::kExtendSingle;
+		else if (gKeys->command()) ext= DTabSelection::kExtendMulti;
+		else ext= DTabSelection::kDontExtend;
+		fSelection->SelectCells(  row, col, ext, 
+					DTabSelection::kHighlight, DTabSelection::kSelect);
 		}
 }
 			
 
-void DTableView::PointToCell(Nlm_PoinT mouse, short& row, short& col)
+void DTableView::PointToCell(Nlm_PoinT mouse, long& row, long& col)
 {
 	if (fHeights) {
 		row= fTop - 1;
-		short yrow= fRect.top;
+		long yrow= fRect.top;
 		do {
 			row++;
 			if (row<=fMaxRows) yrow += fHeights[row];
@@ -808,7 +640,7 @@ void DTableView::PointToCell(Nlm_PoinT mouse, short& row, short& col)
 
 	if (fWidths) {
 		col= fLeft - 1;
-		short xcol= fRect.left;
+		long xcol= fRect.left;
 		do {
 			col++;
 			if (col<=fMaxCols) xcol += fWidths[col];
@@ -823,7 +655,7 @@ void DTableView::PointToCell(Nlm_PoinT mouse, short& row, short& col)
 
 void DTableView::Click(Nlm_PoinT mouse)
 {
-	short row, col;
+	long row, col;
 	
 	//if (gLastCommand) gLastCommand->Commit();	//?? prevent bombs from prev. cmds ?
 	//if (fCurrentTracker) fCurrentTracker->Reset();
@@ -862,9 +694,9 @@ void DTableView::TrackMouse( short aTrackPhase,
 			if (gKeys->shift()) {  
 				Nlm_PoinT pt;
 				Nlm_RecT  pixr;
-				short	diff1, diff2;
+				long	diff1, diff2;
 				
-				GetCellRect( fSelrect, pixr);
+				GetCellRect( fSelection->GetSelRect(), pixr);
 				diff1= anchorPoint.x - pixr.left;
 				diff2= anchorPoint.x - pixr.right;
 				if (abs(diff1) > abs(diff2)) pt.x= pixr.left; 
@@ -887,7 +719,7 @@ void DTableView::TrackMouse( short aTrackPhase,
 			
 		case DTracker::trackEnd:
 			{
-			short row, col;
+			long row, col;
 			Boolean moved= gKeys->shift() // extend
 					|| abs(anchorPoint.x - nextPoint.x) > 2
 					|| abs(anchorPoint.y - nextPoint.y) > 2;
@@ -926,21 +758,28 @@ void DTableView::TrackFeedback( short aTrackPhase,
 
 
 
-void DTableView::DrawCell(Nlm_RecT r, short row, short col)
+void DTableView::DrawCell(Nlm_RecT r, long row, long col)
 {
 	char	snum[80];
 	sprintf(snum,"r%d,c%d", row, col);
 	Nlm_DrawString( &r, snum, 'c', false);
 }
 	
-void DTableView::DrawRow(Nlm_RecT r, short row)
+Boolean gHasSel = false;
+
+void DTableView::DrawRow(Nlm_RecT r, long row)
 {
-	short col = fLeft; 
+	long col = fLeft; 
 	if (fWidths && col <= fMaxCols) r.right= r.left + fWidths[col];
 	else r.right= r.left + fItemWidth;
 	while (r.left < fRect.right && col < fMaxCols) {
-		if (Nlm_RectInRgn (&r, Nlm_updateRgn))  
+		if (Nlm_RectInRgn (&r, Nlm_updateRgn))  {
 			DrawCell( r, row, col);
+#if 1
+ 			if (gHasSel && fSelection->IsSelected(row, col) ) 
+ 				InvertRect( r);
+#endif
+			}
 		if (fWidths) {
 			Nlm_OffsetRect( &r, fWidths[col], 0);
 			r.right= r.left + fWidths[col+1];
@@ -953,7 +792,7 @@ void DTableView::DrawRow(Nlm_RecT r, short row)
 }
 
 
-void DTableView::GetPageCount(Nlm_RecT pagerect, short& rowpages, short& colpages)
+void DTableView::GetPageCount(Nlm_RecT pagerect, long& rowpages, long& colpages)
 {
 	long left, top, row, col; 	
 	rowpages= colpages= 1;
@@ -981,29 +820,38 @@ void DTableView::Draw()
 {
 	Nlm_RecT	 	r2, r = fRect;
 	Nlm_PoinT  	pt;
-	short 			row = fTop; 
+	long 			row = fTop; 
 	Boolean			hasSel;
+	Nlm_RegioN saveUpdrgn = NULL;
 	
 	if (fHeights) r.bottom= r.top + fHeights[row];
 	else r.bottom= r.top + fItemHeight;
 	Nlm_SelectFont(fFont); //?? here
-	hasSel= !Nlm_EmptyRect(&fSelrect);
+	hasSel= fSelection->IsSelected();
+	gHasSel= hasSel;
 	if (hasSel) {
-		pt.x= fSelrect.left;
-		r2= fSelrect;
+#if 0
+		saveUpdrgn= Nlm_CreateRgn();
+		Nlm_UnionRgn(saveUpdrgn,Nlm_updateRgn, saveUpdrgn);
+#endif
+#if 0
+		pt.x= fSelection->GetSelectedCol();
+		r2= fSelection->GetSelRect();
 		GetCellRect( r2, r2);
+#endif		
 		}
-		
 	while (r.top < fRect.bottom && row < fMaxRows) {
 		if (Nlm_RectInRgn (&r, Nlm_updateRgn)) { 
 			DrawRow( r, row);
  			pt.y= row;
- 			if (hasSel && Nlm_PtInRect( pt, &fSelrect)) {
+#if 0
+ 			if (hasSel && fSelection->IsSelected(pt.y, pt.x) ) {
  				Nlm_RecT ir= r;
  				ir.left= r2.left;
  				ir.right= r2.right;
 				InvertRect( ir);
  				}
+#endif
   		}
 		if (fHeights) {
 			Nlm_OffsetRect( &r, 0, fHeights[row]);
@@ -1013,6 +861,12 @@ void DTableView::Draw()
 			Nlm_OffsetRect( &r, 0, fItemHeight);
 		row++;
 		}
+#if 0
+	if (hasSel) {
+		fSelection->InvertSelection(saveUpdrgn); // ! only do redrawn section !!
+		saveUpdrgn= Nlm_DestroyRgn(saveUpdrgn);
+		}
+#endif
 }
 		
 
@@ -1037,7 +891,7 @@ void DTableView::Print()
   Nlm_WindoW    w;
   Boolean   		goOn, newPage, widerThanPage;
   Nlm_RecT    	pager, r, saverect;
-	short 				row = 0, rowpages, colpages; 
+	long  				row = 0, rowpages, colpages; 
 	long					saveleft;
 	
 	// problems: assumes each row < page height

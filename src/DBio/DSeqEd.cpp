@@ -395,186 +395,10 @@ Boolean DSeqedView::IsMyAction(DTaskMaster* action)
 			return DDialogText::IsMyAction(action);
 		}
 		
-#if 0			
- if (action->Id() == kColorButHit) {
-		fUseColor= ((DView*)action)->GetStatus();
-		fAlnView->Invalidate();
-  	return true;
-  	}
-	else 
-#endif
-		return DoMenuTask(action->Id(), NULL);
+	return DoMenuTask(action->Id(), NULL);
 }
 			
 
-
-
-#if FIX_LATER
-pascal void TSeqedView::DoMenuCommand(aCommandNumber:CommandNumber); // override 
-VAR
-		TSeqTranslateCmd		aSeqTranslateCmd;
-		TSeqReverseCmd		aSeqReverseCmd;
-		TSeqRevComplCmd		aSeqRevComplCmd;
-		TSeqComplementCmd		aSeqComplementCmd;
-		TSeqCompressCmd		aSeqCompressCmd;
-		TSeqDna2RnaCmd		aSeqDna2RnaCmd;
-		TSeqRna2DnaCmd		aSeqRna2DnaCmd;
-		TSeqLockIndelsCmd		aSeqLockIndelsCmd;
-		TSeqUnlockIndelsCmd		aSeqUnlockIndelsCmd;
-	
-	pascal void MakeSeqPrint(Boolean doREMap)
-	VAR
-			TREMapDocument		aREMapDoc;
-			aSeqPrDoc	: TSeqPrintDocument;
-			longint		firstBase, nBases;
-	{
-		fSequence->UpdateFlds(); //!? need for New seq...
-		firstBase= this.(*fHTE)->selStart; 
-		nBases= this.(*fHTE)->selEnd - firstBase;  
-		if (doREMap) {
-			New(aREMapDoc);
-			FailNIL(aREMapDoc);
-			aREMapDoc->IREMapDocument(kPrintClipType, fDocument, fSequence, firstBase, nbases);
-			gSeqAppApplication->OpenNewDocument(aREMapDoc);  
-			}		else {
-			New(aSeqPrDoc);
-			FailNIL(aSeqPrDoc);
-			aSeqPrDoc->ISeqPrintDocument(kPrintClipType, fDocument, fSequence, firstBase, nbases);
-			gSeqAppApplication->OpenNewDocument(aSeqPrDoc);  
-			}
-	}
-	
-	pascal void GetSeqList( TSeqList VAR aSeqList)
-	longint		VAR firstBase, nBases;
-	{
-		fSequence->UpdateFlds(); //!? need for New seq...
-		firstBase= (*fHTE)->selStart;
-		nBases= (*fHTE)->selEnd - firstBase;
-		fSequence->SetSelection( firstBase, nBases);
-		aSeqList= TSeqList(NewList); 
-		FailNIL( aSeqList);
-		aSeqList->InsertLast(fSequence);
-	}
-
-	pascal void	DoSeqChangeCommand( TSeqChangeCmd aCommand)
-	VAR		aSeqList: TSeqList; 
-	{
-		FailNIL(aCommand);
-		GetSeqList( aSeqList);
-		aCommand->ISeqChangeCmd( TAlnDoc(fDocument), this, aSeqList); 
-		PostCommand( aCommand);
-	}
-
-{
-	switch (aCommandNumber) {
-		cTranslateSeq: {
-				New(aSeqTranslateCmd);
-				DoSeqChangeCommand(aSeqTranslateCmd);
-				}
-		cReverseSeq: {
-				New(aSeqReverseCmd);
-				DoSeqChangeCommand(aSeqReverseCmd);
-				}
-		cComplementSeq: {
-				New(aSeqComplementCmd);
-				DoSeqChangeCommand(aSeqComplementCmd);
-				}
-		cRevComplement: {
-				New(aSeqRevComplCmd);
-				DoSeqChangeCommand(aSeqRevComplCmd);
-				}
-		cCompress: {
-				New(aSeqCompressCmd);
-				DoSeqChangeCommand(aSeqCompressCmd);
-				}
-		cLockIndels: {
-				New(aSeqLockIndelsCmd);
-				DoSeqChangeCommand(aSeqLockIndelsCmd);
-				}
-		cUnlockIndels: {
-				New(aSeqUnlockIndelsCmd);
-				DoSeqChangeCommand(aSeqUnlockIndelsCmd);
-				}
-		cDna2Rna: {
-				New(aSeqDna2RnaCmd);
-				DoSeqChangeCommand(aSeqDna2RnaCmd);
-				}
-		cRna2Dna: {
-				New(aSeqRna2DnaCmd);
-				DoSeqChangeCommand(aSeqRna2DnaCmd);
-				}
-					
-		cPrettyPrint: MakeSeqPrint( FALSE);
-		cRestrictMap: MakeSeqPrint( TRUE);
-		  
-		default:
-			inherited::DoMenuCommand(aCommandNumber);
-		}
-
-	UpdateCtls(FALSE);
-}
-
-pascal void TSeqedView::DoSetupMenus(void) // override 
-VAR  haveSel: boolean;
-{
-  inherited::DoSetupMenus();	
-	
-	//haveSel= ((*fHTE)->selEnd - (*fHTE)->selStart) > 0; 
-	haveSel= TRUE; 
-
-	Enable( cReverseSeq, haveSel); 
-	Enable( cComplementSeq, haveSel); 
-	Enable( cRevComplement, haveSel); 
-	Enable( cCompress, haveSel); 
-	Enable( cLockIndels, haveSel); 
-	Enable( cUnlockIndels, haveSel); 
-	Enable( cDna2Rna, haveSel); 
-	Enable( cRna2Dna, haveSel); 
-	Enable( cTranslateSeq, haveSel); 
-	
-	Enable( cPrettyPrint, TRUE); 
-	Enable( cRestrictMap, TRUE); 
-}
-
-
-pascal void TSeqedView::DoMouseCommand(VPoint VAR theMouse, TToolboxEvent event,
-											   Point hysteresis) // override 
-{
-	inherited::DoMouseCommand(theMouse,event,hysteresis);
-	UpdateCtls(FALSE);
-}
-
-
- //keep cursor at arrow when teview is not selected (inactive "edittext")
-pascal void TSeqedView::DoSetCursor(VPoint localPoint, RgnHandle cursorRegion)	// override 
-{
-	if GetWindow->fTarget == this then 
-		inherited::DoSetCursor(localPoint, cursorRegion);
-}
-
-
-pascal TSeqedView::HandleMouseDown( VPoint theMouse, TToolboxEvent event, 
-							 hysteresis: Point):Boolean; // override 
-//TView method -- note this is Generic for any TEView...
-{		
-	if (GetWindow->fTarget != this) { 
-		/*---
-		TDialogView		VAR aDlog; 
-		aDlog = TDialogView(GetDialogView);   
-		if ((aDlog!=NULL)) if (!aDlog->DeselectCurrentEditText()) ;
-		---*/
-		/*---
-		 Else if fTarget == otherTEView)
-			otherTEView->InstallSelection(TRUE,FALSE);
-		-----*/
-		// gApplication->SetTarget(this);
-		HandleMouseDown= BecomeTarget;   //! turn on our TEview event handler
-		}	else
-  	HandleMouseDown= inherited::HandleMouseDown(theMouse,event,hysteresis);
-}
-
-
-#endif // FIX_LATER
 
 
 
@@ -901,7 +725,7 @@ public:
 
 	DPopupMenu  * fSeqFontMenu, 
 							* fSeqStyleMenu;
-	DSwitchBox	* fSeqSizeSw, * fCommonPctSw;
+	DSwitchBox	* fSeqSizeSw, * fCommonPctSw, * fMinORFSw;
 	Boolean	 		fNeedSave;
 	short				fOldStyle;
 	DCluster	* fDistCor, * fMatKind;
@@ -936,6 +760,7 @@ enum FonStyles {
 DSeqDocPrefs::DSeqDocPrefs() :
 	DWindow( 0, NULL, DWindow::fixed, -10, -10, -50, -20, "SeqDoc prefs", kDontFreeOnClose),
 	fSeqFontMenu(NULL), fSeqStyleMenu(NULL), fSeqSizeSw(NULL), fCommonPctSw(NULL),
+	fMinORFSw(NULL),
 	fDistCor(NULL), fMatKind(NULL),
 	fOldStyle(-1), fNeedSave(false)
 {	
@@ -965,6 +790,7 @@ void DSeqDocPrefs::InitGlobals()
 	DSeqFile::gWriteMasks= gApplication->GetPrefVal( "gWriteMasks", "seqdoc", "1");
 	DSeqDoc::fgStartDoc	= gApplication->GetPrefVal( "fgStartDoc", "seqdoc", "1");
 	DSeqList::gMinCommonPercent= gApplication->GetPrefVal( "gMinCommonPercent", "seqdoc", "70");
+	DSeqList::gMinORFsize= gApplication->GetPrefVal( "gMinORFsize", "seqdoc", "20");
 
 	DSeqDoc::fgDistCor	= gApplication->GetPrefVal( "fgDistCor", "seqdoc", "0");
 	DSeqDoc::fgMatKind	= gApplication->GetPrefVal( "fgMatKind", "seqdoc", "0");
@@ -1011,6 +837,7 @@ void DSeqDocPrefs::SaveGlobals()
 	gApplication->SetPref(  DSeqDoc::fgDistCor, "fgDistCor", "seqdoc");
 	gApplication->SetPref(  DSeqDoc::fgMatKind, "fgMatKind", "seqdoc");
 	gApplication->SetPref(  DSeqList::gMinCommonPercent, "gMinCommonPercent", "seqdoc");
+	gApplication->SetPref(  DSeqList::gMinORFsize, "gMinORFsize", "seqdoc");
 
 }
 
@@ -1108,6 +935,12 @@ void DSeqDocPrefs::Initialize()
 	fCommonPctSw->SetValues(DSeqList::gMinCommonPercent,100);
 	super->NextSubviewBelowLeft();
 	
+	new DPrompt( 0, super, "Minimum ORF size", 0, 0, Nlm_programFont);	 		
+	super->NextSubviewToRight();
+	fMinORFSw = new DSwitchBox(0, super, true, true);
+	fMinORFSw->SetValues(DSeqList::gMinORFsize,200);
+	super->NextSubviewBelowLeft();
+
 	//ck= new DCheckBox(cColored, super, "Colored bases");
 	//ck->SetStatus(gColored);
 
@@ -1140,7 +973,7 @@ void DSeqDocPrefs::Initialize()
 
 void DSeqDocPrefs::OkayAction() 
 { 
-	short	 		aSize, aStyle, aCommon;
+	short	 		aSize, aStyle, aval;
 	char			name[256];
 	DMenu 	*	aFontMenu, * aStyleMenu;
 	Nlm_FonT	aFont;
@@ -1154,9 +987,15 @@ void DSeqDocPrefs::OkayAction()
 				aStyleMenu= fSeqStyleMenu; 
 				aSize= fSeqSizeSw->GetValue();// aSize= gNameFontSize;
 				 
-				aCommon= fCommonPctSw->GetValue();
-				if (aCommon != DSeqList::gMinCommonPercent) {				
-					DSeqList::gMinCommonPercent= aCommon;
+				aval= fCommonPctSw->GetValue();
+				if (aval != DSeqList::gMinCommonPercent) {				
+					DSeqList::gMinCommonPercent= aval;
+					fNeedSave= true;
+					}
+					
+				aval= fMinORFSw->GetValue();
+				if (aval != DSeqList::gMinORFsize) {				
+					DSeqList::gMinORFsize= aval;
 					fNeedSave= true;
 					}
 		  	break;

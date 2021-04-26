@@ -197,7 +197,7 @@ DView* DSendMailDialog::InstallMessage(DView* super, char* msgStr)
 		return fMsg;
 	else {
 		DDialogScrollText* emsg = new DDialogScrollText(cMsg, super,
-												 		25, 6, Nlm_programFont, true/*kDoWrap*/);
+												 		50, 6, Nlm_programFont, true/*kDoWrap*/);
 		SetEditText(emsg); 
 		if (msgStr) emsg->SetTitle(msgStr);
 		fMsg= emsg;

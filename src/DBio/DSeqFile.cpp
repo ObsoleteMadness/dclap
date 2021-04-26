@@ -9,6 +9,8 @@
 #include "DSeqFile.h"
 #include "DSeqList.h"
 #include "ureadseq.h"
+#include "DMegaSequence.h"
+#include "DSequence.h"
 
 
 
@@ -28,6 +30,37 @@ void DSeqFile::DontSaveMasks()
 void DSeqFile::DoSaveMasks()
 {
 	gWriteMasks= gSaveMasks;
+}
+
+
+Boolean dupBases = false; // !?
+
+//static
+DSequence* DSeqFile::MakeSequence(char* name, char*& bases, char* info, long modtime)
+{
+	char *b;
+	long nbases;
+	Boolean ismega;
+	DSequence* aSeq;
+	
+	for (b= bases, nbases=0; 
+			(b) && (*b) && nbases<DMegaSequence::kMegaPartSize; 
+			b++, nbases++)
+				;
+	ismega= nbases>=DMegaSequence::kMegaPartSize; 
+	 
+	if (ismega) {
+		aSeq= new DMegaSequence();
+		} 
+	else {
+		aSeq= new DSequence();
+		}
+	aSeq->SetName(name);
+	aSeq->SetBases(bases, dupBases);
+	aSeq->SetInfo(info);
+ 	if (modtime!=0) aSeq->SetTime( (unsigned long)modtime);
+	aSeq->UpdateFlds(); 	 
+	return aSeq;
 }
 
 
@@ -72,6 +105,7 @@ Local const  struct formatTable {
   };
 #endif
 
+enum { kMaxFormatNames = 18 }; // != kMaxFormat ??
 static char *gSeqFileFormats[] = { //DSeqFile::kMaxFormat+1
 	    "IG|Stanford",
 	    "GenBank|GB",
@@ -90,12 +124,13 @@ static char *gSeqFileFormats[] = { //DSeqFile::kMaxFormat+1
 	    "MSF",
 	    "ASN.1",
 	    "PAUP|NEXUS",
-	    "Pretty [out only]",
+	    "Pretty [out only]",// # 18
+	    //"AutoSeq [in only]", 
 	    0};
 
 const char* DSeqFile::FormatName(short index)
 { 
-	if (index<1 || index>18) return "";
+	if (index<1 || index>kMaxFormatNames) return "";
 	else return gSeqFileFormats[index-1];
 }
 
@@ -110,14 +145,8 @@ short  DSeqFile::FormatFromName(const char* name)
 		form2= StrChr(form1,'|'); 
 		if (form2) { len1= form2 - form1; form2++; }
 		else len1= StrLen( form1);
-#if 1
 		if (StrNICmp(name, form1,len1) == 0) return i+1;
 		else if (form2 && StrICmp(name, form2) == 0) return i+1;
-#else
-			// problem w/ Phylip matching Phylip3.2 not Phylip
-		if (StrNICmp(name, form1, namelen) == 0) return i+1;
-		else if (form2 && StrNICmp(name, form2, namelen) == 0) return i+1;
-#endif
 		}
 	return kUnknown;
 }
@@ -125,24 +154,12 @@ short  DSeqFile::FormatFromName(const char* name)
 
 char* DSeqFile::FixSeqID( char* s, short leftmargin)
 {
-#if 1
 	register char * cp, * ep;
 	for (cp= s; *cp && isspace(*cp); cp++) ;
 	for (ep= cp; *ep && !isspace(*ep); ep++) ;
 	if (ep>cp && ep[-1] == ',') ep--; // fix for fasta "name, #bases, # checksum"
 	if (*ep) *ep= 0;
 	return cp;
-#else
-	//s= StrDup(s);
-  short len = StrLen(s);
-	while (s[--len] == ' ' &&  len>0) ;
-	s[++len]= 0;
-	short i = Min( len-1, leftmargin);
-	while (s[i] == ' ' && i<len) i++;
-	if (i>0) s += i; //MemMove(s, s+i, len-i+1); //s= s+i;
-	//if (StrLen(s) > kNameWidth) s[kNameWidth]= 0;
-	return s;
-#endif
 }
 
 short DSeqFile::SeqFileFormatWrapper( DFile* aFile) 
@@ -436,7 +453,7 @@ void	DSeqFile::WriteSeqTrailer( DFile* aFile,
 void DSeqFile::WriteSeqWrapper( DFile* aFile,
 									char *seq, long seqlen, short outform, char *seqid)
 { 
-	if (!aFile->IsOpen()) aFile->Open("a");
+	if (!aFile->IsOpen())  aFile->Open("a"); 
 	seqid= StrDup(seqid);
 	char* cp= FixSeqID(seqid, 0);
 	gLinesPerSeqWritten= writeSeq( aFile->fFile, seq, seqlen, outform, cp);
@@ -448,7 +465,8 @@ void DSeqFile::WriteMaskWrapper( DFile* aFile,
 									char *mask, long seqlen, short outform, char *seqid)
 { 
 	char maskid[128];
-	if (!aFile->IsOpen()) aFile->Open("a"); 
+	
+	if (!aFile->IsOpen())  aFile->Open("a"); 
 	seqid= StrDup(seqid);
 	char* cp= FixSeqID(seqid, 0);
 	StrNCpy( maskid, cp, sizeof(maskid)-5);

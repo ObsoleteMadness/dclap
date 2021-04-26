@@ -151,9 +151,11 @@ int          Nlm_currentId;
 HWND         Nlm_currentHwndCtl;
 UINT         Nlm_currentCode;
 int          Nlm_currentPos;
-#ifdef DCLAP 
+#if  defined(DCLAP) 
 /* for TranslateAccelerator == MenuKey */
 HWND         Nlm_menuHwnd = NULL;
+#endif
+#if  defined(DCLAP) && !defined(WIN16) 
 extern HACCEL	Nlm_hAccel;
 #endif
 #endif
@@ -284,8 +286,13 @@ static Cursor        watch;
 static XFontStruct   *font;
 static XtIntervalId  windowTimer;
 static GC            firstGC;
+#ifdef DCLAP
+ int           statargc;
+ char          **statargv;
+#else
 static int           statargc;
 static char          **statargv;
+#endif
 #endif
 
 static void Nlm_LoadWindowData (Nlm_WindoW w, Nlm_WindowTool hdl,
@@ -433,7 +440,7 @@ static Nlm_MainTool Nlm_GetWindowMain (Nlm_WindoW w)
 #ifdef DCLAP
 extern void Nlm_SetAppWindow( Nlm_WindoW w)
 {
-#ifdef MSWIN
+#ifdef WIN_MSWIN
   Nlm_menuHwnd= Nlm_GetWindowPtr(w);
 #endif
 }
@@ -1771,10 +1778,12 @@ static void Nlm_SelectWindow (Nlm_GraphiC w, Nlm_Boolean savePort)
 #endif
 #ifdef WIN_MSWIN
       BringWindowToTop (wptr);
+#ifndef DCLAP
 /* M.I */
       if( IsIconic( wptr ) )
         ShowWindow( wptr, SW_RESTORE );  /* de-Iconize window */
 /* M.I */
+#endif
       Nlm_currentHDC = Nlm_GetWindowPort ((Nlm_WindoW) w);
       Nlm_currentHWnd = wptr;
 #endif
@@ -3043,7 +3052,8 @@ extern void Nlm_WatchCursor (void)
 
 
 #ifdef DCLAP
-Nlm_Char     gProgramPath[PATH_MAX];  
+Nlm_Char    gProgramPath[PATH_MAX];  
+Nlm_Char		gProgramName[PATH_MAX];
 #endif
 
 extern void Nlm_ProgramPath (Nlm_CharPtr buf, Nlm_sizeT maxsize)
@@ -3065,7 +3075,7 @@ extern void Nlm_ProgramPath (Nlm_CharPtr buf, Nlm_sizeT maxsize)
 #ifdef WIN_MOTIF
   Nlm_Char     path [PATH_MAX];
   Nlm_CharPtr  pth;
-  Nlm_CharPtr  ptr;
+  Nlm_CharPtr  ptr, progname;
 #endif
 
   if (buf != NULL && maxsize > 0) {
@@ -3116,8 +3126,19 @@ extern void Nlm_ProgramPath (Nlm_CharPtr buf, Nlm_sizeT maxsize)
 #endif
 #ifdef OS_UNIX
     ptr = statargv [0];
+#ifdef DCLAP
+		if (*gProgramName) progname= gProgramName;
+		else progname= NULL;
+#endif
     if (ptr [0] == DIRDELIMCHR) {
       Nlm_StringNCpy (buf, statargv [0], maxsize);
+#ifdef DCLAP
+			if (!progname) {
+				progname= ptr + Nlm_StrLen(ptr);
+				do { --progname; }
+				while (progname > ptr && progname[-1] != DIRDELIMCHR);
+				}
+#endif
 	    } 
 
 		else if (getcwd (path, sizeof (path)) != NULL) {
@@ -3142,23 +3163,35 @@ extern void Nlm_ProgramPath (Nlm_CharPtr buf, Nlm_sizeT maxsize)
           ptr++;
         }
       }
-#ifdef DCLAP	
-			{	
-			char * apath, envname[64];
-      Nlm_StringNCpy(envname, ptr, 64);
-			Nlm_StringUpper(envname);
-      Nlm_StringNCat(envname,"HOME", 64);
-			apath= getenv( envname);
-			if (apath) Nlm_StringNCpy( path, apath, sizeof(path));
-			}
+#ifdef DCLAP
+			if (!progname) progname= ptr;
 #endif
-
       FileBuildPath (path, NULL, ptr);
       Nlm_StringNCpy (buf, path, maxsize);
     } else {
       Nlm_StringNCpy (buf, statargv [0], maxsize);
-    }
+#ifdef DCLAP
+			if (!progname) progname= ptr;
 #endif
+    }
+
+#ifdef DCLAP	
+			{	
+			char * apath, envname[64];
+			if (!progname) progname= "DCLAP";
+      Nlm_StringNCpy(envname, progname, 64);
+			Nlm_StringUpper(envname);
+      Nlm_StringNCat(envname,"HOME", 64);
+			apath= getenv( envname);
+			if (apath) {
+				Nlm_StringNCpy( path, apath, maxsize);
+      	FileBuildPath (path, NULL, ptr);
+				Nlm_StringNCpy( buf, path, maxsize);
+				}
+			}
+#endif
+#endif
+
 #ifdef OS_VMS
     if (statargv != NULL && statargv [0] != NULL) {
       Nlm_StringNCpy (buf, statargv [0], maxsize);
@@ -3670,20 +3703,6 @@ static Nlm_Boolean Nlm_SetupWindows (void)
   timerAction = NULL;
   keyAction = NULL;
 
-#ifdef NOT_NOW_DCLAP
-	{
-  Widget toplevel;
-  char* appclass= "Vibrant";
-  Nlm_appContext= NULL;
-  toplevel = XtAppInitialize( &Nlm_appContext, appclass, 
-						 NULL, 0, /*XrmOptionDescList options, XtNumber (options),*/
-             &statargc, statargv, 
-						 colorXresources, 
-             NULL, 0); /*ArgList_override_defaults, argnum);*/
-  if (Nlm_appContext == NULL) return FALSE;
-  }
-
-#else
   XtToolkitInitialize ();
   Nlm_appContext = XtCreateApplicationContext ();
   if (Nlm_appContext == NULL) {
@@ -3691,7 +3710,6 @@ static Nlm_Boolean Nlm_SetupWindows (void)
   }
 #ifdef DCLAP
   XtAppSetFallbackResources( Nlm_appContext, colorXresources);
-#endif
 #endif
 
   Nlm_currentXDisplay = XOpenDisplay (NULL);
@@ -4345,16 +4363,15 @@ extern void Nlm_ProcessAnEvent (void)
 #ifdef WIN_MSWIN
   if (PeekMessage (&Nlm_currentMssg, NULL, 0, 0, PM_NOREMOVE)) {
     if (GetMessage (&Nlm_currentMssg, NULL, 0, 0)) {
-#ifdef DCLAP
+#if  defined(DCLAP) && !defined(WIN16) 
 		if (!(Nlm_hAccel 
-      && TranslateAccelerator( Nlm_menuHwnd, Nlm_hAccel, &Nlm_currentMssg))) {
+      && TranslateAccelerator( Nlm_menuHwnd, Nlm_hAccel, &Nlm_currentMssg)))  
 #endif
+			{
       TranslateMessage (&Nlm_currentMssg);
       Nlm_ProcessKeyPress (&Nlm_currentMssg);
       DispatchMessage (&Nlm_currentMssg);
-#ifdef DCLAP
 			}
-#endif
     }
   }
 #endif
@@ -4425,17 +4442,15 @@ extern void Nlm_ProcessEventOrIdle (void)
     }
   } else if (PeekMessage (&Nlm_currentMssg, NULL, 0, 0, PM_NOREMOVE)) {
     if (GetMessage (&Nlm_currentMssg, NULL, 0, 0)) {
-#ifdef DCLAP
+#if  defined(DCLAP) && !defined(WIN16) 
     /* if (!(Nlm_hAccel */
-    if (!(TranslateAccelerator( Nlm_menuHwnd, Nlm_hAccel, &Nlm_currentMssg))) 
-      {
+    if (!(TranslateAccelerator( Nlm_menuHwnd, Nlm_hAccel, &Nlm_currentMssg)))      {
 #endif
+			{
       TranslateMessage (&Nlm_currentMssg);
       Nlm_ProcessKeyPress (&Nlm_currentMssg);
       DispatchMessage (&Nlm_currentMssg);
-#ifdef DCLAP
 			}
-#endif
     }
   }
 #endif
@@ -4474,16 +4489,15 @@ extern void Nlm_ProcessExternalEvent (void)
     }
   } else if (PeekMessage (&Nlm_currentMssg, NULL, 0, 0, PM_NOREMOVE)) {
     if (GetMessage (&Nlm_currentMssg, NULL, 0, 0)) {
-#ifdef DCLAP
+#if  defined(DCLAP) && !defined(WIN16) 
 		if (!(Nlm_hAccel 
-      && TranslateAccelerator( Nlm_menuHwnd, Nlm_hAccel, &Nlm_currentMssg))) {
+      && TranslateAccelerator( Nlm_menuHwnd, Nlm_hAccel, &Nlm_currentMssg))) 
 #endif
+			{
       TranslateMessage (&Nlm_currentMssg);
       Nlm_ProcessKeyPress (&Nlm_currentMssg);
       DispatchMessage (&Nlm_currentMssg);
-#ifdef DCLAP
 			}
-#endif
     }
   }
 #endif
@@ -4527,17 +4541,16 @@ extern void Nlm_ProcessEvents (void)
       }
     }
     if (GetMessage (&Nlm_currentMssg, NULL, 0, 0)) {
-#ifdef DCLAP
+#if  defined(DCLAP) && !defined(WIN16) 
 		if (!(Nlm_hAccel 
-      && TranslateAccelerator( Nlm_menuHwnd, Nlm_hAccel, &Nlm_currentMssg))) {
+      && TranslateAccelerator( Nlm_menuHwnd, Nlm_hAccel, &Nlm_currentMssg)))
 #endif
+		   {
       TranslateMessage (&Nlm_currentMssg);
       Nlm_ProcessKeyPress (&Nlm_currentMssg);
       DispatchMessage (&Nlm_currentMssg);
       Nlm_RemoveDyingWindows ();
-#ifdef DCLAP
 			}
-#endif
     }
   }
 #endif
@@ -5026,6 +5039,7 @@ extern void Nlm_InitWindows (void)
 
 #ifdef DCLAP
 	gProgramPath[0]= 0;
+	gProgramName[0]= 0;
 #endif
 
   documentProcs = &(gphprcsptr [0]);

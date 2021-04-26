@@ -1,0 +1,145 @@
+// DAsmSequence.cp 
+// d.g.gilbert
+
+
+
+#include "DAsmSequence.h"
+#include "DSeqFile.h"
+#include "DSeqList.h"
+#include "DREnzyme.h"
+#include <ncbi.h>
+#include <dgg.h>
+#include <DUtil.h>
+#include <DFile.h>
+#include "ureadseq.h"
+ 
+
+ 
+// same in DSequence !?
+Local char* gAminos		=	"ABCDEFGHIKLMNPQRSTVWXYZ*_.-~?";
+Local char* gIubbase	= "ACGTUMRWSYKVHDBXN_.-*~?"; 	//did include ".", for what?
+Local char* gPrimenuc	= "ACGTU_.-*~?";
+Local char* protonly	= "EFIPQZ";
+Local char* stdsymbols= "_.-*?";
+Local char* allsymbols= "_.-*?!=/**/[]()!&#$%^&=+;:/|`~'\"\\";
+Local char* seqsymbols= allsymbols;
+
+
+
+
+
+
+// DAsmSequence -----------------
+
+
+DAsmSequence::DAsmSequence()
+{
+	for (short t=kA; t<maxTrace; t++) { fTrace[t]= NULL; fTraceNum[t]= 0; }
+  fNTrace= 0;
+  fTrCenter= NULL;
+  fTrlength= 0;
+	fShowTrace = TRUE;
+}
+
+DAsmSequence::~DAsmSequence()  
+{
+	for (short t=kA; t<maxTrace; t++) MemFree(fTrace[t]);
+	MemFree(fTrCenter);
+}
+
+DObject* DAsmSequence::Clone() // override 
+{	
+	DAsmSequence* aSeq= (DAsmSequence*) DSequence::Clone();
+	for (short t=kA; t<maxTrace; t++) {
+		aSeq->fTrace[t]= NULL; 
+		aSeq->SetTrace( (traceNum)t, fTrace[t], fTraceNum[t], true);  
+		}
+	aSeq->fTrCenter= NULL; aSeq->SetTrCenter( fTrCenter, fTrlength, true); 
+	return aSeq;
+}
+
+void DAsmSequence::CopyContents( DAsmSequence* fromSeq)
+{
+	DSequence::CopyContents( fromSeq);
+	for (short t=kA; t<maxTrace; t++) {
+		SetTrace( (traceNum)t, fromSeq->fTrace[t], fromSeq->fTraceNum[t], true);  
+		}
+	SetTrCenter( fromSeq->fTrCenter, fromSeq->fTrlength, true); 
+}
+
+void DAsmSequence::SetTrCenter( short*& theTrCenter, long trlength, Boolean duplicate)
+{
+	if (fTrCenter) { 
+		if (fTrlength>0 && 
+			(fTrlength != trlength || MemCmp( theTrCenter, fTrCenter, trlength)!= 0))
+				fChanged= TRUE;
+		MemFree(fTrCenter); 
+		fTrCenter= NULL; 
+		fTrlength= 0;
+		}
+	if (theTrCenter) {
+		if (duplicate) fTrCenter = (short*)MemDup(theTrCenter, trlength); 
+		else { fTrCenter= theTrCenter; theTrCenter= NULL; }
+		fTrlength= trlength;  
+		}
+	fModTime= gUtil->time();
+}
+
+void DAsmSequence::SetTrace(traceNum t, short*& theTrace, long trlength, 
+			Boolean duplicate)
+{
+	if (fTrace[t]) { 
+		if (fTraceNum[t]>0 && 
+			(fTraceNum[t] != trlength || MemCmp( theTrace, fTrace[t], trlength)!= 0))
+				fChanged= TRUE;
+		MemFree(fTrace[t]); 
+		fTrace[t]= NULL; 
+		fTraceNum[t]= 0;
+		}
+	if (theTrace) {
+		if (duplicate) fTrace[t] = (short*)MemDup(theTrace, trlength); 
+		else { fTrace[t]= theTrace; theTrace= NULL; }
+		fTraceNum[t]= trlength;  // what if trlengths differ for each trace -- error !!  
+		}
+	fNTrace= 0;
+	for (short i=kA; i<maxTrace; i++) fNTrace= Max(fTraceNum[i], fNTrace);
+	fModTime= gUtil->time();
+}
+
+
+
+
+
+
+void DAsmSequence::DoWrite(DFile* aFile, short format)
+{  
+	DSequence::DoWrite( aFile, format);
+#if 0	
+	if (fLength>0) {
+		DSeqFile::WriteSeqWrapper( aFile, fBases, fLength, format, fName);
+		if (fMasks && fMasksOk && DSeqFile::gWriteMasks) 
+			DSeqFile::WriteMaskWrapper( aFile, fMasks, fLength, format, fName);
+		}
+#endif
+}
+
+
+void DAsmSequence::DoWriteSelection(DFile* aFile, short format)
+{
+	DSequence::DoWriteSelection( aFile, format);
+#if 0	
+	if (fSelBases==0) 
+		DoWrite( aFile, format);
+	else if (fLength>0) {
+		long aStart= Min( fSelStart, fLength);
+		long aLength= Min( fSelBases, fLength - fSelStart);
+		DSeqFile::WriteSeqWrapper(  aFile, fBases+aStart, aLength, format, fName);
+		if (fMasks && fMasksOk && DSeqFile::gWriteMasks)  
+			DSeqFile::WriteMaskWrapper( aFile, fMasks+aStart, aLength, format, fName);
+		}
+#endif
+}
+
+
+
+

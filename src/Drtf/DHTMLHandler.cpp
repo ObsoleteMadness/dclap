@@ -157,7 +157,7 @@ Boolean DHTMLHandler::ProcessData( char* cbeg, char* cend, Boolean endOfData,
 DHTMLprocess::DHTMLprocess( DFile* itsFile, DRichView* itsDoc, Nlm_MonitorPtr progress) :
 	DRichprocess( itsFile, itsDoc, progress),
 	fStop(0), fTokenLen(0), fListType(0), fListNum(0), fDLStyle(0), fQuote(0),
-	fCurControl(0), fCurField(0), fPicLink(0), fAnchorLink(0),
+	fCurControl(0), fCurField(0), fLastField(0), fPicLink(0), fAnchorLink(0),
 	fURLstore(NULL), fNamestore(NULL), fFormURL(NULL), fGoplusStore(NULL),
 	fMethodstore(NULL), fValstore(NULL), fTypestore(NULL), fOptionstore(NULL),
 	fSizestore(NULL),fMaxlengthstore(NULL),fRowsstore(NULL),fColsstore(NULL),
@@ -301,6 +301,7 @@ short DHTMLprocess::GotTokenOrParam() // private
 				case htmlValue:
 					MemFree(fValstore);
 					fValstore= StrDup(fTokenBuf);
+					if (fLastField==htmlOption) fCurField= fLastField;
 					break;
 				case htmlType:
 					MemFree(fTypestore);
@@ -334,12 +335,21 @@ short DHTMLprocess::GotTokenOrParam() // private
 					break;
 					
 				case htmlOption:
-					//MemFree(fOptionstore);
-					//fOptionstore= StrDup(fTokenBuf);
 					fTokenBuf[tokenlen++]= '\t';
 					fTokenBuf[tokenlen]= '\0';
 					if (!fOptionstore) fOptionstore= StrDup(fTokenBuf);
 					else StrExtendCat( &fOptionstore, fTokenBuf);
+							// need to collect BOTH option text and values !
+					if (fValstore) {
+						tokenlen= StrLen( fValstore);
+						StrCpy( fTokenBuf, fValstore);
+						}
+					else
+						tokenlen= 0;
+					fTokenBuf[tokenlen++]= '\t';
+					fTokenBuf[tokenlen]= '\0';
+					if (!fRowsstore) fRowsstore= StrDup(fTokenBuf);
+					else StrExtendCat( &fRowsstore, fTokenBuf);
 					break;
 
 				}
@@ -768,29 +778,13 @@ default text
 <select>
 <option selected> name1
 <option> name2
+<option value=n3> name2
 </select>
 	>> Choose: var_name: \t name1 \t name2 ...
 
 
 </form>
 
-	if (fCurControl==HtmlInput) {
-		if (!fTypeStore || StrICmp( fTypestore, "text")==0)
-			;
-		else if (StrICmp( fTypestore, "password")==0)
-			;
-		else if (StrICmp( fTypestore, "submit")==0)
-			;
-		else if (StrICmp( fTypestore, "reset")==0)
-			;
-		else if (StrICmp( fTypestore, "checkbox")==0)
-			;
-		else if (StrICmp( fTypestore, "radio")==0)
-			;
-		else
-			;
-		}
-		
 		// forms tags
   htmlLinkAttr,	htmlForm, "form", kSlashStop, 0,
 	  htmlLinkAttr,	htmlInput, "input", kNoStop, 0,
@@ -810,6 +804,8 @@ default text
 void DHTMLprocess::handleFormAttr(short attr)
 {
 	char buf[512];
+	DWindow* fWin;
+	DControlStyle* cs;
 	
 	switch (attr) {
 	
@@ -829,8 +825,8 @@ void DHTMLprocess::handleFormAttr(short attr)
 					}
 				else {
 					// <FORM METHOD=get/post/localexec ACTION="proto://path/function opts">  
-					DControlStyle* cs = NULL;
-					DWindow* fWin= fDoc->GetWindow();
+					cs = NULL;
+					fWin= fDoc->GetWindow();
 					cs= new DHiddenCStyle( fWin); 
 					if (!fMethodstore) cs->ControlData( "GET", fURLstore);  
 					else cs->ControlData( fMethodstore, fURLstore);  
@@ -868,13 +864,11 @@ void DHTMLprocess::handleFormAttr(short attr)
 				}
 				
 			else {
-
-#if 1
 			// this are HandleEndControl, e.g., at "...>", methods, 
 			// not !fInControl start methods (e.g., at "</control..." 
 			
-				DControlStyle* cs = NULL;
-				DWindow* fWin= fDoc->GetWindow();
+				cs = NULL;
+				fWin= fDoc->GetWindow();
 				
 				if (!fTypestore || StrICmp( fTypestore, "text")==0) {
 					// <input type=text name="variable_name" value='default text' size=10>
@@ -928,67 +922,19 @@ void DHTMLprocess::handleFormAttr(short attr)
 					else cs->ControlData( fNamestore, fValstore); 
 					}
 					
+				else if (StrICmp( fTypestore, "file")==0) {
+					//<input type=file name=default_file_name value='anything'>
+					cs= new DFileCStyle( fWin); 
+					if (!fValstore)  cs->ControlData( fNamestore, "default-file"); 
+					else cs->ControlData( fNamestore, fValstore); 
+					}
+					
 				if (cs) {
 					cs->Install();
 					StoreStyleObject( cs, cs->Width(), cs->Height());
 					}
 				
-#else
-				char * skind = NULL, * stitle = "", * sname = "", * svalue = "", * sanswer = "";
-				
-				if (fNamestore) sname= fNamestore; else sname= fTypestore;
 
-				if (!fTypestore || StrICmp( fTypestore, "text")==0) {
-					skind= "Ask";
-//<input name="variable_name"> // one line text input (type=text)
-//<input type=text name="variable_name" value='default text'> // one line text input
-//	>> Ask: variable_name:\t default text
-					if (tokenlen) stitle= fTokenBuf; else stitle= sname;
-					if (fValstore) sanswer= fValstore; else sanswer= "";  
-					}
-					
-				else if (StrICmp( fTypestore, "password")==0) {
-//<input type=password name="variable_name-name"> // one line password text input
-//	>> AskP: variable_name
-					skind= "AskP";
-					if (tokenlen) stitle= fTokenBuf; else stitle= sname;
-					if (fValstore) sanswer= fValstore; else sanswer= "";  
-					}
-					
-				else if (StrICmp( fTypestore, "submit")==0)
-					;
-				else if (StrICmp( fTypestore, "reset")==0)
-					;
-					
-				else if (StrICmp( fTypestore, "checkbox")==0) {
-//<input type=checkbox name=variable_name value="box value" checked> box_title
-//	>> Select: box title:0 or 1
-					skind= "Select";
-					if (tokenlen) stitle= fTokenBuf; else stitle= sname;
-					if (fValstore) svalue= fValstore; else svalue= ""; // "on" is typical value 
-					//if (fChecked) sanswer= "1"; else 
-					sanswer= "0"; // default value
-					}
-					
-				else if (StrICmp( fTypestore, "radio")==0) {
-//<input type=radio name=var_name value='title 1'> radio title
-//<input type=radio name=var_name value='title 2'>
-//	>> Choose: var_name: \t title 1 \t title 2 ...
-// !! need to collect all radios with same nametag !
-					skind= "Choose";
-					if (tokenlen) stitle= fTokenBuf; else stitle= sname;
-					if (fValstore) svalue= fValstore; else svalue= ""; // "on" is typical value 
-					if (fValstore) sanswer= fValstore; else sanswer= "on\t "; // default value
-					}
-					
-				else
-					;
-					
-			 	if (skind) {
-					sprintf( buf, " %s:%s:%s:%s\t%s\n", skind, sname, svalue, stitle, sanswer); 
-					StrExtendCat( &fGoplusStore, buf);
-					}
-#endif
 				}
 			break;
 
@@ -997,14 +943,17 @@ void DHTMLprocess::handleFormAttr(short attr)
 				//<select name="myname">
 				//<option selected> name1
 				//<option> name2
+				//<option value=n3> name3
 				//</select>
 			if (fTurnOn) { // fInControl
 			  fCurControl= attr; //?? 
 				fCurField= attr;
 				fCurItem= 0;
+				fLastField= 0;
 				//fSomething= fTurnOn;
 				fNamestore= (char*) MemFree(fNamestore); 
 				fOptionstore= (char*) MemFree(fOptionstore); 
+				fValstore= (char*) MemFree(fValstore);  
 				fSizestore= (char*) MemFree(fSizestore);  
 				fMaxlengthstore= (char*) MemFree(fMaxlengthstore);  
 				fRowsstore= (char*) MemFree(fRowsstore);  
@@ -1012,44 +961,29 @@ void DHTMLprocess::handleFormAttr(short attr)
 				fIsChecked= fIsMultiple= false; fSelectitem= 0;
 				}
 			else {
-#if 1
-				DControlStyle* cs = NULL;
-				DWindow* fWin= fDoc->GetWindow();
-				 
+				fLastField= 0;
+				cs = NULL;
+				fWin= fDoc->GetWindow();
 				cs= new DPopupCStyle( fWin); 
 					// ! need to options == popup selections -> from fOptionstore
 				cs->fSelected= fSelectitem;
-				cs->ControlData( fNamestore, fOptionstore); //? fOption not fValstore
+				cs->ControlData( fNamestore, fOptionstore, fRowsstore); //? fOption not fValstore
 				cs->Install();
 				StoreStyleObject( cs, cs->Width(), cs->Height());
-
-#else
-				//	>> Choose: var_name: \t name1 \t name2 ...
-				char * skind = NULL, * stitle = "", * sname = "", * svalue = "", * sanswer = "";
-				
-				short tokenlen= MIN( fTokenLen, 80);
-				fTokenBuf[tokenlen] = '\0';  // this contains non-<control> text following this control
-				for (short i=0; i<tokenlen; i++) 
-					if (fTokenBuf[i]<' ') {
-						fTokenBuf[i]= 0; // terminate string here?
-						tokenlen= 0;
-						break;
-						}
-
-				if (fNamestore) sname= fNamestore; else sname= fTypestore;
-				skind= "Choose";
-				if (tokenlen) stitle= fTokenBuf; else stitle= sname;
-				if (fCurField == htmlOption) {
-				
-					}
-			 	if (skind) {
-					sprintf( buf, " %s:%s:%s:%s\t%s\n", skind, sname, svalue, stitle, sanswer); 
-					StrExtendCat( &fGoplusStore, buf);
-					}
-#endif
 				}
 			break;
 			
+		case htmlOption: 
+			if (fInControl) {
+				fCurField= attr;
+				fCurItem++;
+				fValstore= (char*) MemFree(fValstore);  
+				}
+			else {
+				fLastField= 0;
+				}
+			break;
+
 
 		case htmlTextarea: 
 				//<textarea name=var_name cols=40 rows=2>  
@@ -1068,60 +1002,17 @@ void DHTMLprocess::handleFormAttr(short attr)
 				fIsChecked=  fIsMultiple= false; fSelectitem= 0;
 				}
 			else {
-#if 1
-				DControlStyle* cs = NULL;
-				DWindow* fWin= fDoc->GetWindow();
-				 
+				cs = NULL;
+				fWin= fDoc->GetWindow();
 				cs= new DDialogTextCStyle( fWin); 
 				cs->ControlData( fNamestore, fValstore); 
 				if (fColsstore) cs->fWidth= atol(fColsstore); // # chars wide
 				if (fRowsstore) cs->fHeight= atol(fRowsstore); // # chars tall
 				cs->Install();
 				StoreStyleObject( cs, cs->Width(), cs->Height());
-
-#else
-				//  >> AskL: var_name \t default text
-				char * skind = NULL, * stitle = "", * sname = "", * svalue = "", * sanswer = "";
-				
-				if (fNamestore) sname= fNamestore; else sname= fTypestore;
-				skind= "AskL";
-				fTokenBuf[fTokenLen] = '\0';  // this contains non-<control> text following this control
-				if (fTokenLen) sanswer= fTokenBuf; 
-				stitle= sname; //??
-			 	if (skind) {
-					sprintf( buf, " %s:%s:%s:%s\t%s\n", skind, sname, svalue, stitle, sanswer); 
-					StrExtendCat( &fGoplusStore, buf);
-					}
-#endif
   			}
 			break;
 
-
-		case htmlOption: 
-			if (fInControl) {
-				fCurField= attr;
-				fCurItem++;
-				}
-			else {
-				// ?!?
-#if 0
-				short tokenlen= MIN( fTokenLen, 80);
-				fTokenBuf[tokenlen] = '\0';  // this contains non-<control> text following this control
-				for (short i=0; i<tokenlen; i++) 
-					if (fTokenBuf[i]<' ') {
-						fTokenBuf[i]= 0; // terminate string here?
-						tokenlen= 0;
-						break;
-						}
-				if (tokenlen) {
-					fTokenBuf[tokenlen++]= '\t';
-					fTokenBuf[tokenlen]= '\0';
-					if (!fOptionstore) fOptionstore= StrDup(fTokenBuf);
-					else StrExtendCat( &fOptionstore, fTokenBuf);
-					}
-#endif
-				}
-			break;
 			
 		case htmlMethod:
 			fCurField= attr;
@@ -1139,7 +1030,7 @@ void DHTMLprocess::handleFormAttr(short attr)
 			break;
 		case htmlSelected:
 			fSelectitem= fCurItem;
-			fCurField= attr;
+			//if (fCurField!=htmlOption) fCurField= attr;
 			break;
 		case htmlMultiple:
 			fIsMultiple= true;
@@ -1152,6 +1043,8 @@ void DHTMLprocess::handleFormAttr(short attr)
 		case htmlCols:
 		// case htmlName: // handled		
 		case htmlValue:
+			//if (fCurField!=htmlOption) 
+			fLastField= fCurField;
 			fCurField= attr;
 			break;
 

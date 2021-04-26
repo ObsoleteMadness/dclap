@@ -1,0 +1,149 @@
+CTextGopher 
+		CUuencodeGopher  :CTextGopher
+		CWhoisPhoneBookGopher  :CTextGopher
+DRECutsItem 
+DRTFsetup 
+DSeqFile 
+		DSeqList  :DSeqFile :DList
+DObject 
+		DWindowManager  :DObject
+		DViewCentral  :DObject
+		DClapGlobals  :DObject
+		DErrorManager  :DObject
+		DUtil  :DObject
+		DString  :DObject
+		DPrintManager  :DObject
+		DPrefManager  :DObject
+		DMouse  :DObject
+		DKeys  :DObject
+		DCursor  :DObject
+		DTaskMaster  :DObject
+				DView  :DTaskMaster
+						DWindow  :DView
+								DSeqedWindow  :DWindow
+								DSeqDoc  :DSaveHandler :DWindow
+								DMailSetupDialog  :DWindow
+								DSendMailDialog  :DWindow
+										DORNLGrail  :DSendMailDialog
+										DUWFGeneID  :DSendMailDialog
+										DFHCRCblocks  :DSendMailDialog
+										DFHCRCfetch  :DSendMailDialog
+										DEMBLFetch  :DSendMailDialog
+										DEMBLQuicks  :DSendMailDialog
+										DEMBLFasta  :DSendMailDialog
+										DEMBLBlitz  :DSendMailDialog
+										DNCBIFetch  :DSendMailDialog
+										DNCBIBlast  :DSendMailDialog
+								DGoOtherPrefs  :DWindow
+								DGoviewPrefs  :DWindow
+								DGopherEditWindow  :DWindow
+								DGopherMapDoc  :DWindow
+								DGopherFileDoc  :DWindow
+								DGopherTextDoc  :DSaveHandler :DWindow
+										DGopherInfoDoc  :DGopherTextDoc
+										DGoLinkedTextDoc  :DGopherTextDoc
+								DGopherListDoc  :DSaveHandler :DWindow
+								DGopherAskDoc  :DWindow
+								DAboutBoxWindow  :DWindow
+						DDisplay  :DView
+						DSlate  :DView
+						DPanel  :DView
+								DAlnHIndex  :DPanel
+								DRTFView  :DSaveHandler :DPrintHandler :DPanel
+								DDocPanel  :DSaveHandler :DPrintHandler :DPanel
+										DTextDocPanel  :DDocPanel
+								DSlatePanel  :DPanel
+								DIconButton  :DPanel
+								DNotePanel  :DPanel
+								DAutoPanel  :DPanel
+										DTableView  :DAutoPanel
+												DAlnIndex  :DTableView
+												DAlnITitle  :DTableView
+												DAlnView  :DTableView
+												DGoMapHandlerView  :DTableView
+												DGolistView  :DTableView
+								DAboutBoxPanel  :DPanel
+						DMenuChoiceGroup  :DView
+						DMenu  :DView
+								DPopupMenu  :DMenu
+								DSubMenu  :DMenu
+								DAppleMenu  :DMenu
+								DPulldownMenu  :DMenu
+						DDialogText  :DView
+								DDialogScrollText  :DDialogText
+										DSeqedView  :DKeyCallback :DDialogScrollText
+								DPasswordText  :DDialogText
+								DHiddenText  :DDialogText
+								DEditText  :DDialogText
+						DControl  :DView
+								DSwitchBox  :DControl
+								DScrollBar  :DControl
+								DRepeatButton  :DControl
+								DListBox  :DControl
+								DPopupList  :DControl
+								DRadioButton  :DControl
+								DCheckBox  :DControl
+								DDefaultButton  :DControl
+								DButton  :DControl
+								DCluster  :DControl
+										DGopherEditView  :DCluster
+										DGopherAskShort  :DCluster
+								DPrompt  :DControl
+				DGopher  :DTaskMaster
+						DMailGopher  :DGopher
+						DNoteGopher  :DGopher
+						DBinhexGopher  :DGopher
+						DTelnetGopher  :DGopher
+						DBinaryGopher  :DGopher
+								DMovieGopher  :DBinaryGopher
+								DImageGopher  :DBinaryGopher
+								DSoundGopher  :DBinaryGopher
+						DTextGopher  :DGopher
+								DCSOPhoneBookGopher  :DTextGopher
+						DFolderGopher  :DGopher
+								DIndexGopher  :DFolderGopher
+				DApplication  :DTaskMaster
+		DTaskCentral  :DObject
+		DTask  :DObject
+		DTCP  :DObject
+				DSMTP  :DTCP
+				DGopherTalk  :DTCP
+		DSequence  :DObject
+		DREMap  :DObject
+		DREnzymeVendor  :DObject
+		DREnzyme  :DObject
+		DArray  :DObject
+				DList  :DArray
+						DSeqList  :DSeqFile :DList
+						DIconList  :DList
+						DGopherList  :DList
+						DGopherMapList  :DList
+		DIcon  :DObject
+		DGoMenuItem  :DObject
+				DGoMenuString  :DGoMenuItem
+				DGoMenuLine  :DGoMenuItem
+				DGoMenuBytes  :DGoMenuItem
+				DGoMenuRect  :DGoMenuItem
+		DGoMenuBlock  :DObject
+		DGopherItemAsk  :DObject
+		DGopherItemView  :DObject
+		DGopherMap  :DObject
+		DFile  :DObject
+				DTempFile  :DFile
+		DFileManager  :DObject
+DSaveHandler 
+		DSeqDoc  :DSaveHandler :DWindow
+		DRTFView  :DSaveHandler :DPrintHandler :DPanel
+		DDocPanel  :DSaveHandler :DPrintHandler :DPanel
+				DTextDocPanel  :DDocPanel
+		DGopherTextDoc  :DSaveHandler :DWindow
+				DGopherInfoDoc  :DGopherTextDoc
+				DGoLinkedTextDoc  :DGopherTextDoc
+		DGopherListDoc  :DSaveHandler :DWindow
+DPrintHandler 
+		DRTFView  :DSaveHandler :DPrintHandler :DPanel
+		DDocPanel  :DSaveHandler :DPrintHandler :DPanel
+				DTextDocPanel  :DDocPanel
+DSeqFormatPopup 
+DKeyCallback 
+		DSeqedView  :DKeyCallback :DDialogScrollText

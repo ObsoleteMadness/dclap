@@ -29,7 +29,7 @@ public:
 	virtual ~DPanel();
 
 	virtual void Draw(void) = 0;
-	virtual void Scroll(Boolean vertical, DView* scrollee, short newval, short oldval);
+	virtual void Scroll(Boolean vertical, DView* scrollee, long newval, long oldval);
 	void RegisterRect(Nlm_RecT r) { Nlm_RegisterRect(fPanel, &r); }
 	virtual void CharHandler(char c); // override stub, only for autonomous >> see class DKeyCallback instead
 	void SetSlateBorder(Boolean turnon);

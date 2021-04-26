@@ -1,0 +1,258 @@
+#Select the following scripts and execute on your pascal file
+
+# Token substitution scripts.
+set CaseSensitive 1
+set Exit 0
+find Æ1
+replace -c ° /'{'/ '/*' {Target}
+find Æ1
+replace -c ° /'(*'/ '/*' {Target}
+find Æ1
+replace -c ° /'}'/ '*/' {Target}
+find Æ1
+replace -c ° /'*)'/ '*/' {Target}
+find Æ1
+replace -c ° /'BEGIN'/ '{' {Target}
+find Æ1
+replace -c ° /END[ÂC]/ '}' {Target}
+find Æ1
+replace -c ° /([ ¶t¶n]+)¨1'='([ ¶t¶n]+)¨2/ ¨1'=='¨2 {Target}
+find Æ1
+replace -c ° /([ ¶t¶n]+)¨1'&'([ ¶t¶n]+)¨2/ ¨1'&&'¨2 {Target}
+find Æ1
+replace -c ° /([ ¶t¶n]+)¨1'AND'([ ¶t¶n]+)¨2/ ¨1'&&'¨2 {Target}
+find Æ1
+replace -c ° /([ ¶t¶n]+)¨1'|'([ ¶t¶n]+)¨2/ ¨1'||'¨2 {Target}
+find Æ1
+replace -c ° /([ ¶t¶n]+)¨1'OR'([ ¶t¶n]+)¨2/ ¨1'||'¨2 {Target}
+find Æ1
+replace -c ° /'<>'/ '!=' {Target}
+find Æ1
+replace -c ° /'NOT '/ '!' {Target}
+find Æ1
+replace -c ° /':='/ '=' {Target}
+find Æ1
+replace -c ° /'@'/ '&' {Target}
+find Æ1
+# Change all ifs except macros
+replace -c ° /'IF'[ ¶t]+/ 'if (' {Target}		#changed APW 7/8/91 to handle IF (T) or (F) THEN
+find Æ1
+replace -c ° /[ ¶t]+'THEN'/ ')' {Target}
+find Æ1
+replace -c ° /'ELSE'/ 'else' {Target}
+find Æ1
+replace -c ° /'WHILE'/ 'while (' {Target}
+find Æ1
+replace -c ° /[ ¶t]+'DO'[ ¶t¶n]+/ ')' {Target}
+find Æ1
+replace -c ° /'REPEAT'/ 'do {' {Target}
+find Æ1
+
+# replace "UNTIL x < y;" with "while (!(x < y));"  #changed APW 7/8/91 -- added !()
+replace -c ° /'UNTIL '([(a-zA-Z0-9)+¶/<>!=&|^* .-¶t]+)¨1/ '} while (!(¨1))' {Target}
+find Æ1
+
+# First change to 'FUNCTION' to 'pascal'
+replace -c ° /'FUNCTION'/ 'pascal' {Target}
+find Æ1
+
+# Then swap the order of functions without parameters and their return type
+replace -c ° /'pascal'[ ¶t]+([a-zA-Z0-9%_.]+)¨1':'([ ¶t]+)([a-zA-Z0-9]+)¨2';'/ 'pascal '¨2' '¨1'(void)'
+find Æ1
+
+# Same for functions with parameters (Can't handle function parameters)
+replace -c ° /'pascal'[ ¶t]+([a-zA-Z0-9_%.]+[ ¶t]*'('[a-zA-Z0-9$, :;¶t¶n]+)¨1'):'[ ¶t¶n]+([a-zA-Z0-9]+)¨2';'/ 'pascal '¨2' '¨1');'	#Leave ; for scripts further down
+find Æ1
+
+# Now replace PROCEDURE with pascal and a type of void
+replace -c ° /'PROCEDURE'/ 'pascal void' {Target}
+find Æ1
+
+# Give procedures with no parameters a parameter of void
+replace -c ° /'pascal void'[ ¶t]+([a-zA-Z0-9%_.]+)¨1';'/ 'pascal void '¨1'(void)'
+find Æ1
+
+# Finally, if it is a class function, change from tobject.foo to tobject::foo
+replace -c ° /'pascal'[ ¶t]+([ a-zA-Z0-9%_]+)¨1./ 'pascal '¨1'::' {Target}
+
+find Æ1
+replace -c ° /'OVERRIDE;'/ '/* override */' {Target}
+find Æ1
+replace -c ° /INTEGER/ 'short' {Target}
+find Æ1
+replace -c ° /LONGINT/ 'long' {Target}
+find Æ1
+replace -c ° /BOOLEAN/ 'Boolean' {Target}
+find Æ1
+replace -c ° /CHAR/ 'char' {Target}
+find Æ1
+replace -c ° /[Oo][Rr][Dd]4[ ¶t]*'('([a-zA-Z0-9*¶/&+¶-¶[¶]()¶']+)¨1')'/ '((long)'¨1')' {Target}
+find Æ1
+replace -c ° /[Cc][Hh][Rr][ ¶t]*'('([a-zA-Z0-9*¶/¶%$&+¶-¶[¶]()¶' ]+)¨1')'([;,)])¨2/ '((char)('¨1'))'¨2 {Target}
+find Æ1
+replace -c ° /'long'[ ¶t]*'('([a-zA-Z0-9*&+¶-¶[¶]()¶' ]+)¨1')'/ '((long)'¨1')' {Target}
+find Æ1
+replace -c ° /'DIV'/ '/' {Target}
+find Æ1
+replace -c ° /'MOD'/ '%' {Target}
+find Æ1
+replace -c ° /'SELF'/ 'this' {Target}
+find Æ1
+replace -c ° /'^.'/ '->' {Target}
+find Æ1
+
+# replace HInteger(pSuperClassTable)^ with (*HInteger(pSuperClassTable))
+replace -c ° /([a-zA-Z0-9]+)¨1'('([a-zA-Z0-9 ¶t+-*¶/()]+)¨2')^'/ '(*'¨1'('¨2'))' {Target}
+find Æ1
+
+# replace HInteger(pSuperClassTable)^^ with (**HInteger(pSuperClassTable))
+replace -c ° /([a-zA-Z0-9]+)¨1'('([a-zA-Z0-9 ¶t+-*¶/()]+)¨2')^^'/ '(**'¨1'('¨2'))' {Target}
+find Æ1
+
+# replace pSuperClassTable^[index] with (*pSuperClassTable)[index] !Note [] and () are higher than *
+replace -c ° /([a-zA-Z0-9]+)¨1'^'/ '(*'¨1')' {Target}
+find Æ1
+
+# replace pSuperClassTable^^ with **pSuperClassTable
+replace -c ° /([a-zA-Z0-9]+)¨1'^^'/ '(**'¨1')' {Target}
+
+find Æ1
+replace -c ° /'INHERITED'[ ¶t]+/ 'inherited::' {Target}
+find Æ1
+replace -c ° /'EXIT'/ 'exit' {Target}
+find Æ1
+replace -c ° /'LENGTH'/ 'strlen' {Target}
+find Æ1
+replace -c ° /'SIZEOF'/ 'sizeof' {Target}
+find Æ1
+replace -c ° /([Âa-zA-Z0-9_]+)¨1'NIL'([Âa-zA-Z0-9_]+)¨2/ ¨1'NULL'¨2 {Target}
+find Æ1
+
+# replace "BSR(x + y, 2)" with "((x + y) >> 2)"
+replace -c ° /'BSR('([(a-zA-Z0-9)+¶/* .¶->¶t¶[¶]]+)¨1[ ¶t]*','([ ¶ta-zA-Z0-9$]+)¨2[ ¶t)]/ '(('¨1') >>'¨2')' {Target}
+find Æ1
+
+# replace "BSL(x + y, 2)" with "((x + y) << 2)"
+replace -c ° /'BSL('([(a-zA-Z0-9)+¶/* .¶->¶t¶[¶]]+)¨1[ ¶t]*','([ ¶ta-zA-Z0-9$]+)¨2[ ¶t)]/ '(('¨1') <<'¨2')' {Target}
+find Æ1
+
+# replace "BAND(x + y, 2)" with "((x + y) & 2)"
+replace -c ° /'BAND('([(a-zA-Z0-9)+¶/* .¶->¶t¶[¶]]+)¨1[ ¶t]*','([ ¶ta-zA-Z0-9$]+)¨2[ ¶t)]/ '(('¨1') &'¨2')' {Target}
+find Æ1
+
+# replace "BOR(x + y, 2)" with "((x + y) | 2)"
+replace -c ° /'BOR('([(a-zA-Z0-9)+¶/* .¶->¶t¶[¶]]+)¨1[ ¶t]*','([ ¶ta-zA-Z0-9$]+)¨2[ ¶t)]/ '(('¨1') |'¨2')' {Target}
+find Æ1
+
+# replace "BTST(x + y, 2)" with "((x + y) & (0x1 << 2))"
+replace -c ° /'BTST('([(a-zA-Z0-9)+¶/* .¶->¶t¶[¶]]+)¨1[ ¶t]*','([ ¶ta-zA-Z0-9$]+)¨2[ ¶t)]/ '(('¨1') & (0x1 <<'¨2'))' {Target}
+find Æ1
+
+# replace "BCLR(x + y, 2)" with "((x + y) & ((0x1 << 2) ^ ~0))"
+replace -c ° /'BCLR('([(a-zA-Z0-9)+¶/* .¶->¶t¶[¶]]+)¨1[ ¶t]*','([ ¶ta-zA-Z0-9$]+)¨2[ ¶t)]/ '(('¨1') & ((0x1 <<'¨2') ^ ~0))' {Target}
+find Æ1
+
+#replace "/* $IFC qDebug */" ({ has been replaced above with /*) with "#if qDebug"
+replace -c ° /[ ¶t]*'/*'[ ¶t]*'$'[Ii][Ff][Cc][ ¶t]([a-zA-Z0-9]+)¨1[ ¶t]*'*/'/ '#if '¨1 {Target}
+find Æ1
+
+#replace "/* $IFC !qDebug */"  with "#if !qDebug"
+replace -c ° /[ ¶t]*'/*'[ ¶t]*'$'[Ii][Ff][Cc][ ¶t]'!'([a-zA-Z0-9]+)¨1[ ¶t]*'*/'/ '#if !'¨1 {Target}
+find Æ1
+
+#replace "/* $EndC */"  with "#endif"
+replace -c ° /[ ¶t]*'/*'[ ¶t]*'$'[eE][nN][dD][cC][ ¶ta-zA-Z0-9]*'*/'/ '#endif' {Target}
+find Æ1
+
+#replace "/* $ElseC */"  with "#else"
+replace -c ° /[ ¶t]*'/*'[ ¶t]*'$'[eE][lL][sS][eE][cC][ ¶ta-zA-Z0-9]*'*/'/ '#else' {Target}
+find Æ1
+
+#replace "/* $S MADebug */"  with "#pragma segment MADebug"
+replace -c ° /[ ¶t]*'/*'[ ¶t]*'$'[sS][ ¶t]([a-zA-Z0-9%_]+)¨1[ ¶t]*'*/'/ '#pragma segment '¨1 {Target}
+find Æ1
+
+#replace /* comment */ at the end of the line with // comment
+replace -c ° /([ ¶t]*)¨1'/*'([- ¶ta-zA-Z0-9?,<>.É¶/¶\:;¶"¶'¶[¶]{}+=_!@#$%^&*()¶`~|]+)¨2'*/'°/ ¨1'//'¨2 {Target}
+find Æ1
+
+#replace $number (hex number) with 0xnumber
+replace -c ° /([ ¶t(]+)¨1'$'([0-9A-F]+)¨2/ ¨1'0x'¨2 {Target}
+find Æ1
+
+# replaces gApplication.foo() with gApplication->foo()
+replace -c ° /([a-zA-Z0-9*()]+)¨1.([a-zA-Z0-9]+)¨2'('/ ¨1'->'¨2'(' {Target}
+find Æ1
+
+# Parameters replaces newColor: RGBColor); with RGBColor newColor)
+replace -c ° /([ ¶t(]*)¨1([a-zA-Z0-9_%, ]+)¨2':'[ ¶t]+([a-zA-Z0-9_%]+)¨3[ ¶t]*');'/ ¨1¨3' '¨2')' {Target}
+find Æ1
+
+# Parameters replaces ; newColor: RGBColor; with ; RGBColor	newColor,
+replace -c ° /(';'[ ¶t]*)¨1([a-zA-Z0-9_% ,]+)¨2':'[ ¶t]+([a-zA-Z0-9_%]+)¨3';'/ ¨1¨3' '¨2',' {Target} # Can't handle more than one middle parameter.
+find Æ1
+
+# Parameters replaces (newColor: RGBColor; with (RGBColor	newColor,
+replace -c ° /('('[ ¶t]*)¨1([a-zA-Z0-9_% ,]+)¨2':'[ ¶t]+([a-zA-Z0-9_%]+)¨3';'/ ¨1¨3' '¨2',' {Target}
+find Æ1
+
+# Variables replaces newColor: RGBColor; with RGBColor			newColor;
+replace -c ° /¥([ ¶t]+)¨1([a-zA-Z0-9_% ,]+)¨2':'[ ¶t]+([a-zA-Z0-9_%]+)¨3';'/ ¨1¨3¶t¶t¨2';' {Target}
+find Æ1
+
+# Variables replaces labels: ARRAY [VHSelect] OF TStaticText; with TStaticText labels[VHSelect];
+replace -c ° /¥([ ¶t]+)¨1([a-zA-Z0-9_%]+)¨2':'[ ¶t]+'ARRAY'[ ¶t]*'['([a-zA-Z0-9_%]+)¨3']'[ ¶t]+'OF'[ ¶t]+([a-zA-Z0-9_%]+)¨4';'/ ¨1¨4¶t¨2'['¨3'];' {Target}
+find Æ1
+
+# Add () to the end of function calls without parameters:	FramRect; -> FrameRect();
+replace -c ° /¥([ ¶t]+)¨1([a-zA-Z0-9_%]+)¨2';'/ ¨1¨2'();' {Target}
+find Æ1
+
+# Add () to the end of inherited function calls without parameters:	inherited::FramRect; -> inherited::FrameRect();
+replace -c ° /¥([ ¶t]+)¨1'inherited::'([a-zA-Z0-9_%]+)¨2';'/ ¨1'inherited::'¨2'();' {Target}
+find Æ1
+
+# change aSomething.fAnotherThing to fSomething->fAnotherThing (Assume its a field)
+replace -c ° /([a-z])¨1([a-zA-Z0-9_%]+)¨2'.f'([A-Z])¨3([a-zA-Z0-9_%]+)¨4/ ¨1¨2'->f'¨3¨4 {Target}
+find Æ1
+
+# change aSomething.AnotherProc to aSomething->AnotherProc() (Assume its a field)
+replace -c ° /([a-z])¨1([a-zA-Z0-9_%]+)¨2'.'([A-Z])¨3([a-zA-Z0-9_%]+)¨4[ ¶t]*([;,¶)])¨5/ ¨1¨2'->'¨3¨4'()'¨5 {Target}
+find Æ1
+
+# change CASE junk OF to switch (junk) {
+replace -c ° /¥([ ¶t]*)¨1'CASE'[ ¶t]+([a-zA-Z0-9_%]+)¨2[ ¶t]+'OF'/ ¨1'switch ('¨2') {' {Target}
+find Æ1
+
+# change 		1: to		case 1: for switch statement
+replace -c ° /¥([ ¶t]+)¨1([a-zA-Z0-9_%]+)¨2':'([ ¶t]*)¨3¶n/ ¨1'case '¨2':'¨3¶n {Target}
+find Æ1
+
+# change OTHERWISE to default:
+replace -c ° /¥([ ¶t]+)¨1'OTHERWISE'/ ¨1'default:' {Target}
+find Æ1
+
+# replace DoToField(....) with obj->DoToField(....)
+replace -c ° /¥([ ¶t]*)¨1'DoToField(AtStr('¶'([a-zA-Z0-9_%.]+)¨2¶''),'[ ¶t]*([a-zA-Z0-9_%&.]+)¨3','[ ¶t]*([a-zA-Z0-9_%]+)¨4/ ¨1'obj->DoToField("'¨2'", (Ptr)'¨3', '¨4 {Target}
+find Æ1
+
+# replace member functions with new
+replace -c ° /([ ¶t]*)¨1'if (MEMBER(TObject(NIL), T'([a-zA-Z0-9_%]+)¨2')) ;'/ ¨1'a'¨2' = new T'¨2';' {Target}
+find Æ1
+
+# Move variables into block
+replace -c ° /¥([ ¶t]+)¨1'VAR'¶n([a-zA-Z0-9_%; ¶t¶n]+)¨2'{'/ ¨1'{'¶n¨2 {Target}
+find Æ1
+
+# Turn implementation uses into proper includes
+find ¥
+loop
+	break if {status}
+	find ¥
+	replace  /'USES'[ ¶t¶n]*([a-zA-Z0-9]+)¨1','/ ¶n'#ifndef __'¨1'__'¶n'#include <'¨1'.h>'¶n'#endif'¶n'USES' {Target}
+end
+find ¥
+replace  /'USES'[ ¶t¶n]*([a-zA-Z0-9]+)¨1';'/ ¶n'#ifndef __'¨1'__'¶n'#include <'¨1'.h>'¶n'#endif'¶n {Target}
+
+set CaseSensitive 0
+set Exit 1

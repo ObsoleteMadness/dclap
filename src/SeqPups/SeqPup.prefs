@@ -70,13 +70,11 @@ gWriteMasks=1
 gMinCommonPercent=70
 fgStartDoc=1
 fgViewMode=0
+fgSire=SPup
 
 
 [version=11]
-;[version=50]
 ; updates for release 0.5a, jan'96
-; !! NOTE: this [version=] flag DOESN'T REMOVE existing vars, just adds new or changes
-; try w/ 'var=' empty declaration?
 
 [paths]
 ; can use UNIX standard path descriptions here. DCLAP converts to local OS
@@ -99,7 +97,7 @@ file=File,New/N,Open.../O,Close/W,-,Save/S,Save As...,-,Print,Help/H,Quit/Q
 edit=Edit,Undo/U,-,Cut/X,Copy/C,Paste/V,Clear,-,Select All/A
 seq=Sequence
 inet=Internet
-childapp=ChildApp
+apps=ChildApp
 window=Windows
 
 [apps]
@@ -109,7 +107,12 @@ fastdnaml=FastDNAml...
 lsadt=DeSoete LSADTree...
 drawtree=Draw unrooted Tree...
 drawgram=Draw Cladogram...
+autoseq=AutoSeq base calling...
+dnaml
 ;dnaml=Phylip DNAML...
+
+[autoseq]
+form=$apps:autoseq.html
 
 [drawgram]
 form=$apps:drawgram.html
@@ -122,58 +125,51 @@ form=$apps:lsadt.html
 
 [clustal]
 form=$apps:clustalw.html
-desc
-path
-help
-cmd
-infile
-seqformat
-minseq
-outfile1
-outfile2
 
 [cap]
 form=$apps:cap2.html
-desc
-path
-help
-cmd
-infile
-seqformat
-minseq
-outfile1
 
 [fastdnaml]
 form=$apps:fastdnaml.html
-desc
-path
-help
-cmd
-infile
-seqformat
-minseq
-outfile1
-outfile2
-outfile3
 
 [dnaml]
 form=$apps:dnaml.html
-desc
-path
-help
-cmd
-infile
-stdin
-seqformat
-minseq
-outfile1
-outfile2
-;desc=A DNA max likelihood phylogeny estimator, from Phylip
-;path=$apps:dnaml
-;help=$apps:dnaml.doc
-;cmd=
-;stdin=$temp:dnaml.inseq
-;seqformat=phylip
-;minseq=2
-;outfile1=$apps:treefile	biotree/newick
-;outfile2=$apps:outfile	text/plain
+
+
+[version=63]
+; new for version 0.6c, june 1996
+
+[apps]
+autoseq=AutoSeq base calling...
+
+[autoseq]
+form=$apps:autoseq.html
+
+[inet]
+bop_title=[BOP servers]
+gcg_map=GCG Map...
+gcg_blast=GCG Blast...
+gcg_pepstruc=GCG Peptide Struct...
+gcg_motifs=GCG Motifs...
+gcg_fasta=GCG FastA...
+gcg_prime=GCG Prime...
+gcg_mfold=GCG MFold...
+gcg_pileup=GCG Pileup...
+
+[gcg_map]
+form=$apps:gcg_map.html
+[gcg_blast]
+form=$apps:gcg_blast.html
+[gcg_pepstruc]
+form=$apps:gcg_pepstruc.html
+[gcg_motifs]
+form=$apps:gcg_motifs.html
+[gcg_fasta]
+form=$apps:gcg_fasta.html
+[gcg_prime]
+form=$apps:gcg_prime.html
+[gcg_mfold]
+form=$apps:gcg_mfold.html
+[gcg_pileup]
+form=$apps:gcg_pileup.html
+

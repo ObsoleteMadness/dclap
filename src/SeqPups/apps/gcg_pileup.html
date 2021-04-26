@@ -1,0 +1,52 @@
+<html>
+<!dclap [gcg_pileup]>
+<!;network child app calls using dialog forms>
+<header cols=60 rows=25>
+
+<title>GCG pileup</title>
+</header><body>
+<b>GCG Pileup</b> 
+- Create a multiple sequence alignment from 
+a group of related sequences using progressive,
+pairwise alignments,
+from Genetics Computer Group
+<HR>
+
+<FORM 
+	METHOD=bop 
+	ACTION="bop://$bophost:$bopport/pileup 
+  myseq.msf -out=myout.msf -fig=myseq.figure
+	-GAP=$gapwt -LEN=$lenwt $endw $high $low 
+	$othercmd
+">
+
+<!A HREF=http://sunflower.bio.indiana.edu/gcg/manual/pileup.html}Help with pileup {/A>
+<INPUT TYPE=submit VALUE="Launch app"> 
+<p>
+Program options:<p>
+Gap creation penalty: <INPUT NAME=gapwt VALUE="3.0" SIZE=4>
+<p>
+Gap extension penalty: <INPUT NAME=lenwt VALUE="0.1" SIZE=4>
+<p>
+<INPUT TYPE="checkbox" NAME=endw VALUE="-ENDW">
+Penalize end gaps like other gaps.
+<p> 
+<INPUT TYPE="checkbox" NAME=high VALUE="-HIGH">
+Select top alignment path for equally optimal gaps.
+<p> 
+<INPUT TYPE="checkbox" NAME=low VALUE="-LOW">
+Select bottom alignment path for equally optimal gaps.
+<p> 
+Other options: <p>
+<TEXTAREA NAME="othercmd" COLS=40 ROWS=2></TEXTAREA>
+<p>  
+
+<INPUT TYPE=hidden NAME=infile VALUE="myseq.msf">
+<INPUT TYPE=hidden NAME=seqformat VALUE="msf">
+<INPUT TYPE=hidden NAME=minseq VALUE="1">
+<INPUT TYPE=hidden NAME=outfile1 VALUE="myout.msf biosequence/msf">
+<INPUT TYPE=hidden NAME=outfile2 VALUE="myseq.figure image/gcg-figure">
+
+</FORM>
+<HR>
+</body>

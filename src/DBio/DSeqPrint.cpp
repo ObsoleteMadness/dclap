@@ -7,6 +7,7 @@
 #include "DSeqList.h"
 #include "DSeqDoc.h"
 #include "DSeqPrint.h"
+#include "DSeqPrintSubs.h"
 #include "DREnzyme.h"
 
 #include <ncbi.h>
@@ -23,104 +24,10 @@
 #include <DUtil.h>
 
 
-enum FonStyles { 
-	kPlain = 0, kItalic = 1, kBold = 2, kUnderline = 4 
-	};
+
+#undef TESTZOOM
 
 
-enum {
-
-	kShadeInvert = 1,
-	kShadeGray50 = 2,
-	kShadeGray25 = 3,
-	kShadeGray75 = 4,
-	kShadeStipple50	= 5,
-	kShadeStipple25	= 6,
-	kShadeStipple75	= 7,
-	
-	mColorButHit = 1001,
-	mMonoButHit	= 1002,
-
-	kFontDescent = 2,
-	kIndexRise = 1,
-
-  kNameWidth  = 80,
-  kIndexWidth = 40,
-  kItemWidth  = 12,
-	kNucSpace 	= 0, //was 2
-	kBasesPerLine = 60, // was 50
-  //kSeqWidth = kItemWidth * kBasesPerLine,
-	kNucBorder	= 6,
-	kSeqLinesPerParag = 5,
-	kLinesPerParag= 7, // kSeqLinesPerParag + 2; // 5 seq + top index + top spacer
-
-	kMacdrawHeaderSize= 512
-	};
-
-enum SeqRowType { kSpacer, kTopline, kSeqline };
-
-
-#if 0
-
-#define  ShadeInvert()  { PaintRect(myRect);	TextMode(srcBIC); }
-
-					kShadeInvert: BEGIN
-						PaintRect(myRect); 
-						TextMode(srcBIC);
-						END;
-#endif
-
-
-
-
-class DSeqPrintPrefs : public DWindow {
-public:
-	enum { 
-			kSeqPrintPrefID = 1232,
-			kStylePlain,kStyleItalic,kStyleBold,kStyleUnderline,
-			cIndexLeft, cIndexRight, cIndexTop, 
-			cNameLeft, cNameRight,
-			cColored,
-			cShowComplement,cThreeLetAA,cOnlyORF,
-			cShowAA1,cShowAA2,cShowAA3,
-			cShowCompAA1,cShowCompAA2,cShowCompAA3,
-			cShowCutpoints,cShowAllZymes,cShowExcludedCutters,cShowNoncutters
-			};
-
-	static char *gNameFontName, *gBaseFontName, *gIndexFontName;
-	static Nlm_FonT	gNameFont, gBaseFont, gIndexFont;
-	static short gNameFontSize, gBaseFontSize, gIndexFontSize;
-	static short gNameStyle, gBaseStyle, gIndexStyle;
-	static Boolean gNameLeft,gNameRight,gIndexLeft,gIndexRight,gIndexTop, gColored;
-	static short gBasesPerLine;
-		// restmap prefs ..
-	static Boolean  gShowComplement,gThreeLetAA, gOnlyORF,
-				gShowAA1,gShowAA2,gShowAA3,
-				gShowCompAA1,gShowCompAA2,gShowCompAA3,
-				gShowAllZymes,gShowCutpoints,gShowExcludedCutters,gShowNoncutters;
-	static short	gREMinCuts, gREMaxCuts;
-	
-	static void InitGlobals();
-	static void SaveGlobals();
-
-	DPopupMenu  * fNameFontMenu, * fBaseFontMenu, *fIndexFontMenu,
-							* fNameStyleMenu, *fBaseStyleMenu, *fIndexStyleMenu;
-	DSwitchBox	* fNameSizeSw, * fBaseSizeSw, *fIndexSizeSw;
-	DEditText		* fREMinCuts, * fREMaxCuts, * fBasePerLine;
-	Boolean	 		fNeedSave;
-	
-	DSeqPrintPrefs();
-	virtual ~DSeqPrintPrefs();
-	virtual void Initialize();
-	virtual void Open();
-	virtual void Close();
-	virtual void OkayAction();
-	virtual Boolean IsMyAction(DTaskMaster* action); 
-	virtual void NewFontCluster(char* title, DView* mainview,
-					DPopupMenu*& mfont, DPopupMenu*& mstyle, DSwitchBox*& swsize,
-					char* fontname, short fontstyle, short fontsize );
-					
-};
 
 Global DSeqPrintPrefs* gSeqPrintPrefs = NULL;
  
@@ -163,11 +70,16 @@ Boolean
 			DSeqPrintPrefs::gShowNoncutters = false;
 short	
 			DSeqPrintPrefs::gBasesPerLine = 60,
+#ifdef WIN_MAC
+			DSeqPrintPrefs::gOutFormat = cOutPICT,
+#else
+			DSeqPrintPrefs::gOutFormat = cOutText,
+#endif			
 			DSeqPrintPrefs::gREMinCuts = 1, 
 			DSeqPrintPrefs::gREMaxCuts = 999;
 
  
-
+char DDrawMapRow::fLinebuf[DDrawMapRow::kMaxLinebuf+1];
 
 
 
@@ -177,50 +89,56 @@ inline void RectRgn(Nlm_RegioN rgn, Nlm_RectPtr r)
 	Nlm_LoadRectRgn( rgn, r->left, r->top, r->right, r->bottom);
 }
 
-inline short BaseCharWidth()
+
+static short gBaseCharWidth = 12;
+static short gLineHeight = 12;
+
+
+//inline 
+static short BaseCharWidth()
 {
-	return Nlm_CharWidth('G');
-	//return Nlm_MaxCharWidth(); 
-	//return Nlm_stdCharWidth;
+#ifdef TESTZOOM
+#if 1
+	 gBaseCharWidth= 1;
+#else
+		// TESTING...
+	if (gKeys->shift()) gBaseCharWidth= 1;	else gBaseCharWidth= 12; 
+	if (gBaseCharWidth>1) gBaseCharWidth= Nlm_CharWidth('G');
+#endif
+#else
+	gBaseCharWidth= Nlm_CharWidth('G');
+#endif
+	return gBaseCharWidth;
+}
+
+//inline 
+static short BaseLineHeight()
+{
+	gLineHeight = Nlm_LineHeight();
+	return gLineHeight;
+}
+
+//inline 
+static void BaseDraw( char b)
+{
+#ifdef TESTZOOM
+	if (gBaseCharWidth < 5) {
+		Nlm_PoinT pt;
+		Nlm_GetPen (&pt);
+    Nlm_MoveTo (pt.x, pt.y);
+    pt.y -= gLineHeight; //Nlm_LineHeight();
+    Nlm_LineTo (pt.x, pt.y);
+		}
+	else 
+#endif
+		Nlm_PaintChar(b);
 }
 
 
-class DDrawMapRow : public DObject {
-public:
-	enum { kNoIndex = -999, kMaxLinebuf= 1024 };
-	static char fLinebuf[kMaxLinebuf+1];
-	Nlm_FonT	fFont; 
-	char	* fName;
-	short	  fHeight, fRowOffset, fLinecount, fItemrow;
-
-	DDrawMapRow() : 
-		fFont(NULL), fName(NULL), fHeight(Nlm_stdLineHeight), 
-		fRowOffset(-1), fLinecount(0), fItemrow(0) 
-		{}
-	virtual void Draw( Nlm_RecT& r, short row, short col, long startitem, long stopitem) {}
-	virtual const char* Write( short row, short col, long startitem, long stopitem) { return ""; }
-	virtual char* GetName(short row) { return fName; }
-	virtual short GetIndex(short item) { return item; }
-	virtual short GetHeight( Nlm_RecT& r, short row, long startitem, long stopitem) { return fHeight; }
-	virtual Boolean DoLeftName() { return false; }
-	virtual void  Clip( Nlm_RecT& r, short row, long startitem, long stopitem,
-										 Nlm_RecT& viewr, Nlm_RegioN cliprgn)
-	{
-		Nlm_ClipRgn( cliprgn);
-	}
-};
-
-char DDrawMapRow::fLinebuf[DDrawMapRow::kMaxLinebuf+1];
 
 
-class DDrawSpacer : public DDrawMapRow {
-public:
-	char *fTitle;
-	DDrawSpacer( char* title= NULL, Nlm_FonT itsFont = NULL) : fTitle(title) { fFont= itsFont; }
-	virtual void Draw( Nlm_RecT& r, short row, short col, long startitem, long stopitem);
-	virtual const char* Write( short row, short col, long startitem, long stopitem);
-	virtual short GetIndex(short item) { return kNoIndex; }
-};
+
+// class DDrawSpacer
 
 void DDrawSpacer::Draw( Nlm_RecT& r, short row, short col, long startitem, long stopitem)
 {
@@ -243,21 +161,7 @@ const char* DDrawSpacer::Write( short row, short col, long startitem, long stopi
 
 
 
-class DDrawIndexRow : public DDrawMapRow {
-public:
-	Nlm_Boolean fIsUp;
-	short	fItemWidth;
-	DDrawIndexRow( Nlm_FonT itsFont, short itemWidth, Nlm_Boolean upright= true) : 
-		fIsUp(upright),fItemWidth(itemWidth) 
-		{ 
-			fFont= itsFont; 
-			if (fFont) Nlm_SelectFont(fFont);
-			fHeight= 3 + Nlm_LineHeight();
-		}
-	virtual void Draw( Nlm_RecT& r, short row, short col, long startitem, long stopitem);
-	virtual const char* Write( short row, short col, long startitem, long stopitem);
-	virtual short GetIndex(short item) { return kNoIndex; }
-};
+// class DDrawIndexRow 
 
 void DDrawIndexRow::Draw( Nlm_RecT& r, short row, short col, long startitem, long stopitem)
 {  
@@ -345,24 +249,7 @@ const char*  DDrawIndexRow::Write( short row, short col, long startitem, long st
 	
 	
 
-class DDrawSeqRow : public DDrawMapRow {
-public:
-	DSeqPrintView * fView;
-	ulong	* fColors;
-	DSequence * fSeq, * fTopSeq, * fBotSeq;
-	char	* fBases;
-	char	* fFirstcommon, * fCommonbase;
-	long 		fLength;
-	short		fItemWidth;
-	DList *	fStyles;
-	
-	DDrawSeqRow(Nlm_FonT itsFont, DSeqPrintView* itsView, DSequence* itsSeq,
-					 			DList* itsStyles, char* name, ulong* colors);
-	virtual void Draw( Nlm_RecT& r, short row, short col, long startitem, long stopitem);	
-	virtual const char* Write( short row, short col, long startitem, long stopitem);
-	virtual DSeqStyle* GetStyle(long ibase, short masklevel, DSequence* aSeq);
-};
-
+// class DDrawSeqRow
 
 DDrawSeqRow::DDrawSeqRow(Nlm_FonT itsFont, DSeqPrintView* itsView, DSequence* itsSeq,
 					 								DList* itsStyles, char* name, ulong* colors) : 
@@ -377,13 +264,14 @@ DDrawSeqRow::DDrawSeqRow(Nlm_FonT itsFont, DSeqPrintView* itsView, DSequence* it
 		fLength= fSeq->LengthF();
 		}
 	fFont= itsFont; 
-	fName= name; 
+	if (name) StrNCpy( fNameStore, name, sizeof(fNameStore)); 
+	else *fNameStore= 0;
+	fName= fNameStore; 
 	if (fFont) Nlm_SelectFont(fFont);
-	fHeight= Nlm_LineHeight();
+	fHeight= BaseLineHeight();
 	fItemWidth= BaseCharWidth();
 }
  
-
 
 DSeqStyle* DDrawSeqRow::GetStyle(long ibase, short masklevel, DSequence* aSeq)
 {
@@ -505,7 +393,7 @@ void DDrawSeqRow::Draw( Nlm_RecT& r, short row, short col, long startitem, long 
 					//if (style->invertcolor) Nlm_InvertColors();
 					//if (style->invertcolor) Nlm_EraseMode();//TextMode(srcBIC);
 					
-					Nlm_PaintChar(ch);
+					BaseDraw(ch);
 					needdraw= false;
 
 					//if (style->invertcolor) Nlm_CopyMode();
@@ -577,7 +465,7 @@ void DDrawSeqRow::Draw( Nlm_RecT& r, short row, short col, long startitem, long 
 					Nlm_Black(); // if WithStyle left a color set.... !!
 					curcolor= blackcolor;
 					}
-				Nlm_PaintChar(ch);
+				BaseDraw(ch);
 				laststyle= NULL;
 				}
 
@@ -586,7 +474,7 @@ void DDrawSeqRow::Draw( Nlm_RecT& r, short row, short col, long startitem, long 
 	 			// if (swapBackcolor) Nlm_SetBackColor( fColors[ch-' ']); else 
 				if (ch!=lastch) Nlm_SetColor( fColors[ch-' ']);
 				}
-			Nlm_PaintChar(ch);
+			BaseDraw(ch);
 #endif
 			lastch= ch;
 			atx += fItemWidth;   
@@ -619,21 +507,8 @@ const char* DDrawSeqRow::Write( short row, short col, long startitem, long stopi
 	
 	
 
-class DDrawManySeqRow : public DDrawSeqRow {
-public:
-	DSeqList * fSeqList;
-	//short			 fLinesPerparag, fTopPerparag;
-	
-	DDrawManySeqRow(Nlm_FonT itsFont, DSeqPrintView* itsView, 
-									DSeqList* seqlist, long seqIndex, DList* itsStyles, ulong* colors,
-									char* commonbases, char* firstcommon);
-#if 0
-	virtual ~DDrawManySeqRow();
-	virtual void Draw( Nlm_RecT& r, short row, short col, long startitem, long stopitem);	
-	virtual const char* Write( short row, short col, long startitem, long stopitem);
-	virtual char* GetName(short row);
-#endif
-};
+// class DDrawManySeqRow
+
 
 
 DDrawManySeqRow::DDrawManySeqRow(Nlm_FonT itsFont, DSeqPrintView* itsView, 
@@ -645,7 +520,8 @@ DDrawManySeqRow::DDrawManySeqRow(Nlm_FonT itsFont, DSeqPrintView* itsView,
 	fItemrow= seqIndex;
 	fSeq= seqlist->SeqAt( fItemrow);
 	if (fSeq) {
-		fName= fSeq->Name();
+		StrNCpy( fNameStore, fSeq->Name(), sizeof(fNameStore));
+		fName= fNameStore;
 		fBases= fSeq->Bases();
 		fLength= fSeq->LengthF();
 		}
@@ -704,21 +580,7 @@ const char* DDrawManySeqRow::Write( short row, short col, long startitem, long s
 
 
 
-class DDrawAminoRow : public DDrawMapRow {
-public:
-	char		fNameStore[20];
-	char		* fBases;
-	short		fFrame, fItemWidth;
-	Boolean fThreeLet, fOnlyORF;
-	DSequence * fAAseq;
-	long		fLength;
-	
-	DDrawAminoRow(Nlm_FonT itsFont, DSequence* itsSeq, short frame);
-	virtual ~DDrawAminoRow() { if (fAAseq) delete fAAseq; }
-	virtual void Draw( Nlm_RecT& r, short row, short col, long startitem, long stopitem);	
-	virtual const char* Write( short row, short col, long startitem, long stopitem);
-	virtual short GetIndex(short item) { return kNoIndex; }
-};
+// class DDrawAminoRow
 
 
 DDrawAminoRow::DDrawAminoRow(Nlm_FonT itsFont, DSequence* itsSeq, short frame) : 
@@ -730,7 +592,7 @@ DDrawAminoRow::DDrawAminoRow(Nlm_FonT itsFont, DSequence* itsSeq, short frame) :
 	short   offset = frame % 3;
 	fFont= itsFont;
 	if (fFont) Nlm_SelectFont(fFont);
-	fHeight= Nlm_LineHeight();
+	fHeight= BaseLineHeight();
 	fItemWidth= BaseCharWidth();
 	sprintf( fNameStore, "aa%d", frame);
 	fName= fNameStore;
@@ -815,7 +677,7 @@ void DDrawAminoRow::Draw( Nlm_RecT& r, short row, short col, long startitem, lon
 				}
 			else for (b= bases+startitem; *b && len; b++, len--) {
 				Nlm_MoveTo( chleft, chvert);
-				Nlm_PaintChar(*b);
+				BaseDraw(*b);
 				chleft += chwidth;
 				}		
 			}
@@ -858,640 +720,6 @@ const char* DDrawAminoRow::Write( short row, short col, long startitem, long sto
 	
 
 
-class DDrawZymeTable : public DDrawMapRow { 
-public:
-	char** fLinelist;
-	char * fTableTitle;
-	
-	DDrawZymeTable(Nlm_FonT itsFont, DREMap* itsREMap, short rowoffset);
-	virtual ~DDrawZymeTable();
-	virtual void Draw( Nlm_RecT& r, short row, short col, long startitem, long stopitem);	
-	virtual const char* Write( short row, short col, long startitem, long stopitem);
-	virtual short GetIndex(short item) { return kNoIndex; }
-	virtual char* TableLine(short atline); 
-	virtual void  Clip( Nlm_RecT& r, short row, long startitem, long stopitem,
-										 	Nlm_RecT& viewr, Nlm_RegioN cliprgn);
-};
-
-class DDrawAllZymeTable : public DDrawZymeTable { 
-public:
-	DDrawAllZymeTable(Nlm_FonT itsFont, DREMap* itsREMap, short rowoffset);
-};
-
-class DDrawNocutZymeTable : public DDrawZymeTable { 
-public:
-	DDrawNocutZymeTable(Nlm_FonT itsFont, DREMap* itsREMap, short rowoffset, 
-											short mincuts = 0, short maxcuts = 0);
-};
-
-
-DDrawZymeTable::DDrawZymeTable(Nlm_FonT itsFont, DREMap * itsREMap, short rowoffset) :
-		fLinelist(NULL)
-{
-  fName= "";
-	fFont= itsFont;
-	if (fFont) Nlm_SelectFont(fFont);
-	fHeight= Nlm_LineHeight(); 
-	fTableTitle= "TABLE of enzymes";
-	fRowOffset= rowoffset;
-}
-
-DDrawZymeTable::~DDrawZymeTable() 
-{ 
-	for (short i=0; i<fLinecount; i++) MemFree( fLinelist[i]);
-	MemFree( fLinelist); 
-}
-
-
-char* DDrawZymeTable::TableLine(short atline) 
-{ 
-	//if (atline == 0) return fTableTitle; else 
-	if (atline>=0 && atline<fLinecount) return fLinelist[atline];  
-	else return "";
-}
-
-void  DDrawZymeTable::Clip( Nlm_RecT& r, short row, long startitem, long stopitem,
-										 Nlm_RecT& viewr, Nlm_RegioN cliprgn)
-{
-	//Nlm_ClipRgn( cliprgn);
-	Nlm_RecT clipr= r;
-	clipr.left= viewr.left + 10;
-	clipr.right= viewr.right - 10;
-	clipr.bottom= Min( r.bottom, viewr.bottom);
-	clipr.top= Max(r.top, viewr.top);
-	Nlm_ClipRect( &clipr);
-}
-
-void DDrawZymeTable::Draw( Nlm_RecT& r, short row, short col, long startitem, long stopitem)
-{
-	short	 chleft, chvert, atline;
-	char  * tabline;
-	
-	chleft = r.left;
-	chvert = r.bottom-2;
-	atline = row - fRowOffset;
-	tabline= TableLine(atline);
-	if (tabline) {
-		if (col) { 
-		  if (StrLen(tabline)>col) tabline += col; // ??? offset TableLine by # cols ?
-			else tabline= "";
-			}
-		if (fFont) Nlm_SelectFont(fFont);
-	  if (atline == 0) {
-			Nlm_MoveTo( chleft, chvert-1);
-	 		Nlm_PaintString( tabline);
-			Nlm_MoveTo( r.left, r.bottom-1);
-			Nlm_LineTo( r.right, r.bottom-1);
-	  	}
-		else if (atline >= 0 && atline < fLinecount) {
-			Nlm_MoveTo( chleft, chvert);
-			Nlm_PaintString( tabline);
-			}
-		}
-}
-
-const char* DDrawZymeTable::Write( short row, short col, long startitem, long stopitem)
-{ 
-	long   len, atline;
-	char   * cp;
-
-	atline = row - fRowOffset;
-	len= Min( kMaxLinebuf, 80);
-  if (atline == 0) {
-		Nlm_MemFill( fLinebuf, '_', len);
- 		StrCpy( fLinebuf, TableLine(atline));
- 		cp= StrChr(fLinebuf, '\0');
- 		if (cp) *cp= ' ';
-  	}
-	else if (atline >= 0 && atline < fLinecount) {
-		Nlm_MemFill( fLinebuf, ' ', len);
-		cp = TableLine(atline);
-		StrCpy( fLinebuf, cp);
- 		cp= StrChr(fLinebuf, '\0');
- 		if (cp) *cp= ' ';
-		}
-	else {
-		Nlm_MemFill( fLinebuf, ' ', len);
-		}
-	fLinebuf[len]= 0;
-	return fLinebuf;
-}
-
-
-
-DDrawAllZymeTable::DDrawAllZymeTable(Nlm_FonT itsFont, DREMap * itsREMap, short rowoffset) :
-		DDrawZymeTable( itsFont, itsREMap, rowoffset)
-{ 
-	fTableTitle= "TABLE of all enzymes";
-	if (1) {
-		char  * zymeline = NULL;
-		long  i, nzymes, linelen, linecount;
-		char  buf[128], comma;
-
-		nzymes= DREMap::fREnzymes->GetSize();
-		linecount= 4 + nzymes / 4;
-		fLinelist= (char**) MemNew( linecount * sizeof(char*)); 
-		fLinecount= 0;
-		sprintf( buf, "  TABLE of All Enzymes  (name: cut count)");
-		fLinelist[fLinecount++]= StrDup(buf);
-		//sprintf( buf, " ");
-		//fLinelist[fLinecount++]= StrDup(buf);
-	
-		for (i=0, comma = ','; i<nzymes; i++) {
-			if (i == nzymes-1) comma= ' ';
-			DREnzyme* re= (DREnzyme*) DREMap::fREnzymes->At(i);
-			if (re) {
-				//sprintf( buf, "%10s:%3d%c  ", re->fName, re->fCutcount, comma);
-				sprintf( buf, "%9s:%3d  ", re->fName, re->fCutcount, comma);
-				if (zymeline)  
-					zymeline= Dgg_StrExtendCat( &zymeline, buf);
-				else {
-					zymeline= StrDup(buf);
-					}
-			  linelen= StrLen(zymeline);
-				if (linelen > 70) {
-					fLinelist[fLinecount++]= zymeline;
-					zymeline= NULL;
-					}
-				}
-
-		  if (fLinecount >= linecount) {
-		  	linecount += 10;
-		  	fLinelist= (char**) Nlm_MemMore( fLinelist, linecount * sizeof(char*));
-		  	}
-			}
-		if (zymeline) fLinelist[fLinecount++]= zymeline;
-		}
-}
-
-
-DDrawNocutZymeTable::DDrawNocutZymeTable( Nlm_FonT itsFont, DREMap * itsREMap,
-			 short rowoffset, short mincuts, short maxcuts) :
-		DDrawZymeTable( itsFont, itsREMap, rowoffset)
-{ 
-	if (maxcuts) fTableTitle= "TABLE of excluded enzymes";
-	else fTableTitle= "TABLE of non-cutting enzymes";
-	if (1) {
-		char  * zymeline = NULL;
-		long  i, nzymes, linelen, linecount;
-		char  buf[128], comma;
-		Boolean dolist;
-		
-		nzymes= DREMap::fREnzymes->GetSize();
-		linecount= 4 + nzymes / 6;
-		fLinelist= (char**) MemNew( linecount * sizeof(char*)); 
-		fLinecount= 0;
-		if (maxcuts) sprintf( buf, "  TABLE of Excluded Enzymes");
-		else sprintf( buf, "  TABLE of Noncutting Enzymes");
-		fLinelist[fLinecount++]= StrDup(buf);
-		if (maxcuts) {
-			sprintf( buf, "  (cut with less than %d or more than %d cuts)", mincuts, maxcuts);
-			fLinelist[fLinecount++]= StrDup(buf);
-			}
-			
-		for (i=0, comma = ','; i<nzymes; i++) {
-			//if (i == nzymes-1) comma= ' ';
-			DREnzyme* re= (DREnzyme*) DREMap::fREnzymes->At(i);
-			if (re) {
-				if (maxcuts)  
-					dolist= (re->fCutcount > 0 && (re->fCutcount < mincuts || re->fCutcount > maxcuts));  
-				else 
-					dolist= re->fCutcount == 0;
-				if (dolist) {
-					//sprintf( buf, "%9s%c ", re->fName,comma);
-					sprintf( buf, "%9s ", re->fName);
-					if (zymeline)  
-						zymeline= Dgg_StrExtendCat( &zymeline, buf);
-					else {
-						zymeline= StrDup(buf);
-						}
-				  linelen= StrLen(zymeline);
-					if (linelen > 60) {
-						fLinelist[fLinecount++]= zymeline;
-						zymeline= NULL;
-						}
-					}
-				}
-
-		  if (fLinecount >= linecount) {
-		  	linecount += 10;
-		  	fLinelist= (char**) Nlm_MemMore( fLinelist, linecount * sizeof(char*));
-		  	}
-			}
-		if (zymeline) fLinelist[fLinecount++]= zymeline;
-		}
-}
-
-
-
-
-
-
-
-
-class DDrawZymeCutTable : public DDrawZymeTable { 
-public:
-	DRECutsItem * fCutList;  			 
-	long	fCutcount;
-	short	fCuttersCount; 			//# zymes that cut
-	
-	DDrawZymeCutTable(Nlm_FonT itsFont, DREMap* itsREMap, short rowoffset);
-	virtual ~DDrawZymeCutTable();
-	virtual char* TableLine(short atline); 
-	virtual char* GetName(short row); 
-	virtual Boolean DoLeftName() { return true; }
-};
-
-
-#ifdef WIN_MSWIN
-static int LIBCALLBACK
-#else
-static int
-#endif
-zymenameCompare(void* a, void* b)
-{
-	short diff = StringCmp(((DRECutsItem*)a)->fREnzyme->fName, ((DRECutsItem*)b)->fREnzyme->fName);
-	if (diff == 0) {
-		return ((DRECutsItem*)a)->fSeqIndex - ((DRECutsItem*)b)->fSeqIndex;
-		}
-	else 
-		return diff;
-}
-
-
-
-DDrawZymeCutTable::DDrawZymeCutTable(Nlm_FonT itsFont, DREMap * itsREMap, short rowoffset) :
-		DDrawZymeTable( itsFont, itsREMap, rowoffset),
-		fCutList(NULL), fCutcount(0), fCuttersCount(0)
-{ 
-	fTableTitle= "TABLE of cut points";
-	if (itsREMap) {
-		fCutcount= itsREMap->fCutcount;
-		fCuttersCount= itsREMap->fCuttersCount;
-		fCutList= (DRECutsItem*) Nlm_MemDup( itsREMap->fSeqCuts, fCutcount * sizeof(DRECutsItem));
-		if (fCutList) {
-			long  i, at, lastat, linecount, linelen;
-			char  *name, *zymeline = NULL, *lastname="";
-			char  buf[128];
-			
-			Nlm_HeapSort( fCutList, fCutcount, sizeof(DRECutsItem), zymenameCompare);
-			
-			// what if we need more than one line for zyme cut list !!
-			for (i=0, linecount= 0; i<fCutcount; i++) {
-				name= fCutList[i].fREnzyme->fName;
-				if (StringCmp(name, lastname)!=0) linecount++;
-				lastname= name;
-				}
-		  linecount += 3;
-			fLinelist= (char**) MemNew( linecount * sizeof(char*)); 
-			
-			fLinecount= 0;
-			sprintf( buf, "  TABLE of Cut Points");
-			fLinelist[fLinecount++]= StrDup(buf);
-			//sprintf( buf, " ");
-			//fLinelist[fLinecount++]= StrDup(buf);
-
-		  linelen= 0;
-			lastname= ""; lastat= -1;
-			for (i=0; i<fCutcount && fLinecount < linecount; i++) {
-				name= fCutList[i].fREnzyme->fName;
-				at= fCutList[i].fSeqIndex;
-				if (StringCmp(name, lastname)==0 && linelen<70) { 
-					if (at != lastat) {
-					  sprintf(buf, " %d", at);
-						if (zymeline) { 
-						  zymeline= Dgg_StrExtendCat( &zymeline, buf);
-						  linelen= StrLen(zymeline);
-						  }
-					  }
-					}
-				else {
-					if (zymeline) fLinelist[fLinecount++]= zymeline;
-					sprintf(buf, "%s: %d", name, at);
-					zymeline= (char*) MemNew(StrLen(buf)+1);
-					Nlm_StringCpy(zymeline, buf);
-					linelen= StrLen(buf);
-					}
-					
-				lastname= name;
-				lastat= at;
-			  if (fLinecount >= linecount) {
-			  	linecount += 10;
-			  	fLinelist= (char**) Nlm_MemMore( fLinelist, linecount * sizeof(char*));
-			  	}
-				}
-			if (zymeline) fLinelist[fLinecount++]= zymeline;
-			}
-		}
-}
-
-
-DDrawZymeCutTable::~DDrawZymeCutTable() 
-{ 
-	MemFree( fCutList); 
-}
-
-char* DDrawZymeCutTable::TableLine(short atline) 
-{ 
-	//if (atline == 0) return fTableTitle; else 
-	if (atline>=0 && atline<fLinecount) {
-		char * name = fLinelist[atline];
-		char * cp= StrChr(name,':'); 
-		if (cp) cp++; else cp= name;
-		return cp;  
-		}
-	else return "";
-}
-
-char* DDrawZymeCutTable::GetName(short row) 
-{ 
-	enum { kNameLen = 80 };
-	static char name[kNameLen];
-	short atline = row - fRowOffset;
-  if (atline == 0) {
-		return "ENZYME";
-		}
-	else if (atline> 0 && atline < fLinecount) {
-		StrNCpy(name, fLinelist[atline], kNameLen-1);
-		name[kNameLen-1]= 0;
-		char* cp= StrChr(name,':'); if (cp) *cp= 0;
-		return name;
-		}
-	else
-		return fName; 
-}
-
-
-
-class DDrawZymeRow : public DDrawMapRow { 
-public:
-  DSequence * fSeq, * fCoSeq;
-	DREMap * fREMap;
-	short		fMinCuts, fMaxCuts;
-	DRECutsItem * fCutList;
-	Boolean 	fGoodMap;
-	
-	DDrawZymeRow( Nlm_FonT itsFont, DSequence* itsSeq);
-	virtual ~DDrawZymeRow() { delete fREMap; }
-	virtual short DrawOrMeasure( Nlm_Boolean doDraw, Nlm_RecT& r, short row, long startitem, long stopitem);	
-	virtual void  Draw( Nlm_RecT& r, short row, short col, long startitem, long stopitem);	
-	virtual const char* Write( short row, short col, long startitem, long stopitem);
-	virtual short GetIndex(short item) { return kNoIndex; }
-	virtual short GetHeight( Nlm_RecT& r, short row, long startitem, long stopitem); 
-	virtual void  Clip( Nlm_RecT& r, short row, long startitem, long stopitem,
-										 	Nlm_RecT& viewr, Nlm_RegioN cliprgn);
-};
-
-
-DDrawZymeRow::DDrawZymeRow(Nlm_FonT itsFont, DSequence* itsSeq) : 
-	  fSeq( itsSeq), fGoodMap(false), fCoSeq(NULL), fCutList(NULL),
-	  fMinCuts(DSeqPrintPrefs::gREMinCuts), 
-	  fMaxCuts(DSeqPrintPrefs::gREMaxCuts)
-{ 
-  fName= "zyme";
-	fFont= itsFont;
-	if (fFont) Nlm_SelectFont(fFont);
-	fHeight= 4 * Nlm_LineHeight(); // ! need to calc line height for each row !?
-	fREMap= new DREMap();
-	if (fREMap) {
-		fREMap->MapSeq(fSeq);
-		fCoSeq= fREMap->fCoSeq;
-		fCutList= fREMap->fSeqCuts;
-		}
-	fGoodMap= (fREMap && fCoSeq && fCutList);
-}
-
-void  DDrawZymeRow::Clip( Nlm_RecT& r, short row, long startitem, long stopitem,
-										 Nlm_RecT& viewr, Nlm_RegioN cliprgn)
-{
-	//Nlm_ClipRgn( cliprgn);
-	Nlm_RecT clipr= r;
-	clipr.left= viewr.left + 10;
-	clipr.right= viewr.right - 10;
-	clipr.bottom= Min( r.bottom, viewr.bottom);
-	clipr.top= Max(r.top, viewr.top);
-	Nlm_ClipRect( &clipr);
-}
-
-
-#define znameCenter 0
-
-short DDrawZymeRow::DrawOrMeasure( Nlm_Boolean doDraw, Nlm_RecT& r, short row, long startitem, long stopitem)
-{
-/*==== 
-		gctcggctgctgctcggctg
-				||        | ||
-			 abcI    cbaII
-									hcgX
-====*/
- 
-	short		nameHeight, rowLeft, rowTop;
-	short		chwidth, chleft, ncuts, cutindx;
-	short		cuts, wd, ws, rowBot, lasti, i;
-	Nlm_PoinT		at;
-	Boolean 		first,overlap;
-	char 			* lastzyme, * zymes;	
-	Nlm_RecT		fillRect, bRect, cRect;
-	Nlm_RegioN 	filledArea, aRgn;
-
-	if (!fGoodMap) return 0;
-	cutindx = 0; //cutindx= fLastZymeCut;
-	fREMap->CutsAtBase( startitem, cutindx, ncuts);	//!? don't care if startbase has no cuts
-	//fLastZymeCut= cutindx; // ????
-	
-	if (fFont) Nlm_SelectFont(fFont); 
-
-	//atcellh= col;
-	nameHeight= Nlm_FontHeight(); // cHeight;
-	rowTop= r.top;
-	rowLeft= r.left;
-	rowBot= rowTop;
-	chwidth= (r.right - r.left) / (stopitem - startitem); 
-	
-	filledArea= Nlm_CreateRgn();
-	aRgn= Nlm_CreateRgn();
-	
-	chleft= rowLeft + kNucSpace;
-	Nlm_LoadRect( &fillRect, chleft, rowTop, chleft+1, rowTop+1);
-	RectRgn( filledArea, &fillRect); //must start w/ non-empty rgn
-	Nlm_MoveTo( chleft, rowTop);
-	for ( i= startitem; i<=stopitem; i++) {		
-		while (fCutList[cutindx].fSeqIndex < i) cutindx++;  
-		first= true;
-		lasti= -1; 
-		lastzyme= "";
-		while (fCutList[cutindx].fSeqIndex == i) {
-			zymes= fCutList[cutindx].fREnzyme->fName;
-			cuts = fCutList[cutindx].fREnzyme->fCutcount;
-			cutindx++;
-			if (cuts < fMinCuts || cuts > fMaxCuts)  goto nextZyme;  
-				//! Kludge til we fix REMap to stop dups
-			if ( i==lasti && StringCmp(zymes,lastzyme)==0) goto nextZyme; 
-			lasti= i; 
-			lastzyme= zymes;
-			
-			if (first) {
-				Nlm_MoveTo( chleft, rowTop);
-				if (doDraw) Nlm_LineTo( chleft, rowTop+2/*kTicSize*/);
-				else Nlm_MoveTo( chleft, rowTop+2);
-				}
-
-			ws= Nlm_StringWidth( zymes);
-			wd= 2 + ws / 2;
-			do {
-				Nlm_GetPen( &at);
-#if znameCenter
-				Nlm_LoadRect( &cRect, at.x-wd, at.y, at.x+wd, at.y+nameHeight);
-#else
-				Nlm_LoadRect( &cRect, at.x-1, at.y, at.x+ws+1, at.y+nameHeight);
-#endif
-				overlap= Nlm_RectInRgn( &cRect, filledArea); 
-			
-				if (doDraw && overlap && !first) {
-					//!? replace this w/ draw top to bottom of line, then overwrite zyme names 
-					Nlm_LoadRect( &bRect, at.x, at.y-nameHeight, at.x+1, at.y);
-					if (!Nlm_RectInRgn( &bRect, filledArea)) {
-						Nlm_MoveTo( chleft, at.y-nameHeight+1);
-						Nlm_LineTo( chleft, at.y);
-						}
-					}
-				first= false;
-				Nlm_MoveTo( chleft, at.y+nameHeight);
-			} while (overlap);
-	
-			RectRgn( aRgn, &cRect);
-			Nlm_UnionRgn(filledArea, aRgn, filledArea);
-#if znameCenter
-			Nlm_MoveTo( chleft - (ws / 2), at.y+nameHeight);
-#else
-			Nlm_MoveTo( chleft, at.y+nameHeight);
-#endif
-			if (doDraw) {
-				//TextMode(srcCopy);  //erase line overlaps...
-				Nlm_PaintString( zymes); 
-				//TextMode(srcOr);
-				}
-			Nlm_GetPen( &at);
-			rowBot = Max( rowBot, at.y);   
-nextZyme:			
-			lasti= i;
-			}
-			
-		//spaceright();
-		//chright= chleft + GetColWidth(atCellh) - fColInset;
-		//chleft = chright + fColInset;
-		//atcellh++;
-		chleft += chwidth;
-		}
-	Nlm_DestroyRgn( filledArea);
-	Nlm_DestroyRgn( aRgn);
-	return (rowBot - rowTop + 2); //+ 12); /* lineHeight + fudge factor*/	
-}
-
-
-
-
-const char* DDrawZymeRow::Write( short row, short col, long startitem, long stopitem)
-{ 
-/*==== 
-		gctcggctgctgctcggctg
-				||        | ||
-			 abcI    cbaII
-									hcgX
-====*/
-
-	short		chleft, ncuts, cutindx;
-	short		cuts, ws, lasti;
-	Boolean 		first,overlap;
-	char 			* lastzyme, * zymes;	
-
-	short	linelen;
-	long  len, i, nlines, maxlines;
-	char ** lines;
-	short zlen, zat, atleft, atline;
-
-
-	if (!fGoodMap) return 0;
-	len= Min( kMaxLinebuf, stopitem-startitem);
-	Nlm_MemFill( fLinebuf, ' ', kMaxLinebuf);
-
-	linelen= stopitem-startitem + 5; // +2;
-	maxlines= kMaxLinebuf / linelen;
-	lines= (char**) MemNew( (maxlines+1) * sizeof(char*));
-	for (i=0; i<maxlines; i++) lines[i]= fLinebuf + (linelen * i);
-	nlines= 0;
-	
-	cutindx = 0; //cutindx= fLastZymeCut;
-	fREMap->CutsAtBase( startitem, cutindx, ncuts);	//!? don't care if startbase has no cuts
-	//fLastZymeCut= cutindx; // ????
-		
-	for ( i= startitem; i<=stopitem; i++) {		
-		while (fCutList[cutindx].fSeqIndex < i) cutindx++;  
-		first= true;
-		lasti= -1; 
-		lastzyme= "";
-		chleft= i - startitem;
-		while (fCutList[cutindx].fSeqIndex == i) {
-			zymes= fCutList[cutindx].fREnzyme->fName;
-			cuts = fCutList[cutindx].fREnzyme->fCutcount;
-			cutindx++;
-			if (cuts < fMinCuts || cuts > fMaxCuts)  goto nextZyme;  
-				//! Kludge til we fix REMap to stop dups
-			if ( i==lasti && StringCmp(zymes,lastzyme)==0) goto nextZyme; 
-			lasti= i; 
-			lastzyme= zymes;
-			
-			if (first) {
-				lines[0][chleft]= '|';
-				first= false;
-				}
-
-			ws= StrLen( zymes);
-#if znameCenter
-			wd= ws / 2;
-			atleft= chleft - wd;
-#else
-			atleft= chleft;
-#endif
-			atline= 1;
-			do {
-		  	for (zlen=0, zat=atleft, overlap= false; zlen<ws; zlen++, zat++) 
-			  	if (lines[atline][zat] != ' ') { overlap= true; break; }
-			  if (overlap) atline++;
-			} while (overlap && atline<maxlines);
-			MemCpy( lines[atline]+atleft, zymes, ws);
-			if (++atline > nlines) nlines= atline;
-			first= false;
-			
-nextZyme:			
-			lasti= i;
-			}
-			
-		}
-
-	//return  (rowBot - rowTop + 12); /* lineHeight + fudge factor*/	
-
-	for (i=1; i<nlines; i++) *(lines[i]-1)= '\n';
-	if (nlines) lines[nlines-1][linelen-1]= 0;
-	MemFree(lines);
-	fLinebuf[kMaxLinebuf]= 0;
-	return fLinebuf;
-}
-
-
-
-short DDrawZymeRow::GetHeight( Nlm_RecT& r, short row, long startitem, long stopitem)
-{ 
-	return DrawOrMeasure( false, r, row, startitem, stopitem);
-}
-
-void DDrawZymeRow::Draw( Nlm_RecT& r, short row, short col, long startitem, long stopitem)
-{
-	if (col) { startitem += col; } // ??? 
-	(void) DrawOrMeasure( true, r, row, startitem, stopitem);
-}
-
-
 
 
 
@@ -1527,47 +755,6 @@ methods & fields for various draw objects:
 
 // class DSeqPrintView
 
-class DSeqPrintView : public DTableView 
-{
-public:
-	Boolean		fOneseq, fDoLeftName, fDoRightName, 
-						fDoTopIndex, fDoLeftIndex, fDoRightIndex; 
-	Nlm_FonT	fNameFont, fNumFont, fBaseFont;
-	short 		fBaseWidth, fIndexWidth, fIndexWidthCnt, fNameWidth, fNameWidthCnt, 
-						fSeqsperparag, fExtrarows, fSeqLinesPerParag, fLinesPerParag, 
-						fTopPerparag, fBasesPerLine, fTenSpacer;
-	long 			fFirstBase, fNbases, fMaxbases, fSeqWidth;
-	DSeqPrintDoc	* fDoc;
-	DSeqList	* fSeqList;  
-	DSequence * fSeq;
-	DList			* fDrawRowList, * fStyles;
-	DFile			* fFile;
-	char			* fCommonbase, * fFirstcommon;
-
-	//DCheckBox*		fLeftName, fRightName, fTopIndex, fLeftIndex, fRightIndex ;
-	//DDlogTextView*		fStyleName, fStyleBase, fStyleNums; 
-	
-	DSeqPrintView( long id, DView* itsSuper, DSeqPrintDoc* itsDocument,
-								 DSeqList* itsSeqList, long firstbase, long nbases,
-								 long pixwidth, long pixheight);
-	virtual ~DSeqPrintView();
-	virtual void Initialize();
-
-	virtual void MakeDrawList();
-	virtual void Draw();
-	virtual void DrawRow(Nlm_RecT r, short row);
-	virtual void IndexFromRow( short row, long& itemrow, long& seqline, long& startitem, long& stopitem);
-	virtual void GetReadyToShow();
-	virtual void DrawSideIndex( Nlm_RecT& aRect, long atBase, long leftBorder);
-	virtual void WriteSideIndex( long atBase, long leftBorder);
-	virtual void DrawName( Nlm_RecT& aRect, short rightBorder, char* name);
-	virtual void WriteName( short rightBorder, char* name);
-	virtual short GetExtraRows() { return fExtrarows; }
-
-	virtual void WriteTo(DFile* aFile);
-	virtual	void WriteRow(short row);
-};
-
 
 
 DSeqPrintView::DSeqPrintView( long id, DView* itsSuper, DSeqPrintDoc* itsDocument,
@@ -1586,6 +773,9 @@ DSeqPrintView::DSeqPrintView( long id, DView* itsSuper, DSeqPrintDoc* itsDocumen
 	fNameWidth(kNameWidth), fNameWidthCnt(8)
 
 { 
+		// testing reduced view
+	if (gKeys->shift()) gBaseCharWidth= 1;	else gBaseCharWidth= 12; 
+
 	this->SetSlateBorder( false);
 	this->SetResize( DView::relsuper, DView::relsuper);
 	this->SetTableFont(gTextFont);
@@ -1598,10 +788,32 @@ DSeqPrintView::DSeqPrintView( long id, DView* itsSuper, DSeqPrintDoc* itsDocumen
 }
 
 
+void DSeqPrintView::FreeLists()
+{
+	short i, n;
+	if (fDrawRowList) {
+		n= fDrawRowList->GetSize();
+		for (i=0; i<n; i++) {
+			DDrawMapRow	*	arow= (DDrawMapRow*) fDrawRowList->At(i);
+			delete arow;
+			}
+		delete fDrawRowList;
+		}
+	if (fStyles) {
+		n= DStyleTable::fStyles->GetSize();
+		for (i=0; i<n; i++) {
+			DSeqStyle	*	astyle= (DSeqStyle*) DStyleTable::fStyles->At(i);
+			delete astyle;
+			}
+		delete fStyles;
+		}
+}
+
 DSeqPrintView::~DSeqPrintView()
 {	
-	fDrawRowList= FreeListIfObject(fDrawRowList);
-	fStyles= FreeListIfObject(fStyles);
+	//fDrawRowList= FreeListIfObject(fDrawRowList);
+	//fStyles= FreeListIfObject(fStyles);
+	FreeLists();
 	MemFree( fCommonbase);
 	MemFree( fFirstcommon);
 }
@@ -1623,8 +835,10 @@ void DSeqPrintView::Initialize()
 void DSeqPrintView::MakeDrawList()
 {
 	short i, n;
-	fDrawRowList= FreeListIfObject(fDrawRowList);
-	fDrawRowList= new DList(NULL, DList::kDeleteObjects);
+
+	FreeLists();
+	//fDrawRowList= FreeListIfObject(fDrawRowList);
+	fDrawRowList= new DList(); // NULL, DList::kDeleteObjects << bad, doesn't call destruct
 	fDrawRowList->InsertLast( new DDrawSpacer());
 	if (fDoTopIndex) 
 		fDrawRowList->InsertLast( new DDrawIndexRow(fNumFont,fBaseWidth));
@@ -1635,8 +849,8 @@ void DSeqPrintView::MakeDrawList()
 	else if (fSeq->Kind() == DSequence::kAmino) colors= DBaseColors::gAAcolors;
 	else colors= DBaseColors::gNAcolors;
 
-	fStyles= FreeListIfObject(fStyles);
-	fStyles= new DList(NULL,DList::kDeleteObjects);
+	//fStyles= FreeListIfObject(fStyles);
+	fStyles= new DList(); // NULL,DList::kDeleteObjects << bad
 	n= DStyleTable::fStyles->GetSize();
 	for (i=0; i<n; i++) {
 		DSeqStyle	*	astyle= (DSeqStyle*) DStyleTable::fStyles->At(i);
@@ -1787,7 +1001,7 @@ void DSeqPrintView::WriteName( short rightBorder, char* name)
 }
 
 
-void DSeqPrintView::IndexFromRow( short row, long& itemrow, long& seqline, long& startitem, long& stopitem)
+void DSeqPrintView::IndexFromRow( long row, long& itemrow, long& seqline, long& startitem, long& stopitem)
 {
 	itemrow	= (row % fLinesPerParag);  
 	seqline = (row / fLinesPerParag) * fSeqsperparag;   
@@ -1825,10 +1039,10 @@ void DSeqPrintView::Draw()
 #endif
 }
 
-void DSeqPrintView::DrawRow(Nlm_RecT r, short row)
+void DSeqPrintView::DrawRow(Nlm_RecT r, long row)
 {
 	long 			itemrow, seqline, startitem, stopitem;
-	short 		col, ncols;
+	long 		col, ncols;
 	Nlm_RecT	r1, viewr;
 	Nlm_RegioN 	cliprgn;
 	DDrawMapRow * drawer;
@@ -1911,10 +1125,10 @@ void DSeqPrintView::WriteTo(DFile* aFile)
 		}
 }
 
-void DSeqPrintView::WriteRow(short row)
+void DSeqPrintView::WriteRow(long row)
 {
 	long 			itemrow, seqline, startitem, stopitem;
-	short 		col, ncols;
+	long 		col, ncols;
 	DDrawMapRow * drawer;
 	char * newline, * atline;
 	
@@ -1985,6 +1199,9 @@ DSeqPrintDoc::DSeqPrintDoc( long id, DSeqDoc* itsDoc, DSeqList* itsSeqList, long
 	
 	//gTextFont = Nlm_GetFont( "Courier", 10, false, false, false, "Fixed");
 	//if (gTextFont == NULL) gTextFont= Nlm_programFont;
+
+		// testing reduced view
+	if (gKeys->shift()) gBaseCharWidth= 1;	else gBaseCharWidth= 12; 
 
 	if (!Nlm_EmptyRect(&fgPrWinRect))  {
 		left= MAX(20,fgPrWinRect.left);
@@ -2125,11 +1342,23 @@ void DSeqPrintDoc::WriteTo(DFile* aFile)
 {
 		// offer user choice of Text or PICT (or other? - PS) output
 		// need popup choice in save-as dialog...
-	if (gKeys->shift())
-		fView->WriteTo( aFile); // TEXT
-	else
-		fView->WriteToPICT( aFile); // PICT
+		
+	short outform= DSeqPrintPrefs::gOutFormat;
+	if (gKeys->shift()) {
+		if (outform == DSeqPrintPrefs::cOutText) outform= DSeqPrintPrefs::cOutPICT;
+		else outform= DSeqPrintPrefs::cOutText; 
+		}
+	switch (outform) {
+		case DSeqPrintPrefs::cOutPICT:
+			fView->WriteToPICT( aFile);
+			break;
+		case DSeqPrintPrefs::cOutText:
+		default:
+			fView->WriteTo( aFile); 
+			break;
+		}
 }
+		
 
 
 void DSeqPrintDoc::Print()  
@@ -2150,12 +1379,6 @@ void DSeqPrintDoc::Print()
 
 // class DAlnPrintView
 
-class DAlnPrintView : public DSeqPrintView {
-public:
-
-	DAlnPrintView( long id, DView* itsSuper, DSeqPrintDoc* itsDocument,
-								 DSeqList* itsSeqList, long firstbase, long nbases, long pixwidth, long pixheight);
-};
 
 DAlnPrintView::DAlnPrintView( long id, DView* itsSuper, DSeqPrintDoc* itsDocument,
 								 DSeqList* itsSeqList, long firstbase, long nbases, long pixwidth, long pixheight):
@@ -2190,259 +1413,6 @@ DAlnPrintDoc::DAlnPrintDoc( long id, DSeqDoc* itsDoc, DSeqList* itsSeqList, long
 
 
 
-// class DREMapPrintView
-
-class DREMapPrintView : public DSeqPrintView {
-public:
-	Boolean fDoAAline[6];
-	Boolean fDoSeqLine,fDoMidIndex,fDoCoseqLine,fDoZymeLine;
-	short		fMaxseqrow;
-	
-	DREMapPrintView( long id, DView* itsSuper, DSeqPrintDoc* itsDocument,
-					DSeqList* itsSeqList, long firstbase, long nbases, long pixwidth, long pixheight);
-	virtual void Initialize();
-	virtual void MakeDrawList();
-	virtual void SetScrollPage();
-	virtual void IndexFromRow( short row, long& itemrow, long& seqline, long& startitem, long& stopitem);
-};
-
-
-
-DREMapPrintView::DREMapPrintView( long id, DView* itsSuper, DSeqPrintDoc* itsDocument,
-								 DSeqList* itsSeqList, long firstbase, long nbases, long pixwidth, long pixheight):
-	DSeqPrintView( id, itsSuper, itsDocument, itsSeqList, firstbase, 
-							nbases, pixwidth, pixheight)
-{ 
-	Initialize();
-}
-
-void DREMapPrintView::IndexFromRow( short row, long& itemrow, long& seqline, long& startitem, long& stopitem)
-{
-		// !! modify itemrow to return drawer item row for tables after all of sequence as been drawn
-  if (row > fMaxseqrow) {
-#if 1
-		short i, n = fDrawRowList->GetSize();
-		itemrow= fLinesPerParag;
-    seqline= row - fMaxseqrow - 2; //??
-		for (i= fLinesPerParag; i<n; i++) {
-			DDrawMapRow* drawer= (DDrawMapRow*) fDrawRowList->At(i);
-			if (drawer && 
-				  row >= drawer->fRowOffset && row < drawer->fRowOffset + drawer->fLinecount) { 
-				  itemrow= i;
-				  seqline= row - drawer->fRowOffset; //??
-				  break; 
-					}
-			}
-#else
-    itemrow= fLinesPerParag; // need to adjust this for each spacer, etc...
-  	if (row > fMaxseqrow + 1) itemrow++;
-    seqline= row - fMaxseqrow - 2; //??
-#endif
-		startitem = seqline;
-		stopitem  = startitem+1; //??
-  	}
-  else {
-		itemrow	= (row % fLinesPerParag);  
-		seqline = (row / fLinesPerParag) * fSeqsperparag;   
-		if (fOneseq) seqline += Max( 0, itemrow - fTopPerparag);
-#if 1
-		startitem = fFirstBase + seqline * fBasesPerLine;
-		stopitem  = Min(startitem + fBasesPerLine, fFirstBase+fNbases);
-#else
-		startitem = seqline * fBasesPerLine;
-		stopitem  = startitem + fBasesPerLine;
-#endif
-		}
-}
-
-void DREMapPrintView::Initialize()
-{
-	DSeqPrintView::Initialize();
-
-	fSeqLinesPerParag= 1;
-	fOneseq= false;
-	fDoMidIndex= fDoTopIndex;
-	fDoTopIndex= false;
-	fDoSeqLine= true;
-	fDoCoseqLine= DSeqPrintPrefs::gShowComplement;
-	fDoZymeLine= true;
-  
-	fDoAAline[0]= DSeqPrintPrefs::gShowAA1;
-	fDoAAline[1]= DSeqPrintPrefs::gShowAA2;
-	fDoAAline[2]= DSeqPrintPrefs::gShowAA3;
-	fDoAAline[3]= DSeqPrintPrefs::gShowCompAA1;
-	fDoAAline[4]= DSeqPrintPrefs::gShowCompAA2;
-	fDoAAline[5]= DSeqPrintPrefs::gShowCompAA3;	
-	
-}
-
-void DREMapPrintView::SetScrollPage()
-{
-	fItemHeight= Nlm_stdLineHeight;
-	DTableView::SetScrollPage();
-}
-
-void DREMapPrintView::MakeDrawList()
-{
-	short i, n;
-	ulong * colors = NULL;
-	DDrawZymeRow * zymerow = NULL;
-	DSequence* coseq = NULL;
-	Boolean anyamino;
-	
-	fDrawRowList= FreeListIfObject(fDrawRowList);
-	fDrawRowList= new DList(NULL, DList::kDeleteObjects);
-	fDrawRowList->InsertLast(new DDrawSpacer());
-	if (fDoTopIndex) 
-		fDrawRowList->InsertLast(new DDrawIndexRow(fNumFont,fBaseWidth));
-
-	if (fDoZymeLine) {
-		fSeq->SetSelection(fFirstBase, fNbases);  // !? zyme map for only selected section
-		zymerow= new DDrawZymeRow( fNameFont, fSeq);
-		if (zymerow) {
-			if (!zymerow->fGoodMap) { delete zymerow; zymerow= NULL; }
-			else coseq= zymerow->fCoSeq;
-			}
-		}
-	else if (fDoCoseqLine) {
-		fSeq->SetSelection(0,0); // for Complement...
-		coseq= fSeq->Complement();
-		}
-	
-	anyamino= false;
-	for (i=0; i<6; i++) if (fDoAAline[i]) anyamino= true;
-
-	fStyles= FreeListIfObject(fStyles);
-	fStyles= new DList(NULL,DList::kDeleteObjects);
-	n= DStyleTable::fStyles->GetSize();
-	for (i=0; i<n; i++) fStyles->InsertLast( DStyleTable::fStyles->At(i));
-	
-#if 1
-	/* if (dospacer) */ fLinesPerParag = 1; fTopPerparag= 1;
-	if (fDoTopIndex) { fLinesPerParag++; fTopPerparag++; }
-	if (fDoSeqLine)
-		fDrawRowList->InsertLast( 
-			new DDrawSeqRow( fBaseFont, this, fSeq, fStyles, fSeq->Name(), colors));
-	if (fDoSeqLine) { fLinesPerParag++;  }
-	if (fDoMidIndex) 
-		fDrawRowList->InsertLast(new DDrawIndexRow(fNumFont,fBaseWidth,false));
-	if (fDoMidIndex) { fLinesPerParag++;  }
-	if (fDoCoseqLine && coseq)
-		fDrawRowList->InsertLast( 
-			new DDrawSeqRow( fBaseFont, this, coseq, fStyles, "compl", colors));
-	if (fDoCoseqLine && coseq) { fLinesPerParag++;}
-	if (fDoZymeLine && zymerow)
-		fDrawRowList->InsertLast( zymerow);
-	if (fDoZymeLine && zymerow) { fLinesPerParag++; }
-	if (anyamino)
-		fDrawRowList->InsertLast(new DDrawSpacer()); fLinesPerParag++;
-		
-	for (i= 0; i<3; i++) if (fDoAAline[i])
-		fDrawRowList->InsertLast( new DDrawAminoRow( fBaseFont, fSeq, i));
-	for (i= 0; i<3; i++) if (fDoAAline[i]) { fLinesPerParag++;  }
-	if (fDoMidIndex) 
-		fDrawRowList->InsertLast(new DDrawIndexRow(fNumFont,fBaseWidth,false));
-	if (fDoMidIndex) { fLinesPerParag++;  }
-	for (i= 3; i<6; i++) if (fDoAAline[i] && coseq)
-		fDrawRowList->InsertLast( new DDrawAminoRow( fBaseFont, coseq, i));
-	for (i= 3; i<6; i++) if (fDoAAline[i]) fLinesPerParag++;
-
-	fDrawRowList->InsertLast(new DDrawSpacer()); fLinesPerParag++;
-	
-#else
-	for (i= 0; i<3; i++) if (fDoAAline[i])
-		fDrawRowList->InsertLast( new DDrawAminoRow( fBaseFont, fSeq, i));
-	if (fDoSeqLine)
-		fDrawRowList->InsertLast( 
-			new DDrawSeqRow( fBaseFont, this, fSeq, fStyles, fSeq->Name(), colors));
-	if (fDoMidIndex) 
-		fDrawRowList->InsertLast(new DDrawIndexRow(fNumFont,fBaseWidth,false));
-	if (fDoMidIndex) { fLinesPerParag++;  }
-	if (fDoCoseqLine && coseq)
-		fDrawRowList->InsertLast( 
-			new DDrawSeqRow( fBaseFont, this, coseq, fStyles, "compl", colors));
-	for (i= 3; i<6; i++) if (fDoAAline[i] && coseq)
-		fDrawRowList->InsertLast( new DDrawAminoRow( fBaseFont, coseq, i));
-	if (fDoZymeLine && zymerow)
-		fDrawRowList->InsertLast( zymerow);
-	/* if (dospacer) */ fLinesPerParag = 1; fTopPerparag= 1;
-	if (fDoTopIndex) { fLinesPerParag++; fTopPerparag++; }
-	for (i= 0; i<3; i++) if (fDoAAline[i]) { fLinesPerParag++; fTopPerparag++; }
-	if (fDoSeqLine) { fLinesPerParag++;  }
-	if (fDoCoseqLine && coseq) { fLinesPerParag++;}
-	for (i= 3; i<6; i++) if (fDoAAline[i]) fLinesPerParag++;
-	if (fDoZymeLine) { fLinesPerParag++; }
-#endif
-
-	fMaxseqrow= 1 + (fMaxbases / fBasesPerLine);
-	fMaxseqrow *= fLinesPerParag;
-	if (zymerow && DSeqPrintPrefs::gShowCutpoints) {
-		fDrawRowList->InsertLast(new DDrawSpacer()); fExtrarows++;
-		DDrawZymeCutTable* ztab= new DDrawZymeCutTable( gTextFont/*fNumFont*/,  
-																	zymerow->fREMap, fMaxseqrow+fExtrarows);  
-		fDrawRowList->InsertLast( ztab);  
-    fExtrarows += ztab->fLinecount + 1;
-    }
-	if (zymerow && DSeqPrintPrefs::gShowAllZymes) {
-		fDrawRowList->InsertLast(new DDrawSpacer()); fExtrarows++;
-		DDrawAllZymeTable* ztab= new DDrawAllZymeTable( gTextFont, zymerow->fREMap, 
-																		fMaxseqrow+fExtrarows);  
-		fDrawRowList->InsertLast( ztab);  
-    fExtrarows += ztab->fLinecount + 1;
-    }
-	if (zymerow && DSeqPrintPrefs::gShowNoncutters) {
-		fDrawRowList->InsertLast(new DDrawSpacer()); fExtrarows++;
-		DDrawNocutZymeTable* ztab= new DDrawNocutZymeTable( gTextFont, zymerow->fREMap, 
-																		fMaxseqrow+fExtrarows);  
-		fDrawRowList->InsertLast( ztab);  
-    fExtrarows += ztab->fLinecount + 1;
-    }
-	if (zymerow && DSeqPrintPrefs::gShowExcludedCutters) {
-		fDrawRowList->InsertLast(new DDrawSpacer()); fExtrarows++;
-		DDrawNocutZymeTable* ztab= new DDrawNocutZymeTable( gTextFont, zymerow->fREMap, 
-																		fMaxseqrow+fExtrarows, 
-																		DSeqPrintPrefs::gREMinCuts,
-																		DSeqPrintPrefs::gREMaxCuts);  
-		fDrawRowList->InsertLast( ztab);  
-    fExtrarows += ztab->fLinecount + 1;
-    }
-	 
-}
-
-
-
-// class DREMapPrintDoc
-
-DREMapPrintDoc::DREMapPrintDoc( long id, DSeqDoc* itsDoc, DSeqList* itsSeqList, long firstbase, long nbases) :
-	DSeqPrintDoc( id, itsDoc, itsSeqList, firstbase, nbases)
-{
-	short width= 450, height= 350;
-	//super->GetNextPosition( &nps);
-	//width = MAX( 40, fgWinRect.right - fgWinRect.left) - Nlm_vScrollBarWidth  - nps.x; 
-	//height= MAX( 60, fgWinRect.bottom - fgWinRect.top) - Nlm_hScrollBarHeight - nps.y;   
-	fView= new DREMapPrintView(0,this,this,fSeqList,fFirstBase,fNbases,width,height);
-
-	char title[256];
-	DSequence * aSeq= (DSequence*) fSeqList->At(0);
-	if (aSeq)  
-		StrCpy(title, aSeq->Name());
-	else
-		itsDoc->GetTitle( title, sizeof(title)); 
-	StrCat( title, " Restr. Map");
-	SetTitle( title);
-}
-
-
-
-
-
-
-
-
-
-
-
-
 //class DSeqPrintPrefs : public DWindow 
 
 
@@ -2459,6 +1429,24 @@ DSeqPrintPrefs::DSeqPrintPrefs() :
 
 DSeqPrintPrefs::~DSeqPrintPrefs()
 {
+}
+
+
+class DOutFormatPopup : public DPopupList
+{
+public:
+	DOutFormatPopup(long id, DView* superior, short defaultFormat);
+	virtual short GetValue() {
+	 	return  DSeqPrintPrefs::cOutText + DPopupList::GetValue() - 1;
+		}
+};
+
+DOutFormatPopup::DOutFormatPopup(long id, DView* superior, short defaultFormat) :
+			DPopupList(id,superior,true)
+{
+	this->AddItem( "Text");
+	this->AddItem( "PICT");
+	this->SetValue(defaultFormat - DSeqPrintPrefs::cOutText + 1);
 }
 
 
@@ -2496,6 +1484,8 @@ void DSeqPrintPrefs::InitGlobals()
 	gIndexTop= gApplication->GetPrefVal( "gIndexTop", "seqprint","1");
 	gColored= gApplication->GetPrefVal( "gColored", "seqprint","1");
 	gBasesPerLine= gApplication->GetPrefVal( "gBasesPerLine", "seqprint","60");
+	short outform= gApplication->GetPrefVal( "gOutFormat", "seqprint","0");
+  if (outform) gOutFormat= outform;
   
 	gShowComplement= gApplication->GetPrefVal( "gShowComplement", "seqprint","1");
 	gThreeLetAA= gApplication->GetPrefVal( "gThreeLetAA", "seqprint","0");
@@ -2563,6 +1553,7 @@ void DSeqPrintPrefs::SaveGlobals()
 	gApplication->SetPref( gIndexTop, "gIndexTop", "seqprint");
 	gApplication->SetPref( gColored, "gColored", "seqprint");
 	gApplication->SetPref( gBasesPerLine, "gBasesPerLine", "seqprint");
+	gApplication->SetPref( gOutFormat, "gOutFormat", "seqprint");
 	
 // restrict map
 	gApplication->SetPref( gShowComplement, "gShowComplement", "seqprint");
@@ -2639,6 +1630,8 @@ void DSeqPrintPrefs::NewFontCluster(char* title, DView* mainview,
 }
 
 
+
+
 void DSeqPrintPrefs::Initialize() 
 { 
 	DView* super;
@@ -2646,6 +1639,7 @@ void DSeqPrintPrefs::Initialize()
 	DCheckBox* ck;
 	DCluster* clu;
 	char nums[128];	
+	DPopupMenu* popm;
 
 	super= this;
 	clu= new DCluster( 0, super, 30, 10, false, "Bases");
@@ -2699,6 +1693,16 @@ void DSeqPrintPrefs::Initialize()
 	super = this;
 	//super->NextSubviewToRight();
 	//super->NextSubviewBelowLeft();
+
+	clu= new DCluster( 0, super, 0, 0, true);
+	super= clu;
+	pr= new DPrompt(0,super,"File format:",0, 0, Nlm_programFont);
+	super->NextSubviewToRight();
+	DOutFormatPopup* apop = new DOutFormatPopup( cOutText, super, gOutFormat);
+	super = this;
+	super->NextSubviewBelowLeft();
+
+	//super->NextSubviewToRight();
 
 #if 1		
 
@@ -2800,7 +1804,8 @@ void DSeqPrintPrefs::OkayAction()
 		nums= fBasePerLine->GetTitle(name, sizeof(name));
 		gBasesPerLine= atol(nums);
 		}
-	
+
+		
 	for (short imenu= 0; imenu<3; imenu++) {
 		
 		switch (imenu) {
@@ -2831,12 +1836,13 @@ void DSeqPrintPrefs::OkayAction()
 				}
 #else
  			short item= Nlm_GetValue(((DPopupMenu*)aStyleMenu)->fPopup);
+ 			// ^^ same as aStyleMenu->GetValue(); //??
  			switch (item) {
  				case 1: aStyle= 0; break;
  				case 2: aStyle |= kItalic; break;
  				case 3: aStyle |= kBold; break;
  				case 4: aStyle |= kUnderline; break;
-         }
+        }
 #endif 			
 			if (StringCmp(name,"System")==0) aFont= Nlm_systemFont;
 			else if (StringCmp(name,"Program")==0) aFont= Nlm_programFont;
@@ -2944,7 +1950,8 @@ Boolean DSeqPrintPrefs::IsMyAction(DTaskMaster* action)
 		case cShowAllZymes	: gShowAllZymes= aview->GetStatus(); break;
 		case cShowNoncutters	: gShowNoncutters= aview->GetStatus(); break;
 		case cShowExcludedCutters	: gShowExcludedCutters= aview->GetStatus(); break;
-
+		case cOutText: gOutFormat= aview->GetValue(); break;
+  	
 		default : return DWindow::IsMyAction(action);	
 		}
 		

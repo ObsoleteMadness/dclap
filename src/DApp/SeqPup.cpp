@@ -3,6 +3,8 @@
 // Jan 1994
 
 #define UseGopher  0
+#undef  DEBUG
+#define SEQASM
 
 #include <DClap.h>
 #if UseGopher
@@ -17,6 +19,15 @@
 #include <DDrawPICT.h>
 #include <DSeqPict.h>
 #include <Dversion.h>
+#include <DBOPclient.h>
+
+#ifdef SEQASM
+#include <DSeqAsmDoc.h>
+#endif
+
+#if DEBUG
+#include <DebugNew.h>
+#endif
 
 void AboutSeqPupPicture(); // DAboutSeqPup.cpp
 
@@ -36,7 +47,7 @@ public:
 		kOpenDoc, kFetchLink, kFetchDefault, // kFetchView1...kFetchViewN
 		kFetchOptionFlag, kAutoloadFlag,
 		kViewPrefs, kCodonPref,kREnzymePref,kColorPref,kStylePref,
-		kSaveWinPrefs,kSeqPrintPrefs, kSeqDocPrefs,
+		kSaveWinPrefs,kSeqPrintPrefs, kSeqDocPrefs, kBOPprefs,
 		kGetInfo, kMailAdmin, kOpenLocalGo,
 		kNewServer,kFindServer,kNewLink, kEditLink,kExtractGodoc,kLockWindow,
 		kOpenText, kOpenSeq, kOpenAppendSeq, kOpenTree,  
@@ -120,7 +131,9 @@ void DSeqPup::ISeqPup()
 	if (DStyleTable::NotAvailable()) ; // read in DStyleTable data now 
 	
 		// default documents ??
-	if (DSeqDoc::fgStartDoc) DSeqDoc::NewSeqDoc();
+  if (! OpenStartDocs() )
+    if (DSeqDoc::fgStartDoc) DSeqDoc::NewSeqDoc();
+	
 	{
 		// open default gopher document if it exists.
 		// TRY RTF Form first (.start ?? )
@@ -196,6 +209,7 @@ void DSeqPup::SetUpMenus(void)
 	aMenu->AddItem(kSave,"Save/S",false, true);
 	aMenu->AddItem(kSaveAs,"Save As...",false, true);
 	aMenu->AddItem(DSeqDoc::cSaveSel,"Save selection...",false, true);
+	aMenu->AddItem(DSeqDoc::cRevert,"Revert to saved",false, true);
 	aMenu->AddSeparator();
 	aMenu->AddItem(kPrint,"Print",false, true);
 	aMenu->AddItem(kHelp,"Help/H",false, true);
@@ -214,12 +228,14 @@ void DSeqPup::SetUpMenus(void)
  	//iMenu->AddSeparator();		
 
 	DSeqDoc::SetUpMenu(DSeqDoc::kInternetMenu, iMenu);
- 	
+ 	iMenu->AddSeparator();		
+	DSeqApps::SetUpMenu(DSeqDoc::kInternetMenu, iMenu, "inet");
+ 	iMenu->AddSeparator();		
 	iMenu->AddItem( kSendMail, "Send Mail...");
 	iMenu->AddItem( kBugMail, "Comment on this app...");
 
 	DMenu* cMenu = NULL;
-	DSeqApps::SetUpMenu(DSeqApps::kChildMenu, cMenu);
+	DSeqApps::SetUpMenu(DSeqApps::kChildMenu, cMenu, DSeqApps::kAppSection);
 	
 	iMenu = NewMenu( kPrefsMenu, "Options");
 	iMenu->AddItem( kSeqDocPrefs, "Seq Prefs...",false, true);
@@ -246,7 +262,8 @@ void DSeqPup::SetUpMenus(void)
 	iMenu->AddItem( kOtherPrefs, 	"Other prefs...",false, true);
 #endif
 #endif
-	iMenu->AddItem( kMailSetup, 	"Mail setup...",false, true);
+	iMenu->AddItem( kBOPprefs,  "BOP setup...", false, true);
+	iMenu->AddItem( kMailSetup, "Mail setup...",false, true);
 
 	aMenu= NULL;
 	this->SetUpMenu(DApplication::cWindowMenu, aMenu);
@@ -341,6 +358,29 @@ void DSeqPup::OpenDocument(DFile* aFile)
 {
 	if (!aFile || !aFile->Exists()) return;
 	gCursor->watch();
+
+#ifdef SEQASM	
+	if (DSeqAsmDoc::IsAutoseqFile(aFile)) {
+		
+		fAppendSeq= true; // !? expect ~6 data files from autoseq analysis
+											// all belong to same window...
+											// can we load these at same time somehow ??
+											// e.g., same file name, diff. suffix?
+		if (fAppendSeq) {
+			DSeqAsmDoc* sdoc= (DSeqAsmDoc*) gWindowManager->CurrentWindow();
+			if (sdoc && sdoc->Id() == DSeqAsmDoc::kSeqAsmdoc) 
+				sdoc->Open(aFile);   
+			else
+				fAppendSeq= false;
+			}
+		if (!fAppendSeq) {
+			DSeqAsmDoc* sdoc= new DSeqAsmDoc(DSeqAsmDoc::kSeqAsmdoc, NULL, NULL);
+			sdoc->Open(aFile);   
+			}
+		}
+	else 
+#endif
+
 	if (DSeqDoc::IsSeqFile(aFile)) {
 		if (fAppendSeq) {
 			DSeqDoc* sdoc= (DSeqDoc*) gWindowManager->CurrentWindow();
@@ -441,6 +481,10 @@ Boolean DSeqPup::IsInternetMenu(DTaskMaster* action)
 				DSeqDoc::SaveGlobals();
 				fWinPrefsNotSaved= false;
 				}
+			return true;
+
+		case kBOPprefs: 
+			BOPSetLogon();
 			return true;
 
 		case kSeqDocPrefs: 
@@ -594,8 +638,13 @@ Boolean DSeqPup::DoMenuTask(long tasknum, DTask* theTask)
 Boolean DSeqPup::IsMyAction(DTaskMaster* action) 
 {
 	enum doctype { nodoc, anydoc, godoc, seq1doc, alndoc };
-	doctype	thedoc = nodoc;
-	Boolean	done= false;
+	static DTaskMaster* curaction = NULL;
+	doctype		thedoc = nodoc;
+	Boolean		done= true, result= false;
+	
+	Boolean inrecurse= (curaction == action);  
+	if (inrecurse) return false; // prevent infinite loop here...
+	curaction= action;
 	
 	DWindow* win 	= gWindowManager->CurrentWindow();
 	DSeqDoc* sdoc = (DSeqDoc*) win;
@@ -613,30 +662,48 @@ Boolean DSeqPup::IsMyAction(DTaskMaster* action)
 		}
 		
 	short	menuitem = action->Id();
-		  
+	short menuid= (action->fSuperior) ? action->fSuperior->Id() : 0;
+
+	if ((menuid == kInternetMenu
+	    ||menuid == DSeqApps::kChildMenu)
+	 && (menuitem >= DSeqApps::kChildMenuBaseID 
+	     && menuitem <= DSeqApps::kChildMenuBaseID + 50) // +50 = HACK !! need better way to distinguish menu items !
+	) goto caseChildMenu;
+		
 	if (action->fSuperior)  
 		switch (action->fSuperior->Id()) {
-
+				
 			case kOpenMenu : 
 			case cFileMenu : 
 			  switch (menuitem) {
 			  
 				case kNewServer:
-					return IsInternetMenu(action);
+					result= IsInternetMenu(action);
+					break;
 					
 				case DSeqDoc::cSaveSel:
+				case DSeqDoc::cRevert:
 					goto caseSeqDoc;
 					
 				case DApplication::kNew:
-					DSeqDoc::NewSeqDoc();
-					return true;
+#if DEBUG
+					if ( gKeys->option()) { 
+						DebugNewReportLeaks();
+						}
+					else
+#endif
+						DSeqDoc::NewSeqDoc();
+					result= true;
+					break;
 					
 				case kOpenText:
 					DApplication::DoMenuTask(DApplication::kOpen, NULL);
-					return true;
+					result= true;
+					break;
 					
 				case kOpenTree:
-					return true;
+					result= true;
+					break;
 
 				case kOpenAppendSeq:
 					fAppendSeq= true;
@@ -646,31 +713,26 @@ Boolean DSeqPup::IsMyAction(DTaskMaster* action)
 					DApplication::DoMenuTask(DApplication::kOpen,NULL);
 					DSeqDoc::fgTestSeqFile= false;
 					fAppendSeq= false;
-					return true;
+					result= true;
+					break;
 					
 #if UseGopher
 				case kOpenLocalGo:
 					OpenLocalGopher();
-					return true;
+					result= true;
+					break;
 #endif
  				default: 
-					return DApplication::IsMyAction(action);
+					result= DApplication::IsMyAction(action);
+					break;
 				}
 				break;
 		
-		
 			case DApplication::cEditMenu:
-#if 1
 				if (thedoc == alndoc) done= sdoc->IsMyAction(action);
 				else if (thedoc == seq1doc) done= s1doc->IsMyAction(action);
 				else done= false;
-				if (done) return true;
-#else
-				if (menuitem == DSeqDoc::cFindORF) {
-					if (thedoc == alndoc) return sdoc->IsMyAction(action);
-					else if (thedoc == seq1doc) return s1doc->IsMyAction(action);
-					}
-#endif
+				if (done) result= true;
 				break;
 				
 			case kInternetMenu	:
@@ -680,49 +742,66 @@ Boolean DSeqPup::IsMyAction(DTaskMaster* action)
 					goto caseViewChoiceMenu; 
 				else
 #endif
-				  return IsInternetMenu(action);
-				
+				  result= IsInternetMenu(action);
+				break;
+					
 #if UseGopher
 			case DGopherListDoc::kViewKindMenu	: 
-				if (thedoc == godoc) return gdoc->IsMyAction(action);
-				else return false;
+				if (thedoc == godoc) result= gdoc->IsMyAction(action);
+				else result= false;
+				beak;
 				
 			case DGopherListDoc::kViewChoiceMenu	: 
 			caseViewChoiceMenu:
-				if (thedoc == godoc) return gdoc->IsMyAction(action);
-				else return false;
+				if (thedoc == godoc) result= gdoc->IsMyAction(action);
+				else result= false;
+				break;
 #endif
 			
 			case DSeqApps::kChildMenu :
-				if (thedoc == alndoc) return sdoc->IsMyAction(action);
-				else if (thedoc == seq1doc) return s1doc->IsMyAction(action);
+			caseChildMenu:
+				if (thedoc == alndoc) result= sdoc->IsMyAction(action);
+				else if (thedoc == seq1doc) result= s1doc->IsMyAction(action);
 				else {
 					DSeqApps::CallChildApp( menuitem, NULL);
-					return true;
+					result= true;
 					}
+				break;
 
 			case DSeqDoc::kSeqMenu	: 
 			case DSeqDoc::kViewKindMenu	: 
 			case DSeqDoc::kSeqMaskMenu	: 
 			caseSeqDoc:
 				switch(menuitem) {
-					case DSeqDoc::cNAcodes:	NucCodesPicture(); return true;
-					case DSeqDoc::cAAcodes: AminoCodesPicture(); return true;
+					case DSeqDoc::cNAcodes: NucCodesPicture(); result= true; break;
+					case DSeqDoc::cAAcodes: AminoCodesPicture(); result= true; break;
+					default:
+						if (thedoc == alndoc) result= sdoc->IsMyAction(action);
+						else if (thedoc == seq1doc) result= s1doc->IsMyAction(action);
+						else result= false;
+						break;
 					}
-				if (thedoc == alndoc) return sdoc->IsMyAction(action);
-				else if (thedoc == seq1doc) return s1doc->IsMyAction(action);
-				else return false;
+				break;
+				
+			default:
+				done= false;
+				break;
 			}
 	 
 	 
-	switch(menuitem) {
-
+	if (!done) switch(menuitem) {
 		case DApplication::kNew:
 			DSeqDoc::NewSeqDoc();
-			return true;
+			result= true;
+			break;
 		default: 
-			return DApplication::IsMyAction(action);
+			result= DApplication::IsMyAction(action);
+			break;
 		}
+ 		
+	inrecurse= false;
+	curaction= NULL;
+	return result;
 }
 
 

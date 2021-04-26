@@ -130,7 +130,7 @@ DWindow::~DWindow()
 {		
 #if 0
 // this gets us into trouble when child ~ has been called...
-// do in ::Close() instead!
+// do in ::Close() instead - but QUIT() bypasses Close() !
 	if (fSaveHandler) {
 		char mytitle[50];
 		GetTitle(mytitle, sizeof(mytitle));
@@ -499,9 +499,13 @@ DWindowManager::DWindowManager()
 DWindowManager::~DWindowManager()
 {
 	long i, n= fWindows->GetSize();
-	for (i=0; i<n; i++) { 
+	for (i= n-1; i>0; i--) { 
 		DWindow* theWin= (DWindow*) fWindows->At(i); 
-		delete theWin; 
+		if (theWin) {
+			theWin->fFreeOnClose= false;
+			theWin->Close(); // to save dirty?
+			delete theWin; 
+			}
 		}
 	delete fWindows;
 }

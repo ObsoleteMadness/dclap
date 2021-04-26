@@ -1,0 +1,173 @@
+// USeqReader.p 
+// by d.g.gilbert, Oct 1990 
+
+
+UNIT USeqReader;
+INTERFACE
+
+
+#ifndef __Types__
+#include <Types.h>
+#endif
+
+#ifndef __Memory__
+#include <Memory.h>
+#endif
+
+#ifndef __QuickDraw__
+#include <QuickDraw.h>
+#endif
+
+#ifndef __ToolUtils__
+#include <ToolUtils.h>
+#endif
+
+#ifndef __OSUtils__
+#include <OSUtils.h>
+#endif
+
+#ifndef __Resources__
+#include <Resources.h>
+#endif
+
+#ifndef __Packages__
+#include <Packages.h>
+#endif
+
+#ifndef __Files__
+#include <Files.h>
+#endif
+
+#ifndef __Printing__
+#include <Printing.h>
+#endif
+
+#ifndef __TextEdit__
+#include <TextEdit.h>
+#endif
+
+#ifndef __Controls__
+#include <Controls.h>
+#endif
+
+#ifndef __Aliases__
+#include <Aliases.h>
+#endif
+
+#ifndef __Editions__
+#include <Editions.h>
+#endif
+
+#ifndef __Events__
+#include <Events.h>
+#endif
+
+#ifndef __Notification__
+#include <Notification.h>
+#endif
+
+#ifndef __AppleEvents__
+#include <AppleEvents.h>
+#endif
+
+#ifndef __Processes__
+#include <Processes.h>
+#endif
+
+#ifndef __Balloons__
+#include <Balloons.h>
+#endif
+
+#ifndef __MacAppTypes__
+#include <MacAppTypes.h>
+#endif
+
+#ifndef __UPascalObject__
+#include <UPascalObject.h>
+#endif
+
+#ifndef __UObject__
+#include <UObject.h>
+#endif
+
+#ifndef __UEventHandler__
+#include <UEventHandler.h>
+#endif
+USES UList, UAdorners, UStream, UGeometry,
+	UEvent, UCommand, UCommandHandler,
+	UView,  UBehavior, UTEView, UTECommands,
+	UMacAppUtilities, UPatch, UFailure, UMacAppGlobals,
+		
+	UFile, UApplication,
+	UPrintHandler, UPrinting,
+	UWindow, UMenuMgr, UMemory, UErrorMgr,
+		
+	/*$U $$Shell(UStd)UStandard.p */ UStandard,
+	
+	USequence();
+
+
+CONST
+
+	/*formats*/	
+ kIG            ==  1;
+ kGenBank       ==  2;
+ kNBRF          ==  3;
+ kEMBL          ==  4;
+ kGCG           ==  5;
+ kStrider       ==  6;
+ kFitch         ==  7;
+ kPearson       ==  8;
+ kZuker         ==  9;
+ kOlsen         ==  10;
+ kPhylip2       ==  11;
+ kPhylip4       ==  12;
+ kPhylip3       ==  kPhylip4;
+ kPhylip        ==  kPhylip4;
+ kPlain         ==  13;  // keep this at #13 
+ kPIR           ==  14;
+ kMSF           ==  15;
+ kASN1          ==  16;
+ kPAUP          ==  17;
+ kPretty        ==  18;
+
+ kMaxFormat     ==  18;
+ kMinFormat     ==  1;
+ kNoformat      ==  -1;    // format not tested 
+ kUnknown       ==  0;     // format not determinable 
+
+ kASNseqentry   ==  51;
+ kASNseqset     ==  52;
+ kPhylipInterleave == 61;
+ kPhylipSequential == 62;
+
+
+
+	pascal integer SeqFileFormatWrapper( longint aRefNum, boolean RefIsHandle) 
+	
+	pascal integer ReadSeqFile( longint aFileRef, Boolean RefIsHandle, TList aSeqList) 
+
+	pascal void	WriteSeqHeader( longint fref, boolean RefIsHandle,
+								integer		format; integer nseqs,  nbases: longint; Str63 outputName,
+								Boolean VAR needSameSize, isInterleaved)
+								
+	pascal void	WriteSeqTrailer( longint fref, boolean RefIsHandle,
+								integer		format, nseqs, nlinesperseq;  longint nbases)
+								
+	pascal void WriteSeqWrapper( fref	: longint; boolean RefIsHandle,
+								seq		: charsPtr; longint seqlen,
+								integer		inform; 	//format of input seq
+								integer		outform; //format for output seq
+								charsPtr seqid)
+								
+	pascal void	DoInterleave( fref	: longint; boolean RefIsHandle,
+								integer		outform, seqtype, nseqs; longint nbases,
+								integer		nlines, noutindex; Handle outindex, integer fromFileRef)
+							
+		
+IMPLEMENTATION
+
+		// see USeqReader.cp/.h 
+		// $ I USeqReader.inc.p 
+
+}

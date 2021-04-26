@@ -5,7 +5,7 @@
 #define __DURL__
 
 
-class		DGopher;
+class		DNetOb;
 
 class DURL : public DObject {
 public:
@@ -26,7 +26,7 @@ public:
 		};
 			
 	static short IsURL( const char *line, char*& url, long maxline = 0);
-	static Boolean ParseURL( DGopher* go, const char *url, long urlsize = 0, 
+	static Boolean ParseURL( DNetOb* nob, const char *url, long urlsize = 0, 
 					Boolean verbatim = true);
 	static char* EncodeChars( const char* str, unsigned char mask = pathChars);
 	static char* DecodeChars( char * str);

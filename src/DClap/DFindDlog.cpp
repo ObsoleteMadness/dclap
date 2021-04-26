@@ -10,6 +10,7 @@
 #include <DMenu.h>
 #include <DWindow.h>
 #include <DTask.h>
+#include <DUtil.h>
 #include "DFindDlog.h"
 
 
@@ -22,7 +23,10 @@ char* DFindDialog::fReplace[DFindDialog::kMaxReplace];
 
 void DFindDialog::FindAgain()
 {
+	Boolean saveback= fBackwards;
+	fBackwards= gKeys->shift(); 
 	DoFind();
+	fBackwards= saveback;
 }
 
 Boolean DFindDialog::IsMyAction(DTaskMaster* action) 

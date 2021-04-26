@@ -1,0 +1,14 @@
+FrontWindow() fails for motif/mswin when menu is on fAppWindow and it
+comes into front when accessing menu.  Need app to track other windows
+and keep "last-front" window.
+
+Views submenu:  menu->Remove() only works on mac, need to delete entire
+submenu for x/ms win (oooh and we need to fix that for all the windows
+w/ links to this submenu object....) -- need some gApplication-menu methods
+to deal w/ this and similar changes to app menu !!! why don't x/ms win
+believe in utility of app-wide menus ????
+
+
+DWindow::Activate() -- this is NOT called when user switches X windows, only
+when X window is opened (in Xwin).  Bummer.
+

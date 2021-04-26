@@ -1,0 +1,111 @@
+23160
+23660
+23792
+23793
+
+
+Article 23793 (1194 more) in comp.os.linux.help:
+From: badella@polec1.polito.it (enrico badella (L.R.))
+Subject: Re: Motif for Linux
+Date: 25 Feb 1994 22:44:42 GMT
+Organization: Politecnico di Torino - Italy
+Lines: 5
+NNTP-Posting-Host: polec1.polito.it
+
+In article <zorCLsAy9.2zM@netcom.com> zor@netcom.com (Chris Kaczor) writes:
+>Does anyone know where I can get Motif for Linux and how to install it?
+
+Mail eb@vax.cnuce.cnr.it for more info.
+
+
+Jaroslaw "Yarek" Kowalik (jkowalik@r-node.io.org) wrote:
+: Oh, where can I get it? (Please let me know if it is in the FAQ somewhere).
+: Any info will be greatly appreciated,
+
+Motif is a commercial product! You have to buy it!
+
+
+  I didn't have the chance yet to evaluate it. Bernhard
+  Strassl is working on a version that can be used with
+  Metrolinks Motif on Linux.
+  If you want to contact Bernhard:
+
+  The Xm++ / CommonInteract Project
+  Vienna User Interface Group
+  Bernhard Strassl              University of Vienna
+  xmplus@ani.univie.ac.at       Dpt. for Applied Computer Science
+                                and Information Systems
+
+15579 Motif/Windows Comparison
+15622 Help! Looking for a good C++ GUI Lib for OSF/Motif  :-(
+15714 Ftp sites for c++ + Motif
+
+15726 Re: X11, Motif libraries for OS/2
+merlin (merlin@neuro.usc.edu) wrote:
+: You should contact IBM 1-800-IBM-4OS2 (or some such number) and order
+
+1-800-3IBMOS2.
+
+
+
+
+METRO LINK INC., has Motif 1.2.3 and Motif 1.2.2 Runtime and Development
+packages available for a variety of operating systems.  All versions ship with
+shared library version of libXm.  Linux version includes free O'Reilly volume
+and FTP shipping option.  Send mail to:
+
+Motif 1.2.3 (available Dec. 1, 1993)
+    Linux 0.99, Solaris 2.x (SPARC), SunOS 4.1.x      --->  $199.00
+    Solaris 2.1 (x86)                                 --->  $299.00
+
+Motif 1.2.2
+    Linux 0.99, Solaris 2.x (SPARC), SunOS 4.1.x      --->  $199.00
+    QNX, SVR3, SVR4.[012], SCO, UnixWare, SINIX,
+    LynxOS, Venix, ISC, NCR SVR4 MP                   --->  Under $299.00
+
+Metro Link Incorporated.  2213 W. McNab Rd. Pompano Beach,  Florida  33069
+Voice: +1.305.970.7353x412  Fax: +1.305.970.7351  Email: ken@metrolink.com
+
+
+
+
+Linux
+
+** TAMU Linux Distribution
+   Last modified 31 Oct 93
+   Availability: The latest TAMU release is available by anonymous ftp
+        from net.tamu.edu:pub/linux.
+
+** SlackWare Linux v1.1.0
+   Last modified 5 Nov 93
+
+        The SlackWare release of Linux is the *only* release officially
+        recommended by J.R. Bob Dobbs.
+
+        Distributor: Patrick Volkerding <volkerdi@mhd1.moorhead.msus.edu>
+
+        Description: Slackware Linux is a full featured distribution of the
+        Linux operating system designed for 386/486 computers with a 3.5"
+        floppy. Slackware changes rapidly, but here's a current (partial)
+        feature list:
+
+        A series (14 disks): Base Linux 0.99pl13 OS and utilities.
+          Networking, UUCP, gcc/g++ 2.4.5, libc 4.4.4, and more.
+        E series (5 disks): Emacs 19.19.
+        F series (1 disk): FAQs, HOWTOs, and other documentation.
+        OI series (3 disks): ObjectBuilder 2.0 for X.
+        X series (5 disks): Base XFree86 2.0 X windows system with fvwm.
+        XAP series (2 disks): X windows applications such as seyon and
+          ghostview.
+        XD series (3 disks): X windows program/server development.
+        XV series (2 disks): XView 3.2 release 5, Open Look Window Manager.
+        Y series (1 disk): Games from BSD, such as "hunt".
+
+        Availability: The home site is ftp.cdrom.com, where the latest
+        distribution can be found in /pub/linux/slackware. To make it easy
+        to download, the disks can also be found pre-zooed in
+        /pub/linux/zooed_slackware. (Zoo is just a compression utility for
+        MS-DOS).
+
+        Ordering: FTP only, although various independent distributors provide
+        it on disk, floppy, and CD.

@@ -15,6 +15,7 @@ public:
 	enum FileTypes { kNothing, kIsFile, kIsFolder };
 	static const char* kUntitled;
 	
+	static void SetFilename( const char* name);
 	static const char* GetInputFileName( const char* extension,  const char* mactype);
 	static const char* GetOutputFileName( const char* defaultname);		
 	static const char* GetFolderName();
@@ -22,6 +23,7 @@ public:
 	static const char* FilenameFromPath( const char* pathname);
 	static const char* PathOnlyFromPath( const char* pathname);
 	static char*	TempFilename( char* namestore = NULL);
+	static char*  TempFilenameonly( char* namestore = NULL);
 	static char*  TempFolder( char* namestore = NULL);
 	static Boolean CreateFolder( const char* pathname);
 	static const char* BuildPath( const char* rootpath, const char* subfolder, 
@@ -32,6 +34,7 @@ public:
 	static short FileOrFolderExists( const char* pathname);
 	static void UnixToLocalPath( char*& pathname);
 	static Boolean IsRelativePath(const char* path);
+	static Boolean Rename( const char* pathname, const char* newpathname);
 	
 };
 
@@ -41,6 +44,9 @@ extern	DFileManager*		gFileManager;
 
 class DFile : public DObject
 {
+protected:
+	Boolean fUseNameStore;
+	char		fNameStore[37];
 public:	
 	FILE*	fFile;
 	char*	fName;
@@ -48,6 +54,8 @@ public:
 	char* fType;
 	char* fSire;
 	Boolean fEof;
+	static char* fgType;
+	static char* fgSire;
 	
 	DFile();
 	DFile(const char* filename, const char* openmode = "r",
@@ -60,6 +68,7 @@ public:
 					const char* ftype = NULL, const char* fcreator = NULL);
 	virtual const char*	GetName() { return fName; }
 	virtual const char*	GetShortname() { return gFileManager->FilenameFromPath(fName); }
+	virtual void SetName(const char* newname);
 	
 			// short result in most funcs here is error code or 0
 	virtual short Open(const char* openmode = NULL);

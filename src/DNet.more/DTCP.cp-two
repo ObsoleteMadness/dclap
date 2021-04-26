@@ -1,0 +1,1800 @@
+// DTCP.cp 
+// by D. Gilbert, 1991-92, with help from code of Harry Chesley and others 
+// 1994 -- rewritten for multi-platform tcp-sockets api
+
+ 
+#include "DTCP.h"
+#include <ncbi.h>
+
+#ifndef UseMacTCPApi
+
+#include "dnet-tcp.h"
+
+#ifdef OS_MAC
+	// leave only CR at end
+char*	DTCP::LineEnd = "\015";
+short DTCP::LineEndSize = 1;
+#endif
+#ifdef OS_UNIX
+	// leave only LF at end
+char*	DTCP::LineEnd = "\012";
+short DTCP::LineEndSize = 1;
+#endif
+#ifdef OS_DOS
+	// CR + LF
+char*	DTCP::LineEnd = "\015\012";
+short DTCP::LineEndSize = 2;
+#endif
+
+
+#else	/* UseMacTCPApi */
+
+#include "includes.h"
+#ifndef __STDLIB__
+#include <StdLib.h>
+#endif
+#ifndef __STDIO__
+#include <StdIO.h>
+#endif
+#ifndef __STRING__
+#include <STRING.h>
+#endif
+
+#ifdef BOZOTHREADS
+# include <UAThread.h>
+#else
+# include <UThread.h>
+#endif
+
+//#include "UMacTCP.h"
+#include "UTCP.h"
+#include "AddressXlation.h"		// Apple MacTCP header
+#include "GetMyIPAddr.h"			// Apple MacTCP header
+#include <UMacAppUtilities.h>	//dgg
+
+#endif		/* UseMacTCPApi */
+
+
+
+#ifdef UseMacTCPApi 
+
+typedef wdsEntry *wdsEntryPtr;
+typedef rdsEntry *rdsEntryPtr;
+
+const short		errTCPError	= 0x8234;
+const long		msgTCPError = 0x80001234;
+
+#endif		// UseMacTCPApi 
+
+
+const	short		kUTCPVersion	= 3;
+
+#ifndef UseMacTCPApi 
+const	char*		kUTCPVersionString = "vers. 3.0, Jan 94 (sockets)";
+#else
+const	char*		kUTCPVersionString = "vers. 3.0, Jan 94 (mactcp)";
+#endif
+
+const char		kLF		= 10;	
+const char		kCR		= 13;	
+
+const short		kRecvChunkSize = 500;   	// bytes/ handle increment
+
+	// make this enum ?	
+const short		kErrConnectionBroken = -1; //common way for gopher server to end transmission 
+const short		kErrTimedOut = -2;
+const short		kErrUserBreak = -3;
+const short		kErrMemFull = -4;
+const short		kErrOpenTimeout = -5;
+
+
+const	short 	kTCPDefaultTimeout = 1200;	// default # ticks (1/60sec) to wait for TCP remote
+const long 		kDefaultOpenDelay = 20;
+
+		// this is a guess -- no generic way to find memory available
+const	long	kMaxReadBuffer = 32000;
+						
+const long 	kStreamBufferSize = 24 * 1024;
+						// maybe making this longer will speed up reads !?, 
+						// 8K is suggested minimum, 16K average, up to 128K may speed up usage
+
+const	short	kNumRds = 21;
+const	short	kNumWds = 21;
+						// used in reading data from stream buffer...
+
+
+
+	// Public Global vars
+long		gTCPTimeout = kTCPDefaultTimeout;
+
+short 	gMacTCPRefNum = 0;		// not a global now...
+
+	// Private global vars
+long  	gMyIP = 0;
+char*	 	gMyDotName = NULL; 
+Boolean gResolverIsOpen = false;
+
+
+	// Debugging vars
+const	char *kGetFile 	= "TCP.get";
+const	char *kPutFile	= "TCP.put";
+FILE *	gPutFile;
+Boolean gUseTCP = false, gDebugging = false;
+
+
+
+
+
+
+ 
+Boolean	localUserBreak()
+{  
+	Boolean		wantbreak = false;
+			// need to redo all of this as a DTaskMaster call...
+	return wantbreak;
+}
+
+
+
+
+
+
+
+
+#ifndef	UseMacTCPApi
+
+	
+
+
+#endif	// UseMacTCPApi
+
+short OpenMacTCP()
+{
+	if (gMacTCPRefNum !=0 ) 
+		return 0;
+	else {
+		gUseTCP = true;
+		short err= 0;
+#ifdef UseMacTCPApi
+		short refnum;
+		err= opendriver( ".IPP", &refnum);
+		if (err == 0) gMacTCPRefNum= refnum;
+		if (!gResolverIsOpen)	{
+			FailOSErr(OpenResolver(NULL)); // hostfile
+			gResolverIsOpen = true;
+			}
+#endif
+		return err;
+		}
+}
+
+
+void InitializeTCP() 		// InitUMacTCP()
+{
+	gMyDotName = NULL;
+	gMacTCPRefNum= 0;
+	short err= OpenMacTCP(); 
+}
+
+void FinishTCP() 				// CloseDownUMacTCP()
+{
+#ifdef UseMacTCPApi
+	if (gResolverIsOpen) {
+		gResolverIsOpen = false;
+		if (gUseTCP) 	{ (void) CloseResolver(); }
+	  }
+#endif
+	gMacTCPRefNum = 0;
+}
+
+Boolean TCPIsItInstalled() 		// IsMacTCPInstalled()
+{
+	return (0 == OpenMacTCP());
+}
+
+long MyIP()
+{
+	if (!OpenMacTCP() || gMyIP)  return gMyIP;
+
+#ifndef UseMacTCPApi 
+	gMyIP = MyIPaddress();
+#else
+	GetAddrParamBlock pb;
+	pb.ioCompletion	= nil;
+	pb.ioCRefNum	= gMacTCPRefNum;
+	pb.csCode			= ipctlGetAddr;
+	pb.ioResult 	= 1;
+	short err = PBControlSync((ParmBlkPtr) &pb);
+	if (0 == err) {
+		gMyIP = pb.ourAddress;
+		//gNetMask	= pb.ourNetMask;
+		}
+#endif		 
+	return gMyIP;
+}
+
+
+void GetMyDotName(char* myDotName)
+{
+	if (!OpenMacTCP()) {
+		myDotName = gMyDotName = ".";
+		return;
+		}
+	if (myDotName) gMyDotName= IP2DotName(MyIP());
+	myDotName = gMyDotName;
+}	
+
+
+#ifdef UseMacTCPApi
+pascal void	StrToAddrResultProc(struct hostInfo , Ptr )	
+{
+	// utility routine for StrToAddr 
+	// simply watch the aHostInfo.rtnCode! 
+}
+#endif
+
+char* IP2DotName(long ip)
+{
+	char *name = NULL;
+	
+#ifndef UseMacTCPApi
+	
+	// ?? do we need this proc
+	
+#else
+	static hostInfo theHostInfo; // may not be on stack
+	if (!gResolverIsOpen) {
+		FailOSErr(OpenResolver(NULL)); // hostfile
+		gResolverIsOpen = true;
+		}
+
+		// ask the DNR function to get the IP address 
+	short err= AddrToName( ip, &theHostInfo, (ResultProcPtr) StrToAddrResultProc, (Ptr) 0);
+	
+		// wait for the address information or some error other than cacheFault to occur 
+	while (cacheFault == theHostInfo.rtnCode)
+		if (localUserBreak()) ;  
+
+	err = short(theHostInfo.rtnCode);
+	if (err != cacheFault) Fail(err);
+	if (theHostInfo.addr[0] == 0 || theHostInfo.addr[0] == 0xFFFFFFFF)
+		Fail(authNameErr);
+	theHostInfo.cname[254] = 0;
+	name= StrDup( theHostInfo.cname);
+	//if (name[name.Length()] == '.') name.Length()--; 
+#endif
+	return name;
+}
+
+
+
+
+long DotName2IP(const char* name)
+{
+#ifndef UseMacTCPApi
+	
+	return Hostname2IP( name);
+	
+#else	//UseMacTCPApi
+	static hostInfo theHostInfo; // may not be on the stack, like gResolverDone!
+	long a, b, c, d;
+	if (sscanf( name, "%ld.%ld.%ld.%ld", &a, &b, &c, &d) == 4)
+		return (a << 24) | (b << 16) | (c << 8) | d;
+ 
+	if (!gResolverIsOpen)	{
+		FailOSErr(OpenResolver(NULL)); // hostfile
+		gResolverIsOpen = true;
+		}
+		
+		// ask the DNR function to get the IP address 
+	short err= StrToAddr( (char*)name, &theHostInfo, 
+										(ResultProcPtr) StrToAddrResultProc, (Ptr) 0);
+	
+		// wait for the address information or some error other than cacheFault to occur 
+	while (cacheFault == theHostInfo.rtnCode)
+		if (localUserBreak()) ; 
+
+	err = short(theHostInfo.rtnCode);
+	// #define	outOfMemory				-23048 << getting this err here at times !!
+	if (err != 0 && err != cacheFault) FailOSErr(err);
+	fi.Success();
+	
+	// ?? can we leave resolver open b/n calls??
+	// having DNR failures after some calls !? will close/open each call fix??
+	err = CloseResolver();
+	gResolverIsOpen = false;
+
+	if (theHostInfo.addr[0] == 0 || theHostInfo.addr[0] == 0xFFFFFFFF)
+		return 0;  
+	else 
+		return theHostInfo.addr[0];
+
+#endif	//UseMacTCPApi
+
+}
+
+
+
+ 
+// DTCP ..........................
+
+void DTCP::Initialize()
+{
+	fSocket= -1;
+	fError= NULL;
+	fErrNo= 0;
+	fFailed= false;
+	fTimeout= gTCPTimeout;
+	fLastSentCRLF= false;
+	
+	fDoShowProgress= false;
+	fResultSize= 0;
+	fMaxResultSize= 0;
+	fResultNew= 0;
+	fBytesread= 0;
+	fResultTotal= 0; // this is now a ShowProgress::LastBytesRead counter
+	fLimitResultSize= 0;
+	fEndofMessage= false;
+	fResultHand= NULL;
+	fNullTerm= true; //??
+	fLastc = fLast2c= fLast3c = 0; // receive -- CRLF conversion record
+	fStartTime= 0;
+	fConnectTime= 0;
+
+	fMessageProc = NULL;
+	fMessageObj = NULL;
+	fBreakProc = NULL;
+	fBreakObj = NULL;
+	fReadSaveLen = 0;
+	fReadSave = NULL;
+
+#ifdef UseMacTCPApi	
+		// TMacTCP vars
+	fConnectionIsOpen = false;
+	fStreamIsOpen = false;
+	fPBP = NULL;
+	fReceivePBP = NULL;
+	fAbortPBP = NULL;
+	fStreamP = NULL;  
+	fWdsEntryP = NULL;
+	fRdsEntryP = NULL;
+	fWaitingP = NULL;
+	fWaitSeg= 0;
+	fWaitIndx= 0;
+	fHasRDS = false;
+	fStreamBufferP = NULL;
+	fGetFile= 0;
+#endif
+
+	(void) OpenMacTCP();
+
+#ifdef UseMacTCPApi
+		short i;
+		
+		fPBP = (TCPiopb *)MemNew(sizeof(TCPiopb));
+		BlockSet( (Ptr)fPBP, sizeof(TCPiopb), 0);
+		fPBP->ioResult = 0; // signal that previous command has ended
+
+		fAbortPBP = (TCPiopb *)MemNew(sizeof(TCPiopb));
+		BlockSet((Ptr)fAbortPBP, sizeof(TCPiopb), 0);
+
+		fReceivePBP = (TCPiopb *)MemNew(sizeof(TCPiopb));
+		BlockSet((Ptr)fReceivePBP, sizeof(TCPiopb), 0);
+		fReceivePBP->ioResult = 0; // signal that previous command has ended
+		fReceivePBP->csParam.receive.rcvBuffLen = 0; // nothing received
+
+		fWdsEntryP = MemNew(kNumWds * sizeof(wdsEntry));
+		for (i= 0; i<kNumWds; i++) {
+			((wdsEntryPtr)fWdsEntryP)[i].ptr = NULL;
+			((wdsEntryPtr)fWdsEntryP)[i].length = 0;
+			}
+	
+		fRdsEntryP = MemNew(kNumRds * sizeof(rdsEntry));
+		for (i= 0; i<kNumRds; i++) {
+			((rdsEntryPtr)fRdsEntryP)[i].ptr = NULL;
+			((rdsEntryPtr)fRdsEntryP)[i].length = 0;
+			}
+	
+		fWaitingP = MemNew(kNumRds * sizeof(rdsEntry));
+		for (i= 0; i<kNumRds; i++) {
+			((rdsEntryPtr)fWaitingP)[i].ptr = NULL;
+			((rdsEntryPtr)fWaitingP)[i].length = 0;
+			}
+			
+		fStreamBufferP = MemNew(kStreamBufferSize);
+		fStreamP = CreateStream(fStreamBufferP, kStreamBufferSize); //fPBP, 
+
+#endif // UseMacTCPApi
+}
+
+
+DTCP::DTCP()
+{
+	Initialize();
+}
+
+
+
+
+DTCP::~DTCP() 
+{
+#ifndef UseMacTCPApi
+	if (fConnectionIsOpen)  
+		Close();
+	if (fStreamIsOpen)  
+		Release();
+#else
+	if (fConnectionIsOpen) {
+		if (fHasRDS) {
+			ReturnRds(fWaitingP);
+			ReturnRds(fRdsEntryP);
+			fHasRDS = false;
+			}
+		Close();
+		}
+	if (fStreamIsOpen) {
+		Release();
+		}
+	fStreamBufferP = MemFree(fStreamBufferP);
+	MemFree((Ptr)fAbortPBP); fAbortPBP = NULL;
+	MemFree((Ptr)fPBP); fPBP = NULL;
+	MemFree((Ptr)fReceivePBP); fReceivePBP = NULL;
+	MemFree((Ptr)fWdsEntryP); fWdsEntryP = NULL;
+	MemFree((Ptr)fRdsEntryP); fRdsEntryP = NULL;
+	MemFree((Ptr)fWaitingP); fWaitingP = NULL;
+	fStreamP = NULL; // TCPRelease handles release of this
+#endif
+}
+
+
+#ifdef UseMacTCPApi
+#define SetupTCPblock( pb, tcpCode, stream) { \
+			pb->csCode		= tcpCode; \
+			pb->tcpStream	= stream; \
+			pb->ioCRefNum	= gMacTCPRefNum; \
+			pb->ioCompletion = NULL; \
+			pb->ioResult 	= 1; }
+#endif
+
+
+
+Boolean DTCP::UserBreak()
+{  
+	if (fBreakProc)
+		return (fBreakProc)(fBreakObj);
+	else
+		return false;
+}	
+
+void DTCP::StreamYieldTime()
+{
+	if (UserBreak()) Fail(-1); //??
+}
+
+
+void DTCP::Fail(long errNo)
+{
+	if (errNo) {
+		fErrNo= errNo;
+		fError= NULL;
+		fFailed= true;
+		Nlm_Message (MSG_ERROR, "Network DTCP error # %d",errNo);
+		}
+}
+
+
+void DTCP::Fail(const char* msg)
+{
+	if (msg) {
+		fErrNo= 0;
+		fError= (char*) msg;
+		fFailed= true;
+		Nlm_Message (MSG_ERROR, (char*) msg);
+		}
+}
+
+Boolean DTCP::Failed()
+{
+	return fFailed;
+}
+
+
+
+void DTCP::InstallUserBreak(TCPUserBreakHandler aproc, DTaskMaster* itsObject)
+{
+	fBreakProc= aproc;
+	fBreakObj= itsObject;
+}
+
+void DTCP::InstallMessageHandler(TCPMessageHandler aproc, DTaskMaster* itsObject)
+{
+	fMessageProc= aproc;
+	fMessageObj= itsObject;
+}
+
+void DTCP::ShowMessage(const char* msg)
+{
+	if (fMessageProc) (fMessageProc)(fMessageObj, 0, msg);
+}
+
+Boolean DTCP::IsTCPInstalled()
+{
+	return TCPIsItInstalled();
+}
+
+
+long DTCP::NameToAddress(const char* hostName)
+{
+	return DotName2IP(hostName);
+}
+
+char* DTCP::AddressToName(long address)
+{
+	return IP2DotName(address);
+}
+
+char* DTCP::DotAddrToName(const char* dotAddress)
+{
+	return IP2DotName( DotName2IP( dotAddress));
+}
+
+
+		// do we want both of these??
+long DTCP::Version()
+{
+	return kUTCPVersion;
+}
+
+const char* DTCP::VersionString()
+{
+	return kUTCPVersionString;
+}
+
+
+char* DTCP::StatusString(short state)
+{
+	switch (state) {
+		case kTCPlistening	: return "TCP listening";
+		case kTCPwaitingforopen: return "TCP waiting for open";
+		case kTCPopening		: return "TCP opening";
+	 	case kTCPestablished: return "TCP established";
+		case kTCPPleaseClose: return "TCP please close";
+		case kTCPclosing		: return "TCP closing";
+		case kTCPclosed			: return "TCP closed";
+		case kTCPreleased		: return "TCP released";
+		case kTCPUnknownState:
+		default							: return "TCP unknown state";
+		}
+}
+
+
+long DTCP::Status()
+{
+#ifndef UseMacTCPApi
+	if (!fStreamIsOpen)				return kTCPreleased;
+	else if (!fConnectionIsOpen) 	return kTCPPleaseClose;
+	else  										return kTCPestablished;
+
+#else
+	if (!fStreamIsOpen) 
+		return kTCPreleased;
+	else {
+		// Check for an open still in progress 
+		if (fPBP->ioResult > 0) 
+			return kTCPwaitingforopen; // is this proper useof ioResult now?
+		else {
+			SetupTCPblock( fPBP, TCPStatus, fStreamP);
+			fPBP->csParam.status.userDataPtr = NULL;
+
+			if (PBControlSync((ParmBlkPtr)fPBP) != 0)
+				return kTCPclosed;
+			else switch (fPBP->csParam.status.connectionState) {
+					case 0 : return kTCPclosed;
+					case 2 : return kTCPlistening;
+					case 4 :
+					case 6 : return kTCPopening;
+					case 8 : return kTCPestablished;
+					case 10:
+					case 12:
+					case 16:
+					case 18:
+					case 20: return kTCPclosing;
+					case 14: return kTCPPleaseClose;
+					default: return kTCPUnknownState;
+					}
+			}
+		}
+	
+#endif
+}
+
+void DTCP::StatusMessage(void)
+{
+	ShowMessage( StatusString(Status()));
+}
+
+Boolean DTCP::EndOfMessage()
+{
+	return fEndofMessage;
+	//?? return (fEndofMessage || (NewBytesReceived == 0));
+	//^^ bad when linefeeds are received but don't count in NewBytesRec...!!!
+}
+
+void DTCP::SetEndOfMessage( Boolean isEnded)
+{
+	fEndofMessage= isEnded;
+}
+
+
+//ncbi.h: 	time_t Nlm_GetSecs() == time() call, should be okay on all ansi c systems?
+
+Boolean DTCP::WaitedForOpen(long delayticks)
+{
+	long		aTicks;
+	short		currStat, oldStat;
+	
+	oldStat= -123;
+	while (true) {
+		// Delay(5, &aTicks); << what is ncbi/generic equivalend ??
+		//for (aTicks= GetSecs() + 5; GetSecs() < aTicks; ) ;
+		
+		currStat= (short)Status();
+		if (currStat!=oldStat) ShowMessage( StatusString(currStat));
+		switch (currStat) {
+		
+			case kTCPestablished:  
+				if (delayticks) 
+				//for (aTicks= GetSecs() + delayticks; GetSecs() < aTicks; ) ;
+				// ^^ this is TOO LONG
+				return true;
+
+			case kTCPUnknownState:
+			case kTCPPleaseClose:
+			case kTCPreleased:
+			case kTCPclosed	:  
+				Fail("Couldn't connect to TCP service.");
+				Release();
+				return false;
+				
+			default: if (UserBreak()) {
+				Release();
+				return false;
+				}
+			}
+		oldStat= currStat;
+		}
+	return false;
+}
+
+Boolean DTCP::WaitedForOpen()
+{
+	return WaitedForOpen(kDefaultOpenDelay);
+}
+
+
+
+void DTCP::SetShowProgress( Boolean turnOn)
+{
+	fDoShowProgress= turnOn;
+}
+
+void DTCP::ShowProgress( long sendRecvCount)
+{
+	char msg[128];
+	sprintf( msg, "TCP bytes sent: %d", sendRecvCount);
+	ShowMessage(msg);
+}
+
+void DTCP::ShowProgress()
+{
+	if (fBytesread > fResultTotal + 1024) {
+		ShowProgress( fBytesread);
+		fResultTotal= fBytesread;
+		}
+}
+
+
+
+#ifdef UseMacTCPApi
+StreamPtr DTCP::CreateStream(Ptr bufferP, unsigned long bufSize)
+{
+	SetupTCPblock( fPBP, TCPCreate, nil);
+	fPBP->csParam.create.rcvBuff			= bufferP;	
+	fPBP->csParam.create.rcvBuffLen		= bufSize;	
+	fPBP->csParam.create.notifyProc		= NULL;
+	fPBP->csParam.create.userDataPtr	= NULL;
+	
+	PBControlSync((ParmBlkPtr) fPBP);
+	FailOSErr(fPBP->ioResult);
+	fStreamIsOpen = true;
+	return fPBP->tcpStream;
+}
+#endif // UseMacTCPApi
+
+
+void DTCP::Release()
+{
+	fBytesread= 0;
+	fStreamIsOpen = false;
+#ifndef UseMacTCPApi
+	if (fSocket>=0) short err= SockClose(fSocket); 
+	fSocket= -1;
+	fConnectionIsOpen = false;
+#else
+	SetupTCPblock( fPBP, TCPRelease, fStreamP);		
+	PBControlSync((ParmBlkPtr)fPBP);
+	Fail(fPBP->ioResult);
+#endif	 
+}
+
+
+
+void DTCP::Open( char* hostname, unsigned short hostport, unsigned short localport)
+{
+	fBytesread= 0;
+	fLastc= fLast2c= fLast3c= 0;
+	fConnectTime= 0;
+	fStartTime=	GetSecs();
+	fLastSentCRLF= false;
+	fConnectionIsOpen= false;
+	
+#ifndef UseMacTCPApi
+
+	fSocket= SockOpen( hostname, hostport);
+	if (fSocket<0) switch (fSocket) {
+		case errHost		:	Fail("Can't resolve host name"); return;
+		case errSocket	: Fail("Can't create IP socket"); return;
+		case errConnect	: Fail("Can't connect to host");	return;
+		default					: Fail("Can't open IP connection"); return;
+		}
+	fStreamIsOpen = true;
+	fConnectionIsOpen = true;
+
+#else
+
+	long hostaddr=  NameToAddress(hostname);
+ 
+	SetupTCPblock( fPBP, TCPActiveOpen, fStreamP);
+	fPBP->csParam.open.ulpTimeoutValue	= (unsigned char)Min(100, fTimeout / 60);	
+	fPBP->csParam.open.ulpTimeoutAction	= 1;	
+	fPBP->csParam.open.validityFlags		= 0xC0; // timeout val & action flagged	
+	//fPBP->csParam.open.validityFlags	= 0x10 + 0x20 + 0x40 + 0x80;	
+													          // tosFlags + precedence + timeout val + timeout act
+	fPBP->csParam.open.commandTimeoutValue= (unsigned char)Min(100, fTimeout / 60); 	
+	fPBP->csParam.open.remoteHost			= hostaddr;	
+	fPBP->csParam.open.remotePort			= hostport;	
+	fPBP->csParam.open.localHost			= 0;	
+	fPBP->csParam.open.localPort			= 0; //localPort;	
+	fPBP->csParam.open.tosFlags				= 0; //3  service type: 0x01=low delay + 0x02=high thruput	
+	fPBP->csParam.open.precedence			= 0; //0= default, 1 priority, 2	immediate, 3	flash
+	fPBP->csParam.open.dontFrag				= 0;	
+	fPBP->csParam.open.timeToLive			= 0;
+	fPBP->csParam.open.security				= 0;	
+	fPBP->csParam.open.optionCnt			= 0;
+	for (short index = 0; index < sizeof(fPBP->csParam.open.options); ++index)	
+		fPBP->csParam.open.options[index]	= 0;	
+	fPBP->csParam.open.userDataPtr		= NULL;
+	
+	long startTick = GetSecs();
+	PBControlAsync((ParmBlkPtr) fPBP);
+	while (fPBP->ioResult == inProgress) StreamYieldTime();
+
+	long ticks = GetSecs() - startTick; // do because MacTCP returns timeOut as openFailed
+	if (ticks >= fTimeout - 30) Fail(kErrOpenTimeout);
+	else Fail(fPBP->ioResult);
+	fConnectionIsOpen = true;
+	
+#endif
+}
+
+
+
+// CloseConnection aborts the connection if it could not be closed
+void DTCP::Close()
+{
+	fConnectTime = GetSecs() - fStartTime;
+
+#ifndef UseMacTCPApi
+	if (fSocket>=0) short err= SockClose(fSocket); 
+	fSocket= -1;
+	fConnectionIsOpen = false;
+
+#else
+	fConnectionIsOpen = false;
+
+	SetupTCPblock( fAbortPBP, TCPClose, fStreamP);		
+	fAbortPBP->csParam.close.ulpTimeoutValue	= 30;	
+	fAbortPBP->csParam.close.ulpTimeoutAction	= 1;	// 0 == report, 1 == abort
+	fAbortPBP->csParam.close.validityFlags		= 0xC0;	
+	fAbortPBP->csParam.close.userDataPtr			= NULL;
+	PBControlAsync((ParmBlkPtr) fAbortPBP);
+
+	long maxtime = GetSecs() + 60;
+	while ((fAbortPBP->ioResult == inProgress || fAbortPBP->ioResult == connectionClosing)
+		&& GetSecs() < maxtime) {
+		// MacTCP bug -- can fail to close quickly even w/ TimeoutValue
+		// -- should time out then abort if need be
+		if (! UserBreak()) ; 
+	 }
+	if (fAbortPBP->ioResult == 0 || fAbortPBP->ioResult == connectionDoesntExist || fAbortPBP->ioResult == connectionTerminated) 
+		;
+	else
+		Abort(); // timeout: abort the connection
+
+#endif
+}
+
+
+void DTCP::Abort()
+{
+
+#ifndef UseMacTCPApi
+	if (fSocket>=0) short err= SockClose(fSocket); 
+	fSocket= -1;
+	fConnectionIsOpen = false;
+#else
+	SetupTCPblock( fAbortPBP, TCPAbort, fStreamP);		
+	fAbortPBP->csParam.abort.userDataPtr= nil;
+	PBControlSync((ParmBlkPtr) fAbortPBP);
+	if (fAbortPBP->ioResult == 0 || fAbortPBP->ioResult == connectionDoesntExist || fAbortPBP->ioResult == connectionTerminated) 
+		return;
+	return;
+#endif
+}
+
+
+
+
+
+// Send functions ......................................
+
+#ifdef UseMacTCPApi
+void DTCP::SendData( Ptr wdsPtr, Boolean immediately)
+{	
+	// note: max wdsPtr[i].length == 65535 (min == 1)
+	
+	SetupTCPblock( fPBP, TCPSend, fStreamP);		
+	fPBP->csParam.send.ulpTimeoutValue	= (unsigned char)Min(180, fTimeout/60); 	
+	fPBP->csParam.send.ulpTimeoutAction	= 1;	 // 0 == report, 1 == abort
+	fPBP->csParam.send.validityFlags	= 0xC0;	
+	fPBP->csParam.send.pushFlag				= immediately; // send it at once == 1 	
+	fPBP->csParam.send.urgentFlag			= false;	
+	fPBP->csParam.send.wdsPtr					= (Ptr) wdsPtr;	
+	fPBP->csParam.send.userDataPtr		= NULL;
+	PBControlAsync((ParmBlkPtr) fPBP);
+
+	while (fPBP->ioResult == inProgress) StreamYieldTime();
+	FailOSErr(fPBP->ioResult);
+}
+#endif
+
+
+
+void DTCP::SendBytes(void *data, long datasize, Boolean immediately)
+{
+	char*	pp	 =  (char*) data;
+	long len = datasize;
+	
+#ifndef UseMacTCPApi
+	len= SockWrite( fSocket, data, datasize);
+#else
+	while (len > 0) {
+		unsigned short partLen = len > 16384 ? 16384 : short(len);
+		((wdsEntryPtr)fWdsEntryP)[0].ptr = pp;
+		((wdsEntryPtr)fWdsEntryP)[0].length = partLen;
+		SendData( (Ptr)fWdsEntryP, immediately && (len - partLen <= 0) );
+		pp	+= partLen;
+		len -= partLen;
+		StreamYieldTime();
+		}
+	}
+#endif
+
+	fLastSentCRLF= ( ((char*)data)[datasize-1] == kLF && ((char*)data)[datasize-2] == kCR);
+}
+
+
+
+void DTCP::Send( char* data, Boolean immediately)
+{
+	SendBytes( data, strlen(data), immediately);
+}
+
+void DTCP::SendCRLF(Boolean EvenIfLastSendHadCRLF, Boolean immediately)
+{
+	static char	buf[2] = {kCR,kLF};
+	if (EvenIfLastSendHadCRLF || !fLastSentCRLF)
+		SendBytes( &buf, 2, immediately);
+}
+
+void DTCP::SendStr( char* s, Boolean addCRLF, Boolean immediately)
+{
+	SendBytes( s, strlen(s), immediately);
+	if (addCRLF)	SendCRLF( true, immediately);
+}
+
+
+
+
+
+
+
+
+// Receive status functions ......................................
+
+long DTCP::CharsAvailable() 
+{		
+#ifdef UseMacTCPApi
+	if (!fStreamIsOpen) 
+		return 0;
+	else {
+		long newbytes= 0;
+		if (fHasRDS) newbytes= UnreadCharsWaiting(fWaitingP);
+		
+		SetupTCPblock( fPBP, TCPStatus, fStreamP);
+		fPBP->csParam.status.userDataPtr = NULL;
+		PBControlSync((ParmBlkPtr) fPBP);
+		Fail(fPBP->ioResult);
+		newbytes += fPBP->csParam.status.amtUnreadData;  
+		return newbytes;
+		}
+	}
+	
+#else
+	if (!fStreamIsOpen) 
+		return 0;
+	else if (!fConnectionIsOpen)  
+		return 0;
+	else {
+		long charsleft =  0;
+		
+		if (fReadSave) charsleft= fReadSaveLen;
+		
+			// ?? how do we deal w/ this in sockets ??
+			// do we need to use select(n, readfds, writefds, errfds, timeout);
+			// doesn't select() set a file descripttor for async operations??
+#if 0
+		long readarray[1] = { fSocket };
+		long maxtime = 1;
+		short result= SockSelect( 1, readarray, NULL, NULL, maxtime);
+		if (result > 0) charsleft++; // don't know how many...
+#endif
+
+		return charsleft;
+		}
+#endif 
+}
+
+void DTCP::EatResponseLine(void)
+{
+	(void) MemFree( RecvLine()); //RecvUpTo( true, kLF, NULL));
+	(void) MemFree( RecvChars( CharsAvailable() ));	
+}
+
+
+long DTCP::TotalBytesReceived()
+// total over life of the DTCP (since init), or multiple calls to RecvUpTo, RecvChunk ...
+{
+	return fBytesread; // fResultTotal;
+}
+
+long DTCP::NewBytesReceived()
+// total only for last read 
+{
+	return fResultNew;
+}
+
+void DTCP::NullTerm( Boolean turnon)
+{
+	fNullTerm = turnon;
+}
+
+long DTCP::ConnectTime()
+{
+	if (fConnectionIsOpen) fConnectTime = GetSecs() - fStartTime;
+	return fConnectTime;
+}
+
+
+
+// Receive functions ......................................
+
+#ifdef UseMacTCPApi
+void DTCP::ReturnRds( Ptr theRdsArray)
+{
+	if (theRdsArray == fRdsEntryP) { 
+		if (((rdsEntryPtr)theRdsArray)[0].length > 0) {
+			SetupTCPblock( fReceivePBP, TCPRcvBfrReturn, fStreamP);						
+			fReceivePBP->csParam.receive.rdsPtr = theRdsArray;	
+			fReceivePBP->csParam.receive.userDataPtr= NULL;
+			PBControlSync((ParmBlkPtr) fReceivePBP);
+			}
+	  for (short ir=0; ir<kNumRds; ir++) {
+			((rdsEntryPtr)theRdsArray)[ir].length = 0;
+			((rdsEntryPtr)theRdsArray)[ir].ptr = NULL;
+			}
+		}
+	else if (theRdsArray == fWaitingP) { 
+		Boolean hasdata= true;
+	  for (short ir=0; ir<kNumRds; ir++) {
+			if (hasdata) {
+				long len= ((rdsEntryPtr)theRdsArray)[ir].length;
+				char *cp= ((rdsEntryPtr)theRdsArray)[ir].ptr;
+				if (len == 0) hasdata= false;
+				if (cp) free( cp); //DisposeIfPtr( cp); 
+				}
+			((rdsEntryPtr)theRdsArray)[ir].ptr = NULL;
+			((rdsEntryPtr)theRdsArray)[ir].length = 0;
+			}
+		}
+	fHasRDS = false;
+}
+#endif
+
+#ifdef UseMacTCPApi
+void DTCP::NoCopyRead( Ptr theRdsArray, short numEntries)
+{
+	SetupTCPblock( fReceivePBP, TCPNoCopyRcv, fStreamP);						
+	fReceivePBP->csParam.receive.commandTimeoutValue = (unsigned char) fTimeout/60; //1;	 // short wait
+	fReceivePBP->csParam.receive.urgentFlag		= 0;	
+	fReceivePBP->csParam.receive.markFlag			= 0;	
+	fReceivePBP->csParam.receive.rdsPtr				= theRdsArray;	
+	fReceivePBP->csParam.receive.rdsLength		= numEntries;	
+	fReceivePBP->csParam.receive.userDataPtr	= NULL;
+	PBControlAsync((ParmBlkPtr) fReceivePBP);
+	fHasRDS = true;
+	while (fReceivePBP->ioResult == inProgress) StreamYieldTime();
+	fHasRDS = (fReceivePBP->ioResult == 0); // ???
+}
+#endif
+
+
+
+#ifdef UseMacTCPApi
+void DTCP::SaveUnreadArray()
+{
+	// copy remainder of fRdsEntryP to fWaitingP
+	short	i, j;
+	long	len;
+	Boolean hasdata = true, haswait= false;
+	rdsEntryPtr waitArray = (rdsEntryPtr)fWaitingP;
+	rdsEntryPtr theRdsArray = (rdsEntryPtr)fRdsEntryP;
+	for (i= fWaitSeg, j=0; hasdata && i<kNumRds; i++, j++) {
+		waitArray[j].length = len = theRdsArray[i].length;
+		//waitArray[j].ptr = theRdsArray[i].ptr;
+		if (len == 0) hasdata = false;
+		if (hasdata) {
+			haswait= true;
+			waitArray[j].ptr = (char*) malloc( len); //NewPtr( len); 
+			memcpy( waitArray[j].ptr, theRdsArray[i].ptr, len);
+			}
+		}
+			// and return to tcp -- !? IS THIS LEGAL !?!?
+	ReturnRds(fRdsEntryP);						
+	if (haswait) fHasRDS= true;	// we still have fWaitingP
+	fWaitSeg= 0;		// data starts in item 0, at index fWaitIndx
+}
+#endif
+
+#ifdef UseMacTCPApi
+long DTCP::UnreadCharsWaiting(Ptr aRdsArray)
+{
+	long newbytes= 0;
+	Boolean hasdata= true;
+	rdsEntryPtr theRdsArray = (rdsEntryPtr)aRdsArray;
+	for (short i=fWaitSeg; hasdata && i<kNumRds; i++) {
+		long len= theRdsArray[i].length;
+		if (len == 0) hasdata= false;
+		else if (i == fWaitSeg) len -= fWaitIndx;
+		newbytes += len;
+		}
+	return newbytes;
+}
+#endif
+
+
+Boolean gStoppedatLF = false;
+
+#ifdef UseMacTCPApi
+void DTCP::CopyReadArray(char **datap, long datasize, long &bytesReceived, 
+													Ptr aRdsArray, short numEntries,
+													Boolean convertnewline, Boolean checklf, Boolean stopatlf)
+{
+	rdsEntryPtr theRdsArray= (rdsEntryPtr)aRdsArray;
+	Boolean done = false;
+	if (stopatlf) convertnewline= true;
+	gStoppedatLF = false;	
+	
+	while ( bytesReceived<datasize 
+		&& fWaitSeg<numEntries  && !done
+		&& theRdsArray[fWaitSeg].length > 0 ) {
+			long newindx= 0;
+			long newbytes = theRdsArray[fWaitSeg].length - fWaitIndx;
+			long maxnewbytes = datasize - bytesReceived;
+			
+			if (convertnewline) {
+				register char* cp= theRdsArray[fWaitSeg].ptr + fWaitIndx;
+				register char* bp= *datap;
+				register char  c;
+				register long	 j;
+				register long usedbytes= 0;
+				for (j= 0; j<newbytes && usedbytes<maxnewbytes; j++) {  
+					if ((c= *cp++) == kLF) {
+						if (fLastc != kCR) { *bp++ = kCR; usedbytes++; }
+						else if (checklf && fLast2c == '.' && fLast3c == kLF) {
+							bp -= 3; // drop dot-cr from bufat
+							usedbytes -= 3;
+							fEndofMessage= true;
+							done= true; 
+							j = newbytes;
+							}
+						if (stopatlf)	{ 
+							gStoppedatLF = true;	
+							done= true; j= newbytes; 
+							}
+						}
+					else
+						{ *bp++ = c; usedbytes++; }
+					fLast3c = fLast2c;
+					fLast2c	= fLastc;
+					fLastc	= c;
+					}
+				if (usedbytes == maxnewbytes && usedbytes < newbytes) 
+					newindx = fWaitIndx + newbytes;
+				newbytes = usedbytes;
+				}
+				
+			else {
+				if (newbytes > maxnewbytes) {
+					newbytes= maxnewbytes;
+					newindx = fWaitIndx + newbytes;
+					}
+				memcpy( *datap, theRdsArray[fWaitSeg].ptr + fWaitIndx, newbytes);
+				}
+			
+			*datap += newbytes;
+			bytesReceived += newbytes;
+			fWaitIndx= newindx;
+			if (!newindx) fWaitSeg++;
+			}
+
+	if (theRdsArray[fWaitSeg].length == 0 || (bytesReceived<datasize && !stopatlf))  
+		ReturnRds(aRdsArray);
+}
+#endif
+
+
+
+void DTCP::ReceiveData(void *data, long datasize, long &bytesReceived, Boolean stopatlf)
+{
+	short	err= 0;
+	long startTick= GetSecs();
+	long oldBytes = fBytesread;
+	Boolean done	= datasize < 1;
+	bytesReceived = 0;
+	char*	datap		= (char*) data;
+		
+#ifdef UseMacTCPApi
+	while ( bytesReceived<datasize && !done ) {
+		if (fHasRDS) { 
+			CopyReadArray( &datap, datasize - bytesReceived, bytesReceived, fWaitingP, kNumRds,
+													stopatlf, false, stopatlf);
+			if (bytesReceived >= datasize || gStoppedatLF) done= true; 
+			}
+		if (!done) {
+			fWaitSeg= fWaitIndx= 0;
+			((rdsEntryPtr)fRdsEntryP)[0].length = 0;
+			NoCopyRead( fRdsEntryP, kNumRds-1);
+			err = fReceivePBP->ioResult;
+			done |= (fReceivePBP->ioResult != commandTimeout); // ???
+			//done |= (GetSecs() - startTick >= fTimeout);
+			
+			CopyReadArray( &datap, datasize - bytesReceived, bytesReceived, fRdsEntryP, kNumRds,
+														stopatlf, false, stopatlf);
+			if (((rdsEntryPtr)fRdsEntryP)[fWaitSeg].length > 0) 
+				SaveUnreadArray();
+			if (bytesReceived >= datasize || gStoppedatLF) done= true;
+			}
+		}		
+		
+#else
+	long count;
+	
+	if (fReadSave) {
+		// read from local buffer...
+		count= Min( datasize, fReadSaveLen);
+		if (stopatlf) {
+			char* lfp= (char*) MemChr( fReadSave, '\n', count);
+			if (lfp) count= lfp - fReadSave;
+			}
+		MemCpy( datap, fReadSave, count);
+		datap += count;
+		bytesReceived += count;
+		datasize -= count;
+		if (datasize<1) done= true;
+		fReadSaveLen -= count;
+		if (fReadSaveLen > 0) {
+			char* tmp= (char*) MemDup( fReadSave+count, fReadSaveLen);
+			MemFree( fReadSave);
+			fReadSave= tmp;
+			}
+		else {
+			fReadSave= (char*) MemFree( fReadSave);
+			fReadSaveLen= 0;
+			}
+		}
+
+	while ( !done && (count= SockRead( fSocket, datap, datasize)) > 0) {
+		if (stopatlf) {
+			char *lfp= (char*) MemChr(datap, '\n', count);
+			if (lfp) {
+				long newcount= lfp - datap;
+				if (newcount < count) {
+					fReadSaveLen= count - newcount;
+					fReadSave=	(char*) MemDup( lfp+1, fReadSaveLen);
+					count= newcount;
+					}
+				done= true;
+				}
+			}
+		datap 	+= count;
+		bytesReceived += count;
+		datasize -= count;
+		if (datasize<1) done= true;
+		}
+#endif
+	
+	fBytesread= oldBytes + bytesReceived;
+		
+	StreamYieldTime();
+}
+
+
+
+char* DTCP::ReadWithChecks( 
+						long expectedbytes/* = kTCPStopAtclose*/, 
+						Boolean convertnewline/* = false*/, 
+						long maxbytes/* = 0*/, 
+						char* oldbuffer/* = NULL*/)
+{
+	long 	bufsize= 0, bytesread = 0, bufadditions = 0, newbytes= 0;
+	long 	oldbytes= fBytesread;
+	Boolean stopAtdotcrlf = (expectedbytes == kTCPStopAtdotcrlf);
+	Boolean done = false;
+	short	err = 0;
+	long 	startTick = GetSecs();
+
+#if 0	
+			// no generic analog to FreeMem()?? -- coreavail() ??
+	long freebytes = FreeMem();
+	freebytes = freebytes - (freebytes / 4); 
+	if (maxbytes <= 0) maxbytes= freebytes;
+	else maxbytes = Min( maxbytes, freebytes);
+#endif
+	if (maxbytes <= 0) maxbytes= kMaxReadBuffer;
+	fResultNew= 0; //??
+
+	if (oldbuffer == NULL) { 
+		bufsize= 0; 
+		//FailNIL( oldbuffer= NewHandle(bufsize));
+		oldbuffer= (char*) MemNew(1);
+		oldbuffer[0]= '\0';
+		}
+	else {
+		//bufsize= GetHandleSize( oldbuffer);
+		bufsize= strlen(oldbuffer); // <<!!! Implies null term !!!
+	  //if (bufsize && oldbuffer[bufsize-1] == 0) bufsize--;
+		}
+		
+#ifdef UseMacTCPApi
+
+	while (!done) {
+		char *bufat, *bufat1;
+		Ptr	rds;
+		Boolean	readingNocopy;
+
+		if (fHasRDS) { 
+			readingNocopy= false;
+			rds = fWaitingP; 
+			err= 0;
+			}
+		else {
+			readingNocopy= true;
+			rds = fRdsEntryP; 
+			fWaitSeg= fWaitIndx= 0;
+			((rdsEntryPtr)rds)[0].length = 0;
+			NoCopyRead( rds, kNumRds-1);
+			err = fReceivePBP->ioResult;
+			done |= (fReceivePBP->ioResult != commandTimeout);
+			}
+		
+		long charswaiting= UnreadCharsWaiting(rds);
+		long newbufspace = Min( maxbytes - bufadditions, charswaiting) ;
+
+		if (charswaiting > maxbytes - bufadditions)  {
+			fResultNew= -1; // flag out-of-memory for TextGopher
+			done= true; 
+			}
+		
+		if (expectedbytes > 0 && newbufspace >= expectedbytes - bytesread) {
+			newbufspace = Max( 0, newbufspace - (expectedbytes - bytesread));
+			fEndofMessage= true;
+			done= true;
+			}
+			
+		if (newbufspace > 0) {
+			bufadditions += newbufspace;
+			//HUnlock( oldbuffer); //?? need this for SetHandleSize?
+			//SetHandleSize( oldbuffer, bufsize + newbufspace); // need +1 to stuff \0 at end
+			//FailMemError();
+			oldbuffer= Nlm_MemMore( oldbuffer, bufsize + newbufspace + 1);
+			
+			//SignedByte savedState = LockHandleHigh(oldbuffer);
+			newbytes= 0;
+			bufat1= bufat= oldbuffer + bufsize;
+			CopyReadArray( &bufat1, newbufspace, newbytes, rds, kNumRds, 
+															convertnewline, stopAtdotcrlf, false);
+
+			//HSetState(oldbuffer, savedState);
+			bytesread += newbytes;
+			bufsize   += newbytes;
+			fBytesread = oldbytes + bytesread;
+			if (fResultNew>=0) fResultNew += bytesread;
+			}
+		else if (((rdsEntryPtr)rds)[fWaitSeg].length == 0)  {
+			ReturnRds(rds); // normally done in call to CopyReadArray()
+			newbytes= 0;
+			}
+			
+		if (readingNocopy) {
+			if (((rdsEntryPtr)rds)[fWaitSeg].length > 0) SaveUnreadArray();
+			}
+		else {
+			if (newbytes >= newbufspace && ((rdsEntryPtr)rds)[fWaitSeg].length > 0) 
+				done= true;
+			}
+			
+		//if (GetHandleSize( oldbuffer) > bufsize) 
+		//	SetHandleSize( oldbuffer, bufsize); // shrink down
+			
+		if (fDoShowProgress) ShowProgress();  
+		if (UserBreak()) { err= -1; done = true; }
+		}
+
+#else //UseMacTCPApi
+
+	long count;
+	char* bufat;
+	do {
+		count= Min(maxbytes-newbytes,50);
+		if (count>0) {
+			oldbuffer= (char*) MemMore( oldbuffer, bufsize + count + 1);
+			bufat= oldbuffer + bufsize;
+			long newcount = 0;
+
+			ReceiveData( bufat, count, newcount, stopAtdotcrlf || convertnewline);
+			
+			if (newcount>0 && stopAtdotcrlf) {
+				if (bufat[0] == '.' && (bufat[1] == kCR || bufat[1] == kLF)) {
+					count= 0;
+					}
+				} 
+			
+			if (newcount>0 && convertnewline) {
+				// then bufat has only one new line, look at its tail
+				long n= newcount-1;
+				if (bufat[n] == kLF) n--;
+				if (bufat[n] == kCR) n--;
+				if (n + LineEndSize + 1 > count) {
+					count= n + 1;
+					oldbuffer= (char*) MemMore( oldbuffer, bufsize + count + 1);
+					}
+				for (short i= 0; i<LineEndSize; i++) bufat[++n]= LineEnd[i];
+				newcount= n;
+				}
+			count= newcount;
+			
+			//HSetState(oldbuffer, savedState);
+			bufsize += count;
+			newbytes += count;
+			fBytesread += count;
+			StreamYieldTime();
+			}
+		} while (err == 0 && count > 0);
+		
+	//SetHandleSize( oldbuffer, bufsize);
+	oldbuffer= (char*) MemMore( oldbuffer, bufsize + 1);
+	//FailMemError();
+	//if (bufsize >= (long) fStreamBufferP)	fEndofMessage= true;  // stored file size here.
+	//else if (err == eofErr)  fEndofMessage= true;
+
+#endif //UseMacTCPApi
+
+	if (true) { //fNullTerm !!!
+		//SetHandleSize( oldbuffer, bufsize+1);
+		//FailMemError();
+		oldbuffer[bufsize] = '\0'; // always now, no such GetPtrSize(p) for generic systems
+		}
+
+	if (err != 0)  {
+		fEndofMessage= (Status() != kTCPestablished);
+		}
+		
+	return oldbuffer;
+}
+
+
+
+
+short DTCP::RecvByte()
+{
+// RecvByte -- Return the next byte in the buffer, reading more in if necessary. 
+// all valid data is >= 0; data < 0 is NODATA 
+	unsigned char b;
+	long bytesread= 0;
+
+	ReceiveData( &b, 1, bytesread);
+		
+	if (bytesread>0) return b; 
+	//else if (gUseTCP) return fReceivePBP->ioResult; // MacTCPCommonTypes error codes
+	else return -1;			
+}
+
+  
+char* DTCP::RecvChars(long readCount)
+{ 
+	long  thisread;
+	long	numread= 0;
+	long  bufsize= readCount;
+
+	if (!fConnectionIsOpen) return NULL;
+	if (readCount < 0) Fail("TCP.RecvChars: invalid count"); 
+ 
+	//if (fNullTerm) fResultHand = NewHandle(bufsize+1);
+	//else fResultHand = NewHandle(bufsize+1);
+	//FailMemError();
+	//HLock( fResultHand);
+	fResultHand= (char*) MemNew(bufsize+1);
+	
+	char* p= fResultHand;
+	if (readCount > 0) do {
+		thisread= 0;
+		ReceiveData( p, bufsize, thisread);
+		p += thisread;
+		bufsize -= thisread;
+		numread += thisread;
+	} while (numread < readCount && thisread > 0 && bufsize > 0);
+		
+	if (true) { //fNullTerm)
+		fResultHand[numread] = '\0';
+		}
+	//HUnlock( fResultHand);
+	return fResultHand;
+}
+
+
+char* DTCP::RecvChunk( long maxChunk, char* oldChunk)
+{	
+	Boolean done; 
+	long	thisread, count, oldchunksize, newchunksize= 0;
+ 	// note: maxChunk >= newchunksize, oldchunksize is separate
+	
+	fResultNew= 0;
+	fResultHand= oldChunk;
+	if (!fConnectionIsOpen) return oldChunk;
+	
+	if (maxChunk <= 0) 
+		maxChunk = kMaxReadBuffer; //maxChunk= FreeMem() - (FreeMem() / 5); 
+	
+	if (oldChunk == NULL) { 
+		oldchunksize= 0; 
+		//FailNIL( oldChunk= NewHandle(oldchunksize));
+		oldChunk= (char*) MemNew(oldchunksize+1);
+		oldChunk[oldchunksize]= '\0';		
+		}
+	else 
+		oldchunksize= strlen( oldChunk); // !! this implies NULL termination for all data !
+		//oldchunksize= GetHandleSize( oldChunk);
+		
+	do {
+		//count= CharsAvailable();
+		//if (count+newchunksize > maxChunk) count= maxChunk-newchunksize;
+		count= maxChunk - newchunksize;
+		if (count>0) {
+			//SetHandleSize( oldChunk, oldchunksize+newchunksize+count);  
+			//FailMemError();
+			//SignedByte savedState = LockHandleHigh(oldChunk);
+			
+			oldChunk= (char*) MemMore( oldChunk, oldchunksize + newchunksize + count + 1);
+			char* p= oldChunk + oldchunksize + newchunksize;
+			thisread = 0;
+			ReceiveData( p, count, thisread);
+			//HSetState(oldChunk, savedState);
+			newchunksize += thisread;
+			}
+
+		fEndofMessage= (Status() != kTCPestablished);
+		if (fDoShowProgress) ShowProgress(); 
+		done= (newchunksize >= maxChunk || thisread < 1);
+		if (UserBreak()) {
+			done= true;
+			Fail("User break");  // ?? fail or proceed w/ short read?
+			}
+	} while (!(done || fEndofMessage)); 
+	
+	if (true) { //fNullTerm) 
+		//SetHandleSize( oldChunk, newchunksize+oldchunksize+1);
+		//FailMemError();
+		oldChunk[oldchunksize + newchunksize] = '\0';
+		}
+	fResultNew= newchunksize;
+	fResultHand= oldChunk;
+	return oldChunk;
+}
+
+
+ 
+char* DTCP::RecvLine() // read up to kLF 
+{
+	const	short	kBufSize = 511;
+	char	buf[kBufSize+1];
+ 
+	if (!fConnectionIsOpen) return false;
+	fResultSize= 0;
+	fMaxResultSize= 0;
+	fResultNew= fResultSize;  //save for close calculation
+	fEndofMessage= false;
+
+	long 	bytesread = 0;
+	ReceiveData( buf, kBufSize, bytesread, true);
+	if (bytesread > 0) {
+		fResultSize += bytesread;
+		fResultNew= fResultSize;
+		buf[bytesread]= 0;
+		return StrDup(buf);
+		}
+	else
+		return NULL;
+}
+
+
+ 
+
+#ifdef IsThisObsolete
+
+void DTCP::OpenRecv( Handle oldData, long limit)
+{
+	fResultHand = oldData;		 
+	if (fResultHand != NULL) {
+		if (fNullTerm) {
+			fResultSize= GetHandleSize( fResultHand);
+			char *cp= (char*) memchr( *fResultHand, '\0', fResultSize);
+			if (cp) { 
+				fResultSize= cp - *fResultHand;
+				SetHandleSize(fResultHand,fResultSize);
+				}
+			}
+		else
+			fResultSize= GetHandleSize( fResultHand);
+		}	
+	else {
+		fResultHand = NewHandle(0);
+		fResultSize = 0;
+		}
+	fMaxResultSize= 0;
+	fResultNew= fResultSize;  //save for close calculation
+	fEndofMessage= false;
+	
+ 	if (limit <= 0) limit= FreeMem() - (FreeMem() / 5);  //!! make sure we dont' use all of mem
+	if (limit > 0) fLimitResultSize= limit;
+	else fLimitResultSize= 0; //? save time below if set to max-positive-long ...
+}
+
+
+Boolean DTCP::StoreRecvLimit( char b)
+//! this is true when we have reached fLimitResult... and must STOP READING 
+//! current byte b IS stored (if possible) 
+// Put the byte b after the output handle, increasing the handle's size in the process. 
+{
+	fResultSize++;
+	//fResultTotal++;
+	if (fResultSize >= fMaxResultSize) {
+		if (UserBreak())	{
+			// ?? Fail("TCP user break in data receive");  
+			fLimitResultSize= fResultSize;
+			}
+		if (fDoShowProgress) ShowProgress(); // fResultTotal);
+		fMaxResultSize= fResultSize + kRecvChunkSize;
+		SetHandleSize(fResultHand,fMaxResultSize); 
+		FailMemError();
+		}
+	char* p =  *fResultHand + fResultSize-1;
+	*p = b;
+	return ((fLimitResultSize > 0) && (fResultSize >= fLimitResultSize));
+}
+
+
+void DTCP::CloseRecv()
+{
+	long endbyte = fResultSize;  
+	if (fNullTerm) endbyte++;
+	if (endbyte > fMaxResultSize) {
+		fMaxResultSize= endbyte + 1;
+		SetHandleSize(fResultHand,fMaxResultSize); 
+		FailMemError();
+		}
+	if (fNullTerm) {
+		char* p = *fResultHand + endbyte-1;
+		*p = 0; // NO MORE NULL terms
+		}
+	fResultNew = fResultSize - fResultNew;
+	//- fResultTotal= fResultTotal + fResultNew; 
+	fMaxResultSize= endbyte;
+	SetHandleSize( fResultHand, fMaxResultSize);
+	if (fDoShowProgress) ShowProgress(); //fResultTotal);
+}
+
+
+/*
+TCPRecvUpTo(connectionID,termination character, waitTime,oldString) 
+-- Return a string from the
+TCP connection; return everything available, up to BUT !INCLUDING the termination 
+character (if any). Pass an empty termination character to receive everything 
+available. WaitTime is the amount of time to wait for the input, in ticks 
+(60ths of a second). oldString is what was read the last call (presumably
+terminated due to a time-out).
+*/
+
+Handle DTCP::RecvUpTo(Boolean lookForTerm, char termChar, Handle AppendToThisData)
+{
+	short		inChar;
+	Boolean	done;
+ 
+	if (!fConnectionIsOpen) return NULL;
+	OpenRecv( AppendToThisData, 0);
+	done= false;
+	while (!done) {
+		inChar = RecvByte();
+		if (inChar < 0) {
+			fEndofMessage= true;
+			done= true;
+			}				
+		else { 		// note: must keep 0, for binary data 
+			if (StoreRecvLimit(inChar)) {
+				done= true; inChar= -9;
+				}
+			if (lookForTerm && inChar == termChar) {
+				//! fEndofMessage= true; << not necessarily !?
+				done= true; inChar= -8;
+				}
+			}
+		}
+	CloseRecv();
+	
+	if (inChar == kErrTimedOut) Fail("TCP Connection timed out");
+	else if (inChar == kErrUserBreak) Fail("User break");
+	return fResultHand;
+}
+
+
+/*
+TCPRecvMsg(connectionID,waitTime,OKChar,limit) 
+-- Return a message, where a message is
+defined as either a line starting with the OKChar (if the first line does not start with this,
+then the first line is returned surrounded by "еее"; this is an error indication), which should
+be stripped from the message, followed by lines of text until a period on a line be itself is reached,
+which final line is also stipped; or if OKChar is empty, then no initial line, but just lines of text
+until a period on a line by itself, which is stripped. In addition, the following editing is performed on
+the incoming text: linefeeds are removed; control-Hs and the characters immediately preceeding them
+are removed; ".." at the start of lines is changed is "."; tabs are converted to spaces. If waitTime
+ticks go by without reading a whole message, then return "еее time out еее". If limit characters
+are input without reading a whole message, then "еее message too big еее" is appended
+to the truncated message (but it's all read anyway). This routine should be able to read
+SMTP, NNTP, and POP messages.
+*/
+
+Handle DTCP::RecvMsg( char OKChar, long limit)
+{
+	const	char	chRtn = 13;				// ASCII for carriage return. 
+	const	char	chBackspace = 8;				// ASCII for backspace. 
+	const	char	chTab = 9;						// ASCII for tab. 
+	const	char	chFormfeed = 12;			// ASCII for form feed. 
+	const	char	kTabStops = 8;			// Number of columns per tab stop.   
+	short		err= 0;
+	short		theChar;		// Input character. 
+	short		tabColumn= 0;			// Current column. 
+	Boolean	storeLimit;
+
+#define ExitRead(e) { err= e; goto exitread; } 
+#define StoreOrDie(c)  { if (StoreRecvLimit(c)) {err= kErrMemFull; goto exitread;} }
+#define nextByte(c) { c= RecvByte(); if (c<0) {err= c; goto exitread;} }
+ 
+	if (!fConnectionIsOpen) return NULL;
+	OpenRecv( NULL, limit);
+	
+			// Get the first character. 
+	if (OKChar != 0) nextByte(theChar);
+			// Check if this is a good message or an error. 
+			// If error, return the line, surounded by bullets. 
+	if (theChar != OKChar && OKChar != 0) {
+		char *stmp;
+		for (stmp="еее "; stmp!=NULL; stmp++) StoreOrDie(*stmp);
+		while (theChar != chRtn) {
+			StoreOrDie(theChar);
+			nextByte(theChar);
+			}
+		for (stmp=" еее"; stmp!=NULL; stmp++) StoreOrDie(*stmp);
+		nextByte(theChar);  
+			// Skip the linefeed. 
+		}
+		
+	else {
+				// Skip the first line. 
+		if (OKChar != 0) do nextByte(theChar) while (theChar != kLF); 
+			// Repeat for each line. 
+		while (true) {
+			nextByte(theChar);
+			if (theChar == '.') {
+					// Initial period. Might be end-of-message. Check the second char. 
+				nextByte(theChar);
+				if (theChar == chRtn) {
+						// End-of-message. Skip the linefeed and return. 
+					nextByte(theChar);
+					fEndofMessage= true;
+					break;	// exit the WHILE loop....
+					}
+				else  	// Otherwise, output the initial period.
+					storeLimit= StoreRecvLimit('.');
+								// Plus the next char if it wasn't a doubled initial period. 
+				if (theChar != '.') storeLimit |= StoreRecvLimit(theChar);
+				if (storeLimit) ExitRead(kErrMemFull);
+				nextByte(theChar);
+				}
+				
+				// Do the rest of the line. 
+			while (theChar != kLF) {
+				if (theChar == chTab) do { // Space out to the tab stop << NOT FOR GOPHER 
+						StoreOrDie(' ');
+						tabColumn++;
+					} while (! (tabColumn % kTabStops) == 0);
+				else if (theChar == chBackspace) {
+					// Back up one, if there's anything to back up over. 
+					if (tabColumn > 0 && fResultSize > 0) {
+						fResultSize--;
+						tabColumn--;
+						}
+					}						
+				else if (theChar == chFormfeed) {
+					// Insert a page-break. 
+					short i;
+					for (i = 0; i<20; i++) StoreOrDie('-');
+					for (i = 0; i< 3; i++) StoreOrDie(chRtn);
+					}						
+				else if (theChar != kLF) {
+					// Just put the character out straight, and adjust the tabbing. 
+					StoreOrDie(theChar);
+					if (theChar == chRtn) tabColumn = 0;
+					else tabColumn++;
+					}
+				nextByte(theChar);
+				}
+			}
+		}
+	err= 0;
+	
+exitread:
+	CloseRecv();  
+	if (err == kErrTimedOut) Fail("TCP Connection timed out");  
+	else if (err == kErrUserBreak) Fail("User break");  
+	return fResultHand;   
+
+#undef ExitRead
+#undef StoreOrDie
+#undef nextByte
+}
+
+
+#endif //IsThisObsolete
+
+
+ 

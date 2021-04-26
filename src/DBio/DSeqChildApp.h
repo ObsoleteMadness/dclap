@@ -19,9 +19,10 @@ public:
 		kSeqApps = 360, 
 		kChildMenu, kChildMenuBaseID
 		};
+	static char * kAppSection;
 	
 	//static DList* fgChildList;
-	static void SetUpMenu( short menuId, DMenu*& aMenu); 
+	static void SetUpMenu( short menuId, DMenu*& aMenu, char* menuPrefs = kAppSection); 
 	static void CallChildApp( short menucmd, DSeqList* aSeqList);
 
 	DSeqApps();

@@ -1235,12 +1235,15 @@ extern Nlm_Int4 Nlm_ComputerTime (void)
 
 {
 #ifdef WIN_MAC
-  return (TickCount ());
+  return (TickCount ()); /* 60ths of second */
 #endif
 #ifdef WIN_MSWIN
-  return (GetCurrentTime ());
+  return (GetCurrentTime ()); /* milliseconds */
 #endif
 #ifdef WIN_MOTIF
+#ifdef DCLAP
+	return  time(NULL) * 60;  /* 60ths of seconds */
+#endif
 #endif
 }
 

@@ -8,7 +8,8 @@
 #include "DFile.h"
 
 class DList;
-
+class DNetOb;
+class DBOP;
 
 class DChildFile : public DFile
 {	
@@ -19,7 +20,8 @@ public:
 	short fAction; 	
 	short fKind;
 	Boolean	fDelete;
-		
+	char * fName2;
+	
 	DChildFile( const char* filename, short kind= kOutput, Boolean deleteWhenDone = false,
 							short doneAction= kOpenText, const char* openmode = NULL,
 							const char* ftype = NULL, const char* fcreator = NULL);
@@ -30,13 +32,25 @@ public:
 class DChildApp : public DTaskMaster
 {	
 public:
+	enum CallMethods {
+			kNone,
+			kLocalexec,
+			kBOPexec,
+			kHTTPget,
+			kHTTPpost,
+			kOther
+			};
+			
 	char  * fName, * fCmdline;
 	const char * fStdin, * fStdout, * fStderr;
 	long		fProcessNum;
 	short		fLaunched;
 	short		fResult;
-	Boolean	fReusable; // don't delete from manager list after run
-	DList * fFiles;  // of DChildFile
+	short		fCallMethod;
+	Boolean	fReusable; 	// don't delete from manager list after run
+	DList * fFiles;  		// of DChildFile
+	DBOP  * fBopper;		// network childapps
+	DNetOb * fNob;			// network childapps
 	
 	DChildApp();
 	DChildApp( char* appname, char* cmdline= NULL, Boolean showStdout = true, 
@@ -45,7 +59,10 @@ public:
 	virtual void AddFile( DChildFile* aFile);
 	virtual void AddFile( short filekind, char* name = NULL);
 	virtual void AddInputBuffer( short filekind, char* buffer, ulong buflen);
+	virtual void ClearFiles();
 	virtual Boolean Launch();
+	virtual Boolean LaunchBop();
+	virtual Boolean LaunchLocal();
 	virtual void Finished();
 	virtual void FileAction( DChildFile* aFile);
 };
@@ -64,6 +81,7 @@ class DChildAppManager : public DTaskMaster
 public:
 	enum { kChildManagerTask = 4782, kStatusTask };
 	static DList* 	gChildList; // of DChildApp
+	static long 		gLastTime;
 	static short  	BuryDeadChildApp( long theEvent);
 	static Boolean  CheckStatus();
 	DChildAppManager();

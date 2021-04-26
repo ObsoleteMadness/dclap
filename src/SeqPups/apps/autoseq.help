@@ -1,0 +1,133 @@
+dgg needs: 
+-i -tfs -o ba16d1.s1 ba16d1.s1
+optional:
+-bp -s -v -pt -ts -ps
+
+autoseq (version 94.05.03) help
+-------------------------------
+  autoseq extracts a variety of information from SCF and ABI files and
+  writes these components to files.  It acts as an interface to CTrace,
+  CTraceFile, & CPeakList to perform a operations on the data, and the
+  results of these operations are also directed to files.
+
+command line structure:
+% autoseq {flag_list} {filename}
+flag_list ::= {'-'} {flag} {flag_list}
+flag ::= 1 of the following:
+b    [A,C,G,T]0+
+     Specifies to which bases individual actions should be performed.
+     More than one base may be specified. The default is -bACGT (all bases).
+bl   [short bl=<trace minimum>]
+     Set the baseline of the selected traces to bl. If bl is omitted then each
+     trace is translated downward by the the minimum value for that trace.
+bpd  [+integer maxnbhd=2]
+     For every subsequence of length nbhd (1<=nbhd<=maxnbhd) in the predicted
+     sequence, write the index of the 3' most peak center for that subsequence,
+     the delta for the subsequence, and the subsequence itself.  The delta
+     between bases m and n is defined to be the distance between the centers of
+     the peaks corresponding to bases m and n.
+bp   Output the base-to-trace-position mapping stored in file [prefix.bp]
+d1   Compute 1st derivative trace [prefix.#.d1]
+d2   Compute 2nd derivative trace [prefix.#.d2]
+fmt  [{ABI0,ABI1,ABI,SCF} fmt=<best guess>]
+     Read in specified format; guess if not specified.
+         ABI0  - ABI (raw data)
+         ABI1  - ABI (2nd trace set)
+         ABI   - ABI (processed data)
+         SCF   - Standard Chromatogram Format
+fs   Write the sequence predicted stored in the file. [prefix.fseq]
+ft   Writes the trace of expected fluorescence from the list of selected peaks.
+     Expected fluorescence is calculated by fitting a Gaussian at the peak
+     center using the peak height & width; see fw. [prefix.#.ft]
+fw   [+short fw=50]
+     Specifies the breadth of the Gaussian used to model the fluorescence of
+     each peak (ie. Gaussian limits are [peakcenter - fw , peakcenter + fw]).
+h    Include descriptive headers in output files
+help This help display
+i    Write the individual traces after translation (bl), scaling (s), 
+     smoothing (sm), and transformation (x). [prefix.#]
+l    [+int index]|'p'
+     Specifies the left cutoff index. Peak positions are reported relative
+     to the left cutoff.  If 'p' is passed as the argument, the left cutoff
+     is set to the primer position.
+o    [string prefix=<input filename>]
+     Specifies file prefixes for output filenames.  If the prefix is a file,
+     suffixes will be added as appropriate.  If the prefix is a directory (that
+     is, ends in a '/'), files will be redirected to that directory and
+     the input filename will be used as the filename prefix.  The hash symbol
+     ('#') may be used a placeholder for the base identifier; if it is omitted,
+     .# will be appended to the prefix specified with this flag.
+pmc  [+double PMC=1]
+     Specifies the minimum peak height as a product of the mean and the
+     Peak Mean Coefficient (PMC).  For instance, if the mean trace value
+     is 20, then -a 1.5 will only pick peaks above 24 =(1.2 * 20).
+p    [+int separation=4]
+     Prunes peaks by doing a pairwise comparison of adjacent peaks and
+     discarding the less-probably peak of each pair which is separated by less
+     than separation.  If os is specified, a list of pairwise comparisons which
+     resulted in the removal of a peak is output. [prefix.pruned]
+ps   Write the predicted sequence (the sequence chosen by CPeakList)
+pt   Generates traces which represent peaks and their widths & heights.
+     Peak traces are especially informative when overlaid with the
+     individual (i) trace.  [prefix.#.pt]
+q    Quiet mode.  Only errors will be displayed.
+r    [int index]
+     Specifies the right cutoff index.  If index is <0, the right cutoff
+     will be set to +index from the end of the trace.  See l.
+rt   Output the residual trace computed by subtracting the expected fluorescence
+     trace from the observed data [prefix.#.rt]
+s    [string filename]
+     Scale traces using scales from filename (in ACGT order), or default scales
+     if not specified.
+sm   [short iterations=2]
+     Smooths by using a weighted average of the 3 points about a particular
+     index, with the special case of the endpoints handled by throwing out the
+     third point and normalizing the weighting coefficients.  The process is
+     repeated iterations times.
+tfs  Output a summary of tracefile statistics and peaks [prefix.tfs]
+ts   Output a summary of individual trace statistics and peaks [prefix.#.ts]
+version Print version info
+v    (extremely) Verbose mode
+x    [string filename]
+     Applies a 4x4 transformation/orthogonalization matrix to the 4 traces,
+     producing a new set of traces which replaces the existing set.
+     Transformation matrics are expected to be 4x4 matrix of the form:
+     (file consists of mTS values only)
+         M =         [,A]    [,C]    [,G]    [,T]
+             [A,]    mAA     mAC     mAG     mAT
+             [C,]    mCA     mCC     mCG     mCT
+             [G,]    mGA     mGC     mGG     mGT
+             [T,]    mTA     mTC     mTG     mTT
+     The general equation for the resulting traces is:
+     R = M O  <==>  R(T,i) =      sum     [ mTS x O(S,i) ]
+                              S in {ACGT}
+     where R is the resulting vector of 4 traces
+           O is the original vector of 4 traces
+           M is the 4x4 ({ACGT}x{ACGT}) matrix whose elements m(i,j) are
+             the cross-term contributions of channel j to channel i
+           S & T are trace identifiers (Source & Target) in {A,C,G,T}
+           i loops over the indices of the trace
+z    [+double threshold=0]
+     Specifies the epsilon about zero in which derivatives are considered to
+     be exactly zero, and thus the crest (trough) of a local maxima (minima).
+
+     Argument specifications are given in square brackets ('[' & ']') with their
+     associated flags where applicable.  Usually exactly one argument is
+     expected; 0+ means that zero or more arguments may follow; 0,1 indicates
+     0 or 1 arguments are expected (ie. it's optional).  If a flag has an
+     optional argument which is omitted by the user, the following flag must
+     begin with a hyphen ('-'); otherwise, the hyphen is optional.  Default
+     values are designated in the argument specification by an equal sign ('=').
+     If any operation (ie. a flag that results in an output file) is specified,
+     then none of the default operations are performed unless specifically
+     requested.  If a flag causes an output file to be written, the default
+     filename for that file is indicated in square brackets.  Generally,
+     filnames are generated by appending a suffix to the input filename and are
+     written to the same directory as the input file; the user may specify an
+     alternate prefix or destination directory with the -o flag.  The hash
+     symbol ('#') is a placeholder for the base letter when the output file
+     writes base-specific information; # may be used on the command line.  If
+     filename ends with '.s1' the suffix is removed.  Peaks will be picked
+     only if necessary for the requested operations.
+     WARNING: If file with an output filename already exists, it will be
+              overwritten.

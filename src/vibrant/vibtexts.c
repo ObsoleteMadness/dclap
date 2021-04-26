@@ -499,6 +499,21 @@ static void Nlm_DoTabCallback (Nlm_TexT t)
   }
 }
 
+
+
+#ifdef DCLAP
+extern void Nlm_TextEnableNewlines(Nlm_TexT t, Nlm_Boolean turnon)
+{
+#ifdef WIN_MAC
+  Nlm_TextTool  h;
+  h = Nlm_GetTextHandle (t);
+	if (turnon) (**h).crOnly= 0;
+	else (**h).crOnly= -1;
+#endif
+}
+#endif
+
+
 static void Nlm_SelectAText (Nlm_TexT t, Nlm_Int2 begin, Nlm_Int2 end)
 
 {
@@ -1693,7 +1708,6 @@ static void Nlm_GetDialogText (Nlm_GraphiC t, Nlm_Int2 item,
 
 {
   Nlm_TextTool  h;
-  Nlm_Char      temp [256];
 #ifdef WIN_MAC
   Nlm_Char      **chars;
   TEPtr         hp;
@@ -1725,8 +1739,8 @@ static void Nlm_GetDialogText (Nlm_GraphiC t, Nlm_Int2 item,
   }
 #endif
 #ifdef WIN_MSWIN
-  GetWindowText (h, temp, sizeof (temp));
-  Nlm_StringNCpy (title, temp, maxsize);
+    GetWindowText (h, title, maxsize);
+    title [maxsize - 1] = '\0';
 #endif
 #ifdef WIN_MOTIF
   ptr = XmTextGetString (h);
@@ -1747,7 +1761,6 @@ static void Nlm_GetScrollText (Nlm_GraphiC t, Nlm_Int2 item,
 
 {
   Nlm_TextTool  h;
-  Nlm_Char      temp [256];
 #ifdef WIN_MAC
   Nlm_Char      **chars;
   TEPtr         hp;
@@ -1779,8 +1792,8 @@ static void Nlm_GetScrollText (Nlm_GraphiC t, Nlm_Int2 item,
   }
 #endif
 #ifdef WIN_MSWIN
-  GetWindowText (h, temp, sizeof (temp));
-  Nlm_StringNCpy (title, temp, maxsize);
+    GetWindowText (h, title, maxsize);
+    title [maxsize - 1] = '\0';
 #endif
 #ifdef WIN_MOTIF
   ptr = XmTextGetString (h);
@@ -2329,7 +2342,7 @@ static void Nlm_HScrollAction (Nlm_BaR sb, Nlm_GraphiC t,
   if (oldval != newval) {
 		SelectDialogFont();
 #ifdef DCLAP
-		width= Nlm_CharWidth('A');
+		width= Nlm_CharWidth('G');
 #else
     width = Nlm_stdCharWidth;
 #endif
@@ -2360,9 +2373,30 @@ extern void Nlm_HScrollText(Nlm_BaR sb, Nlm_GraphiC t, Nlm_Int2 newval, Nlm_Int2
 #endif
 
 #ifdef WIN_MOTIF
- /* ??? */
+  Nlm_TextTool  h;
+  if (t && oldval != newval) {
+    h = Nlm_GetTextHandle ((Nlm_TexT) t);
+		if (newval < 0) newval= 0; 
+    XmTextShowPosition( h, newval); 
+		}
 #endif
 }
+
+extern void Nlm_SetTextColumns( Nlm_GraphiC t, Nlm_Int2 ncolumns)
+{
+#ifdef WIN_MOTIF
+  if (t) {
+		Nlm_TextTool h;
+		short n;
+	  Arg   wargs [20];
+	  n= 0;
+	  XtSetArg( wargs[n], XmNcolumns, ncolumns); n++;
+		h = Nlm_GetTextHandle(( Nlm_TexT) t);
+	  XtSetValues( h, wargs, n);
+	  }
+#endif
+}
+
 #endif
 
 #ifdef WIN_MOTIF
@@ -2528,7 +2562,8 @@ static void Nlm_NewDialogText (Nlm_TexT t, Nlm_CharPtr dfault, Nlm_TxtActnProc a
   Nlm_InsetRect (&r, 2, 2);
   Nlm_RecTToRectTool (&r, &rtool);
   h = TENew (&rtool, &rtool);
-  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, FALSE, FALSE, FALSE, 1, NULL, NULL, NULL);
+  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, 
+  		FALSE, FALSE, FALSE, 1, NULL, NULL, NULL);
   Nlm_SetDialogText ((Nlm_GraphiC) t, 0, local, FALSE);
   if (h != NULL) {
     TEAutoView (TRUE, h);
@@ -2573,7 +2608,8 @@ static void Nlm_NewDialogText (Nlm_TexT t, Nlm_CharPtr dfault, Nlm_TxtActnProc a
 #endif
 #endif
   }
-  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, FALSE, FALSE, FALSE, 1, NULL, NULL, NULL);
+  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight,
+  		 FALSE, FALSE, FALSE, 1, NULL, NULL, NULL);
   if (lpfnNewTextProc == NULL) {
     lpfnNewTextProc = (WNDPROC) MakeProcInstance ((FARPROC) TextProc, Nlm_currentHInst);
   }
@@ -2619,7 +2655,8 @@ static void Nlm_NewDialogText (Nlm_TexT t, Nlm_CharPtr dfault, Nlm_TxtActnProc a
   XtSetArg (wargs [n], XmNhighlightThickness, 0); n++;
   XtSetArg (wargs [n], XmNautoShowCursorPosition, TRUE); n++;
   h = XmCreateText (wptr, (String) "", wargs, n);
-  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, FALSE, FALSE, FALSE, 1, NULL, NULL, NULL);
+  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, 
+  		FALSE, FALSE, FALSE, 1, NULL, NULL, NULL);
   XmTextSetString (h, local);
   XmTextShowPosition (h, 0);
   XtAddCallback (h, XmNmodifyVerifyCallback, Nlm_RefreshCallback, (XtPointer) t);
@@ -2678,7 +2715,8 @@ static void Nlm_NewPasswordText (Nlm_TexT t, Nlm_CharPtr dfault, Nlm_TxtActnProc
   Nlm_InsetRect (&r, 2, 2);
   Nlm_RecTToRectTool (&r, &rtool);
   h = TENew (&rtool, &rtool);
-  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, FALSE, FALSE, FALSE, 1, NULL, NULL, NULL);
+  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, 
+  		FALSE, FALSE, FALSE, 1, NULL, NULL, NULL);
   Nlm_SetPasswordText ((Nlm_GraphiC) t, 0, local, FALSE);
 #endif
 #ifdef WIN_MSWIN
@@ -2690,7 +2728,8 @@ static void Nlm_NewPasswordText (Nlm_TexT t, Nlm_CharPtr dfault, Nlm_TxtActnProc
   if (h != NULL) {
     SetProp (h, (LPSTR) "Nlm_VibrantProp", (Nlm_HandleTool) t);
   }
-  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, FALSE, FALSE, FALSE, 1, NULL, NULL, NULL);
+  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, 
+  		FALSE, FALSE, FALSE, 1, NULL, NULL, NULL);
   if (lpfnNewTextProc == NULL) {
     lpfnNewTextProc = (WNDPROC) MakeProcInstance ((FARPROC) TextProc, Nlm_currentHInst);
   }
@@ -2732,7 +2771,8 @@ static void Nlm_NewPasswordText (Nlm_TexT t, Nlm_CharPtr dfault, Nlm_TxtActnProc
 #endif
   XtSetArg (wargs [n], XmNhighlightThickness, 0); n++;
   h = XmCreateText (wptr, (String) "", wargs, n);
-  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, FALSE, FALSE, FALSE, 1, NULL, NULL, NULL);
+  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, 
+  	FALSE, FALSE, FALSE, 1, NULL, NULL, NULL);
   XmTextSetString (h, local);
   XtAddCallback (h, XmNmodifyVerifyCallback, Nlm_PasswordCallback, (XtPointer) t);
   XtAddCallback (h, XmNvalueChangedCallback, Nlm_TextCallback, (XtPointer) t);
@@ -2792,7 +2832,8 @@ static void Nlm_NewHiddenText (Nlm_TexT t, Nlm_CharPtr dfault,
 #ifdef WIN_MAC
   Nlm_RecTToRectTool (&r, &rtool);  
   h = TENew (&rtool, &rtool);
-  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, FALSE, FALSE, TRUE, 1, NULL, NULL, tabProc);
+  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, 
+  		FALSE, FALSE, TRUE, 1, NULL, NULL, tabProc);
   Nlm_SetDialogText ((Nlm_GraphiC) t, 0, local, FALSE);
   if (h != NULL) {
     TEAutoView (TRUE, h);
@@ -2837,7 +2878,8 @@ static void Nlm_NewHiddenText (Nlm_TexT t, Nlm_CharPtr dfault,
 #endif
 #endif
   }
-  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, FALSE, FALSE, TRUE, 1, NULL, NULL, tabProc);
+  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, 
+  		FALSE, FALSE, TRUE, 1, NULL, NULL, tabProc);
   if (lpfnNewTextProc == NULL) {
     lpfnNewTextProc = (WNDPROC) MakeProcInstance ((FARPROC) TextProc, Nlm_currentHInst);
   }
@@ -2887,7 +2929,8 @@ static void Nlm_NewHiddenText (Nlm_TexT t, Nlm_CharPtr dfault,
   h = XmCreateText (wptr, (String) "", wargs, n);
   XtOverrideTranslations (h, XtParseTranslationTable ("<Key>Tab: do_tab()"));
   XtVaSetValues (h, XmNuserData, (XtPointer) t, NULL);
-  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, FALSE, FALSE, TRUE, 1, NULL, NULL, tabProc);
+  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, 
+  		FALSE, FALSE, TRUE, 1, NULL, NULL, tabProc);
   XmTextSetString (h, local);
   XmTextShowPosition (h, 0);
   XtAddCallback (h, XmNmodifyVerifyCallback, Nlm_RefreshCallback, (XtPointer) t);
@@ -2915,7 +2958,7 @@ static void Nlm_NewHiddenText (Nlm_TexT t, Nlm_CharPtr dfault,
 
 #ifdef DCLAP
 
-static void Nlm_NewTextLine (Nlm_TexT t, Nlm_CharPtr dfault,
+static void Nlm_NewTextLine (Nlm_TexT t, Nlm_CharPtr dfault, Nlm_Int2 charWidth, 
                                Nlm_TxtActnProc actn, Nlm_TxtActnProc tabProc)
 
 {
@@ -2923,7 +2966,6 @@ static void Nlm_NewTextLine (Nlm_TexT t, Nlm_CharPtr dfault,
   Nlm_Int2        leng;
   Nlm_Char        local [128];
   Nlm_RecT        r;
-  Nlm_Char        stars [32];
   Nlm_WindowTool  wptr;
 #ifdef WIN_MAC
   Nlm_RectTool    rtool;
@@ -2938,13 +2980,9 @@ static void Nlm_NewTextLine (Nlm_TexT t, Nlm_CharPtr dfault,
   XmFontList      fontlist;
 #endif
 
-  Nlm_StringCpy (stars, "******************************");
   local [0] = '\0';
   Nlm_StringNCpy (local, dfault, sizeof (local) - 1);
   leng = (Nlm_Int2) Nlm_StringLen (local);
-  if (leng < 32) {
-    stars [leng] = '\0';
-  }
   Nlm_GetRect ((Nlm_GraphiC) t, &r);
   wptr = Nlm_ParentWindowPtr ((Nlm_GraphiC) t);
 
@@ -2954,7 +2992,8 @@ static void Nlm_NewTextLine (Nlm_TexT t, Nlm_CharPtr dfault,
 	dtool.right= 32000;  
 	h = TENew (&rtool, &dtool);
 	(**h).crOnly= -1;
-  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, FALSE, FALSE, TRUE, 1, NULL, NULL, tabProc);
+  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, 
+  		FALSE, FALSE, TRUE, 1, NULL, NULL, tabProc);
   Nlm_SetDialogText ((Nlm_GraphiC) t, 0, local, FALSE);
   if (h != NULL) {
     TEAutoView (TRUE, h);
@@ -2999,7 +3038,8 @@ static void Nlm_NewTextLine (Nlm_TexT t, Nlm_CharPtr dfault,
 #endif
 
   }
-  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, FALSE, FALSE, TRUE, 1, NULL, NULL, tabProc);
+  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, 
+  	FALSE, FALSE, TRUE, 1, NULL, NULL, tabProc);
   if (lpfnNewTextProc == NULL) {
     lpfnNewTextProc = (WNDPROC) MakeProcInstance ((FARPROC) TextProc, Nlm_currentHInst);
   }
@@ -3035,9 +3075,12 @@ static void Nlm_NewTextLine (Nlm_TexT t, Nlm_CharPtr dfault,
   XtSetArg (wargs [n], XmNmarginHeight, 0); n++;
 #endif
   XtSetArg (wargs [n], XmNmarginWidth, 0); n++;
+ 	 /* dgg -- need XmNcolumns for horiz. scrolling - must be accurate & reset w/ resize !! */
+  if (charWidth) { XtSetArg( wargs[n], XmNcolumns, charWidth); n++; }
+  
   XtSetArg (wargs [n], XmNborderWidth, (Dimension) 0); n++;
   XtSetArg (wargs [n], XmNshadowThickness, (Dimension) 0); n++;
-  XtSetArg (wargs [n], XmNeditMode, XmMULTI_LINE_EDIT); n++;
+  XtSetArg (wargs [n], XmNeditMode, XmSINGLE_LINE_EDIT); n++; /* XmMULTI_LINE_EDIT */
 #ifdef DCLAP
   XtSetArg (wargs [n], XmNfontList, fontlist); n++;
 #else
@@ -3049,7 +3092,8 @@ static void Nlm_NewTextLine (Nlm_TexT t, Nlm_CharPtr dfault,
   h = XmCreateText (wptr, (String) "", wargs, n);
   XtOverrideTranslations (h, XtParseTranslationTable ("<Key>Tab: do_tab()"));
   XtVaSetValues (h, XmNuserData, (XtPointer) t, NULL);
-  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, FALSE, FALSE, TRUE, 1, NULL, NULL, tabProc);
+  Nlm_LoadTextData (t, h, NULL, NULL, FALSE, gDialogTextFont, gDlogTextHeight, 
+  						FALSE, FALSE, FALSE, 1, NULL, NULL, tabProc); 
   XmTextSetString (h, local);
   XmTextShowPosition (h, 0);
   XtAddCallback (h, XmNmodifyVerifyCallback, Nlm_RefreshCallback, (XtPointer) t);
@@ -3116,9 +3160,9 @@ extern Nlm_TexT Nlm_TextLine(Nlm_GrouP prnt, Nlm_CharPtr dfault,
     r.bottom = r.top + gDlogTextHeight + vbounds * 2;
     t = (Nlm_TexT) Nlm_CreateLink ((Nlm_GraphiC) prnt, &r,
                                    sizeof (Nlm_TextRec), 
-                                   hiddenTextProcs); /* dialogTextProcs);  */
+                                   hiddenTextProcs); /* dialogTextProcs/ hiddenTextProcs */
     if (t != NULL) {
-      Nlm_NewTextLine (t, dfault, actn, tabProc);
+      Nlm_NewTextLine (t, dfault, charWidth, actn, tabProc);
 #ifdef WIN_MAC
       Nlm_DoSelect ((Nlm_GraphiC) t, FALSE);
 #endif
@@ -3191,7 +3235,8 @@ static void Nlm_NewScrollText (Nlm_TexT t, Nlm_Int2 height,
   }
   Nlm_RecTToRectTool (&r, &dtool);
   h = TENew (&dtool, &rtool);
-  Nlm_LoadTextData (t, h, vsb, hsb, wrap, font, fnthgt, FALSE, FALSE, FALSE, height, NULL, NULL, NULL);
+  Nlm_LoadTextData (t, h, vsb, hsb, wrap, font, fnthgt, 
+  			FALSE, FALSE, FALSE, height, NULL, NULL, NULL);
 #endif
 #ifdef WIN_MSWIN
   vsb = NULL;

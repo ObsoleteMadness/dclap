@@ -5,6 +5,7 @@
 
 #include "DSequence.h"
 #include "DSeqFile.h"
+#include "DSeqList.h"
 #include "DREnzyme.h"
 #include <ncbi.h>
 #include <dgg.h>
@@ -17,7 +18,7 @@ char* DSequence::kConsensus = "Consensus";
 char  DSequence::indelHard = '-';
 char  DSequence::indelSoft = '~';
 char  DSequence::indelEdge = '.';
-
+ 
 
 Local char* gAminos		=	"ABCDEFGHIKLMNPQRSTVWXYZ*_.-~?";
 Local char* gIubbase	= "ACGTUMRWSYKVHDBXN_.-*~?"; 	//did include ".", for what?
@@ -26,13 +27,15 @@ Local char* protonly	= "EFIPQZ";
 Local char* stdsymbols= "_.-*?";
 Local char* allsymbols= "_.-*?!=/**/[]()!&#$%^&=+;:/|`~'\"\\";
 Local char* seqsymbols= allsymbols;
-Local Boolean kForWriting	= TRUE;
-Local Boolean	kForReading	= FALSE;
-
-enum { kSearchNotFound = -1, kMaskOK = 'K', kMaskEmpty = -1 };
 
 
-	
+
+
+
+
+// DSequence statics -----------------
+
+
 long DSequence::NucleicBits(char nuc)
 {
 	//char nuc= toupper(nuc);
@@ -52,15 +55,13 @@ long DSequence::NucleicBits(char nuc)
 		case 'b': case 'B': return (kMaskG | kMaskC | kMaskT);  
 		case 'v': case 'V': return (kMaskG | kMaskC | kMaskA);  
 		case 'd': case 'D': return (kMaskG | kMaskT | kMaskA);  
-		// case '-': return kMaskIndel;   
 		case ' ': case '_': return 0;  //? spacers
 		case  0 : return 0;  
-		// case '.': //indelEdge	 
 		case 'n': case 'N': return kMaskNucs; 
 		default : 
 			{
 			if (nuc == indelHard || nuc == indelSoft)  return kMaskIndel;
-			else if (nuc == indelEdge) return kMaskNucs;
+			else if (nuc == indelEdge) return 0; //return kMaskNucs; ???
 			else return 0; //kMaskNucs;  //?? match all or match none ??
 			}
 		}
@@ -255,7 +256,12 @@ DSequence::DSequence()
 	fChecksum	= 0;
 	fIndex		= 0; //dummy
 	fModTime	= gUtil->time();
-	fChanged	= TRUE;
+	fChanged	= FALSE; //TRUE;
+	fIsMega		= FALSE;
+	fShowORF	= FALSE;
+	fShowRE		= FALSE;
+	fShowTrace = FALSE;
+
 	fDeleted	= FALSE; 
 	fOpen			= FALSE;
 	fSearchRec.targ= NULL;
@@ -278,8 +284,8 @@ DSequence::~DSequence()
 DObject* DSequence::Clone() // override 
 {	
 	DSequence* aSeq= (DSequence*) DObject::Clone();
-	aSeq->fBases= StrDup( fBases);
-	aSeq->fMasks= NULL; aSeq->SetMasks( fMasks); //aSeq->fMasks= StrDup( fMasks);
+	aSeq->fBases= NULL; aSeq->SetBases( fBases, true);  
+	aSeq->fMasks= NULL; aSeq->SetMasks( fMasks, true); 
 	aSeq->fInfo=  StrDup( fInfo);
 	aSeq->fName=  StrDup( fName);
 	aSeq->fSearchRec.targ= StrDup( fSearchRec.targ);
@@ -288,8 +294,8 @@ DObject* DSequence::Clone() // override
 
 void DSequence::CopyContents( DSequence* fromSeq)
 {
-	SetBases( fromSeq->fBases); 
-	SetMasks( fromSeq->fMasks); 
+	SetBases( fromSeq->fBases, true); 
+	SetMasks( fromSeq->fMasks, true); 
 	SetInfo( fromSeq->fInfo); 
 	SetName( fromSeq->fName); 
 	fKind			= fromSeq->fKind; 		 
@@ -304,13 +310,25 @@ void DSequence::CopyContents( DSequence* fromSeq)
 	fSearchRec.targ= StrDup( fromSeq->fSearchRec.targ);
 }
 
-void DSequence::SetBases( char* theBases)
+void DSequence::SetBases( char*& theBases, Boolean duplicate)
 {
-	if (fBases) MemFree(fBases);
-	fBases = StrDup(theBases);  
-	fLength= StrLen(fBases);
-	fMasksOk= false; // assume SetBases allways called before SetMask...
+	long  newlen= (theBases) ? StrLen(theBases) : 0;
+	if (fBases) { 
+		if (fLength>0 && 
+			(fLength != newlen || MemCmp( theBases, fBases, newlen)!= 0))
+				fChanged= TRUE;
+		MemFree(fBases); 
+		fBases= NULL; fLength= 0; 
+		}
+	if (theBases) {
+		if (duplicate) fBases = StrDup(theBases); 
+		else { fBases= theBases; theBases= NULL; }
+		fLength= newlen;  
+		}
+	fModTime= gUtil->time();
+	fMasksOk= false; // assume SetBases always called before SetMask...
 }
+
 
 void DSequence::UpdateBases( char* theBases, long theLength)
 {
@@ -320,11 +338,12 @@ void DSequence::UpdateBases( char* theBases, long theLength)
 }
 
 
-void DSequence::SetMasks( char* theMasks)
+void DSequence::SetMasks( char*& theMasks, Boolean duplicate)
 {
 	if (fMasks) MemFree(fMasks);
 	if (theMasks) {
-		fMasks = StrDup(theMasks);  
+		if (duplicate) fMasks = StrDup(theMasks);  
+		else { fMasks= theMasks; theMasks= NULL; }
 		FixMasks();
 		}
 	else {
@@ -365,10 +384,32 @@ short DSequence::MaskAt(long baseindex, short masklevel)
 			case 2: b &= 2;  break;
 			case 3: b &= 4;  break;
 			case 4: b &= 8;  break;
+				// 5-7 reserved for now
+			case 5: b &= 16;  break;
+			case 6: b &= 32;  break;
+			case 7: b &= 64;  break;
 			default: b = kMaskEmpty; break;
 			}
 		}
 	return b;
+}
+
+Boolean DSequence::IsMasked(unsigned char maskbyte, short masklevel)
+{
+	short b= (unsigned char) maskbyte;
+	switch (masklevel) {
+		case 0: b &= 0x7f; break; // return full mask - top (0x80) bit
+		case 1: b &= 1;  break;  
+		case 2: b &= 2;  break;
+		case 3: b &= 4;  break;
+		case 4: b &= 8;  break;
+				// 5-7 reserved for now
+		case 5: b &= 16;  break;
+		case 6: b &= 32;  break;
+		case 7: b &= 64;  break;
+		default: b = kMaskEmpty; break;
+		}
+	return (b > 0);
 }
 
 
@@ -379,7 +420,10 @@ inline void SetMaskByte( char& b, short masklevel, short maskval)
 		case 2: if (maskval) b |= 2; else b &= ~2; break;
 		case 3: if (maskval) b |= 4; else b &= ~4; break;
 		case 4: if (maskval) b |= 8; else b &= ~8; break;
-		// reserve bits 5, 6, 7 & 8 for now 
+			// reserve bits 5, 6, 7 & 8 for now 
+		case 5: if (maskval) b |= 16; else b &= ~16; break;
+		case 6: if (maskval) b |= 32; else b &= ~32; break;
+		case 7: if (maskval) b |= 64; else b &= ~64; break;
 		// -- 7 & 8 may go unused to store data in printchar form
 		default: break;
 		}
@@ -409,6 +453,10 @@ inline void FlipMaskByte( char& b, short masklevel)
 		case 2: b ^= 2;  break;
 		case 3: b ^= 4;  break;
 		case 4: b ^= 8;  break;
+				// 5-7 reserved for now?
+		case 5: b ^= 16;  break;
+		case 6: b ^= 32;  break;
+		case 7: b ^= 64;  break;
 		default:  break;
 		}
 	//if (b) masklevel--; // debugging b val
@@ -495,7 +543,7 @@ void DSequence::UpdateFlds()
 	//fValidLength= seqlen; //?? is fLength == StrLen(fBases) or is it <= that, only valid bases??
 	fKind			= kind;
 	fChecksum	= check;
-	fChanged	= FALSE;
+	//fChanged	= FALSE;
 }
 
 
@@ -1018,6 +1066,52 @@ DSequence* DSequence::Compress()
 	return aSeq;
 }
 
+ 
+
+
+DSequence* DSequence::CompressFromMask(short masklevel)
+{
+	long  len, fulllen, i;
+	char 	b, c;
+	char * mc, * mr;
+	Boolean domask= (fMasks && fMasksOk && masklevel>0);
+
+	if (!domask) return NULL; // or aSeq ???
+	DSequence* aSeq= (DSequence*) Clone();	
+	//if (!domask) return aSeq;  
+ 
+	if (fSelStart < 0) fSelStart= 0;
+	len= aSeq->fLength - fSelStart;
+	fulllen= len;
+	if (fSelBases > 0 && fSelBases < len) len= fSelBases;
+	char* pc= this->fBases+fSelStart;
+	char* pr= aSeq->fBases+fSelStart;
+	mc= this->fMasks+fSelStart;
+	mr= aSeq->fMasks+fSelStart;
+		 
+	for (i= 0; i<len; i++) {
+		b= *pc++;
+		c= *mc++;
+		if (IsMasked(c, masklevel)) { 
+			*pr++= b;
+			*mr++= c;
+			}
+		}
+	for (i=len; i<fulllen; i++) *pr++= *pc++;
+	for (i=len; i<fulllen; i++) *mr++= *mc++;
+
+	long newlen= pr - aSeq->fBases;
+	aSeq->fBases= (char*) MemMore( aSeq->fBases, newlen+1);
+	aSeq->fBases[newlen]= 0;
+	aSeq->fMasks= (char*) MemMore( aSeq->fMasks, newlen+1);
+	aSeq->fMasks[newlen]= 0;
+		
+	aSeq->UpdateFlds();
+	aSeq->Modified();
+	return aSeq;
+}
+
+ 
 
 DSequence* DSequence::Translate(Boolean keepUnselected)
 {	
@@ -1027,8 +1121,8 @@ DSequence* DSequence::Translate(Boolean keepUnselected)
 	char	*pr, *pc, *mr, *mc;
 	long	len, fulllen, newlen, i, j, k;
 	
-	if (DCodons::NotAvailable()) return NULL;
 	DSequence* aSeq= (DSequence*) Clone();		
+	if (DCodons::NotAvailable()) return aSeq; // safer than returning NULL !?
 	// !? what do we do w/ fMasks !?
 	Boolean domask= (fMasks && fMasksOk);
 	
@@ -1151,6 +1245,93 @@ DSequence* DSequence::Translate(Boolean keepUnselected)
 }
 
 
+DSequence* DSequence::OnlyORF(char nonorf)
+// convert sequence to ORF part only 
+{
+	DSequence* aSeq= (DSequence*) Clone();	
+	
+	if (fSelStart < 0) fSelStart= 0;
+	long len= aSeq->fLength - fSelStart;
+	if (fSelBases > 0 && fSelBases < len) len= fSelBases;
+
+	long start = 0, fini= 0;
+	long anchor= fSelStart;
+	do {
+		aSeq->SearchORF( start, fini);
+		if (start != kSearchNotFound) {
+			char* pr= aSeq->fBases + anchor;
+			if (start>len) start= len;
+			if (fini<start) fini= start+1;
+			for ( ; anchor<start; anchor++) *pr++ = nonorf; 
+			anchor= fini+1;
+			fSelStart= anchor;
+			}
+	} while (start != kSearchNotFound);
+		
+	aSeq->UpdateFlds();
+	aSeq->Modified();
+	return aSeq;
+}
+
+
+void DSequence::SetORFmask(short masklevel, short frame)
+{
+	if (!fMasks || !fMasksOk) {
+		FixMasks();
+		if (!fMasks || !fMasksOk) return;
+		}
+		
+	// revise this to do multiple frames in one go,
+	//  offseting each anchor +1 beyond START of last orf, not after STOP
+	// since separate frame calls return the same orfs !
+	
+	frame %= 3; // drop reverse frames
+	long savesel= fSelStart;
+	long savelen= fSelBases;
+	fSelStart= frame;
+	fSelBases= fLength - frame;
+
+	long start = 0, fini= 0;
+	long anchor= fSelStart;
+	do {
+		this->SearchORF( start, fini);
+		if (start != kSearchNotFound) {
+			long i;
+			for (i= anchor; i<start; i++) SetMaskAt( i, masklevel, 0);
+			for (i= start; i<=fini ; i++) SetMaskAt( i, masklevel, 1);
+			if (fini == kSearchNotFound) {
+				start= kSearchNotFound;
+				}
+			else {
+			  anchor= fini+1;
+			  fSelStart= anchor; // start+1 // !? want overlapped orfs !?
+			  }
+			}
+	} while (start != kSearchNotFound);
+	
+	fSelStart= savesel;
+	fSelBases= savelen;
+}
+
+void DSequence::SetShowORF( short turnon) 
+{ 
+	fShowORF= turnon > 0; 
+	if (turnon > 1) {
+		if (turnon & 2) SetORFmask(5, 0);
+		//if (turnon & 4) SetORFmask(6, 1);
+		//if (turnon & 8) SetORFmask(7, 2);
+		}
+}
+
+void DSequence::SetShowRE( short turnon) 
+{ fShowRE= turnon > 0; 
+}
+
+void DSequence::SetShowTrace( short turnon) 
+{ fShowTrace= turnon > 0; 
+}
+
+
 //Boolean domask= (fMasks && fMasksOk);
 
 
@@ -1230,20 +1411,6 @@ Boolean DSequence::IsConsensus()
 
 
 
-DSequence* MakeSequence(char* name, char* bases, char* info, long modtime)
-{
-	DSequence* aSeq= new DSequence();
-	aSeq->SetName(name);
-	//?? can we always assume bases is null terminated?
-	aSeq->SetBases(bases);
-	aSeq->SetInfo(info);
- 	if (modtime!=0) aSeq->SetTime( (unsigned long)modtime);
-	aSeq->UpdateFlds(); 	 
-	return aSeq;
-}
-
-
-
 
 
 long DSequence::SearchAgain() 
@@ -1257,7 +1424,7 @@ void DSequence::SearchORF( long& start, long& stop)
 {
 	char  startc[2];
 	long  i, j, k;
-	short	ns;
+	short	ns, aaMinORFsize;
 	CodonStat  stops[10];
 	
 	start= kSearchNotFound;
@@ -1277,11 +1444,27 @@ void DSequence::SearchORF( long& start, long& stop)
 	 		start= Search( DCodons::startcodon(), FALSE);
 	 		if (start == kSearchNotFound) return;
 	 		for (j= start+3; j<fLength; j += 3) {
-	 			for (k=0; k<ns; k++) {
+	 		  if ( j+3 - start >= DSeqList::gMinORFsize) 
+	 		 	 for (k=0; k<ns; k++) {
+#if 1
+	 		 	 	short jc, jt;
+	 		 	 	for (jc= 0, jt=0; jc<3; ) {
+		 		 	 	long tbit= NucleicBits( fBases[j+jt]);
+					  long sbit= NucleicBits( stops[k].codon[jc]); 
+					  if (tbit == kMaskIndel) jt++;
+						else if (!(kMaskNucs & tbit & sbit)) goto nextcodon;
+						else { jt++; jc++; }
+						}
+					stop= j+3; 
+					return;
+#else					
 	 				if (StrNICmp( fBases+j, stops[k].codon, 3) == 0) {
-	 					stop= j+3; // +3 to include this codon
+	 					stop= j+3;
 	 					return;
 	 					}
+#endif				
+	 	nextcodon:
+	 				continue;
 	 				}
 	 			}
 			break;
@@ -1289,10 +1472,12 @@ void DSequence::SearchORF( long& start, long& stop)
 		case kAmino:
 			startc[0]= DCodons::startamino();
 			startc[1]= 0;
+	 		aaMinORFsize= (DSeqList::gMinORFsize+2) / 3;
 	 		start= Search( startc, FALSE);
 	 		if (start == kSearchNotFound) return;
 	 		for (j= start+1; j<fLength; j++) {
-	 			for (k=0; k<ns; k++) {
+	 		  if ( j - start >= aaMinORFsize) 
+	 			 for (k=0; k<ns; k++) {
 	 				if (toupper(fBases[j]) == toupper(stops[k].amino)) {
 	 					stop= j+1; // +1 to include this codon
 	 					return;
@@ -1308,6 +1493,7 @@ void DSequence::SearchORF( long& start, long& stop)
 
 
 
+
 void DSequence::NucleicSearch(char* source, char* target, SearchRec& aSearchRec)
 {
 	long k, j, tBits, lens, ti;
@@ -1319,7 +1505,7 @@ void DSequence::NucleicSearch(char* source, char* target, SearchRec& aSearchRec)
 	for (j= 0, ti= 0, tBits= 0; j<lens && !tBits; j++) {
 		ti= j;
 		tBits= NucleicBits( target[ti]);
-		tBits &= kMaskNucs; //	bClr( tBits, kBitExtra); //drop RNA bit
+		tBits &= kMaskNucs;  //drop RNA bit
 		}
 
 	do {
@@ -1362,11 +1548,20 @@ nextindx:
 			
 			if (!done) {
 				long srcstart= aSearchRec.indx - ti;
-				for (j= 0; j<lens; j++) 
-				 if (j != ti) {
-					//if (!IsNucleicMatch( NucleicBits( target[j]), NucleicBits( source[j+srcstart]))) 
-				  if (!(kMaskNucs & NucleicBits( target[j]) & NucleicBits( source[j+srcstart]))) 
+				long js, jt;
+				for (js= 0, jt= 0; jt<lens; ) {
+#if 1
+				  long tbit= NucleicBits( target[jt]);
+				  long sbit= NucleicBits( source[js+srcstart]); 
+				  if (tbit == kMaskIndel) jt++;
+				  else if (sbit == kMaskIndel) js++;
+					else if (!(kMaskNucs & tbit & sbit)) goto reloop;
+					else { jt++; js++; }
+#else 
+				  if (!(kMaskNucs & NucleicBits( target[jt]) & NucleicBits( source[js+srcstart]))) 
 					  goto reloop;
+					else { jt++; js++; }
+#endif
 					}
 				done= true;
 				}

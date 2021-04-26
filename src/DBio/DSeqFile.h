@@ -13,6 +13,7 @@
 #include <DList.h>
 
 class DSeqList;
+class DSequence;
 
 	// reader/writer formats
 
@@ -55,12 +56,15 @@ public:
 	 };
 
 	static Boolean gWriteMasks;
+	static char* fgMacSire;
 	
 	static void DontSaveMasks();
 	static void DoSaveMasks();
 
 	static const char* FormatName(short index); 
 	static short FormatFromName(const char* name); 
+
+	static DSequence* MakeSequence(char* name, char*& bases, char* info, long modtime);
 	
 	static short SeqFileFormatWrapper(DFile* aFile); 
 	

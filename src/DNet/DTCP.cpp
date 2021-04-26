@@ -200,7 +200,7 @@ void DTCP::Fail(const char* msg)
 		fErrNo= 0;
 		fError= (char*) msg;
 		fFailed= true;
-		Nlm_Message (MSG_ERROR, "Network DTCP error: %s", (char*) msg);
+		Nlm_Message (MSG_ERROR, "Network DTCP error:\n%s", (char*) msg);
 		}
 }
 
@@ -418,11 +418,23 @@ void DTCP::Open( char* hostname, unsigned short hostport, unsigned short localpo
 	fConnectionIsOpen= false;
 	
 	fSocket= SockOpen( hostname, hostport);
-	if (fSocket<0) switch (fSocket) {
-		case errHost		:	Fail("Can't resolve host name"); return;
-		case errSocket	: Fail("Can't create IP socket"); return;
-		case errConnect	: Fail("Can't connect to host");	return;
-		default					: Fail("Can't open IP connection"); return;
+	if (fSocket<0) {
+		char buf[256];
+		if (!hostname) hostname="NULL";
+		switch (fSocket) {
+			case errHost		:  
+				sprintf(buf, "Can't get IP# for host '%s', port %d", 
+					hostname, hostport);
+				Fail(buf); return;
+			case errSocket	: 
+				Fail("Can't create IP socket"); return;
+			case errConnect	: 
+				sprintf(buf, "Can't connect to host '%s', port %d", 
+						hostname, hostport);
+				Fail(buf); return;
+			default					: 
+				Fail("Can't open IP connection"); return;
+			}
 		}
 	fStreamIsOpen = true;
 	fConnectionIsOpen = true;
@@ -634,19 +646,20 @@ short DTCP::ReceiveData(void *data, long datasize, long &bytesReceived, Boolean 
 			
 	
 char* DTCP::ReadWithChecks( 
-						long& bufsize,
+						ulong& bufsize,
 						long 	expectedbytes/* = kTCPStopAtclose*/, 
 						Boolean convertnewline/* = false*/, 
 						long 	maxbytes/* = 0*/, 
 						char* oldbuffer/* = NULL*/)
 {
+	enum { kDropChar = 22 };
 	long	bytesread = 0, bufadditions = 0, newbytes= 0;
 	long 	oldbytes= fBytesread;
 	Boolean stopAtdotcrlf = (expectedbytes == kTCPStopAtdotcrlf);
-	Boolean done = false;
+	Boolean done = false, dodropchar= false;
 	short	err = 0;
 	long 	count, newcount;
-	char* bufat;
+	char * bufat, * from, * tob;
 	long 	startTick = GetSecs();
 
 	if (maxbytes <= 0) maxbytes= kMaxReadBuffer;
@@ -678,10 +691,14 @@ char* DTCP::ReadWithChecks(
 
 			err= ReceiveData( bufat, count, newcount, stopAtdotcrlf);
 			
-			if (newcount>0 && stopAtdotcrlf) {
-				if (bufat[0] == '.' && (bufat[1] == kCR || bufat[1] == kLF)) {
+			if (newcount>0 && stopAtdotcrlf && (bufat[0] == '.')) {
+				if (bufat[1] == kCR || bufat[1] == kLF) {
 					newcount= 0;
 					fEndofMessage= true;
+					}
+				else if (bufat[1] == '.') {
+					bufat[0] = kDropChar;
+					dodropchar= true;
 					}
 				} 
 			count= newcount;
@@ -696,16 +713,25 @@ char* DTCP::ReadWithChecks(
 finish:
 	gErrorManager->TurnOn();		
 	
+	if (dodropchar) {
+		tob= from= oldbuffer;
+		for (count= 0; count<bufsize; count++, from++) {
+			if (*from != kDropChar)  *tob++= *from;
+			}
+		*tob= 0;
+		bufsize= tob - oldbuffer; 
+		dodropchar= false;
+		}
+		
 	if (convertnewline && bufsize) { 
-		// ?? this is screwy -- some texts have all cr stripped, some have extras !!
+		tob= from= oldbuffer;
+		
 		if (LineEndSize == 2) { // what the net lineend is
 			if (LineEnd[0] == kCR && LineEnd[1] == kLF) ;
 			else ; // convert CRLF to LineEnd
 			}
 			
 		else if (LineEndSize == 1) {
-			char *from= oldbuffer;
-			char *tob= oldbuffer;
  
 			if (*LineEnd == kLF) {
 				for (count= 0; count<bufsize; count++, from++) {

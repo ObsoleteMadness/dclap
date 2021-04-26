@@ -1,0 +1,31 @@
+
+Sizes of DCLAP and other software,  30 May 94
+
+sunflower% wc DApp/* DClap/* DNet/* DBio/* Drtf/*
+
+   55006  167912 1484267 total
+
+
+NCBI's toolkit (core, non-biological portion)
+sunflower% wc corelib/*
+
+  17725   58509  518909 total
+
+sunflower% wc vibrant/*
+
+  46165  141063 1221273 total
+
+
+The rest of NCBI toolkit (biology/asn portion)
+
+sunflower%  wc api/* asnlib/* asnstat/* browser/* cdromlib/* object/* demo/*
+
+ 109704  351683 3142478 total
+
+
+sunflower% cd acedb
+/bio/mb/acedb
+
+sunflower% wc w1/* w2/* w4/* w5/* w6/* w7/* w8/* w9/* wace/* wgf/*
+
+   40252  133405 1049401 total

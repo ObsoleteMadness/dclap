@@ -82,10 +82,16 @@ public:
 	DList*	fItemList;
 	DPopupList(long id, DView* itsSuperior, Boolean macLike = true);
 	~DPopupList();
-	virtual void AddItem(char* title);
+	virtual void AddItem(char* title, char* value= NULL);
 	virtual char* GetSelectedItem( short& item, char* name, ulong namesize);
-	virtual char* GetItemTitle( short item, char* title = NULL, ulong maxsize = 256);
-
+	virtual char* GetSelectedValue( short& item, char* name, ulong namesize);
+	virtual char* GetItemTitle( short item, char* title = NULL, ulong maxsize = 256)
+		{  return GetItemTitleOrValue( item, title, maxsize, false); }
+	virtual char* GetItemValue( short item, char* title = NULL, ulong maxsize = 256)
+		{  return GetItemTitleOrValue( item, title, maxsize, true); }
+protected:
+	virtual char* GetItemTitleOrValue( short item, char* title = NULL, 
+									ulong maxsize = 256, Boolean getval2= false);
 };
 
 

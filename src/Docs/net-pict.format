@@ -1,0 +1,39 @@
+Let me suggest PICT format for maps and various graphics as a good choice.  
+Among its advantages are
+
+(a) it is standard on all Macs, and available on MSWindows.
+
+(b) it is an editable format with the right software
+    (again common to Macs and available on MSWindows).  That will
+    be very important to biologists who want to fetch Flybase maps
+    and do something with them.  This option isn't available for GIF
+    or Postscript.
+
+(c) it is a vector method like Postscript, and retains unlimited
+    resolution.  Printed PICT maps are indistiguishable from printed
+    Postscript maps.
+
+(d) it is a binary, small format compared to Postscript.  Expect
+    PICT format files to be 1/10 the size of Postscript.
+
+(e) it can include bitmap images, and includes compression of these,
+    though not as great as GIF format.  
+    
+(f) it is not encumbered by patent restrictions as the GIF compression
+    algorithm is.
+    
+(e) the GopherPup network browser will display
+    PICT format, on XWindows and MSWIndows as well as mac, and
+    can easily include network links as in Mosaic GIFs.  I've timed
+    the access of this low-weight PICT versus GIF for maps, and
+    using PICT is about 5 times faster (as well as having the above
+    advantages (b) and (c) that GIF lacks).
+
+PICT format is fully defined and an open, well known standard graphic
+format.  You can find specifications in various "Inside Macintosh" books
+available at local bookstores.  I can also help you write any PICT
+drawing routines.  It will look similar to your postscript drawing
+methods, but substitute various keywords here and there.
+
+The only advantage I can see to having GIF-format maps as well is that
+is the Mosaic-class network browsers know how to display.

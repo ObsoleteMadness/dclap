@@ -34,7 +34,7 @@ DSeqChangeCmd::DSeqChangeCmd(char* title, DSeqDoc* itsAlnDoc, DView* itsView, DS
 		// let user fix fOldSeqs !?
 	if (itsSeqs == NULL)  {
 		long start, nbases;
-		itsAlnDoc->GetSelection( TRUE, TRUE, itsSeqs, start, nbases);
+		itsAlnDoc->GetSelection( kSeqSel+kMaskSel+kIndexSel+kAllIfNone+kEqualCount, itsSeqs, start, nbases);
 		}
 #endif
 	fOldSeqs= itsSeqs;
@@ -51,7 +51,8 @@ DSeqChangeCmd::~DSeqChangeCmd()
 		delete fNewSeqs; 			 
 		}
 	if (fOldSeqs) {
-		fOldSeqs->FreeAllObjects(); 	//drop all objects && list
+		//fOldSeqs->FreeAllObjects(); 	//drop all objects && list !! MEM LEAK, doesn't !
+		fOldSeqs->fDeleteObjects= true; // this should avoid leak
 		delete fOldSeqs;
 		}
 }
@@ -152,6 +153,10 @@ void DSeqChangeCmd::DoItWork()
 				Nlm_RecT vLoc;
 				fAlnView->GetRowRect( indx, vLoc, 1);
 				fAlnView->InvalRect( vLoc);
+				if (fSeqDoc->fAlnIndex) {
+					fSeqDoc->fAlnIndex->GetRowRect( indx, vLoc, 1);
+					fSeqDoc->fAlnIndex->InvalRect( vLoc);
+					}
 				if (indx == saveEdit) {
 					fAlnView->fEditRow= saveEdit;
 #if 0
@@ -207,6 +212,11 @@ DSequence* DSeqRevComplCmd::ChangeToNew( DSequence* oldSeq)
 DSequence* DSeqCompressCmd::ChangeToNew( DSequence* oldSeq) 
 { 	
 	return oldSeq->Compress();
+}
+
+DSequence* DSeqCompressMaskCmd::ChangeToNew( DSequence* oldSeq) 
+{ 	
+	return oldSeq->CompressFromMask(fAlnView->fMaskLevel);
 }
 
 DSequence* DSeqDna2RnaCmd::ChangeToNew( DSequence* oldSeq) 
@@ -265,7 +275,7 @@ DAlnSlider::DAlnSlider()
 	//IAlnSlider( NULL, NULL, 0);	
 }
 
-DAlnSlider::DAlnSlider( DSeqDoc* itsDoc, DTableView* itsView, DAlnView* itsAlnView,  short oldRC)
+DAlnSlider::DAlnSlider( DSeqDoc* itsDoc, DTableView* itsView, DAlnView* itsAlnView,  long oldRC)
 {
 	IAlnSlider( itsDoc, itsView, itsAlnView, oldRC);	
 }
@@ -282,7 +292,7 @@ DAlnSlider::~DAlnSlider()
 #endif
 }
 
-void DAlnSlider::IAlnSlider(DSeqDoc* itsDoc, DTableView* itsView, DAlnView* itsAlnView, short oldRC)
+void DAlnSlider::IAlnSlider(DSeqDoc* itsDoc, DTableView* itsView, DAlnView* itsAlnView, long oldRC)
 {
 	fAlnView= itsAlnView;	
 	fSeqDoc= itsDoc;
@@ -332,7 +342,7 @@ void DAlnSlider::TrackFeedback( TrackPhase aTrackPhase,
 					const Nlm_PoinT& anchorPoint, const Nlm_PoinT& previousPoint,
 					const Nlm_PoinT& nextPoint, Nlm_Boolean mouseDidMove, Nlm_Boolean turnItOn)
 {
-	short row, col, oldrow, oldcol;
+	long row, col, oldrow, oldcol;
 	Nlm_RecT 	selr, pixr;
 	
 	switch (aTrackPhase) {
@@ -366,7 +376,7 @@ void DAlnSlider::TrackFeedback( TrackPhase aTrackPhase,
 
 void DAlnSlider::DoSlide()
 {
-	short 	row, col, left, right, top, bottom;
+	long 	row, col, left, right, top, bottom;
 	long		start, nbases, dist;
 	DSequence * oldSeq, * newSeq;
  	
@@ -415,16 +425,20 @@ void DAlnSlider::DoItWork()
 	If dist<0 then slide opposite direction.
 */
 	Nlm_RecT 	r;
-	short			zeroshift, left;
+	long			i, n, zeroshift, left;
 	
 	if (fMovedOnce) {
-		short i, n= fNewSeqs->GetSize();
+		n= fNewSeqs->GetSize();
 		for (i=0; i<n; i++) {		
 				// replaceViewSeq
 			DSequence* aSeq= fNewSeqs->SeqAt(i);
 			fAlnView->fSeqList->AtPut( aSeq->Index(), aSeq);
 			fAlnView->GetRowRect( aSeq->Index(), r);
 			fAlnView->InvalRect( r);
+			if (fSeqDoc->fAlnIndex) {
+				fSeqDoc->fAlnIndex->GetRowRect( aSeq->Index(), r);
+				fSeqDoc->fAlnIndex->InvalRect( r);
+				}
 			}
 
 		zeroshift= fAlnView->fSeqList->ZeroOrigin(); //!?
@@ -439,7 +453,7 @@ void DAlnSlider::DoItWork()
 
 				// the inval/redraw will handle selection highlight
 		fTable->SelectCells( fNewSelection, 
-				!DTableView::kExtend, !DTableView::kHighlight, DTableView::kSelect);
+				DTabSelection::kDontExtend, ! DTabSelection::kHighlight,  DTabSelection::kSelect);
 
 #if 1
 		n= fNewSeqs->GetSize();
@@ -469,7 +483,7 @@ void DAlnSlider::UndoWork()
 
 void DAlnSlider::DoIt()  
 {
-	short row, col, oldrow, oldcol;
+	long row, col, oldrow, oldcol;
 	
 	fTable->PointToCell( fNextPoint, row, col);
 	fTable->PointToCell( fAnchorPoint, oldrow, oldcol);
@@ -510,7 +524,7 @@ DAlnShifter::DAlnShifter()
 {
 }
 
-DAlnShifter::DAlnShifter( DSeqDoc* itsDoc, DTableView* itsView, DAlnView* itsAlnView, short oldRC) :
+DAlnShifter::DAlnShifter( DSeqDoc* itsDoc, DTableView* itsView, DAlnView* itsAlnView, long oldRC) :
   DAlnSlider( itsDoc, itsView, itsAlnView, oldRC)
 {
 	DAlnShifter::IAlnSlider( itsDoc, itsView, itsAlnView, oldRC);
@@ -520,7 +534,7 @@ DAlnShifter::~DAlnShifter()
 {
 }
 
-void DAlnShifter::IAlnSlider( DSeqDoc* itsDoc, DTableView* itsView, DAlnView* itsAlnView, short oldRC)
+void DAlnShifter::IAlnSlider( DSeqDoc* itsDoc, DTableView* itsView, DAlnView* itsAlnView, long oldRC)
 {
 	fAlnView= itsAlnView;	
 	fSeqDoc= itsDoc;
@@ -559,7 +573,7 @@ void DAlnShifter::UndoWork()
 	fOldSelection= fNewSelection;
 	fNewSelection= tmpRect;
 
-	short saverc= fNewRC;
+	long saverc= fNewRC;
 	fNewRC= fOldRC;
 	fOldRC= saverc;
 	
@@ -568,9 +582,9 @@ void DAlnShifter::UndoWork()
 
 void DAlnShifter::DoItWork()  
 {
-	short diff = fNewRC - fOldRC;
+	long diff = fNewRC - fOldRC;
 	if (fMovedOnce && diff) {
-		short i, nrows, newtop, maxrow, top, bottom, minr, maxr;
+		long i, nrows, newtop, maxrow, top, bottom, minr, maxr;
 		DSeqList* tmpseq;
 		DSequence* aseq;
 		Nlm_RecT	r;
@@ -626,7 +640,7 @@ void DAlnShifter::DoItWork()
 			}
 		
 		fTable->SelectCells( fNewSelection, 
-				!DTableView::kExtend, !DTableView::kHighlight, DTableView::kSelect);
+				 DTabSelection::kDontExtend, ! DTabSelection::kHighlight,  DTabSelection::kSelect);
 		}
 }
 
@@ -731,7 +745,8 @@ void DAlnEditCommand::DeleteSelection()
 				tab->GetRowRect( irow, r, totalRows-irow+1);
 				tab->InvalRect( r);
 				tab->SelectCells( irow, 0, 
-						!DTableView::kExtend, !DTableView::kHighlight, !DTableView::kSelect);
+						 DTabSelection::kDontExtend, ! DTabSelection::kHighlight, 
+						 ! DTabSelection::kSelect);
 				}
 			}
 		}
@@ -782,7 +797,7 @@ void DAlnEditCommand::ReSelect()
 {
 	if (fAlnDoc->fAlnIndex)
 	  fAlnDoc->fAlnIndex->SelectCells( fSelection, 
-				!DTableView::kExtend, DTableView::kHighlight, DTableView::kSelect);
+				 DTabSelection::kDontExtend,  DTabSelection::kHighlight,  DTabSelection::kSelect);
 }
 
 
@@ -852,11 +867,11 @@ DAlnPasteCommand::DAlnPasteCommand(DSeqDoc* itsDoc) :
 	fClipList= NULL;
 	//fChangesClipboard = false;
 
-	short col;
+	long col;
 	fInsRow= 0;
 	if (fAlnDoc->fAlnIndex) 
 		fAlnDoc->fAlnIndex->GetLastSelectedCell( fInsRow, col);
-	if (fInsRow == DTableView::kNoSelection) 
+	if (fInsRow ==  DTabSelection::kNoSelection) 
 		fInsRow= fAlnDoc->fSeqList->GetSize();
 
 	DAlnView* clipview= NULL;
@@ -921,7 +936,7 @@ void DAlnPasteCommand::UndoWork()
 					fAlnDoc->fAlnIndex->GetRowRect( irow, r, totalRows-irow+1);
 					fAlnDoc->fAlnIndex->InvalRect( r);
 					fAlnDoc->fAlnIndex->SelectCells( irow, 0, 
-							!DTableView::kExtend, !DTableView::kHighlight, !DTableView::kSelect);
+							 DTabSelection::kDontExtend, ! DTabSelection::kHighlight, ! DTabSelection::kSelect);
 					}
 				}
 			}

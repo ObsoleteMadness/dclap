@@ -1,0 +1,68 @@
+
+Don's Class Application (DCLAP) library is a C++ class library for
+building applications on the common windowing operating systems
+(Macintosh, MS-Windows, XWindow-Motif-Unix, XWindow-Motif-VMS, ?).
+
+This is built on the cross-platform toolkit from National Center for
+Biotechnology Information (NCBI) of the National Library of Medicine (
+NLM), called NCBI toolkit, and especially the Vibrant window system
+subset, plus the coretools subset.  This toolkit is written in ANSI C,
+and compiles on a variety of systems.  The source for NCBI tools is
+available for anonymous ftp from ncbi.nlm.nih.gov as 	
+	cd toolbox\ncbi_tools
+	bin
+	get ncbi.tar.Z
+	quit
+This has much more than the subset with DCLAP, including detailed
+documentation. Most of the additional source is directed toward
+manipulation biosequence data. 
+
+If you have problems compiling DCLAP, the full ncbi toolkit may
+provide needed information.  However, some of the coretools and vibrant
+source files from the ncbi distribution have been modified a bit
+to work with DCLAP.
+
+DCLAP is still very preliminary.  There is yet no detailed documentation
+for it. It is based loosely on the MacApp and TCL application class
+libraries available on Macintosh, but is structured to use the available
+Vibrant toolkit methods.
+
+The only platforms I've tested it with are Macintosh-Think C 6-Symantec C++,
+and Sun-GCC/G++-Motif.  To compile with ThinkC/C++, see the make/MyApp.proj.hqx
+for the Think project file.  To compile with gcc/g++, see the make/makedclap.gcc
+file.  See README.NCBI for general build instructions.  For gcc/g++ of DCLAP, also copy
+headers from DClap/ and DApp/ to include/, and copy .cp files from those folders
+to the build/ folder.  I had to change the .cp suffix to .cc to get g++ to
+compile them... maybe there is a suffix switch I don't know about.  Ignore warnings
+about multiple byte character constants from g++ -- I use the Mac convention
+of initializing long ID values with somewhat humanly readable values like
+  long appID = 'Appl'; long viewID = 'View';  //etc
+  
+The "icons" file will be used by Iconbuttons demo if in same folder as the
+application.  Still needs work at this writing to distinguish mac-bitmap bit-order
+from X window bitmap bit-order (Vibrant displays the differences properly,
+but my DIconLib.cp doesn't read them from disk properly yet).
+
+Source and updates will be available thru ftp/gopher at ftp.bio.indiana.edu,
+/util/dclap...
+
+For DCLAP bug reports, comments, etc., email to software@bio.indiana.edu.
+I don't have much time to devote to helping people use this at present.
+If you are working in the biocomputing/computational biology field, you'll
+be more likely to get help.
+
+-- Don Gilbert, 2 jan 1994
+
+
+
+  
+
+
+
+
+
+
+
+
+
+

@@ -15,6 +15,8 @@
 
 Global short gLinesPerSeqWritten = 0;
 short DSeqList::gMinCommonPercent = 70;
+short DSeqList::gMinORFsize = 20;
+
 
 // DSeqList  -------------------------------------
 
@@ -209,122 +211,12 @@ void DSeqList::DoWrite( DFile* aFile, short format)  // change to iostreams !!
 void DSeqList::DoWrite( char* aFileName, short format)  
 {
 	gOutputName= aFileName;
-	DFile* aFile= new DFile( aFileName, "w");
+	DFile* aFile= new DFile( aFileName, "w"); //, "TEXT", fgSire);
 	aFile->Open();
 	DoWrite( aFile, format);
 	aFile->Close();
 }
 
-
-#if 0
-Handle DSeqList::doWriteHandle( integer format)  
-VAR
-		Handle		aHand, handSave;
-		Boolean		needSameSize, sizesDiffer, isInterleaved;
-		integer		aRow, nseqs, seqtype, err, vref, tempFileRef;
-		longint		minbases, dirID;
-		
-	void findMinSize( DSequence* aSeq)
-	longint		var  start, nbases;
-	{
-		aSeq->GetSelection( start, nbases);
-		seqtype= aSeq->fKind;
-		if (minbases<0) then minbases= nbases
-		else {
-			if (nbases!=minbases) then sizesDiffer= true;
-			minbases= min( nbases, minbases);
-			}
-	}
-	
-	void SetSameSize( DSequence* aSeq)
-	longint		var  start, nbases;
-	{
-		aSeq->GetSelection( start, nbases);
-		aSeq->SetSelection( start, minbases);
-	}
-	
-	void writeRangeToHand( DSequence* aSeq)
-	longint		VAR index;
-	{
-		if (isInterleaved) then begin
-			if (0!=GetFPos( tempFileRef, index)) then ;
-			Indexit(index);
-			aSeq->doWriteSelection( tempFileRef, format);
-			end
-		else
-			aSeq->doWriteSelectionHandle( aHand, format);
-	}
-		
-	FailInfo		VAR  fi;
-	void HndlFailure(OSErr error, long message)		
-	{
-		IndexCleanup(); 
-		aHand= DisposeIfHandle( aHand);
-	}
-	
-	
-{
-	gOutindex= NULL; //make sure for failure
-	aHand= NULL;
-	minbases= -1; 
-	needSameSize= false;
-	isInterleaved= false;
-	sizesDiffer= false;
-	seqtype= kOtherSeq;
-	nseqs= this->GetSize();
-	this->Each( findMinSize);		
-
-	if (nseqs>1)) // deal w/ one-per-file formats 
-		switch (format) {
-			kGCG		: format= kMSF;
-			kStrider: format= kIG;
-			kNoformat, kPlain, kUnknown: format= kGenbank;
-			}
-
-	CatchFailures(fi, HndlFailure);
-	aHand= NewPermHandle(0);
-	FailMemError();
-	
-	DSeqFile::WriteSeqHeader(longint(aHand), TRUE, format, nseqs, minbases, gOutputName,
-			needSameSize, isInterleaved);
-			
-	if (isInterleaved) {
-		IndexSetup();
-		err= FindFolder(kOnSystemDisk,kTemporaryFolderType,kCreateFolder,vRef,dirID);
-		if (err!=0)) { vref= gAppVolRef; dirID= gAppDirID; }
-		if 0!=HDelete(vRef, dirID, kInterleaveTemp) then ;
-		FailOSErr( HCreate( vRef, dirID, kInterleaveTemp, kSappSig, 'TEXT'));
-		FailOSErr( HOpen( vRef, dirID, kInterleaveTemp, fsRdWrPerm, tempFileRef));
-		}
-	
-	if (((needSameSize || isInterleaved/*?*/) && sizesDiffer)) {
-		/*---
-		ParamText('all sequences must have same # bases for this format', '', 'WriteSeq','');	
-		Failure( -1, msgMyError); 
-		---*/
-		this->Each( SetSameSize);
-		}
-
-	this->Each( writeRangeToHand);		
-
-	if (isInterleaved) {
-		indexEOF( tempFileRef);
-		DoInterleave( longint(aHand), TRUE/*isHandle*/, format, seqtype, nseqs,
-									minbases, gLinesPerSeqWritten, 
-									gNoutindex, Handle(gOutindex), tempFileRef);
-
-		FailOSErr( FSClose(tempFileRef));
-		if 0!=HDelete(vRef, dirID, kInterleaveTemp) then ;
-		IndexCleanup();
-		}
-
-	WriteSeqTrailer(longint(aHand), TRUE, format, this->GetSize(), gLinesPerSeqWritten, minbases);
-
-	Success(fi);	
-	doWriteHandle= aHand;
-}
-
-#endif
 
 
 void DSeqList::AddNewSeq()
@@ -483,12 +375,17 @@ void DSeqList::MakeConsensus()
 	if (cons) {
 		//short arow= this->GetIdentityItemNo( cons);
 		char* hCon= cons->Bases();   
-		long conlen= StrLen( hCon); //?? use aSeq->fBaseLength;
+		long conlen= cons->LengthF(); //StrLen( hCon);
 		long count= 0;
 		long i, iseq, nseq= GetSize();
 		for (iseq= 0; iseq<nseq; iseq++) {
 			DSequence* aSeq= this->SeqAt(iseq);
-			if (!aSeq->IsConsensus() && aSeq->Kind() != DSequence::kOtherSeq) {
+			if (!aSeq->IsConsensus() 
+			//&& aSeq->Kind() != DSequence::kOtherSeq
+			&& (aSeq->Kind() == DSequence::kDNA 
+			   || aSeq->Kind() == DSequence::kRNA
+			   || aSeq->Kind() == DSequence::kNucleic)
+			 ) {
 				count++;
 				char* hSeq= aSeq->Bases();
 				long  len = aSeq->LengthF();

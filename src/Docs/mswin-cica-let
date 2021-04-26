@@ -1,0 +1,81 @@
+To: mcmullen@cica.indiana.edu,
+    TWETZEL@ucs.indiana.edu
+
+Do you know of an MS-Windows computer that might be loaned to me
+for a week or two, for software development?  I would also need
+either Borland's or Microsoft's C/C++ compiler for Windows on it.
+
+If I can get my hands on such a machine then I can test and make
+available a multi-platform C++ application development library (Mac,
+X-Window/Motif and MS-Windows).  I've been working on this over
+the holidays, and have it going on Mac and Motif, but lack
+an MS Windows machine.
+
+I'm going to make this software source freely available to IU 
+and the public in general.  It may be of interest to your/other
+groups at IU.  You can see a demo application written on this 
+application library: ftp to ftp.bio.indiana.edu, folder 
+/util/dclap/preview.  
+
+I'm most interested in getting hands on an mswin computer this 
+month, the sooner the better, as I'm running out of time I can
+spend on development (until next vacation).
+
+Thanks,  Don
+
+
+						------ a summary --------
+
+My holiday gift to the world is a bit delayed, but here is a peek
+at it:
+  a C++ application library, built on NCBI's Vibrant and core
+  toolkit, for software developers.  Don's Class Application library
+  (DCLAP) will let me, and others if they want, write applications
+  in a relatively easy way, using this oop application library.
+  The applications will compile and run on any platforms that NCBI's
+  Vibrant toolkit supports, that currently being Macintosh, MS-Windows
+  and Motif-XWindows.
+
+MyApp-sparc-motif was compiled on my Sun Sparcstation, using a Motif
+library.  It requires, I believe, the shared motif run-time libraries
+on your Sparc system to work.
+
+MyApp.hqx was compiled for Macintoshes.
+
+I don't have an MS-Windows system (yet), so can't provide
+that version.
+
+The source for this C++ library will be made available free to the
+public -- but it still needs much work.
+
+This tidbit is at ftp.bio.indiana.edu:/util/dclap/preview
+
+
+This is built on the cross-platform toolkit from National Center for
+Biotechnology Information (NCBI) of the National Library of Medicine (
+NLM), called NCBI toolkit, and especially the Vibrant window system
+subset, plus the coretools subset.  This toolkit is written in ANSI C,
+and compiles on a variety of systems.  The source for NCBI tools is
+available for anonymous ftp from ncbi.nlm.nih.gov as 	
+	cd toolbox\ncbi_tools
+	bin
+	get ncbi.tar.Z
+	quit
+This has much more than the subset with DCLAP, including detailed
+documentation. Most of the additional source is directed toward
+manipulation biosequence data. 
+
+The NCBI toolkit compiles & runs on following platforms.  DCLAP has
+been tested so far on Mac (think c 6/sym c++) and Sun-Sparc w/ Motif.
+
+MS-DOS/MS-WIN
+     Microsoft C version 7.00
+     Microsoft Windows version 7.00
+     Borland C++ 3.1
+     Borland C++ 3.1 for Windows
+Mac
+	NCBI toolkit tested on THINK C 5.0.4 and MPW C 3.2
+Unix
+    NCBI toolkit tested on Sun Sparc, Silicon Graphics, IBM 3090 with AIX
+	with X-Motif
+VMS w/ Motif

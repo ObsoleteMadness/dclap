@@ -30,13 +30,21 @@
 
 
 
+#define BACKCOLOR
+#define TESTVARHEIGHT
+#undef TESTZOOM
 
 
 Local short gAlnCharWidth = 12;
 Local short gAlnCharHeight = 15;
+Local short kORFxtraHeight = 4; // also in DSeqAsmView.cpp !
+
 //Local short gMinCommonPercent = 0;
 Local Boolean gSwapBackground = false;
 typedef unsigned long  colorVal;
+
+extern "C" void Nlm_SelectBackColor(Nlm_Uint1 red, Nlm_Uint1 green, Nlm_Uint1 blue);
+extern "C" void Nlm_SetBackColor (Nlm_Uint4 color);
 
 
 #define ETEXT 1
@@ -46,29 +54,70 @@ extern "C" void Nlm_HScrollText (Nlm_BaR sb, Nlm_GraphiC t,
                                Nlm_Int2 newval, Nlm_Int2 oldval);
 extern "C" void Nlm_DoActivate(void* g, Nlm_Boolean saveport);
 //extern Nlm_Boolean   gDialogTextMultiline;
+extern "C" void Nlm_SetTextColumns( Nlm_GraphiC t, Nlm_Int2 ncolumns);
 
 
 
 // class DAlnSequence
 
-DAlnSequence::DAlnSequence(long id, DSeqDoc* itsSuperior):
-		DTextLine(id, itsSuperior, NULL, 1, gSeqFont),  
-		fSeq(NULL),fVisible(false)
+#ifdef  WIN_MAC
+#define kTextLineCharwidth	1
+#else
+#define kTextLineCharwidth	charwidth
+#endif
+
+DAlnSequence::DAlnSequence(long id, DAlnView* itsSuperior, short charwidth):
+		DTextLine(id, itsSuperior->fDoc, NULL, kTextLineCharwidth, gSeqFont),  
+		fSeq(NULL),fVisible(false), fNcols(0)
 {
-	fDoc= itsSuperior;
+	fAlnView= itsSuperior;
 	SetMultilineText(false);
 }
 
-void DAlnSequence::Scroll(Boolean vertical, DView* scrollee, short newval, short oldval) 
+void DAlnSequence::Scroll(Boolean vertical, DView* scrollee, long newval, long oldval) 
 {
 	if (fVisible && !vertical) { 
+#ifndef WIN_MAC
+	long curlen= Nlm_TextLength(fText);
+	if (newval > curlen) newval= curlen;
+#endif
 		Nlm_HScrollText( NULL, (Nlm_GraphiC)GetNlmObject(), newval, oldval);
 		}
 }
 
-void DAlnSequence::ShowEdit()
+void DAlnSequence::SetColumns( long ncolumns)
 {
-	if (fSeq) SetText( fSeq->Bases());
+	if (fNcols != ncolumns) {
+		fNcols= ncolumns;
+		Nlm_SetTextColumns( (Nlm_GraphiC)GetNlmObject(), ncolumns);
+		}
+}
+
+void DAlnSequence::Select(long start, long length)
+{
+	Nlm_SelectText(fText, start, length + start);
+}
+
+Boolean DAlnSequence::IsMyAction(DTaskMaster* action) 
+{
+	switch(action->Id()) {
+		case DApplication::kFind:
+		case DApplication::kFindAgain:
+			return gApplication->DoMenuTask(action->Id(), NULL);
+		case DSeqDoc::cFindORF:
+			return fAlnView->fDoc->DoMenuTask( action->Id(), NULL);
+		default:
+			return DDialogText::IsMyAction(action);
+		}
+}
+
+
+
+void DAlnSequence::ShowEdit(Boolean newseq)
+{
+	if (newseq && fSeq) {
+		SetText( fSeq->Bases());
+		}
 	if (!fVisible) {
 		fVisible= true;
 		Show(); 
@@ -201,8 +250,26 @@ void DMaskSelector::DoItWork()
 		else
 #endif
 		((DTableView*)fView)->SelectCells( fNewSelection, 
-				fDoExtend, DTableView::kHighlight, DTableView::kSelect);
+				fDoExtend,  DTabSelection::kHighlight,  DTabSelection::kSelect);
 		}
+}
+
+
+
+
+static short gBaseCharWidth = 12;
+
+//inline 
+static short BaseCharWidth()
+{
+#ifdef TESTZOOM
+	if (gBaseCharWidth>1) gBaseCharWidth= Nlm_CharWidth('G');
+#else
+	gBaseCharWidth= Nlm_CharWidth('G');
+#endif
+	return gBaseCharWidth;
+	//return Nlm_MaxCharWidth(); 
+	//return Nlm_stdCharWidth;
 }
 
 
@@ -224,7 +291,10 @@ DAlnView::DAlnView( long id, DView* itsSuper, DSeqDoc* itsDocument, DSeqList* it
 	fColorBases(kBaseBlack), fColcolors(NULL), fNcolcolors(0)
 { 
 	fKind= kindAlnView;
-	gAlnCharWidth= Nlm_stdCharWidth; //Nlm_CharWidth('G');   
+#ifdef TESTZOOM
+	if (gKeys->shift()) gBaseCharWidth= 1; else gBaseCharWidth= Nlm_stdCharWidth;
+#endif
+	gAlnCharWidth= gBaseCharWidth; //Nlm_stdCharWidth; //BaseCharWidth();   
 	gAlnCharHeight= Nlm_stdLineHeight;
 	this->SetResize( DView::relsuper, DView::relsuper);
 	this->SetTableFont(gSeqFont);
@@ -232,9 +302,20 @@ DAlnView::DAlnView( long id, DView* itsSuper, DSeqDoc* itsDocument, DSeqList* it
 }
 
 
+enum { 
+	 kAlnIndexName = 0,
+	 kAlnIndexSize,
+	 kAlnIndexKind,
+	 kAlnIndexRow,
+	 kAlnIndexChecksum,
+	 kAlnIndexCols,			// end of listings
+	 kAlnIndexShowORF, 	// hide this one for now
+	 knada
+	 };
+
 DAlnIndex::DAlnIndex( long id, DView* itsSuper, DSeqDoc* itsDocument, DSeqList* itsSeqList,
 				 long pixwidth, long pixheight) :
-	DTableView( id, itsSuper, pixwidth, pixheight, 0, 4,
+	DTableView( id, itsSuper, pixwidth, pixheight, 0, kAlnIndexCols,
 			5*Nlm_stdCharWidth, 2+Nlm_stdFontHeight, false, true),
 	fNameWidth(15),
 	fSizeWidth(8),
@@ -245,10 +326,11 @@ DAlnIndex::DAlnIndex( long id, DView* itsSuper, DSeqDoc* itsDocument, DSeqList* 
 	//this->SetSlateBorder(false);
 	this->SetResize( DView::fixed, DView::relsuper);
 	this->SetTableFont(gTextFont);
+	//fChangedFont= gItalicTextFont;
 }
 
 DAlnITitle::DAlnITitle( long id, DView* itsSuper, long pixwidth, long pixheight) :
-	DTableView( id, itsSuper, pixwidth, pixheight, 1, 4,
+	DTableView( id, itsSuper, pixwidth, pixheight, 1, kAlnIndexCols,
 			5*Nlm_stdCharWidth, 2+Nlm_stdFontHeight, false, false),
 	fNameWidth(15),
 	fSizeWidth(8),
@@ -291,25 +373,59 @@ void DAlnHIndex::Resize(DView* superview, Nlm_PoinT sizechange)
 void DAlnView::Resize(DView* superview, Nlm_PoinT sizechange)
 {
 	DTableView::Resize(superview, sizechange);
+	CheckViewCharWidth();
 }
+
+void DAlnView::CheckViewCharWidth()
+{
+	if (fEditSeq) {
+		Nlm_RecT vr;
+		ViewRect( vr);
+		long cwidth= (vr.right - vr.left) / GetItemWidth(0);
+		fEditSeq->SetColumns( cwidth);
+		}
+}
+
 
 void DAlnView::GetReadyToShow()
 {
 	// assume port is set??
 	SelectFont();  
-	gAlnCharWidth = Nlm_CharWidth('G');   
-	gAlnCharHeight= Nlm_LineHeight() + 2; // Nlm_FontHeight()
+	gAlnCharWidth = BaseCharWidth();   
+		// use Nlm_FontHeight for background color to adjoin among rows
+	gAlnCharHeight= Nlm_FontHeight(); //Nlm_LineHeight(); // + 2; 
 	SetItemWidth(0, GetMaxCols(), gAlnCharWidth);
+	
+#ifdef notnow_TESTVARHEIGHT
+	// testing
+	long i, nrow= GetMaxRows();
+	for (i= 0; i<nrow; i += 2) {
+		short ht= gAlnCharHeight;
+		if ( i % 4 == 2) ht *= 2;
+		SetItemHeight(i, 2, ht);
+		}	
+#else
 	SetItemHeight(0, GetMaxRows(), gAlnCharHeight);
+#endif
 	this->UpdateAllWidths(); 
 	this->UpdateSize();  
 }
 
 void DAlnIndex::GetReadyToShow()
 {
-	//SelectFont(); //Nlm_SelectFont(fFont);  
+	//SelectFont();  
 	SetItemWidth(0, GetMaxCols(), fViewrect.right-fViewrect.left-1); //<< width of view
+#ifdef TESTVARHEIGHT
+	// testing
+	DAlnView* aview= fDoc->fAlnView;
+	long i, nrow= GetMaxRows();
+	for (i= 0; i<nrow; i++) {
+		long ht= aview->GetItemHeight(i);
+		SetItemHeight(i, 1, ht);
+		}
+#else
 	SetItemHeight(0, GetMaxRows(), gAlnCharHeight);
+#endif
 }
 
 void DAlnITitle::GetReadyToShow()
@@ -385,7 +501,7 @@ void DAlnHIndex::Release(Nlm_PoinT mouse)
 }
 
 
-void DAlnView::DoubleClickAt(short row, short col)
+void DAlnView::DoubleClickAt(long row, long col)
 {
 #if 0
 	//?? do this only on DAlnIndex dblclik??
@@ -397,14 +513,28 @@ void DAlnView::DoubleClickAt(short row, short col)
 
 void DAlnIndex::Click(Nlm_PoinT mouse)
 {
-	short  	row, col;
+	long  	row, col;
 	//if (gLastCommand) { delete gLastCommand; gLastCommand= NULL; } //gLastCommand->Commit();	//??
 	
 	fDoc->fAlnView->DeInstallEditSeq();
 	fDoc->fAlnView->SetEmptySelection(true); 
 
 	PointToCell( mouse, row, col);
-	if (Nlm_dblClick)
+	
+	if (col == kAlnIndexShowORF) {
+		DSequence* aSeq= fDoc->fSeqList->SeqAt(row);
+		if (aSeq) {
+			if (aSeq->ShowORF()) aSeq->SetShowORF(0);  
+			else aSeq->SetShowORF(1+2+4+8);
+			fDoc->fAlnView->Invalidate();  
+			this->Invalidate();
+			fDoc->fAlnView->GetReadyToShow(); 
+			this->GetReadyToShow();
+			}
+		return;
+		}
+		
+	else if (Nlm_dblClick)
 		;
 	else if (IsSelected(row, col)) {   //if (gKeys->shift()) 
 		// slide/shift selected lines...
@@ -438,7 +568,7 @@ void DAlnITitle::Click(Nlm_PoinT mouse)
 
 void DAlnView::Click(Nlm_PoinT mouse)
 {
-	short 	row, col;
+	long 	row, col;
 
 	//if (gLastCommand) { delete gLastCommand; gLastCommand= NULL; } //gLastCommand->Commit();	//??
 
@@ -448,7 +578,7 @@ void DAlnView::Click(Nlm_PoinT mouse)
 	
 	SeqMeter(row,col);
 
-	if (IsSelected(row, col)) {
+	if (fMaskLevel<1 && IsSelected(row, col)) {
 		//if (fSlider) delete fSlider;  // is this delete causing bombs?
 		fSlider= new DAlnSlider();
 		fSlider->IAlnSlider( fDoc, this, this, 0);
@@ -482,7 +612,7 @@ void DAlnView::TrackFeedback( short aTrackPhase,
 					const Nlm_PoinT& nextPoint, Nlm_Boolean mouseDidMove, Nlm_Boolean turnItOn)
 {
 #if 1
-	short 	row, col;
+	long 	row, col;
 	if (mouseDidMove && aTrackPhase == DTracker::trackContinue ) { // 2 == trackContinue
 		PointToCell( nextPoint, row, col);
 		SeqMeter(row,col);
@@ -493,19 +623,19 @@ void DAlnView::TrackFeedback( short aTrackPhase,
 }
 
 
-void DAlnIndex::DoubleClickAt(short row, short col)
+void DAlnIndex::DoubleClickAt(long row, long col)
 {
 	DSequence* ag= fSeqList->SeqAt(row); 
 	if (ag) fDoc->OpenSeqedWindow(ag);
 }
 
-void DAlnITitle::DoubleClickAt(short row, short col)
+void DAlnITitle::DoubleClickAt(long row, long col)
 {
 }
 
 
 
-void DAlnView::SeqMeter(short row, short col)
+void DAlnView::SeqMeter(long row, long col)
 {
 	// display base# location of mouse
 	if (fDoc->fSeqMeter) {
@@ -515,7 +645,7 @@ void DAlnView::SeqMeter(short row, short col)
 		}
 }
 
-void DAlnView::SingleClickAt(short row, short col)
+void DAlnView::SingleClickAt(long row, long col)
 {
 #if ETEXT
 	if (!(fLocked || gKeys->shift() || gKeys->command() || gKeys->option() )) {  
@@ -542,13 +672,13 @@ void DAlnView::SingleClickAt(short row, short col)
 	 //fDoc->SetViewMenu();
 }
 
-void DAlnIndex::SingleClickAt(short row, short col)
+void DAlnIndex::SingleClickAt(long row, long col)
 {
 	 DTableView::SingleClickAt(row,  col);
 	 //fDoc->SetViewMenu();
 }
 
-void DAlnITitle::SingleClickAt(short row, short col)
+void DAlnITitle::SingleClickAt(long row, long col)
 {
 }
 
@@ -562,22 +692,26 @@ void DAlnHIndex::Click(Nlm_PoinT mouse)
 void DAlnHIndex::ClickColumn(Nlm_PoinT mouse)
 {
 #if MASKS
-	short row, col;
+	long row, col;
 	// if (fMouseStillDown && ...)
 	short masklevel= fDoc->fAlnView->fMaskLevel;
 	fDoc->fAlnView->PointToCell( mouse, row, col);
 	
 	if (col != fLastCol && col >= 0 && col < fDoc->fAlnView->GetMaxCols()) {
 		Nlm_RecT r;
-		short irow, nrow= fSeqList->GetSize();
+		long irow, nrow= fSeqList->GetSize();
 		if (masklevel == 0) {
 			r.left= col;
 			r.right= col+1;
 			r.top= 0;
 			r.bottom= fDoc->fAlnView->GetMaxRows(); 
+			long ext;
+			if (gKeys->shift()) ext=  DTabSelection::kExtendSingle;
+			else if (gKeys->command()) ext=  DTabSelection::kExtendMulti;
+			else ext=  DTabSelection::kDontExtend;
 			fDoc->fAlnView->InvalidateSelection();
-			fDoc->fAlnView->SelectCells( r, gKeys->shift(), 
-							!DTableView::kHighlight, DTableView::kSelect);
+			fDoc->fAlnView->SelectCells( r, ext, 
+							! DTabSelection::kHighlight,  DTabSelection::kSelect);
 			fDoc->fAlnView->InvalidateSelection();
 			}
 		else for (irow=0; irow<nrow; irow++) {
@@ -587,7 +721,7 @@ void DAlnHIndex::ClickColumn(Nlm_PoinT mouse)
 				else ag->FlipMaskAt(col,masklevel);
 				}
 			fDoc->fAlnView->GetCellRect( irow, col, r);
-			InvalRect( r);
+			fDoc->fAlnView->InvalRect(r); //InvalRect(r);
 			}
 		fLastCol= col;
 		}
@@ -597,28 +731,45 @@ void DAlnHIndex::ClickColumn(Nlm_PoinT mouse)
 	
 
 
-void DAlnView::Scroll(Boolean vertical, DView* scrollee, short newval, short oldval)
+void DAlnView::Scroll(Boolean vertical, DView* scrollee, long newval, long oldval)
 {
-	short diff= newval - oldval;
+	long diff= newval - oldval;
+
 	DTableView::Scroll(vertical, scrollee, newval, oldval);
 	
 	if (diff && fEditSeq && fEditSeq->fVisible) {
-		Nlm_RecT	r;
-		short delta;
+		Nlm_RecT	r, oldr;
+		long delta;
 		if (vertical) {
 			delta= diff * fItemHeight; // bad for variable line height
 			fEditSeq->GetPosition( r);
+			oldr= r;
 			Nlm_OffsetRect( &r, 0, -delta);
-			if (r.top < fRect.top || r.top >= fRect.bottom) DeInstallEditSeq();
-			else fEditSeq->SetPosition( r);
+			if (r.top < fRect.top || r.top >= fRect.bottom) {
+				//DeInstallEditSeq();
+				fEditSeq->HideEdit();
+				fDoc->SetEditText(NULL); //??
+				InvalRect(r);
+				}
+			else {
+				fEditSeq->SetPosition( r);
+					// !!! must re-install editseq if it gets back in view !!
+				if (oldr.top < fRect.top || oldr.top >= fRect.bottom) {
+					fEditSeq->ShowEdit(false);
+					fDoc->SetEditText(fEditSeq); 
+					InvalRect(r); //??
+					}
+				}
 			}
 		else {
+#if 1
 				// messy, undo bitmap scroll by TableView for just editseq rect...
-			delta= diff * fItemWidth;
 			fEditSeq->GetPosition(r);
+			delta= diff * GetItemWidth(0); //fItemWidth; //gAlnCharWidth
 			Nlm_ScrollRect(&r, delta, 0);
 					// then redo scroll using edit method !
 			fEditSeq->Scroll(vertical, scrollee, newval, oldval);
+#endif
 			}
 		}
 		
@@ -632,7 +783,7 @@ void DAlnView::Scroll(Boolean vertical, DView* scrollee, short newval, short old
 		}
 }
 
-void DAlnIndex::Scroll(Boolean vertical, DView* scrollee, short newval, short oldval)
+void DAlnIndex::Scroll(Boolean vertical, DView* scrollee, long newval, long oldval)
 {
 	DTableView::Scroll(vertical, scrollee, newval, oldval);
 	if (scrollee == this) {
@@ -646,12 +797,13 @@ void DAlnIndex::Scroll(Boolean vertical, DView* scrollee, short newval, short ol
 }
 
 
-void DAlnHIndex::Scroll(Boolean vertical, DView* scrollee, short newval, short oldval)
+void DAlnHIndex::Scroll(Boolean vertical, DView* scrollee, long newval, long oldval)
 {
 	Nlm_RecT	r;
-	short delta;
-	short diff= newval-oldval;
+	long delta;
+	long diff= newval-oldval;
 	ViewRect(r);
+	this->Select(); // need for motif !
 	if (vertical) {
 #if 0
 		delta= diff * cHeight;
@@ -670,7 +822,6 @@ void DAlnHIndex::Scroll(Boolean vertical, DView* scrollee, short newval, short o
 		else r.left= r.right - delta - Min(5,delta/2);
 #endif
 		}
-	this->Select(); // need for motif !
 	this->InvalRect( r);
  
 	if (scrollee == this) {
@@ -680,18 +831,24 @@ void DAlnHIndex::Scroll(Boolean vertical, DView* scrollee, short newval, short o
 
 
 
-DSequence* DAlnView::SelectedSequence(short& selectedRow)
+DSequence* DAlnView::SelectedSequence(long& selectedRow)
 {
-	if (GetSelectedRow() != kNoSelection) {
+	if (GetSelectedRow() !=  DTabSelection::kNoSelection) {
 		selectedRow= GetSelectedRow();
 		return fSeqList->SeqAt(selectedRow);
 		}
-	else if (fDoc && fDoc->fAlnIndex->GetSelectedRow() != kNoSelection) {
+	else if (fDoc && fDoc->fAlnIndex->GetSelectedRow() !=  DTabSelection::kNoSelection) {
 		selectedRow= fDoc->fAlnIndex->GetSelectedRow();
 		return fSeqList->SeqAt(selectedRow);	
 		}
+#if 1
+	else if (fEditSeq && fEditRow>=0) {
+		selectedRow= fEditRow;
+		return fSeqList->SeqAt(selectedRow);	
+		}
+#endif
 	else {
-		selectedRow= kNoSelection;
+		selectedRow=  DTabSelection::kNoSelection;
 		return NULL;
 		}
 }
@@ -707,7 +864,7 @@ void DAlnView::UpdateSize()
 
 #if MASKS
 	if (diff>0) { //fMaskLevel>0 && 
-		short i, nseq= fSeqList->GetSize();
+		long i, nseq= fSeqList->GetSize();
 		for (i=nseq-diff; i<nseq; i++) {
 			DSequence* aseq= fSeqList->SeqAt(i);
 			if (fMaskLevel>0 || aseq->Masks()) aseq->FixMasks();
@@ -721,7 +878,7 @@ void DAlnView::UpdateWidth(DSequence* aSeq)
 { 
 	long alnlen= aSeq->LengthF() + 30;
 	if (alnlen > GetMaxCols()) ChangeColSize( -1, alnlen-GetMaxCols());  
-	SetItemWidth( 0, GetMaxCols(), gAlnCharWidth);  
+	SetItemWidth( 0, GetMaxCols(), gAlnCharWidth); 
 #if MASKS
 	if (fMaskLevel>0 || aSeq->Masks()) aSeq->FixMasks();
 #endif
@@ -731,7 +888,7 @@ void DAlnView::UpdateWidth(DSequence* aSeq)
 void DAlnView::UpdateAllWidths()
 {
 	long alnlen= 0;
-	short i, nseq= fSeqList->GetSize();
+	long i, nseq= fSeqList->GetSize();
 	for (i=0; i<nseq; i++) {
 		DSequence* aSeq= fSeqList->SeqAt(i);
 		alnlen= Max(alnlen, aSeq->LengthF()); 
@@ -774,7 +931,7 @@ void DAlnView::SetViewMode(short viewmode)
 			this->SetTextLock( true);
 			this->fMaskLevel= viewmode - kModeMask1 + 1; 
 			this->Invalidate();
-			short i, nseq= fSeqList->GetSize();
+			long i, nseq= fSeqList->GetSize();
 			for (i=0; i<nseq; i++) fSeqList->SeqAt(i)->FixMasks();
 			}
 			break;
@@ -786,13 +943,28 @@ void DAlnView::SetViewMode(short viewmode)
 
 void DAlnView::SetViewColor(short colorkind) 
 {
+	if (colorkind > kBaseVarLite) {
+		gSwapBackground= true; // temp set
+		colorkind -= 2; // hack !
+		}
+	else {
+		gSwapBackground= false;
+		}
+
 	switch (colorkind) {
+#if 0
+		case kBaseBackColor: 
+			gSwapBackground= true; 
+			break;
+#endif
 		case kBaseBlack: 
 		case kBaseColor:  
 		case kBaseVarLite: 
 		default :
+			//gSwapBackground= false;
 			break;
 		}
+	
 	//if (fColorBases != colorkind) 
 	Invalidate();
 	fColorBases= colorkind;
@@ -826,12 +998,14 @@ void DAlnView::CharHandler(char c)
 // move this to DSeqCmds.h ...
 class DSetEditCmd : public DSeqChangeCmd {
 public: 
-	DSetEditCmd( DSeqDoc* itsAlnDoc, DView* itsView, DSequence* oldSeq, char* newbases):
+	DSetEditCmd( DSeqDoc* itsAlnDoc, DView* itsView, DSequence* oldSeq, char*& newbases):
 		 DSeqChangeCmd("edit seq", itsAlnDoc, itsView, NULL) 
 		 {
 			fOldSeqs= new DSeqList(); 
 		 	fOldSeqs->InsertLast( oldSeq);
-			DSequence* newSeq= MakeSequence( oldSeq->Name(), newbases, oldSeq->Info(), 0);
+			DSequence* newSeq= (DSequence*)oldSeq->Clone();
+			newSeq->SetBases(newbases, false);
+			newSeq->SetChanged(true);
 			fNewSeqs->InsertLast( newSeq);
 		 }
 };
@@ -842,16 +1016,12 @@ void DAlnView::DeInstallEditSeq()
 	if (fEditRow >= 0) { 
 		if (fEditSeq) {
 			Nlm_RecT r;
+			Boolean didedit= false;
 			char* newbases = fEditSeq->GetText();
 			if (StringCmp(newbases, fEditSeq->fSeq->Bases()) != 0) {
-#if 0
-				// test if DSetEditCmd is cause of bombs when fEditSeq is used...
-				// no -- this isn't it...
-				fEditSeq->fSeq->SetBases(newbases);					
-#else
+				didedit= true;
 				DSetEditCmd* cmd= new DSetEditCmd( fDoc, this, fEditSeq->fSeq, newbases);
 				if (cmd) PostTask(cmd); 
-#endif
 				}
 			MemFree( newbases);
 		  
@@ -859,6 +1029,10 @@ void DAlnView::DeInstallEditSeq()
 			fEditSeq->HideEdit();
 			fDoc->SetEditText(NULL); //??
 			InvalRect(r);
+			if (didedit && fDoc->fAlnIndex) {
+				fDoc->fAlnIndex->GetRowRect( fEditRow, r);
+				fDoc->fAlnIndex->InvalRect( r);
+				}
 			}
 		fEditRow= -1;
 		}
@@ -867,7 +1041,7 @@ void DAlnView::DeInstallEditSeq()
 
 
 
-void DAlnView::InstallEditSeq(short row, short selStart, short selEnd, Boolean doLight)
+void DAlnView::InstallEditSeq(long row, long selStart, long selEnd, Boolean doLight)
 {
 		 
 	DeInstallEditSeq();
@@ -878,14 +1052,29 @@ void DAlnView::InstallEditSeq(short row, short selStart, short selEnd, Boolean d
 		Nlm_RecT r;
 		DSequence* aSeq= fSeqList->SeqAt( row);
 		this->GetRowRect( row, r);
+		
+		if (r.left > 0) r.left--; // fix off-by-one!?
+		long cwidth= (r.right - r.left) / GetItemWidth(0);
+		long oldval= -1; // force scroll/setposition
+		long leftoff= GetLeft();
+		
+#ifdef WIN_MOTIF
+			// must install new editseq each time -- otherwiz trash-city...
+		if (fEditSeq) delete fEditSeq;
+		fEditSeq= new DAlnSequence( 0, this, cwidth); 
+#endif
 		fEditSeq->fSeq= aSeq;
-
-		r.left--; // fix off-by-one
 		fEditSeq->SetPosition( r);
-		fEditSeq->ShowEdit();
+		fEditSeq->ShowEdit(true);
 		fEditSeq->SetSelection( selStart, selEnd);
-		if (fLeft>0) fEditSeq->Scroll(false, NULL, fLeft, 0);
-		fDoc->SetEditText(fEditSeq); //??
+#ifdef WIN_MAC
+			// mac - off-by-one if oldvalue=-1 !!
+		if (leftoff>0) fEditSeq->Scroll(false, NULL,leftoff, 0);
+#else
+			// motif - off-by-one if oldvalue=0 !!
+		fEditSeq->Scroll(false, NULL, leftoff, oldval);
+#endif
+		fDoc->SetEditText(fEditSeq); //done by SetSelection??
 
 		if (gLastCommand) { delete gLastCommand; gLastCommand= NULL; } //gLastCommand->Commit();	//??
 		//gLastEditView= this;
@@ -918,7 +1107,7 @@ void DAlnView::addToAlnList( DSequence* aSeq)
 void DAlnView::MakeConsensus()
 { 
 	fSeqList->MakeConsensus();
-	short arow= fSeqList->ConsensusRow();
+	long arow= fSeqList->ConsensusRow();
 	if (arow>0) {
 		Nlm_RecT r;
 		GetRowRect( arow, r);
@@ -965,6 +1154,128 @@ void DAlnView::HiliteORFs()
 }
 
 
+Boolean DAlnView::IsMasked()
+{  
+	if (fMaskLevel>0) {
+		long iseq, nseq= fSeqList->GetSize();
+		for ( iseq= 0; iseq<nseq; iseq++) {
+			DSequence* aseq= fSeqList->SeqAt(iseq);
+			long jbase, nbases= aseq->LengthF();
+			if (aseq->MasksOk())
+			 for (jbase= 0; jbase<nbases; jbase++) {
+				if ( aseq->MaskAt(jbase, fMaskLevel) > 0) 
+					return true;
+				}
+			}
+		}
+	return false;
+}
+
+
+void DAlnView::ReplicateMask()
+{  
+	if (fMaskLevel > 0 && fDoc && fDoc->fAlnIndex) {
+	  long refRow= fDoc->fAlnIndex->GetSelectedRow();
+		if (refRow !=  DTabSelection::kNoSelection) {
+			DSequence* refSeq = fSeqList->SeqAt(refRow);
+			long nseq= fSeqList->GetSize();
+			if (refSeq) 
+			for (long iseq= 0; iseq<nseq; iseq++)
+			 if (iseq != refRow) {
+				DSequence* aSeq= fSeqList->SeqAt(iseq);
+				long alen= aSeq->LengthF();
+				for (long ibase=0; ibase<alen; ibase++) {
+					long val= refSeq->MaskAt(ibase, fMaskLevel);
+					aSeq->SetMaskAt( ibase, fMaskLevel, val);
+					}
+				}
+			this->Invalidate();
+			}
+		}
+}
+
+Boolean DAlnView::MaskCommand(short command)
+{  
+	//if (menuid == kSeqMaskMenu && fMaskLevel>0)   
+	
+		long iseq, nseq= fSeqList->GetSize();
+		long jbase, nbases;
+		short maskval, selval;
+		
+	 	switch (command) {
+	 	
+	 		case DSeqDoc::cMaskReplicate:
+	 			ReplicateMask();
+	 			return true;
+	 			
+			case DSeqDoc::cMaskSelCommon:
+				HiliteCommonBases();
+				return true;
+				
+			case DSeqDoc::cMaskSelORF:
+				HiliteORFs();
+				return true;
+				
+			case DSeqDoc::cMaskSelAll:
+				for (iseq= 0; iseq<nseq; iseq++) 
+					fSeqList->SeqAt(iseq)->SetMask(fMaskLevel);
+				Invalidate();
+				return true;
+				
+			case DSeqDoc::cMaskInvert:
+				for (iseq= 0; iseq<nseq; iseq++) 
+					fSeqList->SeqAt(iseq)->FlipMask(fMaskLevel);
+				Invalidate();
+				return true;
+				
+			case DSeqDoc::cMaskClear:
+				for (iseq= 0; iseq<nseq; iseq++) 
+					fSeqList->SeqAt(iseq)->ClearMask(fMaskLevel);
+				Invalidate();
+				return true;
+
+			case DSeqDoc::cSel2Mask:
+				for (iseq= 0; iseq<nseq; iseq++) {
+					DSequence* aseq= fSeqList->SeqAt(iseq);
+					nbases= aseq->LengthF();
+					for (jbase= 0; jbase<nbases; jbase++) {
+						selval= IsSelected(iseq,jbase);
+						aseq->SetMaskAt(jbase, fMaskLevel, selval);
+						}
+					}
+				Invalidate();
+				return true;
+
+			case DSeqDoc::cMask2Sel:
+			case DSeqDoc::cMaskOrSel:
+			case DSeqDoc::cMaskAndSel:
+				for (iseq= 0; iseq<nseq; iseq++) {
+					DSequence* aseq= fSeqList->SeqAt(iseq);
+					nbases= aseq->LengthF();
+					for (jbase= 0; jbase<nbases; jbase++) {
+						maskval= aseq->MaskAt(jbase, fMaskLevel);
+						selval = IsSelected(iseq,jbase);
+						switch (command) {
+						  case DSeqDoc::cMask2Sel	: selval= maskval; break;
+						  case DSeqDoc::cMaskOrSel: selval= (selval | maskval); break;
+						  case DSeqDoc::cMaskAndSel: selval= (selval & maskval); break;
+						  }
+						  
+// !! This IS NO GOOD now -- must have disjoint selection ability in DTableView...
+						SelectCells(iseq,jbase, DTabSelection::kExtendMulti,false, selval);
+						}
+					}
+				Invalidate();
+				return true;
+				
+			default: 
+				return true;
+			}
+}
+
+
+
+
 void DAlnView::HiliteCommonBases()
 {  
 #if 1
@@ -988,38 +1299,6 @@ void DAlnView::HiliteCommonBases()
 	MemFree(hCommon);
 	MemFree(hFirst);
 #endif
-
-#if THIS_IS_OBSOLETE
-	char		*hCon, *hSeq, *hFirst, *hMaxbase;
-	long		maxlen;
-	short 	arow;
-	 
-	DSequence* cons= fSeqList->Consensus();
-	if (!cons) cons= (DSequence*) fSeqList->First();
-
-	if (cons) {
-		arow= fSeqList->GetIdentityItemNo( cons);
-		hCon= cons->Bases();   
-		hMaxbase= fSeqList->FindCommonBases(DSeqList::gMinCommonPercent, hFirst); 
-		
-		maxlen= StrLen(hMaxbase);
-		this->SetEmptySelection( true);		
-		long iseq, nseq= fSeqList->GetSize();
-		for (iseq= 0; iseq<nseq; iseq++) {
-			DSequence* aSeq= fSeqList->SeqAt(iseq);
-			if (!aSeq->IsConsensus() && aSeq->Kind() != DSequence::kOtherSeq) {
-				hSeq= aSeq->Bases();
-				for (short ibase=0; ibase<maxlen; ibase++) {
-					if ( toupper(hSeq[ibase]) == hMaxbase[ibase] )  
-				  	this->SelectCells( iseq, ibase, false, false);  
-					}
-				}
-			}
-		this->InvalidateSelection();
-		MemFree(hMaxbase); 
-		MemFree(hFirst); 
-		}
-#endif
 }
  
  
@@ -1027,7 +1306,7 @@ void DAlnView::HiliteCommonBases()
 #ifndef DRAWCLASS
 
 void DAlnView::DrawAlnInStyle( baseColors colors, Boolean swapBackColor,
-															char*	pText, long indx, long len, short row)
+															char*	pText, long indx, long len, long row)
 {
 #if MASKS
 		// ?? do we want this? main use of styles is in PrettyPrint...
@@ -1043,7 +1322,7 @@ void DAlnView::DrawAlnInStyle( baseColors colors, Boolean swapBackColor,
 		return;
 		}
 		
-	long cw= GetItemWidth();
+	long cw= GetItemWidth(0);
 	Nlm_GetPen( &pt);
 	if (pt.x < 0) {
 		skip= (-pt.x) / cw;
@@ -1061,7 +1340,7 @@ void DAlnView::DrawAlnInStyle( baseColors colors, Boolean swapBackColor,
 	endx= indx + len - 1;
 	
 	lastch= 0;
-	long cht= GetItemHeight();
+	long cht= GetItemHeight(0);
 	for (long i= indx; i<=endx; i++) {
 		ch= pText[i];
 		if (ch >= ' ') {
@@ -1089,13 +1368,13 @@ void DAlnView::DrawAlnInStyle( baseColors colors, Boolean swapBackColor,
 
 
 void DAlnView::DrawAlnColors(baseColors colors, Boolean swapBackColor,
-															char*	pText, long indx, long len, short row)
+															char*	pText, long indx, long len, long row)
 {
 	Nlm_PoinT pt;
 	long			endx, pend, skip;
 	char			ch, lastch;
 	
-	long cw= GetItemWidth(); 
+	long cw= GetItemWidth(0); 
 	Nlm_GetPen( &pt);
 	if (pt.x < 0) {
 		skip= (-pt.x) / cw;
@@ -1131,13 +1410,14 @@ void DAlnView::DrawAlnColors(baseColors colors, Boolean swapBackColor,
 #else
 ///////////////////////////
 
+
 void DAlnView::DrawAlnColors(baseColors colors, Boolean swapBackColor,
-															char*	pText, long indx, long len, short row)
+															char*	pText, long indx, long len, long row)
 {
 }
 
 void DAlnView::DrawAlnInStyle( baseColors colors, Boolean swapBackColor,
-															char*	pText, long indx, long len, short row)
+															char*	pText, long indx, long len, long row)
 {
 }
 
@@ -1145,17 +1425,19 @@ class DrawBases
 {
 public:
 	Nlm_PoinT pt;
-	long		endx, pend, indx, len, cw;
-	short		row;
+	long		endx, pend, indx, len, cw, cht;
+	long		row, ytop, ybot;
 	char		ch, lastch, *pText;
 	DAlnView* tview;
+	Boolean  swapBackcolor;
 	//baseColors&	colors;
 	
 	DrawBases() {}
 	virtual void doDraw(DAlnView* theView, baseColors theColors, Boolean backcolor,
-		       char*	theText, long theIndx, long theLen, short theRow);
+		       char*	theText, long theIndx, long theLen, long theRow);
 	virtual void Calc();
 	virtual void DrawSub(baseColors colors);
+	virtual void InvertSel();
 };
 
 class DrawGreyBases : public DrawBases
@@ -1168,15 +1450,26 @@ public:
 class DrawBasesWithMask : public DrawBases
 {
 public:
-	DrawBasesWithMask() {}
+	Boolean fIsGrey;
+
+	DrawBasesWithMask() : fIsGrey(false) {}
 	virtual void doDraw(DAlnView* theView, baseColors theColors, Boolean backcolor,
-		       char*	theText, long theIndx, long theLen, short theRow);
+		       char*	theText, long theIndx, long theLen, long theRow);
 	virtual void DrawWithMasks(baseColors colors);
+	virtual void DrawSub(baseColors colors);
 };
 
 
+class DrawGreyBasesWithMask : public DrawBasesWithMask
+{
+public:
+	DrawGreyBasesWithMask() { fIsGrey = true; }
+};
+
+
+
 void DrawBases::doDraw(DAlnView* theView, baseColors theColors, Boolean backcolor,
-	       char*	theText, long theIndx, long theLen, short theRow)
+	       char*	theText, long theIndx, long theLen, long theRow)
 {
 	tview= theView;
 	//colors= theColors;
@@ -1185,16 +1478,23 @@ void DrawBases::doDraw(DAlnView* theView, baseColors theColors, Boolean backcolo
 	len= theLen;
 	row= theRow;
 	lastch= 0;
+	swapBackcolor= backcolor;
+	if (swapBackcolor) Nlm_CopyMode();
 	
 	Calc();
 	DrawSub(theColors);
+	InvertSel();
+	if (swapBackcolor) Nlm_MergeMode();
 }
 
 void DrawBases::Calc() 
 {
 	long skip;
-	cw= tview->GetItemWidth(); 
+	cht= tview->GetItemHeight(0);
+	cw = tview->GetItemWidth(0); 
 	Nlm_GetPen( &pt);
+	ytop= pt.y-cht+2;
+	ybot= pt.y+2;  
 	if (pt.x < 0) {
 		skip= (-pt.x) / cw;
   	indx+= skip;
@@ -1210,17 +1510,32 @@ void DrawBases::Calc()
 	endx= indx + len - 1;
 }
 
+
+void DrawBases::InvertSel()
+{	 	
+	Nlm_RecT crec;
+	long atx= pt.x;
+	
+	for (long i= indx; i<=endx; i++) {
+	  if (tview->fSelection->IsSelected(row, i)) {
+			Nlm_LoadRect( &crec, atx, ytop, atx+cw, ybot); 
+			tview->DTableView::InvertRect( crec);
+			}
+		atx += cw;
+		}
+}
+
 void DrawBases::DrawSub(baseColors colors)
 {
-	//-- backcolor not showing -- need erase or something...
-	//if (swapBackcolor) RGBForeColor( colors[' '-' ']); else RGBBackColor( colors[' '-' ']);
- 	//Nlm_CopyMode(); //?? assume?
- 	
 	for (long i= indx; i<=endx; i++) {
 		ch= pText[i];
 		if (ch >= ' ') {
-			// if (swapBackcolor) RGBBackColor( colors[ch-' ']); else 
-			if (ch!=lastch) Nlm_SetColor( colors[ch-' ']);
+			if (ch!=lastch)  {
+#ifdef BACKCOLOR
+				if (swapBackcolor) Nlm_SetBackColor( colors[ch-' ']);  else 
+#endif
+				Nlm_SetColor( colors[ch-' ']);
+				}
 			Nlm_PaintChar(ch);
 			lastch= ch;
 			}
@@ -1228,6 +1543,29 @@ void DrawBases::DrawSub(baseColors colors)
 	Nlm_Black();
 }
 
+void DrawBasesWithMask::DrawSub(baseColors colors)
+{
+	for (long i= indx; i<=endx; i++) {
+		ch= pText[i];
+		if (ch >= ' ') {
+			if (fIsGrey) {
+#ifdef BACKCOLOR
+				if (swapBackcolor) Nlm_SetBackColor( tview->fColcolors[i-indx]);  else 
+#endif
+				Nlm_SetColor( tview->fColcolors[i-indx]);
+				}
+			else if (ch!=lastch) {
+#ifdef BACKCOLOR
+				if (swapBackcolor) Nlm_SetBackColor( colors[ch-' ']);  else 
+#endif
+				Nlm_SetColor( colors[ch-' ']);
+				}
+			Nlm_PaintChar(ch);
+			lastch= ch;
+			}
+		}
+	Nlm_Black();
+}
 
 void DrawGreyBases::DrawSub(baseColors colors)
 {	 	
@@ -1235,6 +1573,9 @@ void DrawGreyBases::DrawSub(baseColors colors)
 		ch= pText[i];
 		if (ch >= ' ') {
 				// could draw by columns & setcolor once/col for speed !
+#ifdef BACKCOLOR
+			if (swapBackcolor) Nlm_SetBackColor( tview->fColcolors[i-indx]);  else 
+#endif
 			Nlm_SetColor( tview->fColcolors[i-indx]);
 			Nlm_PaintChar(ch);
 			}
@@ -1244,9 +1585,8 @@ void DrawGreyBases::DrawSub(baseColors colors)
 
 
 
-
 void DrawBasesWithMask::doDraw(DAlnView* theView, baseColors theColors, Boolean backcolor,
-	       char*	theText, long theIndx, long theLen, short theRow)
+	       char*	theText, long theIndx, long theLen, long theRow)
 {
 	tview= theView;
 	//colors= &theColors;
@@ -1255,29 +1595,55 @@ void DrawBasesWithMask::doDraw(DAlnView* theView, baseColors theColors, Boolean 
 	len= theLen;
 	row= theRow;
 	lastch= 0;
+	swapBackcolor= backcolor;
+	if (swapBackcolor) Nlm_CopyMode();
+	
 	Calc();
 	Boolean dostyles= (tview->fCurSeq && tview->fCurSeq->MasksOk());
-	if (!dostyles) DrawSub(theColors);
-	else DrawWithMasks(theColors);
+	if (!dostyles) {
+		DrawSub(theColors);
+		InvertSel();
+		}
+	else 
+		DrawWithMasks(theColors);
+	if (swapBackcolor) Nlm_MergeMode();
 }
 
 void DrawBasesWithMask::DrawWithMasks(baseColors colors)
 {
-	long cht= tview->GetItemHeight();
 	Nlm_RecT	crec;  
 	
 	for (long i= indx; i<=endx; i++) {
+		Boolean notInverted= true;
 		ch= pText[i];
 		if (ch >= ' ') {
-			if (ch!=lastch) Nlm_SetColor( colors[ch-' ']);
+			if (fIsGrey) {
+#ifdef BACKCOLOR
+				if (swapBackcolor) Nlm_SetBackColor( tview->fColcolors[i-indx]);  else 
+#endif
+				Nlm_SetColor( tview->fColcolors[i-indx]);
+				}
+			else if (ch!=lastch) {
+#ifdef BACKCOLOR
+				if (swapBackcolor) Nlm_SetBackColor( colors[ch-' ']);  else 
+#endif
+				Nlm_SetColor( colors[ch-' ']);
+				}
 			Nlm_PaintChar(ch);
 			lastch= ch;
 			if (tview->fMaskLevel>0) {
+				notInverted= false;
 				short maskval= tview->fCurSeq->MaskAt(i, tview->fMaskLevel);
 				if (maskval>0) {
-					Nlm_LoadRect( &crec, pt.x, pt.y-cht+2, pt.x+cw, pt.y+2); //??
+					Nlm_LoadRect( &crec, pt.x, ytop, pt.x+cw, ybot); //??
 					//Nlm_FrameRect( &crec); //?? doesn't show on XMotif?
 					tview->DTableView::InvertRect( crec); 
+					}
+				}
+			if (notInverted) {
+			  if (tview->fSelection->IsSelected(row, i)) {
+					Nlm_LoadRect( &crec, pt.x, ytop, pt.x+cw, ybot); //??
+					tview->DTableView::InvertRect( crec);
 					}
 				}
 			pt.x += cw;
@@ -1291,12 +1657,12 @@ void DrawBasesWithMask::DrawWithMasks(baseColors colors)
 	
 DrawBases         gDrawBases;
 DrawBasesWithMask gDrawBasesWithMask;
-DrawGreyBases			gDrawGreyBases;
-
+//DrawGreyBases			gDrawGreyBases;
+DrawGreyBasesWithMask	gDrawGreyBases;
 #endif
 
 
-void DAlnView::DrawAllColors(Nlm_RecT r, short row)
+void DAlnView::DrawAllColors(Nlm_RecT r, long row)
 { 
 #ifdef DRAWCLASS
 #define DRAWALN(a,b,c,d,e,f)	gDrawBasesWithMask.doDraw(this,a,b,c,d,e,f)
@@ -1313,7 +1679,7 @@ void DAlnView::DrawAllColors(Nlm_RecT r, short row)
 
 	for (stopcol= startcol; stopcol<GetMaxCols() && newright<r.right; stopcol++) {
 		//if (fWidths) newright += fWidths[startcol]; else 
-		newright += GetItemWidth();
+		newright += GetItemWidth(0);
 		// optimize later -- check update region by each char rect ...
 		//if (Nlm_RectInRgn (&item_rect, Nlm_updateRgn)) done= true;
 		}
@@ -1325,7 +1691,7 @@ void DAlnView::DrawAllColors(Nlm_RecT r, short row)
 		//Boolean dostyles= (fCurSeq && fCurSeq->MasksOk());
 		
 		long len= Min( aSeq->LengthF(), stopcol) - startcol;
-		if (len>0 && hSeq) {
+		if (len>0) {
 			Nlm_MoveTo( r.left, r.bottom-2); //bottom-5
 			if (fColorBases == kBaseVarLite && fColcolors) 
 				gDrawGreyBases.doDraw(this,DBaseColors::gNAcolors, gSwapBackground, hSeq, startcol, len, row);
@@ -1339,11 +1705,13 @@ void DAlnView::DrawAllColors(Nlm_RecT r, short row)
 }  
 
 
-void DAlnView::DrawNoColors(Nlm_RecT r, short row)
+void DAlnView::DrawNoColors(Nlm_RecT r, long row)
 { 
+	Nlm_RecT crec;
+	long atx, aty;
 	long stopcol, startcol = GetLeft(); 
 	long newright= r.left;
-	short	cwidth= GetItemWidth(); // Nlm_CharWidth('G'); //fItemWidth
+	short	cwidth= GetItemWidth(0); // BaseCharWidth(); //fItemWidth
 	
 	for (stopcol= startcol; stopcol<GetMaxCols() && newright<r.right; stopcol++) {
 		//if (fWidths) newright += fWidths[startcol]; else 
@@ -1356,22 +1724,32 @@ void DAlnView::DrawNoColors(Nlm_RecT r, short row)
 	if (aSeq && aSeq->Bases()) {
 		char *s, se, *hSeq= aSeq->Bases();
 		long len= Min( aSeq->LengthF(), stopcol) - startcol;
-		if (len>0 && hSeq) {
+		if (len>0) {
 #if MASKS
 			if (fMaskLevel>0) {
-				short atx= r.left;
-				short aty= r.bottom-2;
+				atx= r.left;
+				aty= r.bottom-2;
 				stopcol= startcol + len;
 				for (long i= startcol; i<stopcol; i++) {
+					//Boolean notInverted= true;
 					Nlm_MoveTo(atx, aty);
 					Nlm_PaintChar(hSeq[i]);
 					short maskval= aSeq->MaskAt(i, fMaskLevel);
 					if (maskval>0) {
-						Nlm_RecT crec;
 						Nlm_LoadRect( &crec, atx, r.top, atx+cwidth, r.bottom); 
 						//Nlm_FrameRect( &crec); //<< ? bad for Motif, also messy looking
 						DTableView::InvertRect( crec); 
+						//notInverted= false;
 						}
+#if 0
+	// no -- if fMaskLevel>0, don't do any selection inversion !
+			if (notInverted) {
+			  if (this->fSelection->IsSelected(row, i)) {
+					Nlm_LoadRect( &crec, atx, r.top, atx+cwidth, r.bottom); 
+					this->DTableView::InvertRect( crec);
+					}
+				}
+#endif
 					atx += cwidth;
 					}
 				}
@@ -1385,6 +1763,16 @@ void DAlnView::DrawNoColors(Nlm_RecT r, short row)
 				Nlm_PaintString( s); 
 				s[len]= se;
 				//Nlm_DrawText( &r, hSeq+startcol, len, 'l', false); // gray== false
+#if 1
+				atx= r.left;
+				for (long i= startcol; i<stopcol; i++) {
+				  if (this->fSelection->IsSelected(row, i)) {
+						Nlm_LoadRect( &crec, atx, r.top, atx+cwidth, r.bottom); 
+						this->DTableView::InvertRect( crec);
+						}
+					atx += cwidth;
+					}
+#endif
 				}
     	}
 		}
@@ -1398,14 +1786,14 @@ void DAlnView::Draw()
 	if (fColorBases == kBaseVarLite) {
 		// find grey color mask for base columns in view 
 		Nlm_RecT r = fRect;
-		short	row = 0; 
+		long	row = 0; 
 		long 	ncols, icol, stopcol, startcol = GetLeft(); 
 		long 	newright= r.left;
 		long	basecount['~'];
 		char	maxc, ac;
 		
 		for (stopcol= startcol; stopcol < GetMaxCols() && newright<r.right; stopcol++) {
-			newright += GetItemWidth();
+			newright += GetItemWidth(0);
 			}
 		ncols= stopcol - startcol + 1;
 		
@@ -1468,7 +1856,7 @@ void DAlnView::Draw()
 }
 
 
-void DAlnView::DrawRow(Nlm_RecT r, short row)
+void DAlnView::DrawRow(Nlm_RecT r, long row)
 {
  	// DTableView::Draw() does SelectFont(fFont)
   if (fEditRow == row) {
@@ -1488,92 +1876,109 @@ void DAlnView::DrawRow(Nlm_RecT r, short row)
 }
 
 		
-void DAlnIndex::DrawCell(Nlm_RecT r, short row, short col)
+void DAlnIndex::DrawCell(Nlm_RecT r, long row, long col)
 {
-#if 0
-	long stopcol, startcol = fLeft; 
-	long newright= r.left;
-	short	cwidth= Nlm_CharWidth('G'); //fItemWidth
-	
-	for (stopcol= startcol; stopcol<fMaxCols && newright<r.right; stopcol++) {
-		//if (fWidths) newright += fWidths[startcol]; else 
-		newright += cwidth;
-		// optimize later -- check update region by each char rect ...
-		//if (Nlm_RectInRgn (&item_rect, Nlm_updateRgn)) done= true;
-		}
-#endif
-
 	// add cols for Kind(), Length(), Origin(), UpdateTime(), Info()(wide col..better in box)
-		
+	char *cp, buf[128];
+	buf[0]= 0;
+	r.right -= 2; // inset
+	
 	DSequence* aSeq= fSeqList->SeqAt(row);
-	if (aSeq) switch (col) {
-		case 0: 
-			{
-			char* hSeq= aSeq->Name();
-			Nlm_DrawString( &r, hSeq, 'l', false);
-			return;
-			}
-		case 1:
-			{
-			char buf[128];
-			sprintf(buf,"%d ", aSeq->LengthF()); // switch to ostrstream !?
+	if (aSeq) {
+#ifdef TESTVARHEIGHT
+	 	if (aSeq->ShowORF()) r.bottom -= kORFxtraHeight;
+#endif	 	
+		// from 0 .. kAlnIndexCols-1
+		switch (col) {
+		case kAlnIndexName: 
+			if (aSeq->Changed())  Nlm_SelectFont(gUlineTextFont); //gBoldTextFont  
+			cp= aSeq->Name();
+			Nlm_DrawString( &r, cp, 'r', false);
+			if (aSeq->Changed()) { 	Nlm_SelectFont(fFont); }
+			break;
+		case kAlnIndexSize:
+			sprintf(buf,"%d", aSeq->LengthF()); 
 			Nlm_DrawString( &r, buf, 'r', false);
-			return;
+			break;
+		case kAlnIndexKind:
+			cp= aSeq->KindStr();
+			Nlm_DrawString( &r, cp, 'r', false);
+			break;
+		case kAlnIndexRow:
+			sprintf(buf,"%d", row+1);
+			Nlm_DrawString( &r, buf, 'r', false);
+			break;
+		case kAlnIndexShowORF:
+#if 0
+			Nlm_MoveTo( r.left+1, r.bottom);
+			if (aSeq->ShowORF()) Nlm_Medium();
+			Nlm_PaintString( "Show");  
+			Nlm_Solid();
+			Nlm_PaintString( "/");  
+			if (!aSeq->ShowORF()) Nlm_Medium();
+			Nlm_PaintString( "Hide");  
+			Nlm_Solid();
+			Nlm_PaintString( " ORF");  
+#else
+			if (aSeq->ShowORF()) cp= "Hide ORF";
+			else cp= "Show ORF";
+			Nlm_DrawString( &r, cp, 'c', false); //true == grey
+#endif
+			break;
+		case kAlnIndexChecksum:
+			sprintf(buf,"%8lx", aSeq->Checksum());
+			Nlm_DrawString( &r, buf, 'r', false);
+			break;
+			
 			}
-		case 2:
-			{
-			char* hSeq= aSeq->KindStr();
-			Nlm_DrawString( &r, hSeq, 'l', false);
-			return;
+			
+#ifdef notnow_TESTVARHEIGHT
+		if (aSeq->ShowORF()) {
+			r.top += kORFxtraHeight;
+			r.bottom += kORFxtraHeight;
+			Nlm_DrawString( &r, "orf", 'r', false);
 			}
-		case 3:
-			{
-			char buf[128];
-			sprintf(buf,"%8lx ", aSeq->Checksum()); // switch to ostrstream !?
-			Nlm_DrawString( &r, buf, 'l', false);
-			return;
-			}
+#endif	 	
 		}
 }
 
 
-void DAlnITitle::DrawCell(Nlm_RecT r, short row, short col)
+void DAlnITitle::DrawCell(Nlm_RecT r, long row, long col)
 {
+	r.right -= 2; // inset
 	switch (col) {
-		case 0: 
-			{
-			Nlm_DrawString( &r, "Name", 'l', false);
-			return;
-			}
-		case 1:
-			{
-			Nlm_DrawString( &r, "Bases", 'l', false);
-			return;
-			}
-		case 2:
-			{
-			Nlm_DrawString( &r, "Kind", 'l', false);
-			return;
-			}
-		case 3:
-			{
-			Nlm_DrawString( &r, "Checksum", 'l', false);
-			return;
-			}
+		case kAlnIndexName: 
+			Nlm_DrawString( &r, "Name", 'r', false);
+			break;
+		case kAlnIndexSize:
+			Nlm_DrawString( &r, "Bases", 'r', false);
+			break;
+		case kAlnIndexKind:
+			Nlm_DrawString( &r, "Kind", 'r', false);
+			break;
+		case kAlnIndexRow:
+			Nlm_DrawString( &r, "Row", 'r', false);
+			break;
+		case kAlnIndexShowORF:
+			Nlm_DrawString( &r, "ORF view", 'r', false);
+			break;
+		case kAlnIndexChecksum:
+			Nlm_DrawString( &r, "Checksum", 'r', false);
+			break;
 		}
 }
 
 void DAlnHIndex::Draw()
 {
 	Nlm_RecT r;
-	short atx, aty;
+	long atx, aty;
 	char nums[128];
 
 	fDoc->fAlnView->SelectFont();  
 	ViewRect( r);
 	long stopcol, startcol = fDoc->fAlnView->GetLeft(); 
 	long newright= r.left;
-	short	cwidth= Nlm_CharWidth('G');  
+	short	cwidth= gAlnCharWidth; //BaseCharWidth(); // fDoc->fAlnView->GetItemWidth(0);
 
 #if 0	
 	Nlm_RecT vr;
@@ -1592,7 +1997,7 @@ void DAlnHIndex::Draw()
 	long len= stopcol - startcol;
 	atx= r.left-(cwidth/2);
 	aty= r.bottom;
-	for (short i= startcol; i<=stopcol; i++) {
+	for (long i= startcol; i<=stopcol; i++) {
 		if (i == 0) ; //skip
 		else if (i % 10 == 0) {
 			Nlm_MoveTo(atx, aty);
@@ -1600,7 +2005,7 @@ void DAlnHIndex::Draw()
 			Nlm_MoveTo(atx+1, aty);
 			Nlm_LineTo(atx+1, aty-2);
 			sprintf( nums, "%d", i);
-			short ws= Nlm_StringWidth(nums);
+			long ws= Nlm_StringWidth(nums);
 			Nlm_MoveTo( atx-(ws/ 2), aty-3);
 			Nlm_PaintString(nums);
 			//Nlm_DrawString( &r1, nums, 'c', false);
@@ -1645,11 +2050,6 @@ void DAlnView::WriteToDeskScrap() // override
 
 
 
-		
-		
-		
-// DAlnIndex	 ------------------
-
 
 char* DAlnIndex::GetItemTitle(short item, char* title, size_t maxsize)   
 {
@@ -1664,87 +2064,5 @@ char* DAlnIndex::GetItemTitle(short item, char* title, size_t maxsize)
 	return NULL;
 }
 
-
-#if FIX_LATER
-
-void TAlnIndex::UpdateSize(void)
-VAR	diff: integer;
-{
-	if ((fAlnView!=NULL)) {
-		diff= fAlnView->fNumOfRows - fNumOfRows;
-		if ((diff>0)) InsRowLast( 1, fAlnView->fRowheight) 	
-		else if ((diff<0)) DelItemLast( -diff);
-		}	else
-		DelItemLast(fNumOfRows);
-}
-
-void TAlnIndex::ReSelect(RgnHandle indexRegion)
-VAR  aCell: GridCell;
-{
-	/*-----
-	aCell = (*indexRegion)->rgnBBox.topLeft;
-	if (!IsCellVisible(aCell)) PositionAtCell(aCell);				 
-	----*/
-	
-	if (!EqualRect((*indexRegion)->rgnBBox, (*fSelections)->rgnBBox)) {
-		/*---- ??
-		WITH fDoc){
-			fAlnView->SetEmptySelection(kHighlight);  
-			}
-		-----*/
-		SetSelection(indexRegion, kDontExtend, kHighlight, kSelect);
-		}
-}
-
-
-
-TAlnIndex::HandleMouseDown( VPoint theMouse, TToolboxEvent event, 
-							 hysteresis: Point):Boolean; // override 
-{		
-	fAlnView->DeInstallEditSeq();
-	fAlnView->SetEmptySelection(kHighlight); 
-	
-  HandleMouseDown= inherited::HandleMouseDown(theMouse,event,hysteresis);
-}
-
-void TAlnIndex::DoMouseCommand(VPoint VAR theMouse, TToolboxEvent event,
-											   Point hysteresis) // override 
-VAR
-	aRow, aCol	: short;
-	aCell	: GridCell;
-	aAlnShifter		: TAlnShifter;
-	boolean		aDoubleClick;
-	aName	: Str255;
-	vpt		: VPoint;
-	GridViewPart		gridPart;
-	aSeq	: DSequence;
-	
-{
-	aDoubleClick= event->fClickCount > 1;
-	gridPart= IdentifyPoint(theMouse, aCell);
-	aRow= aCell.y;
-	
-	if (aDoubleClick) {
-		aSeq= DSequence(fSeqList->At(aRow));
-		if (aSeq!=NULL)) TAlnDoc(fDocument)->OpenSeqedWindow(aSeq);
-		}		
-	else if ((event.IsShiftKeyPressed |event->IsCommandKeyPressed())) { 
-		inherited::DoMouseCommand(theMouse,event,hysteresis) 
-		}		
-	else if (gridPart != badChoice) {
-		aCell	= VPointToLastCell(theMouse);
-		//if TRUE then begin
-		if (isCellSelected(aCell)) {
-			GetItemText(aRow, aName);
-			New(aAlnShifter);
-			FailNIL(aAlnShifter);
-			aAlnShifter->IAlnShifter(this, fAlnView, aRow, aName);
-			PostCommand( aAlnShifter);
-			}		else
-			inherited::DoMouseCommand(theMouse,event,hysteresis); 
-		}
-}
-
-#endif // FIX_LATER
 
 

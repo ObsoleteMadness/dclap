@@ -313,36 +313,54 @@ void DNCBIBlast::Open()
 	if (fSeq->IsAmino()) fNmeth->Hide(); else fAmeth->Hide();
 	super->NextSubviewBelowLeft();
 	
-	
+#if 0
+// ncbi blast libs as of jun'96
+ nr       n Non-redundant GenBank+EMBL+DDBJ+PDB sequences (but no ESTs or STSs)
+ est      n Non-redundant Database of GenBank+EMBL+DDBJ EST Division
+ sts      n Non-redundant Database of GenBank+EMBL+DDBJ STS Division
+ pdb      n PDB nucleotide sequences
+ vector   n Vector subset of GenBank
+ mito     n Database of mitochondrial sequences, Rel. 1.0, July 1995
+ kabat    n Kabat Sequences of Nucleic Acid of Immunological Interest
+ epd      n Eukaryotic Promotor Database
+ alu      n Select Alu Repeats from REPBASE
+ month    n All new/revised GenBank+EMBL+DDBJ+PDB sequences in the last 30 days
+
+ nr        p Non-redundant GenBank CDS translations+PDB+SwissProt+PIR
+ pdb       p PDB protein sequences
+ spdb      p Non-redundant SwissProt+PDB sequences
+ kabat     p Kabat Sequences of Proteins of Immunological Interest
+ alu       p Translations of Select Alu Repeats from REPBASE
+ month     p All new/revised GenBank trans+PDB+SwissProt+PIR in last 30 days
+ swissprot p SwissProt sequences
+#endif	
+
 	(void) new DPrompt(0, super, "Nucleic library");
 	super->NextSubviewBelowLeft();
 	fNlib= new DPopupList( cNucLib, super);
-	fNlib->AddItem("nr - non-redundant nucleic lib, full & updates");
-	fNlib->AddItem("genbank - latest full GenBank");
-	fNlib->AddItem("gbupdate - updates to GenBank");
-	fNlib->AddItem("embl - latest full EMBL");
-	fNlib->AddItem("emblu - updates to EMBL");
+	fNlib->AddItem("nr - non-redundant nucleic library");
+	fNlib->AddItem("month - new/revised sequences in last month");
+	fNlib->AddItem("est - non-redundant EST division");
+	fNlib->AddItem("sts - non-redundant STS division");
 	fNlib->AddItem("pdb - from Brookhaven Protein Data Bank");
 	fNlib->AddItem("vector - vector subset of GenBank");
-	fNlib->AddItem("kabatnuc - from Kabat's sequences of immunological interest");
-	fNlib->AddItem("dbest - expressed sequence tags data");
+	fNlib->AddItem("mito - mitochondrial sequences");
+	fNlib->AddItem("kabat - Kabat immunological sequences");
 	fNlib->AddItem("epd - eukaroytic promotors");
+	fNlib->AddItem("alu - Alu repeats from REPBASE");
 	fNlib->SetValue(1);
 	super->NextSubviewBelowLeft();
 
 	(void) new DPrompt(0, super, "Protein library");
 	super->NextSubviewBelowLeft();
 	fAlib= new DPopupList( cProtLib, super);
-	fAlib->AddItem("nr - non-redundant protein lib, full & updates");
+	fAlib->AddItem("nr - non-redundant protein library");
+	fNlib->AddItem("month - new/revised sequences in last month");
 	fAlib->AddItem("swissprot - latest full Swiss-Prot");
-	fAlib->AddItem("pir - latest full PIR");
-	fAlib->AddItem("spupdate - updates to swiss-prot");
-	fAlib->AddItem("genpept - GenPept, translated from full GenBank");
-	fAlib->AddItem("gpupdate - updates to GenPept");
+	fAlib->AddItem("spbd - non-redundant SwissProt+PDB");
 	fAlib->AddItem("pdb - from Brookhaven Protein Data Bank");
-	fAlib->AddItem("kabatpro - from Kabat's sequences of immunological interest");
-	fAlib->AddItem("tfd - transcription factors protein database");
-	fAlib->AddItem("palu - 6-frame translations of human Alu repeats");
+	fNlib->AddItem("alu - Alu repeats from REPBASE");
+	fAlib->AddItem("kabat - Kabat immunological sequences");
 	fAlib->SetValue(1);
 	super->NextSubviewBelowLeft();
 

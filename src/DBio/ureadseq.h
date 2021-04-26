@@ -118,8 +118,9 @@ typedef unsigned char boolean;
 #define kRSFile_Read		2
 #define kRSFile_Write		3
 #define kRSFile_Seek		4
-#define kRSFile_Rewind		5
+#define kRSFile_Rewind	5
 #define kRSFile_Tell		6
+#define kRSFile_End			7
 
 #endif
 
@@ -160,6 +161,14 @@ prettyopts  gPretty;
 extern  prettyopts  gPretty;
 #endif
 
+#ifdef TRANSLATE
+#ifdef UREADSEQ_G
+char  gTranslate[256];
+#else
+extern char  gTranslate[256];
+#endif
+#define gTranslateInit() { short c; for(c=0; c<256; c++) gTranslate[c]= c; }
+#endif
 
 
 typedef  long (*ReadWriteProc)( char* line, long maxline, short action);

@@ -82,7 +82,8 @@ protected:
 	char	  fQuote, fTokenBuf[kMaxTokenBuf];
 	long		fTokenLen;
 	short		fListType, fListNum, fDLStyle, // these need to be stacks ??
-					fStop, fCurControl, fCurField, fCurItem, fSelectitem, fPicLink, fAnchorLink;
+					fStop, fCurControl, fCurField, fCurItem, fLastField,
+					fSelectitem, fPicLink, fAnchorLink;
  	char	* fURLstore, * fNamestore, * fFormURL, * fGoplusStore,
 				* fSizestore, * fMaxlengthstore, * fRowsstore, * fColsstore,
  			  * fMethodstore, * fValstore, * fTypestore, *fOptionstore;

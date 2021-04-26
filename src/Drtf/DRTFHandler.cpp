@@ -437,17 +437,9 @@ void DRTFprocess::RTFWriterInit(char* mapfilepath, char* charMapFile, char* symM
 		char* nameonly;
 		long len;
 		
-#if 1
 		progpath= (char*) DFileManager::GetProgramPath();  
 		progpath= (char*) DFileManager::PathOnlyFromPath( progpath);
 		mapfilepath= (char*) DFileManager::BuildPath( progpath, kRTFfolder, NULL);
-#else		
-		Nlm_ProgramPath( (char*)pathname, 512);
-		nameonly= Nlm_FileNameFind( (char*)pathname);
-		len= StrLen(pathname) - StrLen(nameonly);
-		pathname[len]= 0;
-		mapfilepath= Nlm_FileBuildPath(pathname, defaultRTFfolder, NULL);
-#endif
 
 		gMapfilePath= StrDup(mapfilepath);
 		}
@@ -457,24 +449,10 @@ void DRTFprocess::RTFWriterInit(char* mapfilepath, char* charMapFile, char* symM
 	
 	RTFSetOpenLibFileProc( defaultOpenLibfileProc);
 
-#if 1
-
 	//DRichprocess::gGenCharMap= DRichprocess::ReadOutputMap("gen");
 	//DRichprocess::gSymCharMap= DRichprocess::ReadOutputMap("sym");
   //gOutMap= gGenCharMap;
 	
-#else
-	if (charMapFile == NULL) charMapFile= defaultCharMapFile;
-	RTFSetCharSetMap( charMapFile, rtfCSGeneral);
-	if (RTFReadOutputMap (charMapFile, gGenCharMap, 1) == 0)
-		RTFPanic ("Cannot read output map %s", charMapFile);
-  gOutMap= gGenCharMap;
-  
-	if (symMapFile == NULL) symMapFile= defaultSymMapFile;
-	RTFSetCharSetMap( symMapFile, rtfCSSymbol);
-	if (RTFReadOutputMap (symMapFile, gSymCharMap, 1) == 0)
-		RTFPanic ("Cannot read output map %s", symMapFile);
-#endif		
 		
 #if 0
 	/* one time generate charsets in .h format */

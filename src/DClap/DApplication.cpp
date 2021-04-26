@@ -26,6 +26,7 @@ char* DApplication::kVersion= NULL;
 char* DApplication::kHelpfolder = "Help";
 Nlm_RecT DApplication::fgAppWinRect;
 
+extern "C" Nlm_Char		gProgramName[PATH_MAX];// from vibwndws.c
 
 					
 class DNoteWindow : public DWindow 
@@ -151,7 +152,9 @@ void DAppWin::ResizeWin()
 DApplication::DApplication() :
 	DTaskMaster(cAppl)
 {
-	fDone= false;		
+	fDone= false;	
+	fDidOpenStartDoc= false;	
+	fAppID= NULL;
 	fAppWindow= NULL;  
 	fPathname= NULL;
 	fShortname= NULL;
@@ -171,7 +174,8 @@ void DApplication::IApplication(const char* theAppName)
 	//xdebug("DApplication::IApplication");
 	DClapGlobals* initglobals = new DClapGlobals();
 	gCursor->watch();  
-
+	
+	if (kName) StrNCpy( gProgramName, kName, PATH_MAX); // for vibwndws.c
 	fPathname = StrDup( gFileManager->GetProgramPath());
 	if (theAppName) 
 		fShortname= StrDup( theAppName);
@@ -186,7 +190,12 @@ void DApplication::IApplication(const char* theAppName)
 	char buf[512];
 	sprintf( buf, "About %s...", Shortname()); 
 	fAboutLine= StrDup(buf);
-
+	 
+	char *tid= DFileManager::TempFilenameonly();
+	if (StrNCmp(tid, "tmp", 3)) tid += 2;
+	fAppID= StrDup(tid);
+	//fAppID[0]= 'D'; //??
+	
 #ifndef WIN_MAC
 	if (!fAppWindow) {
 			// Non-Mac apps need an fAppWindow to put any application menus into 
@@ -222,11 +231,20 @@ void DApplication::IApplication(const char* theAppName)
 	gTextTabStops= this->GetPrefVal( "gTextTabStops", "fonts", "4");
 	gTextFont		 = Nlm_GetFont( gTextFontName, gTextFontSize, false, false, false, NULL);
 	if (!gTextFont) gTextFont= Nlm_programFont;
-
+	gItalicTextFont= Nlm_GetFont( gTextFontName, gTextFontSize, false, true, false, NULL);
+	if (!gItalicTextFont) gItalicTextFont= Nlm_programFont;
+	gBoldTextFont= Nlm_GetFont( gTextFontName, gTextFontSize, true, false, false, NULL);
+	if (!gBoldTextFont) gBoldTextFont= Nlm_programFont;
+	gUlineTextFont= Nlm_GetFont( gTextFontName, gTextFontSize, false, false, true, NULL);
+	if (!gUlineTextFont) gUlineTextFont= Nlm_programFont;
+  
 	DCluster::SetFont(Nlm_programFont);  
 
 	this->SetUpMenus();
 	this->UpdateMenus(); // !! need to have this called in task loop somewhere !!
+	
+	//if (gOpenStartDocs) 
+	//OpenStartDocs();
 } 
 
 
@@ -274,12 +292,22 @@ const char*	DApplication::Shortname(void)
 #endif
 
 #ifdef WIN_MOTIF
+
+#ifdef OS_UNIX_OSF1
+#undef _OSF_SOURCE
+#undef _POSIX_4SOURCE
+#define _ANSI_C_SOURCE
+#endif
+
 #include <signal.h>
-#if defined(OS_UNIX_SUN) || defined(OS_UNIX_IRIX)
+#if defined(OS_UNIX_SUN) || defined(OS_UNIX_IRIX) || defined(OS_UNIX_LINUX)
 #include <sys/wait.h>
 #else
 #include <wait.h>
 #endif
+
+extern int           statargc;
+extern char          **statargv;
 #endif
 
 
@@ -382,9 +410,14 @@ static const char* GetNextAEFile()
 	else
 		return NULL;
 }
+#endif
+
+
+static Boolean gDidOpenStartDoc = false;
 
 static void HandleFileEvent(long inEvent, long outReply, short tasknum)
 {
+#ifdef WIN_MAC
 	if (::SetAFileEvent( inEvent, outReply)) {
 		const char* path;
 		do {
@@ -395,16 +428,46 @@ static void HandleFileEvent(long inEvent, long outReply, short tasknum)
 				  gApplication->newTask( tasknum, DTask::kMenu, (long)path);
 				gApplication->DoMenuTask( tasknum, filetask);
 				delete filetask;
+				gApplication->fDidOpenStartDoc= true;
 				}
 		} while (path);
 		::ClearAFileEvent();
 		}
-}
-
 #endif
 
+#ifdef WIN_MOTIF
+	if (statargc > 1 
+   && !gDidOpenStartDoc) { 
+  //! gApplication->fDidOpenStartDoc) 
+		const char* path;
+		for (long i=1; i<statargc; i++) {
+			path= statargv[i];
+			if (path) {
+				//gApplication->OpenDocument( (char*) path);
+				DTask* filetask= 
+				  gApplication->newTask( tasknum, DTask::kMenu, (long)path);
+				gApplication->DoMenuTask( tasknum, filetask);
+				delete filetask;
+				gApplication->fDidOpenStartDoc= true;
+				}
+			} 
+		}
+#endif
+}
 
 
+
+Boolean  DApplication::GotStartDocs()
+{
+	return fDidOpenStartDoc;
+}
+
+Boolean DApplication::OpenStartDocs()
+{
+	gDidOpenStartDoc= fDidOpenStartDoc;
+	HandleSpecialEvent( 0, 0, ae_OpenDoc);
+	return fDidOpenStartDoc;
+}
 
 #ifdef COMP_CWI
 static short int HandleSpecialEvent( long inEvent, long outReply, long inNumber)
@@ -435,9 +498,7 @@ CALLBACKFORM short HandleSpecialEvent( long inEvent, long outReply, long inNumbe
 		case ae_OpenDoc:
 			tasknum= DApplication::kOpenAFile;
 		caseOpenDoc:		
-#ifdef WIN_MAC
 			::HandleFileEvent(inEvent, outReply, tasknum);
-#endif	
 			break;
 			
 		case ae_Copy:
@@ -531,24 +592,27 @@ void DApplication::InitSpecialEvents()
 
 Boolean DApplication::InstallDefaultPrefs(const char* defaultSuffix, const char* appName)
 {
-	Boolean didinstall= false;
+	Boolean foundprefs, didinstall= false;
 	char  *cp, defaultPrefs[512];
 	
 		// locate any program default preference file
 	if (!appName) appName= Shortname();
-#if 0
-	const char* appPath = gFileManager->GetProgramPath();  
-	appPath= gFileManager->PathOnlyFromPath( appPath);
-	StrNCpy(defaultPrefs, (char*)appPath, 512);
-	StrNCat(defaultPrefs, (char*)appName, 512);
-#else
-	StrNCpy(defaultPrefs, (char*)appName, 512);
-#endif
-	cp= (char*)gFileManager->FileSuffix(defaultPrefs); if (cp) *cp= 0;
-	
-	StrNCat(defaultPrefs, (char*)defaultSuffix, 512);
 
-	if (gFileManager->FileExists(defaultPrefs)) {
+	StrNCpy(defaultPrefs, (char*)appName, 512);
+	cp= (char*)gFileManager->FileSuffix(defaultPrefs); if (cp) *cp= 0;
+	StrNCat(defaultPrefs, (char*)defaultSuffix, 512);
+	foundprefs= gFileManager->FileExists(defaultPrefs);
+	if (!foundprefs) {
+		const char* appPath = gFileManager->GetProgramPath();  
+		appPath= gFileManager->PathOnlyFromPath( appPath);
+		StrNCpy(defaultPrefs, (char*)appPath, 512);
+		StrNCat(defaultPrefs, (char*)appName, 512);
+		cp= (char*)gFileManager->FileSuffix(defaultPrefs); if (cp) *cp= 0;
+		StrNCat(defaultPrefs, (char*)defaultSuffix, 512);
+		foundprefs= gFileManager->FileExists(defaultPrefs);
+		}
+	
+	if (foundprefs) {
 		short 	iline, nlines = 0;
 		char	**linelist;
 		char	* cp, * line = NULL, * section = NULL, * varname = NULL, * params = NULL;
@@ -567,11 +631,17 @@ Boolean DApplication::InstallDefaultPrefs(const char* defaultSuffix, const char*
 				if (defver > curver) break;
 				}
 			}
-		if (defver <= curver) return false;	
-	
+		if (defver <= curver) {
+			for (iline= 0; iline<nlines; iline++) {
+				line= linelist[iline];
+				MemFree(line);
+				}
+			MemFree(linelist);
+			return false;	
+			}
+			
 		Nlm_MonitorPtr progress= Nlm_MonitorIntNew("Installing new preferences...", 0, nlines);
 				// ^^^ incorporate Nlm_Monitor into a DCLAP class
-		
 		gCursor->watch();
 		for (iline= 0; iline<nlines; iline++) {
 			if (Nlm_MonitorIntValue(progress, iline)) ;
@@ -600,7 +670,6 @@ Boolean DApplication::InstallDefaultPrefs(const char* defaultSuffix, const char*
 		MemFree(linelist);
 		this->SetPref(defver, "version","general");
 		didinstall= true;
-
 		Nlm_MonitorFree(progress);		
 		}
  	return didinstall;
@@ -646,13 +715,13 @@ Boolean DApplication::SetPref(long prefvalue, char* type, char* section)
 
 char*	DApplication::ConvertStdFilePath(char* pathname)
 {
-	char	 *path, *name, *newpath;
+	char	 *path, *atcolon, *name, *newpath;
 	
 	pathname= StrDup( pathname);
-	path= StrChr(pathname, ':');
-	if (path) {
-		name= path+1;
-		*path=0;
+	atcolon= StrChr(pathname, ':');
+	if (atcolon) {
+		name= atcolon+1;
+		*atcolon= 0;
 		path= this->GetPref( pathname, "paths", NULL);
 			// GetPref always returns nonNULL path
 		if (path && *path != '\0') {
@@ -674,12 +743,18 @@ defaultpath:
 			MemFree( pathname);
 			pathname= newpath;
 			}
+#ifdef WIN_MAC
+		else {
+			*atcolon= ':';
+			}
+#else
 		else if (path)
 			goto defaultpath;
 		else {
 			// return full pathname !?
 			// MemMove(pathname, name, StrLen(name)+1);
 			}
+#endif
 		}
 	return pathname;
 }
@@ -867,6 +942,7 @@ Boolean DApplication::DoMenuTask(long tasknum, DTask* theTask)
 							
 		case kSave:
 		case kSaveAs:
+		case kSaveACopy:
 			win= gWindowManager->CurrentWindow();
 			if (win && win->fSaveHandler) {
 				const char* name;
@@ -883,7 +959,7 @@ Boolean DApplication::DoMenuTask(long tasknum, DTask* theTask)
 					name= defname;
 				else {
 					name= gFileManager->GetOutputFileName(defname);
-					changewinname= true;
+					changewinname= (tasknum == kSaveAs);
 					}
 				if (name && *name) {
 					DFile* myFile = new DFile(name, "w");
@@ -982,6 +1058,7 @@ Boolean DApplication::IsMyAction(DTaskMaster* action)
 		case kOpen:
 		case kClose:
 		case kSaveAs:
+		case kSaveACopy:
 		case kSave:
 		case kPrint:
 		case kQuit:
@@ -1001,16 +1078,21 @@ Boolean DApplication::IsMyAction(DTaskMaster* action)
 			{
 					// looks like Vibrant doesn't currently support a system clipboard for
 					// copy/paste of text (& other objects) between applications...
+			static Boolean inrecurse = false;
 			DWindow* win = gWindowManager->CurrentWindow();
 			DDialogText* dtext= gWindowManager->CurrentDialogText();
+			if (inrecurse) return true;
+			inrecurse= true;
 			if (dtext && win && win->HasEditText()) {
 				if (win != dtext->GetWindow()) dtext = win->fEditText;
 					// ^^ if this is true, we can't tell which of multiple texts may be
 					// the intended target ... CurrentDialogText() is supposed to track user text.
-				if (dtext->IsMyAction(action)) return true;
+				if (dtext->IsMyAction(action))  goto doneEditCmd;
 				}
-			if (win && win->IsMyAction(action)) return true;
+			if (win && win->IsMyAction(action)) goto doneEditCmd;
 			Message(MSG_OK,"Application::Edits not ready.");
+	doneEditCmd:
+			inrecurse= false;
 			return true;
 			}
 			

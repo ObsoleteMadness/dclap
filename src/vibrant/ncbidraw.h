@@ -56,16 +56,22 @@ extern "C" {
 *  Platform independent point and rectangle data structures.
 */
 
+#ifdef DCLAP
+#define Nlm_IntD  Nlm_Int4
+#else
+#define Nlm_IntD  Nlm_Int2
+#endif
+
 typedef  struct  Nlm_point {
-  Nlm_Int2  x;
-  Nlm_Int2  y;
+  Nlm_IntD  x;
+  Nlm_IntD  y;
 } Nlm_PoinT, PNTR Nlm_PointPtr;
 
 typedef  struct  Nlm_rect {
-  Nlm_Int2  left;
-  Nlm_Int2  top;
-  Nlm_Int2  right;
-  Nlm_Int2  bottom;
+  Nlm_IntD  left;
+  Nlm_IntD  top;
+  Nlm_IntD  right;
+  Nlm_IntD  bottom;
 } Nlm_RecT, PNTR Nlm_RectPtr;
 
 typedef  Nlm_Handle  Nlm_RegioN;
@@ -178,21 +184,21 @@ void CDECL   Nlm_PaintText VPROTO((char *format, ...));
 void         Nlm_DrawString PROTO((Nlm_RectPtr r, Nlm_CharPtr text, Nlm_Char jst, Nlm_Boolean gray));
 void         Nlm_DrawText PROTO((Nlm_RectPtr r, Nlm_CharPtr text, Nlm_sizeT len, Nlm_Char jst, Nlm_Boolean gray));
 
-void         Nlm_MoveTo PROTO((Nlm_Int2 x, Nlm_Int2 y));
-void         Nlm_LineTo PROTO((Nlm_Int2 x, Nlm_Int2 y));
+void         Nlm_MoveTo PROTO((Nlm_IntD x, Nlm_IntD y));
+void         Nlm_LineTo PROTO((Nlm_IntD x, Nlm_IntD y));
 void         Nlm_DrawLine PROTO((Nlm_PoinT pt1, Nlm_PoinT pt2));
 
-void         Nlm_LoadPt PROTO((Nlm_PointPtr pt, Nlm_Int2 x, Nlm_Int2 y));
+void         Nlm_LoadPt PROTO((Nlm_PointPtr pt, Nlm_IntD x, Nlm_IntD y));
 void         Nlm_AddPt PROTO((Nlm_PoinT src, Nlm_PointPtr dst));
 void         Nlm_SubPt PROTO((Nlm_PoinT src, Nlm_PointPtr dst));
 Nlm_Boolean  Nlm_EqualPt PROTO((Nlm_PoinT p1, Nlm_PoinT p2));
 Nlm_Boolean  Nlm_PtInRect PROTO((Nlm_PoinT pt, Nlm_RectPtr r));
 Nlm_Boolean  Nlm_PtInRgn PROTO((Nlm_PoinT pt, Nlm_RegioN rgn));
 
-void         Nlm_LoadRect PROTO((Nlm_RectPtr r, Nlm_Int2 lf, Nlm_Int2 tp, Nlm_Int2 rt, Nlm_Int2 bt));
-void         Nlm_UpsetRect PROTO((Nlm_RectPtr r, Nlm_Int2 lf, Nlm_Int2 tp, Nlm_Int2 rt, Nlm_Int2 bt));
-void         Nlm_OffsetRect PROTO((Nlm_RectPtr r, Nlm_Int2 dx, Nlm_Int2 dy));
-void         Nlm_InsetRect PROTO((Nlm_RectPtr r, Nlm_Int2 dx, Nlm_Int2 dy));
+void         Nlm_LoadRect PROTO((Nlm_RectPtr r, Nlm_IntD lf, Nlm_IntD tp, Nlm_IntD rt, Nlm_IntD bt));
+void         Nlm_UpsetRect PROTO((Nlm_RectPtr r, Nlm_IntD lf, Nlm_IntD tp, Nlm_IntD rt, Nlm_IntD bt));
+void         Nlm_OffsetRect PROTO((Nlm_RectPtr r, Nlm_IntD dx, Nlm_IntD dy));
+void         Nlm_InsetRect PROTO((Nlm_RectPtr r, Nlm_IntD dx, Nlm_IntD dy));
 Nlm_Boolean  Nlm_SectRect PROTO((Nlm_RectPtr src1, Nlm_RectPtr src2, Nlm_RectPtr dst));
 Nlm_Boolean  Nlm_UnionRect PROTO((Nlm_RectPtr src1, Nlm_RectPtr src2, Nlm_RectPtr dst));
 Nlm_Boolean  Nlm_EqualRect PROTO((Nlm_RectPtr r1, Nlm_RectPtr r2));
@@ -204,7 +210,7 @@ void         Nlm_EraseRect PROTO((Nlm_RectPtr r));
 void         Nlm_FrameRect PROTO((Nlm_RectPtr r));
 void         Nlm_PaintRect PROTO((Nlm_RectPtr r));
 void         Nlm_InvertRect PROTO((Nlm_RectPtr r));
-void         Nlm_ScrollRect PROTO((Nlm_RectPtr r, Nlm_Int2 dx, Nlm_Int2 dy));
+void         Nlm_ScrollRect PROTO((Nlm_RectPtr r, Nlm_IntD dx, Nlm_IntD dy));
 
 void         Nlm_EraseOval PROTO((Nlm_RectPtr r));
 void         Nlm_FrameOval PROTO((Nlm_RectPtr r));
@@ -229,8 +235,8 @@ void         Nlm_InvertPoly PROTO((Nlm_Int2 num, Nlm_PointPtr pts));
 Nlm_RegioN   Nlm_CreateRgn PROTO((void));
 Nlm_RegioN   Nlm_DestroyRgn PROTO((Nlm_RegioN rgn));
 void         Nlm_ClearRgn PROTO((Nlm_RegioN rgn));
-void         Nlm_LoadRectRgn PROTO((Nlm_RegioN rgn, Nlm_Int2 lf, Nlm_Int2 tp, Nlm_Int2 rt, Nlm_Int2 bt));
-void         Nlm_OffsetRgn PROTO((Nlm_RegioN rgn, Nlm_Int2 dx, Nlm_Int2 dy));
+void         Nlm_LoadRectRgn PROTO((Nlm_RegioN rgn, Nlm_IntD lf, Nlm_IntD tp, Nlm_IntD rt, Nlm_IntD bt));
+void         Nlm_OffsetRgn PROTO((Nlm_RegioN rgn, Nlm_IntD dx, Nlm_IntD dy));
 void         Nlm_SectRgn PROTO((Nlm_RegioN src1, Nlm_RegioN src2, Nlm_RegioN dst));
 void         Nlm_UnionRgn PROTO((Nlm_RegioN src1, Nlm_RegioN src2, Nlm_RegioN dst));
 void         Nlm_DiffRgn PROTO((Nlm_RegioN src1, Nlm_RegioN src2, Nlm_RegioN dst));

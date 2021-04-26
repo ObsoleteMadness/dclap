@@ -1,0 +1,48 @@
+// DAsmSequence.h 
+// by d.g.gilbert, Oct 1990 -- 1994
+
+
+#ifndef __DASMSEQUENCE__
+#define __DASMSEQUENCE__
+
+
+#include <DSequence.h>
+			
+class	DAsmSequence : public DSequence {
+public:
+	enum asmseqType {
+		kAutoseq	= kOtherSeq+1,
+		};
+	enum traceNum {
+		kA,kC,kG,kT,maxTrace  // for fTrace 
+		};
+		
+protected:		
+	short 		* fTrace[maxTrace];   	// autoseq traces for A,C,G,T 
+	short 		  fTraceNum[maxTrace];   	// #points/trace 
+	long				fNTrace;			// # points/trace -- same as fTraceNum?
+	short			*	fTrCenter;		// base positions in traces (fLength == #bases)
+	long				fTrlength;		// should! be same as fLength
+public:
+	
+	DAsmSequence();
+	virtual ~DAsmSequence();
+
+	virtual DObject* Clone(); // override 
+	virtual void CopyContents( DAsmSequence* fromSeq);
+	
+	virtual short* Trace(traceNum atbase) const { return fTrace[atbase]; }
+	virtual short* TrCenter() const { return fTrCenter; }
+	virtual long NumPoints() { return fNTrace; }
+	
+	virtual void SetTrace(traceNum t, short*& theTrace, long trlength,
+							Boolean duplicate = false);
+	virtual void SetTrCenter( short*& theTrCenter, long trlength, 
+							Boolean duplicate = false);
+	
+	virtual void DoWrite( DFile* aFile, short format);  // revise for ostream
+	virtual void DoWriteSelection( DFile* aFile, short format); // revise for ostream
+};
+
+
+#endif

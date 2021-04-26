@@ -335,6 +335,8 @@ DControlStyle::DControlStyle(DView* super)
 	fWidth= fHeight= 0;
 	fSelected= 0;
 	fInstalled= false;
+	fData2= NULL;
+	fSize2= 0;
 }
 
 DControlStyle::DControlStyle(DView* super, short kind, void* data, ulong dsize, Boolean owndata)
@@ -356,24 +358,32 @@ DControlStyle::~DControlStyle()
 	//MemFree( fDefaultText); == fData ??
 }
 
-void DControlStyle::ControlData( char* varName, char* defaultText)
+void DControlStyle::ControlData( char* varName, char* defaultText, char* text2)
 {
-	ulong dlen;
+	ulong dlen, dlen2;
 	MemFree( fVarname); 
 	fVarname= (char*) StrDup(varName); 
 	if (defaultText) dlen= 1 + Nlm_StringLen(defaultText);
 	else dlen= 0;
-	SetData( fKind, defaultText, dlen, false);
+	if (text2) dlen2= 1 + Nlm_StringLen(text2);
+	else dlen2= 0;
+	SetData( fKind, defaultText, dlen, false, text2, dlen2);
 }
 
-void DControlStyle::SetData( short kind, void* data, ulong dsize, Boolean owndata)
+void DControlStyle::SetData( short kind, void* data, ulong dsize, Boolean owndata,
+								void* data2, ulong dsize2)
 {
 	fKind= kind;
 	if (!fId) fId= fKind;
 	MemFree( fData); 
-	if (owndata) fData= (char*) data;   // this was bad ?!?
-	else fData= (char*) MemDup(data, dsize); 
+	MemFree( fData2); 
+	if (owndata) { fData= (char*) data; fData2= (char*) data2; }
+	else { 
+		fData= (char*) MemDup(data, dsize);  
+		fData2= (char*) MemDup(data2, dsize2); 
+		} 
 	fSize= dsize;
+	fSize2= dsize2;
 	fDefaultText= fData;
 }
 
@@ -392,6 +402,7 @@ void DControlStyle::Draw( Nlm_RecT area)
 		Install();
 		fInstalled= true;
 		if (fControl) {
+			fControl->fKind= (long) this; // store self reference; is fKind is usable??
 			fControl->SetPosition( area);
 			//fControl->Show(); //<< calls Inval() and Nlm_Update(), which are callers of this !
 #ifdef notWIN_MOTIF
@@ -443,7 +454,8 @@ const char* DControlStyle::Varname()
 
 const char* DControlStyle::Value()
 {
-	return NULL; //fDefaultText;
+	if (fDefaultText && *fDefaultText == '\0') return NULL;
+	return fDefaultText;
 }
 
 
@@ -560,29 +572,80 @@ const char* DRadioCStyle::Value()
 }
 
 
+void DFileCStyle::Install()
+{
+	if (!fControl) {
+	DView* super= fSuperview;
+	fControl = new DButton( fId, fSuperview, "Choose...");  
+	if (fSuperview) fSuperview->NextSubviewToRight();	
+	//DCluster* cl= new DCluster( 0, fSuperview, 0, 0, false, "");
+	//super= cl;
+	char* defname= fDefaultText; //  "default file";
+	fNamebox = new DPrompt( 0, super, defname, 350, 20, gTextFont);
+	}
+}
+
+void DFileCStyle::Draw( Nlm_RecT area)
+{
+	Boolean notinst= !fInstalled;
+	//area.right -= 150;  //??
+	DControlStyle::Draw(area);	
+	if (notinst && fControl) {
+		area.left += 100; area.right += 450; // button width !?!?
+		fNamebox->SetPosition( area);
+		Nlm_Show( (Nlm_GraphiC)fNamebox->fNlmObject); 
+		}
+}
+
+const char* DFileCStyle::Value()
+{
+	if (fNamebox) {
+		MemFree(fDefaultText);
+		fDefaultText= fNamebox->GetText();
+		}
+	if (fDefaultText && *fDefaultText == '\0') return NULL;
+	return fDefaultText;
+}
+
+
 void DPopupCStyle::Install()
 {
 	if (!fControl) {
-	char *cp, *ep;
+	char *cp, *ep, *cp2, *ep2;
 	Boolean done;
 	DPopupList* aPopup = new DPopupList( fId, fSuperview, true);
 
 	char *words= StrDup( fDefaultText);
-	for (cp= words, done=false; !done && *cp!=0; ) {
-		ep= strchr( cp, '\t');
+	char *words2= StrDup( fData2);
+	
+	// ?? replace this w/ StrTok( words, "\t"); 
+	for (cp= words, cp2= words2, done=false; !done && *cp!=0; ) {
+		ep= StrChr( cp, '\t');
 		if (!ep) {
-			ep=strchr( cp, '\0');
+			ep=StrChr( cp, '\0');
 			done= true;
 			}
+			
+		if (cp2) {
+			ep2= StrChr(cp2, '\t');
+			if (!ep2) ep2= StrChr( cp2, '\0');
+			if (ep2) *ep2= 0;
+			}
+		else ep2= NULL;
+		
 	  if (ep) {
-			*ep= 0;
-			aPopup->AddItem( cp);
-			if (!done) cp= ep+1;
+			*ep= 0;	
+			aPopup->AddItem( cp, cp2);
+			if (!done) { 
+				cp= ep+1; 
+				if (ep2) cp2= ep2+1; else cp2= NULL; 
+				}
 			}
 		else
 			done= true;
 		}
 	MemFree( words);
+	MemFree( words2);
 	
 	if (!fSelected) fSelected= 1;
 	aPopup->SetValue(fSelected); 
@@ -595,7 +658,10 @@ const char* DPopupCStyle::Value()
 	static char name[128];
 	if (fControl) { 
 	  short item;
-		((DPopupList*)fControl)->GetSelectedItem(item, name, sizeof(name));
+		*name= 0;
+		((DPopupList*)fControl)->GetSelectedValue(item, name, sizeof(name));
+		if (!*name)
+			((DPopupList*)fControl)->GetSelectedItem(item, name, sizeof(name));
 		return name;
  		}
 	else return NULL;

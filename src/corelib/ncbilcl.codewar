@@ -56,9 +56,9 @@
 #define PROC_PPC
 #define WIN_MAC
 
-#ifndef powerc
-#define USE_MAC_MEMORY /* ?? fix bomb using realloc() ?? */
-#endif
+//#ifndef powerc
+#define USE_MAC_MEMORY /* must be consistent w/ C++ New function */
+//#endif
 
 /*----------------------------------------------------------------------*/
 /*      Desired or available feature list                               */

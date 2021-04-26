@@ -89,7 +89,7 @@ public:
 		
 		virtual short ReceiveData( void *data, long datasize, long &bytesReceived,
 							Boolean stopatlf = false);  
-		virtual char* ReadWithChecks( long& bufsize, long expectedbytes = kTCPStopAtclose, 
+		virtual char* ReadWithChecks( ulong& bufsize, long expectedbytes = kTCPStopAtclose, 
 							Boolean convertnewline = false, long maxbytes = 0, char* oldbuffer = NULL);
 		virtual short RecvByte();  
 		virtual char* RecvLine(); // read up to first LF

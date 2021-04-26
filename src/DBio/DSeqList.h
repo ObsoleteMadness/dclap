@@ -21,8 +21,8 @@ public:
 		};
 	enum DistanceCorrection { DCnone, DCjukes, DColsen };
 	short fSortOrder;
+	static short gMinCommonPercent, gMinORFsize;
 
-	static short gMinCommonPercent;
 	DSeqList();
 	virtual ~DSeqList();
 

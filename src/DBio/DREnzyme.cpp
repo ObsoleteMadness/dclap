@@ -13,9 +13,12 @@
 #include <DUtil.h>
 #include "DSequence.h"
 #include "DREnzyme.h"
+#include <DDialogText.h>
+
+#define EDITTABLE
 
 
-#if 1
+
 class DREnzymeGlobals {
 public:
    DREnzymeGlobals() 
@@ -26,42 +29,141 @@ public:
 };
 
 static DREnzymeGlobals	globals; // initializes globals here
-#endif
-
 extern Nlm_FonT  Nlm_fontInUse;
+extern "C" void Nlm_TextEnableNewlines(Nlm_TexT t, Nlm_Boolean turnon);
+
+
+ 
+	// ?? use hash table for codons, other table lookups !?
+static long Hash( char	*s)
+{
+	register char	c;
+	register long	val = 0;
+	while ((c = *s++) != '\0') val += (int) tolower(c);
+	return (val);
+}
+
+
+// class DLocateFile
+
+class DLocateFile : public DWindow {
+public: 
+	char * fName;
+	DLocateFile(char* fname, char* desc);	
+	~DLocateFile();
+	void OkayAction();
+};
+		
+		
+DLocateFile::DLocateFile(char* format, char* name) :
+	DWindow( 0, gApplication, fixed, -10, -10, -50, -20, "Locate data", kDontFreeOnClose)
+{
+	char buf[512];
+	DView* super = this;
+
+	fName= StrDup(name);
+	sprintf(buf, format, name);
+	new DNotePanel(0, super, buf, 280, 50);	
+	this->NextSubviewBelowLeft();
+	new DPrompt( 0, super, "Would you like to locate it?", 280);
+	this->NextSubviewBelowLeft();
+	this->AddOkayCancelButtons(cOKAY,"Locate",cCANC,"Cancel");
+}
+
+DLocateFile::~DLocateFile()
+{
+	MemFree( fName);
+}
+
+void DLocateFile::OkayAction() 
+{ 
+	DWindow::OkayAction();
+	char * suffix= (char*) DFileManager::FileSuffix( fName);
+	char * name= (char*) DFileManager::GetInputFileName( suffix, "TEXT");
+	MemFree( fName);
+	fName= StrDup( name);
+}
+
+
+
+// class DReplaceFileDlog
+
+class DReplaceFileDlog : public DWindow {
+public: DReplaceFileDlog(char* title);
+};
+
+DReplaceFileDlog::DReplaceFileDlog(char* title) :
+	DWindow( 0, NULL, DWindow::modal, -10, -10, -50, -20, "", kDontFreeOnClose) // DWindow::fixed
+{
+	char str[128];
+	if (title && *title)  
+		sprintf( str, "Replace file '%s'?", title);
+  else
+	  StrCpy( str, "Replace this file?");
+	new DPrompt( 0, this, str, 0, 0, Nlm_systemFont);	 		
+	this->AddOkayCancelButtons(cOKAY,"Yes",cCANC,"No");	
+	DWindow::Open();
+}
+
+
 
 
 // class DTableChoiceDialog
 
 class DTableChoiceDialog : public DWindow {
 public: 
-	enum { cSetDefault = 3225, cChoose };
+	enum { 
+		cSetDefault = 3225, cChoose, cSave,
+		kEditNone= 0, kEditOpen, kEditChanged
+		};
 	DPrompt	* fName;
 	DFile	* fFile;
 	Boolean fSetPref;
+	short fEditData;
+	ulong fEditLen;
+	long	fEditChk;
+	DDialogScrollText* fText;
+	
 	DTableChoiceDialog(char* title, char* desc=NULL, char* curfile = NULL);	
 	~DTableChoiceDialog();		
 	Nlm_Boolean IsMyAction(DTaskMaster* action);
 	void OkayAction();
+	Boolean OpenText();
 };
 		
-DTableChoiceDialog::DTableChoiceDialog(char* title,char* desc,char* curfile) :
+	
+DTableChoiceDialog::DTableChoiceDialog(char* title, char* desc, char* curfile) :
 	DWindow( 0, gApplication, fixed, -10, -10, -50, -20, title, kDontFreeOnClose),
-	fFile(NULL), fName(NULL), fSetPref(false)
+	fFile(NULL), fName(NULL), fSetPref(false), fEditData(kEditNone), fEditChk(0),
+	fText(NULL)
 {
 	enum { cluwidth= 430 };
 	DCluster* clu;
 	DView* super;
+
+	if (curfile) fFile= new DFile(curfile,"r"); // in case user wants default !
+
 	if (desc) {
 		char buf[128];
-		sprintf(buf, "%s format", title);
+		sprintf(buf, "%s data", title);
 		clu= new DCluster( 0, this, 0, 0, false, buf);   
 		if (clu) super= clu; else super= this;
+#ifdef EDITTABLE
+		DDialogScrollText* dt= new DDialogScrollText( 0, super, 50, 15, gTextFont, false);
+		fText= dt;
+		//Nlm_TextEnableNewlines( dt->fText, true);
+		if (!OpenText()) {
+			fText->SetText( desc);  
+			fText->Disable();// make fText un-editable...
+			sprintf(buf, "%s format", title);
+			clu->SetTitle( buf);
+			}
+#else
 		new DNotePanel(0, super, desc, cluwidth, 120);	
+#endif
 		this->NextSubviewBelowLeft();
 		}
 
-	if (curfile) fFile= new DFile(curfile,"r"); // in case user wants default !
 	clu= new DCluster( 0, this, 0, 0, false, "Current table");   
 	if (clu) super= clu; else super= this;
 	fName= new DPrompt( 0, super, curfile, cluwidth);
@@ -79,20 +181,60 @@ DTableChoiceDialog::~DTableChoiceDialog()
 	if (fFile) delete fFile;
 }
 
+Boolean DTableChoiceDialog::OpenText() 
+{
+	Boolean okay= false;
+	fEditData= kEditNone;
+			// use "rb" to avoid newline translation !!
+	if (fText && fFile->Open("rb") == 0) {
+		ulong len= fFile->LengthF();
+		
+				// check for overly long files!? (10K is big...)
+				// REnzyme.table is too big !! (>32k)
+		if (len>10000) return false; // quick fix...
+		
+		char* buf= (char*) MemNew( len+1);
+			// Damn codewarrior stdio is translating mac newline to unix newline here!!
+		fFile->ReadData( buf, len);
+		fFile->Close();
+		buf[len]= 0;
+		fEditData= kEditOpen;
+		fEditLen= len;
+		fEditChk= Hash( buf);
+		
+		fText->SetText( buf);  
+		fText->Enable(); 
+		MemFree( buf);
+		okay= true;
+		}
+	return okay;
+}
+
+
 Nlm_Boolean DTableChoiceDialog::IsMyAction(DTaskMaster* action) 
 {	
 	switch(action->Id()) {
+		case cSave:
+			return true;
+			
 		case cChoose:
 			if (fFile) delete fFile;
 			if (gApplication->ChooseFile( fFile, NULL, "TEXT")) { 
 			  fName->SetTitle( (char*)fFile->GetName());
+#ifdef EDITTABLE
+			  if (!OpenText()) ;
+#else
 			  gApplication->OpenDocument( fFile); // view it ??
+#endif
 			  }
 			return true;
+			
 		default:
 			return DWindow::IsMyAction(action);	
 		}
 }
+
+
 
 void DTableChoiceDialog::OkayAction() 
 { 
@@ -101,6 +243,46 @@ void DTableChoiceDialog::OkayAction()
 	if (ck && ck->GetStatus() && fFile && fFile->Exists()) {
 		fSetPref= true; 
 		}
+		
+#ifdef EDITTABLE
+	if (fFile && fText && fEditData >= kEditOpen) {
+		Boolean okay= true;
+		char *buf= fText->GetText();
+		ulong len= StrLen(buf);
+		if (len == fEditLen) {
+			long check= Hash( buf);
+			if (check == fEditChk) return;
+			}
+		// ask user if s/he wants to save it...
+		if (fFile->Exists()) {
+			DReplaceFileDlog* dlog= new DReplaceFileDlog( (char*)fFile->GetName());
+			okay= dlog->PoseModally();
+ 			delete dlog;  
+ 			if (!okay) {
+				//if (fFile) delete fFile;
+				const char* newname= gFileManager->GetOutputFileName(fFile->GetShortname());
+				if (newname) { 
+					fFile->SetName( newname);
+					//if (fFile->Exists()) fFile->Delete(); //??
+				  //fName->SetTitle( (char*)fFile->GetName());
+				  //if (!OpenText()) ;
+				  }
+			  }
+			}
+		if (okay) {
+			//fFile->Delete(); // need this !?
+			if (fFile->Exists()) {
+				char newname[512];
+				StrNCpy(newname, fFile->GetName(), sizeof(newname));
+				DFileManager::ReplaceSuffix( newname, sizeof(newname), ".old");
+				DFileManager::Rename( fFile->GetName(), newname);
+				}
+			fFile->Open("wb");
+			fFile->WriteData( buf, len);
+			fFile->Close();
+			}
+		}
+#endif		
 }
 
 
@@ -184,9 +366,24 @@ Nlm_Boolean DCodons::NotAvailable()
 {
 	if (fState == kUnread) {
 		char * tablefile= gApplication->GetFilePref( fType, fSection, fDefaultvalue);
-		if (tablefile) ReadTable( tablefile);
-		else fState= kNodata;
-		if (fState != kOkay) Message(MSG_OK,"Could not read table file '%s'",tablefile);
+		if (tablefile) {
+			ReadTable( tablefile);
+			if (fState != kOkay) {
+				// dialog - would you like to locate data?
+				DLocateFile* win= new DLocateFile("Could not read table file '%s'", tablefile);
+				if (win->PoseModally()) {
+					ReadTable( win->fName);
+					if (fState == kOkay)
+						gApplication->SetPref( win->fName, fType, fSection); //??
+					}
+				delete win;
+				}
+			}
+		else 
+			fState= kNodata;
+		if (fState != kOkay)
+			 Message(MSG_OK,"Could not read table file '%s'",tablefile);
+		MemFree( tablefile);
 		}
 	return (fState != kOkay);
 }
@@ -282,6 +479,7 @@ Gly     GGA     1290.00      6.94      0.09
 	short		na;
 	float		number, numPerK, frac;
 	
+	//fState= kNodata;
 	if (!aFile || !aFile->Exists()) return;
 	aFile->OpenFile();
 	do {
@@ -587,9 +785,22 @@ Nlm_Boolean DREMap::NotAvailable()
 {
 	if (fState == kUnread) {
 		char * tablefile= gApplication->GetFilePref( fType, fSection, fDefaultvalue);
-		if (tablefile) ReadTable( tablefile);
+		if (tablefile) {
+		  ReadTable( tablefile);
+			if (fState != kOkay) {
+				// dialog - would you like to locate data?
+				DLocateFile* win= new DLocateFile("Could not read table file '%s'", tablefile);
+				if (win->PoseModally()) {
+					ReadTable( win->fName);
+					if (fState == kOkay)
+						gApplication->SetPref( win->fName, fType, fSection); //??
+					}
+				delete win;
+				}
+			}
 		else fState= kNodata;
 		if (fState != kOkay) Message(MSG_OK,"Could not read table file '%s'",tablefile);
+		MemFree( tablefile);
 		}
 	return (fState != kOkay);
 }
@@ -658,6 +869,7 @@ AccI       2 GT'mk_AC       2 !		 >ABDEGIJKLMNOPQRSUVXY
 	Boolean 		done, gotfirst;
 	char	* cp;
  
+	//fState= kNodata;
  	if (!aFile || !aFile->Exists()) return;
  	
 	FreeEnzymeList();
@@ -813,9 +1025,22 @@ lNextStep:
 			else {
 			  register char * sp = source + qIndex + 1;
 			  register char * tp = target + 1;
-			  for (register long k= targlen-1; (k); k--) 
+			  register long k = targlen-1;
+			  long k1= sourcelen - qIndex - 1;
+			  if (k1<k) k= k1;
+			  if (k<1) goto lNextStep;
+			  for ( ; (k); k--) 
 			  	if ((*sp++ & *tp++) == 0) goto lNextStep; // no match
-				return qIndex; // matched
+			  	
+			  if (source[qIndex] == DSequence::kMaskNucs) {
+					  // screen out all N's here -- don't want to match these !?
+			  	sp = source + qIndex + 1;
+				  for (k= targlen-1; (k); k--) 
+				  	if (*sp++ != DSequence::kMaskNucs) return qIndex;  // non-NNN match
+				  goto lNextStep; // got all Ns .. continue scan
+			  	}
+			  else
+					return qIndex; // matched
 				}
 			}
 		}
@@ -858,12 +1083,6 @@ void DREMap::FindCuts( DREnzyme* zyme, char* sourcebits, long sourcelen)
 {
  	long    zymecuts;
 
-#if 0 	
-	if (StringCmp(zyme->fName, "AlwI")==0) {
-		zymecuts= 0; // debug stop for misplaced zyme cutter
-		}
-#endif
-		
 	zymecuts= 0;
 	SearchStrand( fSeq, zyme->fSite, sourcebits, sourcelen, zyme, zyme->fCutpoint, zymecuts);
 
@@ -907,9 +1126,15 @@ void DREMap::MapSeq( DSequence* aSeq)
 	if (NotAvailable()) return;
 	fSeq= aSeq;
 	fSeq->GetSelection( aStart, aBases);
+	
+		
+#if 1
+	fCoSeq= aSeq->Complement();
+#else
 	aSeq->SetSelection(0,0); // for Complement...
 	fCoSeq= aSeq->Complement();
 	aSeq->SetSelection(aStart,aBases);  
+#endif
 	
 	// make a NucBits form of fBases, once  
 #if 0
@@ -930,8 +1155,11 @@ void DREMap::MapSeq( DSequence* aSeq)
 		sb = (char) DSequence::kMaskNucs & DSequence::NucleicBits(sourcebits[i]);
 		if (sb) sourcebits[sourcelen++]= sb;
 		}
+  	// drop trailing "..." Ns
+	while (sourcelen && sourcebits[sourcelen-1] == DSequence::kMaskNucs) 
+		sourcelen--;
   sourcebits[sourcelen]= 0;
-			
+		
 	fCutcount= 0; 
 	fMaxcuts = 0;
 	fSeqCuts= (DRECutsItem*) MemNew(sizeof(DRECutsItem));
@@ -994,9 +1222,21 @@ Nlm_Boolean DBaseColors::NotAvailable()
 {
 	if (fState == kUnread) {
 		char * tablefile= gApplication->GetFilePref( fType, fSection, fDefaultvalue);
-		if (tablefile) ReadTable( tablefile);
+		if (tablefile) {
+			ReadTable( tablefile);
+			if (fState != kOkay) {
+				DLocateFile* win= new DLocateFile("Could not read table file '%s'", tablefile);
+				if (win->PoseModally()) {
+					ReadTable( win->fName);
+					if (fState == kOkay)
+						gApplication->SetPref( win->fName, fType, fSection); //??
+					}
+				delete win;
+				}
+			}
 		else fState= kNodata;
 		if (fState != kOkay) Message(MSG_OK,"Could not read table file '%s'",tablefile);
+		MemFree( tablefile);
 		}
 	return (fState != kOkay);
 }
@@ -1115,6 +1355,7 @@ void DBaseColors::ReadTable(DFile* aFile)
 	char	* line;
  	char**	linelist;
 
+	//fState= kNodata;
 	if (!aFile || !aFile->Exists()) return;
 	colorVal savecolor= Nlm_GetColor();	
 	
@@ -1272,9 +1513,21 @@ Nlm_Boolean DStyleTable::NotAvailable()
 {
 	if (fState == kUnread) {
 		char * tablefile= gApplication->GetFilePref( fType, fSection, fDefaultvalue);
-		if (tablefile) ReadTable( tablefile);
+		if (tablefile) {
+			ReadTable( tablefile);
+			if (fState != kOkay) {
+				DLocateFile* win= new DLocateFile("Could not read table file '%s'", tablefile);
+				if (win->PoseModally()) {
+					ReadTable( win->fName);
+					if (fState == kOkay)
+						gApplication->SetPref( win->fName, fType, fSection); //??
+					}
+				delete win;
+				}
+			}
 		else fState= kNodata;
 		if (fState != kOkay) Message(MSG_OK,"Could not read table file '%s'",tablefile);
+		MemFree( tablefile);
 		}
 	return (fState != kOkay);
 }
@@ -1308,9 +1561,19 @@ void DStyleTable::ReadTable(DFile* aFile)
 	Boolean 	twocolors;
 	colorVal	ncolor1, ncolor2;
 	
+	//fState= kNodata;
 	if (!aFile || !aFile->Exists()) return;
 	colorVal savecolor= Nlm_GetColor();	
-	fStyles->FreeAllObjects(); 
+	
+	//fStyles->FreeAllObjects();  // MEM LEAK !
+	{
+	long i, n= fStyles->GetSize();
+	for (i=0; i<n; i++) {
+		DSeqStyle* ast= (DSeqStyle*) fStyles->At(i);
+		delete ast;
+		}
+	fStyles->DeleteAll();
+	}
 	
 	aFile->Open("r");
  	linelist= Dgg_ReadDefaultPrefs( aFile->fFile, &nlines);

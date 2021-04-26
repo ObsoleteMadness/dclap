@@ -1,0 +1,76 @@
+
+GopherPup is an Internet information client program, usable
+on the common computer systems including Macintosh, Motif/X-
+Windows and MS-Windows[+].  It provides an easy to use,
+Macintosh Finder-like link to the range of Internet Gopher
+services.
+
+This program supports Gopher+ methods, including ASK forms
+that make it possible to provide client-server dialogs for
+various information analyses, and supports multiple view
+formats, so that you can fetch versions of documents that
+most suit your computer system.
+
+GopherPup is available at
+ftp.bio.indiana.edu:/util/gopher/gopherpup.
+
+GopherPup is based directly on my earlier GopherApp program
+for Macintosh computers.  It includes, or will include, the
+same feature set and general user interface.
+
+It is built on top of a cross-platform toolkit, written in
+ANSI C, from the National Center for Biotechnology
+Information (NCBI), especially Jonathan Kans' Vibrant user-
+interface toolkit, which works on Macintosh, MS-Windows and
+X/Motif (Unix and VMS) systems.
+
+On the NCBI toolkit I built a C++ application framework that
+is patterned after the MacApp framework from Apple Computer.
+This application framework, called Don's Class Application
+Library (DCLAP), will be available freely to the public, as
+is NCBI's toolkit, for those wishing to use it for
+development of platform independent applications.  The home
+archive location for DCLAP is {ftp,gopher} to
+ftp.bio.indiana.edu:/util/dclap.
+
+
+This initial release of GopherPup lacks several important
+features, and also it includes many bugs, making it likely
+to crash, and not yet suitable for extensive use.
+
+-- Macintosh requirements:  requires MacTCP from Apple
+Computer.  The current release may not work at all on older
+macs (SE).
+
+-- MS-Windows requirements:  not available yet.
+
+-- X/Motif requirements:  the author will only be able to
+supply binaries for a limited number of Unix OS flavors.
+These are
+    SunOS-Sparc-Motif, now available, your system will need
+to supply Motif runtime shared libraries, and
+    SGI-Irix-MIPS-Motif, not yet ready.
+
+Source code will eventually be available to those who wish
+to compile on their own systems.
+
+Comments, bug reports and suggestions for new features may
+be addressed via e-mail to    GopherPup@Bio.Indiana.Edu
+
+                                             -- Don Gilbert
+
+
+
+[+] 25 jan 94: still pending development for MSWindows.  If
+anyone has an MS Windows computer to loan for this, please
+let me know.
+
+History
+
+25 Jan 94, version -1 of GopherPup works on Mac and Sun-
+Sparc-Motif,  but still incomplete compared to GopherApp.
+ 9 Nov 93, v 2.1bx of GopherApp.
+25 Mar 92, v1.0 of GopherApp released to public.
+
+
+

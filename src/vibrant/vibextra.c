@@ -326,6 +326,8 @@ static void Nlm_SwitchClickProc (Nlm_PaneL s, Nlm_PoinT pt)
   }
 }
 
+
+
 static Nlm_SwitcH Nlm_CommonSwitch (Nlm_GrouP prnt, Nlm_Boolean text,
                                     Nlm_Boolean vert, Nlm_SwtChngProc actn)
 
@@ -346,7 +348,11 @@ static Nlm_SwitcH Nlm_CommonSwitch (Nlm_GrouP prnt, Nlm_Boolean text,
       width = 20;
     }
     if (text) {
+#ifdef DCLAP
+      width += Nlm_StringWidth ("99/999") + 4;
+#else
       width += Nlm_StringWidth ("99/99") + 4;
+#endif
       height = MAX (height, Nlm_LineHeight () + 2);
     }
     Nlm_SelectFont (Nlm_systemFont);
