@@ -1,0 +1,99 @@
+<HTML>
+<!dclap [drawgram]>
+<!;child app calls using dialog forms>
+
+<title>Phylip DrawGram</title>
+<b>DrawGram</b>
+ - draw phylogenetic cladogram or similar tree, from Phylip<p>
+Written by Joseph Felsenstein.
+<HR>
+
+<FORM  METHOD=localexec  ACTION="$apps:drawgram">
+
+Program options:<p>
+
+<INPUT TYPE="checkbox" NAME="horiz" VALUE="1">Horizontal tree<p>
+<INPUT TYPE="checkbox" NAME="newstyle" VALUE="2">Change style:
+<SELECT name=stylekind>
+<OPTION>Cladogram
+<OPTION>Phenogram
+<OPTION>curVogram
+<OPTION>Eurogram
+<OPTION>Swoopogram
+</SELECT>
+<p>
+<INPUT TYPE="checkbox" NAME="branchlength" VALUE="3">Don't use branch lengths<p>
+<INPUT TYPE="checkbox" NAME="changeangle" VALUE="4">Change text angle to:
+<INPUT NAME="textangle" VALUE="45" SIZE=5> (relative to vertical tree)<p>
+
+<!A HREF=file:///$apps:drawgram.doc  Help /A> 
+<INPUT TYPE=submit VALUE="Launch app"> 
+
+
+<INPUT TYPE=hidden NAME=infile VALUE="$apps:treefile">
+<INPUT TYPE=hidden NAME=seqformat VALUE="biotree">
+<INPUT TYPE=hidden NAME=minseq VALUE="0">
+<INPUT TYPE=hidden NAME=outfile1 VALUE="$apps:plotfile	image/pict">
+
+<INPUT TYPE=hidden NAME=stdcmdin VALUE="M
+N
+$horiz
+$newstyle
+$?newstyle:$stylekind:
+$branchlength
+Y
+">
+
+<INPUT TYPE=hidden NAME=badstdcmdin VALUE="M
+N
+$horiz
+$newstyle
+$?newstyle:$stylekind:
+$branchlength
+$changeangle
+$?changeangle:$textangle:
+Y
+">
+
+</FORM>
+</HTML>
+
+<! need a method to construct a stdin file for Phylip progs,
+   with user options, such as:
+---- stdin file to look like this ----
+T
+3
+F
+C
+9
+2 3 1 4 8 9 1 1 2 3 
+0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.2
+G
+J
+97
+10
+O
+3
+
+2
+Y
+------- translate to this $var syntax
+$trans
+if ($trans) $transnum 
+$freq
+if ($freq) $basefreqs
+$cat
+if ($cat) $catnum
+if ($cat) $catrates
+if ($cat) $catprobs
+$globe
+$jumb
+if ($jumb) $jumbseed
+if ($jumb) $jumbnum
+$outg
+if ($outg) $outnum
+2
+Y
+---------------
+>
+

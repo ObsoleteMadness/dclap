@@ -1,0 +1,94 @@
+
+Drosophila melanogaster
+
+412 genes found in GenBank 63.
+
+ Produced by J. Michael Cherry (cherry@frodo.mgh.harvard.edu) with the
+ GCG program CodonFrequency.
+
+ Duplicates, pseudogenes, mutant and synthetic genes were not included.
+ Coding regions were specified using the Feature Table of each entry, then
+ checked for accuracy. If more than one stop codon was found the sequence
+ was not included.
+
+AmAcid  Codon     Number    /1000     Fraction   ..
+ 
+Gly     GGG      797.00      6.19      0.09
+Gly     GGA     2738.00     21.25      0.30
+Gly     GGT     2040.00     15.83      0.22
+Gly     GGC     3683.00     28.59      0.40
+ 
+Glu     GAG     5011.00     38.89      0.68
+Glu     GAA     2394.00     18.58      0.32
+Asp     GAT     3291.00     25.54      0.53
+Asp     GAC     2867.00     22.25      0.47
+ 
+Val     GTG     3214.00     24.95      0.44
+Val     GTA      758.00      5.88      0.10
+Val     GTT     1408.00     10.93      0.19
+Val     GTC     1882.00     14.61      0.26
+ 
+Ala     GCG     1988.00     15.43      0.19
+Ala     GCA     1912.00     14.84      0.18
+Ala     GCT     2071.00     16.07      0.20
+Ala     GCC     4473.00     34.72      0.43
+ 
+Arg     AGG     1135.00      8.81      0.14
+Arg     AGA      989.00      7.68      0.12
+Ser     AGT     1368.00     10.62      0.13
+Ser     AGC     2477.00     19.23      0.24
+ 
+Lys     AAG     4672.00     36.26      0.70
+Lys     AAA     1979.00     15.36      0.30
+Asn     AAT     2523.00     19.58      0.45
+Asn     AAC     3136.00     24.34      0.55
+ 
+Met     atg     2959.00     22.97      1.00
+Ile     ATA      975.00      7.57      0.16
+Ile     ATT     1985.00     15.41      0.33
+Ile     ATC     3013.00     23.39      0.50
+ 
+Thr     ACG     1862.00     14.45      0.26
+Thr     ACA     1545.00     11.99      0.21
+Thr     ACT     1245.00      9.66      0.17
+Thr     ACC     2629.00     20.40      0.36
+ 
+Trp     TGG     1526.00     11.84      1.00
+End     TGA      434.00      3.37      0.53
+Cys     TGT      902.00      7.00      0.31
+Cys     TGC     2000.00     15.52      0.69
+ 
+End     TAG      138.00      1.07      0.17
+End     TAA      250.00      1.94      0.30
+Tyr     TAT     1254.00      9.73      0.37
+Tyr     TAC     2148.00     16.67      0.63
+ 
+Leu     TTG     1679.00     13.03      0.16
+Leu     TTA      725.00      5.63      0.07
+Phe     TTT     1497.00     11.62      0.35
+Phe     TTC     2724.00     21.14      0.65
+ 
+Ser     TCG     2072.00     16.08      0.20
+Ser     TCA     1093.00      8.48      0.10
+Ser     TCT     1055.00      8.19      0.10
+Ser     TCC     2441.00     18.95      0.23
+ 
+Arg     CGG     1244.00      9.66      0.15
+Arg     CGA     1208.00      9.38      0.15
+Arg     CGT     1326.00     10.29      0.16
+Arg     CGC     2352.00     18.26      0.28
+ 
+Gln     CAG     4557.00     35.37      0.68
+Gln     CAA     2119.00     16.45      0.32
+His     CAT     1560.00     12.11      0.41
+His     CAC     2218.00     17.22      0.59
+ 
+Leu     CTG     4223.00     32.78      0.41
+Leu     CTA      926.00      7.19      0.09
+Leu     CTT     1085.00      8.42      0.11
+Leu     CTC     1622.00     12.59      0.16
+ 
+Pro     CCG     2106.00     16.35      0.28
+Pro     CCA     1967.00     15.27      0.26
+Pro     CCT     1133.00      8.79      0.15
+Pro     CCC     2238.00     17.37      0.30

@@ -1076,8 +1076,8 @@ void DTableView::WriteToPICT(DFile* afile)
 	fname= (char*)DFileManager::FilenameFromPath(fname); // CreateMF fails for full path !?
 	//fname= "test.wmf";
 	
-#if 1
-//#ifdef WIN16
+//#if 1
+#ifdef WIN16
 	HDC hdcMeta= CreateMetaFile(fname); // (fname)
 	
 #define MetaHandle HMETAFILE

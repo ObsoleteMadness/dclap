@@ -169,11 +169,11 @@ void DSMTP::SendMail( char * theTo,  char * theFrom,  char * theSubject,
 	if (!WaitedForOpen()) return;
 	EatResponseLine();  // SMTP SendMail title from host ??
 	
-	sprintf( buf, "HELO %s"CRLF,theFrom);
+	sprintf( buf, "HELO %s" CRLF,theFrom);
 	SendStr( buf, kDontAddCRLF);
 	EatResponseLine();
 
-	sprintf(buf, "MAIL FROM: <%s>"CRLF, theFrom);
+	sprintf(buf, "MAIL FROM: <%s>" CRLF, theFrom);
 	SendStr(buf, kDontAddCRLF);
 	if (!WaitHandshake('2')) goto quitSMTP;	
   
@@ -186,7 +186,7 @@ void DSMTP::SendMail( char * theTo,  char * theFrom,  char * theSubject,
 			
 			char* nameend= strchr(namep, ',');
 			if (nameend) *nameend= 0;			
-			sprintf(buf, "RCPT TO: <%s>"CRLF, namep);
+			sprintf(buf, "RCPT TO: <%s>" CRLF, namep);
 			SendStr(buf, kDontAddCRLF);
 			if (!WaitHandshake('2')) goto quitSMTP;	
 			if (nameend) namep= nameend+1;
@@ -198,27 +198,27 @@ void DSMTP::SendMail( char * theTo,  char * theFrom,  char * theSubject,
 		
 	line= RecvChars( CharsAvailable(), bytesread);
 	MemFree( line);
-	SendStr("DATA"CRLF, kDontAddCRLF);
+	SendStr("DATA" CRLF, kDontAddCRLF);
 	if (!WaitHandshake('3')) goto quitSMTP;	
 	
 	// send header lines... 
-	sprintf(buf, "From: %s"CRLF, theFrom);
+	sprintf(buf, "From: %s" CRLF, theFrom);
   SendStr(buf, kDontAddCRLF);
-	sprintf(buf, "To: %s"CRLF, theTo);
+	sprintf(buf, "To: %s" CRLF, theTo);
 	SendStr(buf, kDontAddCRLF);
 	if (theCCopy && *theCCopy) {
-		sprintf(buf, "Cc: %s"CRLF, theCCopy);
+		sprintf(buf, "Cc: %s" CRLF, theCCopy);
 		SendStr(buf, kDontAddCRLF);
 		}
-	sprintf(buf, "Subject: %s"CRLF, (theSubject)?theSubject:"");
+	sprintf(buf, "Subject: %s" CRLF, (theSubject)?theSubject:"");
 	SendStr(buf, kDontAddCRLF);
 	
 	if (Nlm_DayTimeStr( aDate, true, true)) {
-		sprintf(buf, "Date: %s"CRLF, aDate);
+		sprintf(buf, "Date: %s" CRLF, aDate);
 		SendStr(buf, kDontAddCRLF);
 		}
 		
-	sprintf(buf, "X-Mailer: %s"CRLF, fMailerID);
+	sprintf(buf, "X-Mailer: %s" CRLF, fMailerID);
 	SendStr(buf, kDontAddCRLF);
 	SendCRLF(); //blank line
 	
@@ -245,7 +245,7 @@ void DSMTP::SendMail( char * theTo,  char * theFrom,  char * theSubject,
 			}
 		}
  
-	SendStr("."CRLF, kDontAddCRLF);
+	SendStr("." CRLF, kDontAddCRLF);
 	//if (!WaitHandshake('2')) goto quitSMTP;	
 	// ^^ Not getting '2' here, but "R?? mail received..."
 	//line= RecvLine(); MemFree( line);
@@ -254,7 +254,7 @@ void DSMTP::SendMail( char * theTo,  char * theFrom,  char * theSubject,
 quitSMTP:
 	line= RecvChars( CharsAvailable(), bytesread);
 	MemFree( line);
-	SendStr("QUIT"CRLF, kDontAddCRLF);
+	SendStr("QUIT" CRLF, kDontAddCRLF);
 	
 	//fTimeout= 100; //?? want short timeout here waiting for recvline
 	//line= RecvLine(); MemFree( line);

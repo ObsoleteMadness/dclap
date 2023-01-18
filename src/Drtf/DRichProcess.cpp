@@ -41,6 +41,7 @@ DRichprocess::DRichprocess( DFile* itsFile, DRichView* itsDoc, Nlm_MonitorPtr pr
 	fStyleStackSize(0), fTitle(NULL), fNewStyle(true),
 	fEndOfData(false)
 { 
+
 	fTextMax= 1024;
 	fText= (char*) MemNew(fTextMax+1);
 
@@ -83,11 +84,14 @@ DRichprocess::DRichprocess( DFile* itsFile, DRichView* itsDoc, Nlm_MonitorPtr pr
 DRichprocess::~DRichprocess()
 {
 	Close();
-	//if (fDataFile) fDataFile->Close(); // caller may do this?
+//	if (fDataFile) fDataFile->Close(); // caller may do this?
 	MemFree(fText);
 	MemFree(fStyleArray);
 	MemFree(fTitle);
-	
+	if (fDataBuffer)
+		MemFree(fDataBuffer);
+	if (fOutMap)
+		MemFree(fOutMap);
 }
 
 void DRichprocess::SetBuffer( char* dataBuffer, ulong dataSize, Boolean endOfData)
@@ -349,6 +353,7 @@ void DRichprocess::StoreStyle(DRichStyle& theStyle, Boolean force)
 void DRichprocess::StoreStyleObject(DStyleObject* sob, short width, short height)
 {
 	fStyleRec.style.ispict= true;
+	
 	fStyleRec.style.pixwidth= width; 
 	fStyleRec.style.pixheight= height; 
 	fStyleRec.style.fObject= sob;
@@ -447,6 +452,7 @@ void DRichprocess::NewParagraph()
 	//fTextSize--; /* unput last chStyleTag */
 #endif
  
+
 	fStyleArray[fStyleCount-1].last= TRUE;
 	fText[fTextSize]= 0;
 	

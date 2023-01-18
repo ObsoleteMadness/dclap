@@ -37,7 +37,6 @@ DRichStyle::DRichStyle()
 	ismap= false;
 	ownpict= false;
 	fObject= NULL; 
-
 	boxed= false;
 	hidden= false;
 	last= false; //??

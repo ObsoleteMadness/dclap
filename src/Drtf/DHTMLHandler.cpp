@@ -224,7 +224,7 @@ void DHTMLprocess::Lookup( char	*s, HTMLKey* keyset)
 #ifdef COMP_SYMC
   int (* LIBCALL cmp)(const char*, const char*);
 #else
-	int (*cmp)(const char*,const char*);
+	int (__stdcall *cmp)(const char*,const char*);
 #endif
 #endif
 	if (keyset == htmlAmperChars) cmp= Nlm_StringCmp;

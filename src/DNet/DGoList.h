@@ -45,7 +45,7 @@ public:
 	virtual	Boolean suicide(void);  // prefered to delete 
 	virtual	Boolean suicide(short ownercount);
 	
-	DGopher* GopherAt(short index) { return (DGopher*) At(index); }
+	DGopher* GopherAt(long index) { return (DGopher*) At(index); }
 	
 	virtual void SetStatus(DView *statusline);
 	virtual Boolean MakeNewGopher( char *pInfo, char *eInfo, 

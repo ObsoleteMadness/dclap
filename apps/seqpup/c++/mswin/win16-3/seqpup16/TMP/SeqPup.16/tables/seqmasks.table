@@ -1,0 +1,82 @@
+; seqstyles file for seqpup
+
+[style1]
+description=a test style 
+
+;style values=bold,italic,underline,box,uppercase/lowercase,invertcolor
+style=bold uppercase box
+
+;repeatchar=.  use if you want mult-align repeated chars set to this
+repeatchar=. 
+
+;fontname=Courier 
+;fontsize=9
+;fontcolor=0xff0000	; red
+backcolor=0x80e0e0	; lt.blue
+boxcolor= 0x0000ff	; blue
+;boxstyle values= dashed or dotted or solid or dark or medium or light
+boxstyle=dashed
+
+;fillpattern= use 2 hex-long values for this 8-byte pattern
+;fillpattern=0x88228822 0x88228822 
+;fillpattern=0xaa55aa55 0xaa55aa55 
+;----------------------------
+
+[repeatmask2]
+description=mask for repeat char
+style=box
+repeatchar=. 
+;fontname=Helvetica 
+;fontsize=9
+;fontcolor=0x00ff00	; 
+backcolor=0xD8D8D8  ;  
+boxcolor= 0xff00ff	; magenta
+boxstyle=solid
+;----------------------------
+
+[anotherstyle3]
+description=a third test style 
+
+;style values=bold,italic,underline,box,uppercase/lowercase,invertcolor
+style=uppercase box
+
+repeatchar=. 
+fontname=Courier 
+fontsize=9
+fontcolor=0x00c0c0	; lt.blue
+backcolor=0x090909  ; black
+;----------------------------
+
+[style4]
+description=a fourth test style 
+
+;style values=bold,italic,underline,box,uppercase/lowercase,invertcolor
+style=lowercase box
+
+;repeatchar=. 
+fontname=Helvetica 
+fontsize=9
+fontcolor=0x0000ff	; blue  
+backcolor=0xbbbbbb  ; gray
+boxstyle=solid
+boxcolor=0xff0000	; red
+;----------------------------
+
+
+;fillpattern= use 2 hex-long values for this 8-byte pattern
+;fillpattern=0xffaa8877 0xccddeeff 
+
+;G=0x1fc003	; green
+;T=0xb0700f	; orange
+;U=0xb0700f	; orange
+
+;0xff00ff	; magenta
+;0x000000	; black
+;0xff0000	; red
+;0x0000ff	; blue
+;0x00c0c0	; lt.blue
+;0x00c000	; green
+;0x090909	; gray
+
+
+

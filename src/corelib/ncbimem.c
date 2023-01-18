@@ -257,8 +257,11 @@ void * LIBCALL  Nlm_MemDup (const void *orig, Nlm_sizeT size)
 	if (orig == NULL || size == 0)
 		return NULL;
 		
-	if ((copy = Nlm_Malloc (size)) == NULL)
-		ErrPostEx(SEV_FATAL,E_NoMemory,0,_msgMemory);
+    if ((copy = Nlm_Malloc(size)) == NULL)
+    {
+        ErrPostEx(SEV_FATAL, E_NoMemory, 0, _msgMemory);
+        return NULL;
+    }
 		
 	Nlm_MemCpy(copy, orig, size);
 		return copy;

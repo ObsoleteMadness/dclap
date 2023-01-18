@@ -7,6 +7,7 @@
 #include "DRichHandler.h"
 #include "DRichViewNu.h"
 #include "DRichProcess.h"
+#include <DRTFHandler.cpp>
 
 
 
@@ -68,7 +69,7 @@ long DRichHandler::IsRichFile( char* filename)
 	return IsRichFile( &afile);
 }
 
-Boolean DRichHandler::ProcessData( char* cbeg, char* cend, Boolean endOfData, 
+Boolean DRichHandler::ProcessData( char* cbeg, char* cend, Boolean endOfData,
 										ulong& dataRemaining) 
 {
 	char		* cp;
@@ -108,6 +109,7 @@ Boolean DRichHandler::ProcessData2( char* cp, char* cbeg, char* cend, Boolean en
 										ulong& dataRemaining) 
 {
 
+
 	if (!fProcessor) {  
 		fDoc->SetAutoAdjust(false);
 		//fProcessor= this->NewProcessor(NULL,NULL); 
@@ -116,8 +118,8 @@ Boolean DRichHandler::ProcessData2( char* cp, char* cbeg, char* cend, Boolean en
 		fProcessStage = kInBody;
 		}
 		
-  if (fclen) {
-	  fProcessor->SetBuffer(cbeg, fclen, endOfData);
+	if (fclen) {
+	    fProcessor->SetBuffer(cbeg, fclen, endOfData);
 		while (fProcessor->GetToken() != DRichprocess::tokEOF) 
 			fProcessor->RouteToken();
 		}
@@ -126,8 +128,9 @@ Boolean DRichHandler::ProcessData2( char* cp, char* cbeg, char* cend, Boolean en
 		fProcessor->Close(); 
 		if (fProcessor->GetTitle()) 
 			fDoc->GetWindow()->SetTitle( (char*)fProcessor->GetTitle());
-		delete fProcessor; 
+		//delete fProcessor;
 		fProcessor= NULL; 
+		gRTFprocess = NULL;
 		} 
 
 	fDoc->AdjustScroll();

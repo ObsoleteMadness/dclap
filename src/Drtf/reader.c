@@ -190,7 +190,7 @@ static RTFColor	*colorList =  NULL;	/* initialized to NULL */
 static RTFStyle	*styleList =  NULL;
 
 
-static FILE	*rtffp = stdin;
+static FILE* rtffp = NULL; //stdin; // stdin is no longer a const as of C99;
 
 static char	*inputName =  NULL;
 static char	*outputName =  NULL;

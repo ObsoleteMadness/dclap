@@ -18,6 +18,8 @@ public:
 		DTracker * fCurrentTracker;
 		DTabSelection * fSelection;
 		
+		//enum { kNoSelection = -1, kExtend = true, kHighlight = true, kSelect = true };
+
 		DTableView(long id, DView* itsSuperior,  
 					short pixwidth, short pixheight, 
 					long nrows, long ncols,

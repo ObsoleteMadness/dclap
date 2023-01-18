@@ -1,0 +1,25 @@
+<HTML>
+<!dclap [fastdnaml]>
+<!;child app calls using dialog forms>
+
+<title>fastDNAml phylogeny analysis</title>
+<b>fastDNAml</b>, version 1.1.1
+ - A faster DNA maximum likelihood phylogeny estimator <p>
+Produced by Gary Olsen, Hideo Matsuda, Ray Hagstrom, and Ross Overbeek.
+A modification of DNAml by Joseph Felsenstein.
+<HR>
+
+<FORM  METHOD=localexec  ACTION="$apps:fastDNAml">
+	
+<!A HREF=file:///$apps:fastDNAml.doc  Help /A> 
+<INPUT TYPE=submit VALUE="Launch app"> 
+
+<INPUT TYPE=hidden NAME=stdin VALUE="$temp:fdn$$.ins">
+<INPUT TYPE=hidden NAME=seqformat VALUE="phylip">
+<INPUT TYPE=hidden NAME=minseq VALUE="2">
+<INPUT TYPE=hidden NAME=outfile1 VALUE="$apps:checkpoint.0	text/plain">
+<INPUT TYPE=hidden NAME=outfile2 VALUE="$apps:treefile.0	text/plain">
+<INPUT TYPE=hidden NAME=stdout VALUE="$temp:fdn$$.out	text/plain">
+
+</FORM>
+</HTML>

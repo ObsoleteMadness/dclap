@@ -1,0 +1,68 @@
+<html>
+<!dclap [gcg_blast]>
+<!;network child app calls using dialog forms>
+<header cols=60 rows=25>
+<title>GCG Blast</title>
+</header><body>
+<b>GCG Blast</b> - Search for sequences similar to a query sequence 
+by NCBI and Genetics Computer Group
+<HR>
+
+<FORM 
+	METHOD=bop 
+	ACTION="bop://$bophost:$bopport/blast 
+  myseq -out=myseq.blast -in2=$dbank 
+  $tblastx -expect=$exp -list=$list $othercmd
+">
+
+Program options:<p>
+
+Databank to search:
+<select name=dbank>
+<option>nr
+<option>month 
+<option>est 
+<option>sts 
+<option>pdb 
+<option>vector 
+<option>kabat 
+<option>mito 
+<option>epd 
+<option>alu 
+<option>swissprot 
+<option>spdb 
+<option>pir 
+</select>
+
+<p>
+<input type=checkbox name="tblastx" value="-tblastx">
+Translate nucleic sequences and databanks (TBlastX)
+<p>
+Limit output sequences to <INPUT NAME=list SIZE=5 VALUE=250>
+<p>
+Ignore hits expected by chance more than
+<INPUT NAME=exp SIZE=5 VALUE="10.0"> times
+<p>
+
+Other options: <p>
+<TEXTAREA NAME="othercmd" COLS=40 ROWS=2></TEXTAREA>
+<p>  
+
+<!A HREF=http://sunflower.bio.indiana.edu/gcg/manual/blast.html}Help with Blast {/A>
+<INPUT TYPE=submit VALUE="Launch app"> 
+
+<INPUT TYPE=hidden NAME=infile VALUE="myseq">
+<INPUT TYPE=hidden NAME=seqformat VALUE="gcg">
+<INPUT TYPE=hidden NAME=minseq VALUE="1">
+<INPUT TYPE=hidden NAME=outfile1 VALUE="myseq.blast text/plain">
+
+</FORM>
+<HR>
+</body>
+
+<! -TOPstrand -FILter=xs -MATrix=PAM120[,PAM250...] 
+ -TRANSlate=1 -WORdsize=7 -SYNonym=10 -MATCH=5 -SEGments=100 -HIStogram
+> 
+<! Username: xINPUT NAME=user SIZE=12>
+<! Password: xINPUT TYPE=password NAME=password SIZE=8>
+

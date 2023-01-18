@@ -338,11 +338,11 @@ Boolean DGopherList::MakeNewGopher( char *pInfo, char *eInfo,
 													char *pPlus, char *ePlus, short status)
 {
 	char	termInfo, termPlus;
-	if (eInfo) { termInfo= *eInfo; *eInfo= 0; }
-	if (ePlus) { termPlus = *ePlus; *ePlus= 0;  } 
+	//if (eInfo) { termInfo= *eInfo; *eInfo= 0;  }
+	//if (ePlus) { termPlus = *ePlus; *ePlus= 0;  } 
 	fNewGopher= DGopherList::NewGopher( *pInfo, pInfo, pPlus, status, this);
-	if (eInfo) *eInfo= termInfo;
-	if (ePlus) *ePlus= termPlus;
+	//if (eInfo) *eInfo= termInfo;
+	//if (ePlus) *ePlus= termPlus;
 	switch (status) {
 		case DGopher::kNewGopherEnd : return false;
 		case DGopher::kNewGopherNone: return true; 

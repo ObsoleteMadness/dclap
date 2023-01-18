@@ -13,6 +13,7 @@
 #include <DTracker.h>
 #include <ncbi.h>
 #include <dgg.h>
+#include <DTabSelect.h>
 
 
 

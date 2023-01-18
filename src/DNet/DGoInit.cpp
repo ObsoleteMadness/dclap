@@ -1875,7 +1875,7 @@ void DGoMapHandlerView::Release(Nlm_PoinT mouse)
 	DTableView::Release(mouse);
 }
 
-void DGoMapHandlerView::DoubleClickAt(short row, short col)
+void DGoMapHandlerView::DoubleClickAt(long row, long col)
 {
 	DGopherMap* ag= fItems->GopherMapAt(row); 
 	//if (ag) Message(MSG_OK, "Click on '%s'", (char*)ag->GetName());
@@ -1883,7 +1883,7 @@ void DGoMapHandlerView::DoubleClickAt(short row, short col)
 	if (ag) fDoc->EditLocalHandling(ag, DGoMapEditDlog::kFormLocal);
 }
 
-void DGoMapHandlerView::SingleClickAt(short row, short col)
+void DGoMapHandlerView::SingleClickAt(long row, long col)
 {
 	DTableView::SingleClickAt(row,  col);
 }
@@ -1891,7 +1891,7 @@ void DGoMapHandlerView::SingleClickAt(short row, short col)
 
 DGopherMap* DGoMapHandlerView::SelectedMapper()
 {
-	if (GetSelectedRow() != kNoSelection) 
+	if (GetSelectedRow() != DTabSelection::kNoSelection) 
 		return fItems->GopherMapAt( GetSelectedRow());
 	else 
 		return NULL;
@@ -1921,7 +1921,7 @@ void DGoMapHandlerView::GetReadyToShow()
 	//Nlm_RestorePort( w);
 }
 
-void DGoMapHandlerView::DrawCell(Nlm_RecT r, short row, short col)
+void DGoMapHandlerView::DrawCell(Nlm_RecT r, long row, long col)
 {
 	// need a DTableView field to handle cell rect insets !
 	char *name;

@@ -313,7 +313,7 @@ void DWindow::ResizeWin()
 void  DWindow::Select() 
 {
 	DView::Select();
-	//Nlm_UseWindow(fWindow); // 23feb -- does Motif need this also ??
+	Nlm_UseWindow(fWindow); // 23feb -- does Motif need this also ??
 	gWindowManager->SetCurrent(this);
 }
 

@@ -34,6 +34,7 @@ typedef struct sockaddr *SockAddPtr; /* codewar 4 hates (struct *) casts !? */
 #define connect				s_connect
 #define getsockname		s_getsockname
 #define setsockopt		s_setsockopt
+#define select			s_select
 
 #define __TYPES__       /* avoid Mac <Types.h> */
 #define __MEMORY__      /* avoid Mac <Memory.h> */

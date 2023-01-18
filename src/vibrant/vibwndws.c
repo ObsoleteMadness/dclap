@@ -4036,9 +4036,11 @@ int CALLBACK WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   Nlm_Char  str [32];
   WNDCLASS  wc;
 
+  /*
 #ifdef WIN32
   try {
 #endif
+*/
 
   Nlm_currentHInst = hInstance;
 
@@ -4091,11 +4093,12 @@ int CALLBACK WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
   UnregisterClass (str, Nlm_currentHInst);
   sprintf (str, "Nlm_SlateClass%ld", (long) (int) Nlm_currentHInst);
   UnregisterClass (str, Nlm_currentHInst);
-
+  /*
 #ifdef WIN32
   } except (Nlm_HandleException (GetExceptionCode ())) {
   }
 #endif
+*/
 
   return TRUE;
 }
@@ -4441,17 +4444,20 @@ extern void Nlm_ProcessEventOrIdle (void)
       DispatchMessage (&Nlm_currentMssg);
     }
   } else if (PeekMessage (&Nlm_currentMssg, NULL, 0, 0, PM_NOREMOVE)) {
-    if (GetMessage (&Nlm_currentMssg, NULL, 0, 0)) {
+      if (GetMessage(&Nlm_currentMssg, NULL, 0, 0)) {
 #if  defined(DCLAP) && !defined(WIN16) 
-    /* if (!(Nlm_hAccel */
-    if (!(TranslateAccelerator( Nlm_menuHwnd, Nlm_hAccel, &Nlm_currentMssg)))      {
+          /* if (!(Nlm_hAccel */
+          if (!(TranslateAccelerator(Nlm_menuHwnd, Nlm_hAccel, &Nlm_currentMssg))) {
 #endif
-			{
-      TranslateMessage (&Nlm_currentMssg);
-      Nlm_ProcessKeyPress (&Nlm_currentMssg);
-      DispatchMessage (&Nlm_currentMssg);
-			}
-    }
+              {
+                  TranslateMessage(&Nlm_currentMssg);
+                  Nlm_ProcessKeyPress(&Nlm_currentMssg);
+                  DispatchMessage(&Nlm_currentMssg);
+              }
+          }
+#if  defined(DCLAP) && !defined(WIN16) 
+      }
+#endif
   }
 #endif
 #ifdef WIN_MOTIF
@@ -4470,6 +4476,7 @@ extern void Nlm_ProcessEventOrIdle (void)
   }
 #endif
 }
+
 
 
 

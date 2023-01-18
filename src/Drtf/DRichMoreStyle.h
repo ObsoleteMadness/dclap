@@ -14,6 +14,7 @@ struct PictLinkIndex {
 };
 
 
+
 class DPictStyle : public DStyleObject
 {
 public:

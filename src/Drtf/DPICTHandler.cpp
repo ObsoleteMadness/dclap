@@ -210,7 +210,6 @@ Boolean DPICTprocess::StuffInStyle( DRichStyle* theStyle)
 			}
 		theStyle->ispict= TRUE;
 		theStyle->fObject= newPict;
-		
 		fPictSize= 0;
 		fPict= NULL; //??
 		return true;

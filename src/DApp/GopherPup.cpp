@@ -136,7 +136,7 @@ void DGopherPup::IGopherPup(void)
 void DGopherPup::DoAboutBox()
 {
 	char aboutMe[512];
-	sprintf( aboutMe, "GopherPup, version %s"LINEEND" an Internet Gopher client ",
+	sprintf( aboutMe, "GopherPup, version %s" LINEEND " an Internet Gopher client ",
 				DApplication::kVersion);
 	DAboutBoxWindow* about = new DAboutBoxWindow(aboutMe);
 }

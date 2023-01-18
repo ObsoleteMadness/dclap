@@ -45,6 +45,8 @@ public:
 		};
 
 	DStyleObject*	fObject;
+
+
 	short		nextofs;
   short		pixheight, pixwidth, pixleft;		
   short		linkid;		// gopher/html link id 

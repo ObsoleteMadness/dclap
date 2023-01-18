@@ -422,3 +422,188 @@ Boolean DURL::ParseURL( DNetOb* nob, const char *url, long urlsize, Boolean verb
 	MemFree( line);
 	return true;
 }
+
+
+
+Boolean DURL::ParseURL(DGopher* gob, const char* url, long urlsize, Boolean verbatim)
+{
+	char* cp, * ep, * qp, sep, * line, * newurl;
+	short prot;
+	Boolean isLocalhost;
+
+	if (!gob || url == NULL || *url == '\0') return false;
+	if (!urlsize) urlsize = StrLen(url);
+
+	// can we do this space check safely?
+	newurl = (char*)url;  while (isspace(*newurl)) { newurl++; urlsize--; }
+	ep = newurl + urlsize - 1;  while (isspace(*ep)) { ep--; urlsize--; }
+
+	line = (char*)Nlm_MemNew(urlsize + 1);
+	Nlm_MemCopy(line, newurl, urlsize);
+	line[urlsize] = 0;
+	prot = IsURL(line, newurl);
+	if (prot <= DNetOb::kUnknownProt) {
+		MemFree(line);
+		return false;
+	}
+	else {
+		// need to drop "", '', <> or other delimiters from url end
+		// also filter out newlines, controls, and spaces unless "" or ''
+		{
+			cp = newurl;
+			if (cp > line) do { cp--; } while (cp > line && !isgraph(*cp));
+			ep = cp;
+			switch (*cp) {
+			case '"':
+				newurl = cp + 1;
+				do { if (isprint(*cp)) *ep++ = *cp; cp++; } while (*cp && *cp != '"');
+				*ep = 0;
+				break;
+			case '\'':
+				newurl = cp + 1;
+				do { if (isprint(*cp)) *ep++ = *cp; cp++; } while (*cp && *cp != '\'');
+				*ep = 0;
+				break;
+			case '<':
+				newurl = cp + 1;
+				if (verbatim)
+					do { if (isprint(*cp)) *ep++ = *cp; cp++; } while (*cp && *cp != '>');
+				else
+					do { if (isgraph(*cp)) *ep++ = *cp; cp++; } while (*cp && *cp != '>');
+				*ep = 0;
+				break;
+			default:
+				newurl = cp;
+				if (verbatim)
+					do { if (isprint(*cp)) *ep++ = *cp; cp++; } while (*cp);
+				else
+					do { if (isgraph(*cp)) *ep++ = *cp; cp++; } while (*cp);
+				*ep = 0;
+				break;
+			}
+		}
+		gob->StoreProtocol(prot);
+		gob->StoreURL(newurl);
+		cp = StrChr(newurl + 3, ':');
+		cp++;
+		if (*cp == '/') cp++;
+		if (*cp == '/') cp++;
+		while (isspace(*cp)) cp++;
+		if (prot == DNetOb::kSMTPprot) {
+			DecodeChars(cp);
+			gob->fType = kMailType; // mailto gopher kind  
+			gob->StorePath(cp);
+			MemFree(line);
+			return true;
+		}
+
+		ep = cp;
+		while (*ep && (OKAYCHAR(*ep, alphaPlusChars))) ep++;
+		//while (*ep && (isalnum(*ep) || *ep == '.' || *ep == '-')) ep++;
+
+		while (isspace(*ep)) ep++;
+		sep = *ep; *ep = 0;
+		isLocalhost = (ep - cp < 2); // || StrICmp( cp, "localhost")==0 );
+		gob->StoreHost(cp);
+		*ep = sep;
+		cp = ep; // NO: +1;
+
+		if (sep == ':') {	// port num
+			ep = ++cp;
+			while (isspace(*ep)) ep++;
+			while (isdigit(*ep)) ep++;
+			sep = *ep; *ep = 0;
+			gob->StorePort(cp);
+			*ep = sep;
+			cp = ep; //+1;
+		}
+		if (sep == '/');
+		while (isspace(*cp)) cp++;
+
+		qp = StrChr(cp, '?');
+		if (qp) {
+			*qp++ = 0;
+			gob->fQueryGiven = StrDup(qp);
+		}
+
+		DecodeChars(cp);	// ???
+
+		switch (prot) {
+		case DNetOb::kGopherprot: // gopher://host.name:70/00/path/to/data
+			if (*cp) cp++;
+			if (*cp == 0) {
+				gob->fType = kTypeFolder;
+				gob->StorePath("");
+			}
+			else {
+				gob->fType = *cp;
+				gob->StorePath(cp + 1);
+			}
+			break;
+
+		case DNetOb::kFTPprot: // file:///path:to:file
+		case DNetOb::kFileprot: // file:///path:to:file
+			if (*cp == '/') {
+				// this leading slash is artifact of silly url syntax !!
+				// skip for all????? but sometimes (non-local) this is valid
+#if 1
+				if (isLocalhost) cp++;
+#else
+#ifdef OS_VMS
+				cp++; // vms, skip leading /
+#endif
+#ifdef OS_MAC
+				cp++; // mac, skip leading /
+#endif
+#ifdef OS_DOS
+				if (StrChr(cp, ':')) cp++; // have "/C:\dos\path" form
+				else *cp = '\\'; // have a "/dos\path" form
+#endif
+#endif
+			}
+			gob->fType = kTypeFile;  // !! need ftp folder handling !?
+			gob->StorePath(cp);
+			break;
+
+		case DNetOb::kHTTPprot:	// http://host.name:80/path/to/data
+			gob->fType = kTypeHtml;
+			if (*cp == 0) gob->StorePath("/");
+			else gob->StorePath(cp);
+			break;
+
+		case DNetOb::kTelnetprot:
+			gob->fType = kTypeTelnet;
+			gob->StorePath(cp);
+			break;
+		case DNetOb::kTN3270prot:
+			gob->fType = kTypeTn3270;
+			gob->StorePath(cp);
+			break;
+
+		case DNetOb::kFingerprot:
+		case DNetOb::kWhoisprot:
+			gob->fType = kTypeQuery;
+			gob->StorePath(cp);
+			break;
+
+		case DNetOb::kWAISprot: // ?? or need Folder type or Waisdir & WaisDoc types?
+		default:
+			gob->fType = kTypeFile;
+			gob->StorePath(cp);
+			break;
+		}
+
+		// set a usable title !?
+		const char* name = gob->GetPath();
+		if (name == NULL || *name == 0 || StrCmp(name, "/") == 0)
+			name = gob->GetHost();
+		else
+			name = gFileManager->FilenameFromPath(name);
+		if (name && *name != 0)
+			gob->StoreName((char*)name);
+
+	}
+
+	MemFree(line);
+	return true;
+}

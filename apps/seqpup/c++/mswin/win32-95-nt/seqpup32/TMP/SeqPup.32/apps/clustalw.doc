@@ -1,0 +1,487 @@
+clustalw_help   for version 1.4 (September 1994).
+
+This is the on-line help file for CLUSTAL W.   
+
+It should be named or defined as: clustalw_help 
+except with MSDOS in which case it should be named CLUSTALW.HLP
+
+For full details of usage and algorithms, please see the files:
+cluustalv.doc    The documentation for Clustal V (most of the program usage
+                 and the basic algorithms are the same).
+clustalw.ms      A manuscript describing the main algorithmic changes over
+                 Clustal V.
+readme.txt       A brief summary of the main changes over Clustal V.
+
+
+Toby  Gibson
+Des   Higgins    (now at the EBI, Hinxton, Great Britain)
+Julie Thompson
+
+EMBL, Heidelberg, Germany.    
+
+
+The paper describing Clustal W is:
+
+Thompson, J.D., Higgins, D.G. and Gibson, T.J. (1994)
+CLUSTAL W: improving the sensitivity of progressive multiple
+sequence alignment through sequence weighting, position specific
+gap penalties and weight matrix choice.
+Nucleic Acids Research, submitted, June 1994.
+
+
+>>HELP 1 <<             General help for CLUSTAL W 
+
+Clustal W is a general purpose multiple alignment program for DNA or proteins.
+
+SEQUENCE INPUT:  all sequences must be in 1 file, one after another.  
+6 formats are automatically recognised: NBRF/PIR, EMBL/SWISSPROT, 
+Pearson (Fasta), Clustal (*.aln), GCG/MSF (Pileup) and GDE.
+All non-alphabetic characters (spaces, digits, punctuation marks) are ignored
+except "-" which is used to indicate a GAP ("." in GCG/MSF).  
+
+
+To do a MULTIPLE ALIGNMENT on a set of sequences, use item 1 from this menu to 
+INPUT them; go to menu item 2 to do the multiple alignment.
+
+PROFILE ALIGNMENTS (menu item 3) are used to align 2 alignments or to add a set
+of new sequences to an old alignment.  Use this to add new sequences to an old
+alignment.  GAPS in the old alignments are 
+indicated using the "-" character.   PROFILES can be input in ANY of the
+allowed formats; just use "-" (or "." for MSF) for each gap position.
+
+PHYLOGENETIC TREES (menu item 4) can be calculated from old alignments (read in
+with "-" characters to indicate gaps) OR after a multiple alignment while the 
+alignment is still in memory.
+
+
+The program tries to automatically recognise the different file formats used
+and to guess whether the sequences are amino acid or nucleotide.  This is not
+always foolproof.
+
+FASTA and NBRF/PIR formats are recognised by having a ">" as the first 
+character in the file.  
+
+EMBL/Swiss Prot formats are recognised by the letters
+ID at the start of the file (the token for the entry name field).  
+
+CLUSTAL format is recognised by the word CLUSTAL at the beginning of the file.
+
+GCG/MSF format is recognised by the word PileUp at the start of the file.  If
+your msf files do not contain this word first, edit it in at the start
+of the first line.  
+
+If 85% or more of the characters in the sequence are from A,C,G,T,U or N, the
+sequence will be assumed to be nucleotide.  This works in 97.3% of cases
+but watch out!
+
+
+
+
+The paper describing Clustal W is:
+
+Thompson, J.D., Higgins, D.G. and Gibson, T.J. (1994)
+CLUSTAL W: improving the sensitivity of progressive multiple
+sequence alignment through sequence weighting, position specific
+gap penalties and weight matrix choice.
+Nucleic Acids Research, submitted, June 1994.
+
+
+
+>>HELP 2 <<      Help for multiple alignments
+
+If you have already loaded sequences, use menu item 1 to do the complete
+multiple alignment.  You will be prompted for 2 output files: 1 for the 
+alignment itself; another to store a dendrogram that describes the similarity
+of the sequences to each other.
+
+Multiple alignments are carried out in 3 stages (automatically done from menu
+item 1 ...Do complete multiple alignments now):
+
+1) all sequences are compared to each other (pairwise alignments);
+
+2) a dendrogram (like a phylogenetic tree) is constructed, describing the
+approximate groupings of the sequences by similarity (stored in a file).
+
+3) the final multiple alignment is carried out, using the dendrogram as a guide.
+
+
+PAIRWISE ALIGNMENT parameters control the speed/sensitivity of the initial
+alignments.
+
+MULTIPLE ALIGNMENT parameters control the gaps in the final multiple alignments.
+
+RESET GAPS (menu item 7) will remove any new gaps introduced into the sequences
+during multiple alignment if you wish to change the parameters and try again.
+This only takes effect just before you do a second multiple alignment.  You
+can make phylogenetic trees after alignment whether or not this is ON.
+If you turn this OFF, the new gaps are kept even if you do a second multiple
+alignment. This allows you to iterate the alignment gradually.  Sometimes, the 
+alignment is improved by a second or third pass.
+
+SCREEN DISPLAY can be used to send the output alignments to the screen 
+as well as to the output file.
+
+You can skip the first stages (pairwise alignments; dendrogram) by using an
+old dendrogram file (menu item 3); or you can just produce the dendrogram
+with no final multiple alignment (menu item 2).
+
+OUTPUT FORMAT: Menu item 9 (format options) allows you to choose from 5 
+different alignment formats (CLUSTAL, GCG, NBRF/PIR, PHYLIP and GDE).  
+
+You can toggle between FAST/APPROXIMATE or SLOW/ACCURATE alignments for
+the initial alignments used to make the guide tree.  The fast ones are
+extremely fast but are less reliable than the slow ones.
+>>HELP 3 <<      Help for pairwise alignment parameters
+A distance is calculated between every pair of sequences and these are
+used to construct the dendrogram which guides the final multiple alignment.
+The scores are calculated from separate pairwise alignments.  These can be 
+calculated using 2 methods: dynamic programming (slow but accurate) or by the
+method of Wilbur and Lipman (extremely fast but approximate).   
+
+You can choose between the 2 alignment methods using menu option 8.  The
+slow/accurate method is fine for short sequences but will be VERY SLOW
+for many (e.g. >20) long (e.g. >1000 residue) sequences.   
+
+
+SLOW/ACCURATE alignment parameters:
+
+These parameters do not have any affect on the speed of the alignments.  They
+are used to give initial alignments which are then rescored to give percent
+identity scores.  These % scores are the ones which are displayed on the 
+screen.  The scores are converted to distances for the trees.
+
+1) Gap Open Penalty:      the penalty for opening a gap in the alignment.
+2) Gap extension penalty: the penalty for extending a gap by 1 residue.
+3) Protein weight matrix: the scoring table which describes the similarity of 
+each amino acid to each other.  For DNA, an identity matrix is used.
+
+
+
+FAST/APPROXIMATE alignment parameters:
+
+These similarity scores are calculated from fast, approximate, global align-
+ments, which are controlled by 4 parameters.   2 techniques are used to make
+these alignments very fast: 1) only exactly matching fragments (k-tuples) are
+considered; 2) only the 'best' diagonals (the ones with most k-tuple matches)
+are used.
+
+
+K-TUPLE SIZE:  This is the size of exactly matching fragment that is used. 
+INCREASE for speed (max= 2 for proteins; 4 for DNA), DECREASE for sensitivity.
+For longer sequences (e.g. >1000 residues) you may need to increase the default.
+
+
+GAP PENALTY:   This is a penalty for each gap in the fast alignments.  It has
+little affect on the speed or sensitivity except for extreme values.
+
+
+
+
+
+
+TOP DIAGONALS: The number of k-tuple matches on each diagonal (in an imaginary
+dot-matrix plot) is calculated.  Only the best ones (with most matches) are
+used in the alignment.  This parameter specifies how many.  Decrease for speed;
+increase for sensitivity.
+
+
+WINDOW SIZE:  This is the number of diagonals around each of the 'best' 
+diagonals that will be used.  Decrease for speed; increase for sensitivity.
+
+
+>>HELP 4 <<      Help for multiple alignment parameters
+These parameters control the final multiple alignment.  This is the core of
+the program and the details are complicated.  To fully understand the use
+of the parameters and the scoring system, you will have to refer to the
+documentation.
+
+Each step in the final multiple alignment consists of aligning two alignments 
+or sequences.  This is done progressively, following the branching order in 
+the GUIDE TREE.  The basic parameters to control this are two gap penalties and
+the scores for various identical/non-indentical residues.  
+
+1) and 2) The GAP PENALTIES are set by menu items 1 and 2.  These control the 
+cost of opening up every new gap and the cost of every item in a gap.  
+Increasing the gap opening penalty will make gaps less frequent.  Increasing 
+the gap extension penalty will make gaps shorter.   Terminal gaps are not 
+penalised.
+
+3) The DELAY DIVERGENT SEQUENCES switch delays the alignment of the most
+distantly related sequences until after the most closely related sequences have 
+been aligned.   The setting shows the percent identity level required to delay
+the addition of a sequence; sequences that are less identical than this level
+to any other sequences will be aligned later.
+
+
+
+4) For DNA, the scoring system assigns a score of 3 for two identical bases
+and zero otherwise.   The TOGGLE TRANSITIONS switch (menu item 3) gives
+transitions (A <--> G or C <--> T i.e. purine-purine or pyrimidine-pyrimidine
+substitutions) a score of 1; otherwise, these are scored as mismatches and
+get a score of zero.  For distantly related DNA sequences, this switch 
+might be better turned off; for closely related sequences it can be useful.
+
+5) PROTEIN WEIGHT MATRIX leads to a new menu where you are offered a
+choice of weight matrices.   The default is the BLOSUM series of
+matrices by Jorja and Steven Henikoff.  Note, a series is used!  The actual
+matrix that is used depends on how similar the sequences to be aligned at this 
+alignment step are.   Different matrices work differently at each
+evolutionary distance.  Further help is offered in the weight matrix menu.
+
+>>HELP A <<           Help for protein gap parameters.
+1) RESIDUE SPECIFIC PENALTIES are amino acid specific gap penalties that reduce
+or increase the gap opening penalties at each position in the alignment or
+sequence.  See the documentation for details.  As an example, positions that 
+are rich in glycine are more likely to have an adjacent gap than positions that
+are rich in valine.
+
+2) 3) HYDROPHILIC GAP PENALTIES are used to increase the chances of a gap within
+a run (5 or more residues) of hydrophilic amino acids; these are likely to
+be loop or random coil regions where gaps are more common.  The residues that 
+are "considered" to be hydrophilic are set by menu item 3.
+
+4) GAP SEPARATION DISTANCE tries to decrease the chances of gaps being
+too close to each other.  Gaps that are less than this distance apart 
+are penalised more than other gaps.  This does not prevent close gaps;
+it makes them less frequent, promoting a block-like appearance of the alignment.
+
+5) END GAP SEPARATION treats end gaps just like internal gaps for the purposes
+of avoiding gaps that are too close (set by GAP SEPARATION DISTANCE above).
+If this is off (default), end gaps will be ignored for this purpose.  This is
+useful when you wish to align fragments where the end gaps are not biologically
+meaningful.
+>>HELP 5 <<      Help for output format options.
+Five output formats are offered.  You can choose more than one (or all 5 if
+you wish).  
+
+CLUSTAL format output is a self explanatory alignment format.  It shows the
+sequences aligned in blocks.  It can be read in again at a later date to
+(for example) calculate a phylogenetic tree or add a new sequence with a 
+profile alignment.
+
+GCG output can be used by any of the GCG programs that can work on multiple
+alignments (e.g. PRETTY, PROFILEMAKE, PLOTALIGN).  It is the same as the GCG
+.msf format files (multiple sequence file); new in version 7 of GCG.
+
+PHYLIP format output can be used for input to the PHYLIP package of Joe 
+Felsenstein.  This is an extremely widely used package for doing every 
+imaginable form of phylogenetic analysis (MUCH more than the the modest intro-
+duction offered by this program).
+
+NBRF/PIR:  this is the same as the standard PIR format with ONE ADDITION.  Gap
+characters "-" are used to indicate the positions of gaps in the multiple 
+alignment.   These files can be re-used as input in any part of clustal that
+allows sequences (or alignments or profiles) to be read in.  
+
+GDE:  this format is used by the GDE package of Steven Smith.
+
+
+OUTPUT ORDER is used to control the order of the sequences in the output
+alignments.  By default, it is the same as the input order.  This switch can
+be used to make the order correspond to the order in which the sequences
+were aligned (from the guide tree/dendrogram), thus automatically grouping 
+closely related sequences.
+>>HELP 6 <<      Help for profile alignments
+
+By PROFILE ALIGNMENT, we mean alignment to an existing alignment.  Either of the
+alignments can be a single sequence.  A profile is simply an alignment of
+one or more sequences (e.g. an alignment output file from Clustal W) or a set
+of unaligned sequences.
+
+The profiles can be in any of the allowed input formats with "-" characters
+used to specify gaps (except for GCG/MSF where "." is used).
+
+You have to specify the 2 profiles by choosing menu items 1 and 2 and giving
+2 file names.  Then Menu item 3 will align the 2 profiles to each other. 
+
+Menu item 4 will take the sequences in the second profile and align them to
+the first profile, 1 at a time.  This is useful to add some new sequences to
+an existing alignment.  In this case, the second profile need not be pre-
+aligned.
+
+The alignment parameters can be set using menu items 6 and 7 ("Alignment 
+parameters"). These are EXACTLY the same parameters as used by the general, 
+automatic multiple alignment procedure.  The general multiple alignment proc-
+edure is simply a series of profile alignments.   Carrying out a series of 
+profile alignments on larger and larger groups of sequences, allows you to 
+manually build up a complete alignment.
+
+Profile alignments allow you to store alignments of your favourite sequences 
+and add new sequences to them in small bunches at a time.  
+>>HELP 7 <<      Help for phylogenetic trees
+1) Before calculating a tree, you must have an ALIGNMENT in memory.  This can be
+input in any format or you should have just carried out a full multiple 
+alignment and the alignment is still in memory.  Remember YOU MUST ALIGN THE
+SEQUENCES FIRST!!!!
+
+The method used is the NJ (Neighbour Joining) method of Saitou and Nei.  First
+you calculate distances (percent divergence) between all pairs of sequence from
+a multiple alignment; second you apply the NJ method to the distance matrix.
+
+2) EXCLUDE POSITIONS WITH GAPS?  With this option, any alignment positions
+where ANY of the sequences have a gap will be ignored.  This means that 'like' 
+will be compared to 'like' in all distances.  It also, automatically throws
+away the most ambiguous parts of the alignment, which are concentrated around
+gaps (usually).  The disadvantage is that you may throw away much of
+the data if there are many gaps.  
+
+3) CORRECT FOR MULTIPLE SUBSTITUTIONS?  For small divergence (say <10%) this
+option makes no difference.  For greater divergence, this option corrects
+for the fact that observed distances underestimate actual evolutionary dist-
+ances.  This is because, as sequences diverge, more than one substitution will
+happen at many sites.  However, you only see one difference when you look at the
+present day sequences.  Therefore, this option has the effect of stretching
+branch lengths in trees (especially long branches).  The corrections used here
+(for DNA or proteins) are both due to Motoo Kimura.  See the documentation for
+details.  README.TXT describes a new modification for proteins distances.
+
+For VERY divergent sequences, the distances cannot be reliably
+corrected.  You will be warned if this happens.  Even if none of the distances
+in a data set exceed the reliable threshold, if you bootstrap the data, 
+some of the bootstrap distances may randomly exceed the safe limit.  
+
+
+4) To calculate a tree, use option 4 (DRAW TREE NOW).  This gives an UNROOTED
+tree and all branch lengths.  The root of the tree can only be inferred by
+using an outgroup (a sequence that you are certain branches at the outside
+of the tree .... certain on biological grounds) OR if you assume a degree
+of constancy in the 'molecular clock', you can place the root in the 'middle'
+of the tree (roughly equidistant from all tips).
+
+5) BOOTSTRAPPING is a method for deriving confidence values for the groupings in
+a tree (first adapted for trees by Joe Felsenstein).   It involves making N
+random samples of sites from the alignment (N should be LARGE, e.g. 500 - 1000);
+drawing N trees (1 from each sample) and counting how many times each grouping
+from the original tree occurs in the sample trees.   You must supply a seed 
+number for the random number generator.  Different runs with the same seed
+will give the same answer.  See the documentation for details.
+
+6) OUTPUT FORMATS:  three different formats are allowed.  None of these
+displays the tree visually.  You must make the tree yourself (on paper)
+using the results OR get the PHYLIP package and use the tree drawing facilities
+there.  (Get the PHYLIP package anyway if you are interested in trees).
+
+>>HELP 8 <<      Help for choosing protein weight matrix
+For protein alignments, you use a weight matrix to determine the similarity of
+non-identical amino acids.  For example, Tyr aligned with Phe is usually judged 
+to be 'better' than Tyr aligned with Pro.   These are not used with DNA.
+
+There are two 'in-built' series of weight matrices offered.  Each consists
+of several matrices which work differently at different evolutionary distances.
+To see the exact details, read the documentation.  Crudely, we store several
+matrices in memory, spanning the full range of amino acid distance (from
+almost identical sequences to highly divergent ones).   For very similar
+sequences, it is best to use a strict weight matrix which only gives a high
+score to identities and the most favoured conservative substitutions.  For
+more divergent sequences, it is appropriate to use "softer" matrices which
+give a high score to many other frequent substitutions.
+
+1) BLOSUM (Henikoff).   These matrices appear to be the best available for 
+carrying out data base similarity (homology searches).  The matrices used are:
+Blosum80, 62, 40 and 30.
+
+2) PAM (Dayhoff).  These have been extremely widely used since the late '70s.
+We use the PAM 120, 160, 250 and 350 matrices.
+
+We also supply an identity matrix which gives a score of 10 to two identical 
+amino acids and a score of zero otherwise.  This matrix is not very useful.
+Alternatively, you can read in your own (just one matrix, not a series).
+
+A new matrix can be read from a file on disk, if the filename consists only
+of lower case characters. The values in the new weight matrix must be integers
+and the scores should be similarities.  You can use negative as well as positive
+values if you wish, although the matrix will be automatically adjusted to all
+positive scores.
+
+INPUT FORMAT  The format used for a new matrix is the same as the BLAST program.
+Any lines beginning with a # character are assumed to be comments. The first
+non-comment line should contain a list of amino acids in any order, using the
+1 letter code, followed by a * character. This should be followed by a square
+matrix of integer scores, with one row and one column for each amino acid. The
+last row and column of the matrix (corresponding to the * character) contain
+the minimum score over the whole matrix.
+>>HELP 9 <<      Help for command line parameters
+                DATA (sequences)
+
+/INFILE=file.ext                             :input sequences.
+/PROFILE1=file.ext  and  /PROFILE2=file.ext  :profiles (old alignment).
+
+                VERBS (do things)
+
+/OPTIONS	    :list the command line parameters
+/HELP  or /CHECK    :outline the command line params.
+/ALIGN              :do full multiple alignment 
+/TREE               :calculate NJ tree.
+/BOOTSTRAP(=n)      :bootstrap a NJ tree (n= number of bootstraps; def. = 1000).
+
+                PARAMETERS (set things)
+
+***General settings:****
+/INTERACTIVE :read command line, then enter normal interactive menus
+/QUICKTREE   :use FAST algorithm for the alignment guide tree
+/NEWTREE=    :file for new guide tree
+/USETREE=    :file for old guide tree
+/NEGATIVE    :protein alignment with negative values in matrix
+/OUTFILE=    :sequence alignment file name
+/OUTPUT=     :GCG, GDE, PHYLIP or PIR
+/OUTORDER=   :INPUT or ALIGNED
+/CASE        :LOWER or UPPER (for GDE output only)
+
+***Fast Pairwise Alignments:***
+/KTUP=n      :word size                  /TOPDIAGS=n  :number of best diags.
+/WINDOW=n    :window around best diags.  /PAIRGAP=n   :gap penalty
+/SCORE       :PERCENT or ABSOLUTE
+
+***Slow Pairwise Alignments:***
+/PWMATRIX=   :BLOSUM, PAM, ID or filename
+/PWGAPOPEN=f :gap opening penalty        /PWGAPEXT=f  :gap opening penalty
+
+***Multiple Alignments:***
+/MATRIX=     :BLOSUM, PAM, ID or filename
+/GAPOPEN=f   :gap opening penalty        /GAPEXT=f    :gap extension penalty
+/ENDGAPS     :no end gap separation pen. /GAPDIST=n   :gap separation pen. range
+/NORGAP      :Residue specific gaps off  /NOHGAP      :hydrophilic gaps off
+/HGAPRESIDUES= :list hydrophilic res.    /MAXDIV=n    :% ident. for delay
+/TYPE=       :PROTEIN or DNA             /TRANSITIONS :transitions NOT weighted.
+
+***Trees:***                             /SEED=n    :seed number for bootstraps.
+/KIMURA      :use Kimura's correction.   /TOSSGAPS  :ignore positions with gaps.
+
+>>HELP 0 <<           Help for tree output format options
+
+Three output formats are offered: 1) Clustal, 2) Phylip/TreeTool, 
+3) Just the distances.
+
+None of these formats displays the results graphically.  To see a graphic
+representation of a tree (not a bootstrapped tree), get the PHYLIP package and
+use format 2) below.  It can be imported into the PHYLIP programs RETREE, 
+DRAWTREE and DRAWGRAM and displayed graphically.  TreeTool can also do this
+but is only available for SUN (by ftp from rdp.life.uiuc.edu).  TreeTool,
+however has a neat facility for labels on internal nodes which we use to
+display bootstrap figures on the bootstrap trees.  If you do not have TreeTool,
+please request the trees in Clustal format 1) below.
+
+
+1) Clustal format output.  
+This format is verbose and lists all of the distances between the sequences
+and the number of alignment positions used for each.   The tree is described
+at the end of the file.  It lists the sequences that are joined at each 
+alignment step and the branch lengths.  After two sequences are joined, it is 
+referred to later as a NODE.  The number of a NODE is the number of the 
+lowest sequence in that NODE.   
+
+2) Phylip or TreeTool format output.
+This format is the New Hampshire format, used by many phylogenetic analysis
+packages.  It consists of a series of nested parentheses, describing the
+branching order, with the sequence names and branch lengths.  With a simple
+tree, it can be used by the RETREE, DRAWGRAM and DRAWTREE programs of the PHYLIP
+package to see the trees graphically.  This is the same format used during
+multiple alignment for the guide trees.
+
+With a bootstrap tree, you need to use TreeTool or request format 1) above.
+
+3) The distances only.
+This format just outputs a matrix of all the pairwise distances in a format
+that can be used by the Phylip package.  It used to be useful when one
+could not produce distances from protein sequences in the Phylip package but
+is now redundant (Protdist of Phylip 3.5 now does this).

@@ -376,6 +376,8 @@ short DRichView::FindOrAddStyle( DRichStyle* theStyle)
 
 DParagraph* DRichView::GetParaPtr( short item)
 { 
+	if (fParags == NULL)
+		return nullptr;
 	return (DParagraph*) fParags->At(item); 
 }
 
@@ -614,6 +616,7 @@ short DRichView::FitTextToWidth(char* texts, short maxwid, Boolean byPixels,
   short  i,j,wid, swid, nextofs, numStyles;
 	Boolean wordWrap, styleset;
 	DRichStyle *atstyle, savestyle;
+	styleset = FALSE;
 	
 	nextofs= itemPtr->fStyleIndex[istyle].nextofs;
 	numStyles= itemPtr->fNumStyles;
@@ -661,7 +664,9 @@ short DRichView::FitTextToWidth(char* texts, short maxwid, Boolean byPixels,
     	}
     	
   	}
-	if (styleset) SetStyle( &savestyle);
+  
+	if (styleset) SetStyle(&savestyle);
+  
 	savestyle.ownpict= false; //!!
   if (i > 0 && i < j) return i;
 	else if (j > 0) return j;

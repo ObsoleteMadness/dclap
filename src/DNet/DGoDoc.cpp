@@ -28,6 +28,7 @@
 #include <DUtil.h>
 #include <DIconLib.h> //??
 #include <DIcons.h>
+#include <DTabSelect.h>
  
  
 enum ResizeWindSizes {
@@ -147,8 +148,10 @@ DGopherListDoc::DGopherListDoc( long id, DGopher* parentGopher) :
 		DWindow( id, gApplication)
 { 
 	Initialize(NULL);
+
 	fParent= parentGopher;
 	if (fParent) fParent->newOwner();
+
 	//fParentlist= new DList(NULL, DList::kDeleteObjects);
 	fParentlist= new DList(NULL);
 	SetInfoLine();
@@ -504,7 +507,7 @@ Boolean DGopherListDoc::ProcessGopherWithTest( DGopher* theGo)
 {
 	DWindow* win;
 	
-		// ?? always reset thread state here ??
+	// ?? always reset thread state here ??
 	theGo->fThreadState= DGopher::kThreadNotStarted;  
 	if (theGo->fThreadState == DGopher::kThreadNotStarted) {
 		if (theGo->fHasAsk && theGo->fHaveReply) theGo->fQueryPlus= theGo->fReplyData;  
@@ -960,15 +963,15 @@ public:
 	Nlm_FonT	fItalFont;
 	
 	DGoviewListView(long id, DGopher* itsGopher, DViewChoiceDialog* itsDialog, short pixwidth, short pixheight);
-	virtual void DoClickAt(short row, short col);
-	virtual void SingleClickAt(short row, short col);
-	virtual void DoubleClickAt(short row, short col);
+	virtual void DoClickAt(long row, long col);
+	virtual void SingleClickAt(long row, long col);
+	virtual void DoubleClickAt(long row, long col);
 	virtual void GetReadyToShow();
-	virtual void DrawCell(Nlm_RecT r, short row, short col);
+	virtual void DrawCell(Nlm_RecT r, long row, long col);
 	virtual DGopherItemView* SelectedView();
 	virtual void  SetValue( short value) { SelectCells( value, 0, false); }
 	virtual short GetValue() { 
-		if (GetSelectedRow() != kNoSelection) return (1+GetSelectedRow());
+		if (GetSelectedRow() != DTabSelection::kNoSelection) return (1+GetSelectedRow());
 		else return 0;
 	  }
 };
@@ -991,7 +994,7 @@ DGoviewListView::DGoviewListView(long id, DGopher* itsGopher, DViewChoiceDialog*
 	this->GetReadyToShow(); // ??
 }
 
-void DGoviewListView::DoClickAt( short row, short col)
+void DGoviewListView::DoClickAt( long row, long col)
 {
 	DGopherItemView* giv= (DGopherItemView*) fItems->At(row);
 	if (giv) {
@@ -1011,13 +1014,13 @@ void DGoviewListView::DoClickAt( short row, short col)
 		}
 }
 
-void DGoviewListView::SingleClickAt( short row, short col)
+void DGoviewListView::SingleClickAt(long row, long col)
 {
 	DTableView::SingleClickAt( row, col); // must select item !
 	if (gSingleClicker) DoClickAt( row, col);
 }
 
-void DGoviewListView::DoubleClickAt( short row, short col)
+void DGoviewListView::DoubleClickAt(long row, long col)
 {
 	DTableView::DoubleClickAt( row, col); 
 	if (gDoubleClicker) DoClickAt( row, col);
@@ -1026,7 +1029,7 @@ void DGoviewListView::DoubleClickAt( short row, short col)
 
 DGopherItemView* DGoviewListView::SelectedView()
 {
-	if (GetSelectedRow() != kNoSelection) 
+	if (GetSelectedRow() != DTabSelection::kNoSelection)
 		return (DGopherItemView*)fItems->At( GetSelectedRow());
 	else 
 		return NULL;
@@ -1045,7 +1048,7 @@ void DGoviewListView::GetReadyToShow()
 	this->SetItemWidth( 1, 1, wid);  
 }
 
-void DGoviewListView::DrawCell(Nlm_RecT r, short row, short col)
+void DGoviewListView::DrawCell(Nlm_RecT r, long row, long col)
 {
 	if (col) r.left += 2; // quick fix for cells against each
 	DGopherItemView* giv= (DGopherItemView*) fItems->At(row);
@@ -1166,7 +1169,7 @@ void DViewChoiceDialog::Open()
 		if (aMapper && aMapper->GetDisplay() ) canDisplay= true;
 		
 		this->NextSubviewBelowLeft();
-		sprintf( namebuf, " ? is an unknown view, double-click to link to a handler"LINEEND" * indicates the best view");
+		sprintf( namebuf, " ? is an unknown view, double-click to link to a handler" LINEEND " * indicates the best view");
 		//new DPrompt(0, this, namebuf, 0, 0, gSmallFont);	 	
 		new DNotePanel(0, this, namebuf, 250, 0, gSmallFont);
 		//this->NextSubviewBelowLeft();
@@ -1842,7 +1845,7 @@ void DGopherListDoc::AddGopherToView( DGopher* aGopher)
 void DGopherListDoc::CutClearSelection( Nlm_Boolean saveCut)
 {	
 	short aRow = fGoview->GetSelectedRow();
-	if (aRow == DTableView::kNoSelection) return;
+	if (aRow == DTabSelection::kNoSelection) return;
 	DGopher* aGopher= fGolist->GopherAt(aRow);
 	if (saveCut && aGopher) {
 		if (gClipGopher) gClipGopher->suicide();
@@ -1961,7 +1964,7 @@ void DGolistView::Hold(Nlm_PoinT mouse)
 
 void DGolistView::Drag(Nlm_PoinT mouse)
 {
-	short row, col;
+	long row, col;
 	DTableView::Drag(mouse);
 
 	// this is called on drag, if click/release are ignored
@@ -1996,7 +1999,7 @@ void DGolistView::Release(Nlm_PoinT mouse)
 }
 
 
-void DGolistView::OpenGopherLink(short gopherItem)
+void DGolistView::OpenGopherLink(long gopherItem)
 {
 	DGopher* ag= fItems->GopherAt(gopherItem); 
 	if (ag) {
@@ -2034,12 +2037,12 @@ void DGolistView::OpenGopherLink(short gopherItem)
 
 
 
-void DGolistView::DoubleClickAt(short row, short col)
+void DGolistView::DoubleClickAt(long row, long col)
 {
 	if (gDoubleClicker) OpenGopherLink(row);
 }
 
-void DGolistView::SingleClickAt(short row, short col)
+void DGolistView::SingleClickAt(long row, long col)
 {
 	DTableView::SingleClickAt(row,  col);
 	((DGopherListDoc*)fSuperior)->SetViewMenu();
@@ -2051,7 +2054,7 @@ void DGolistView::SingleClickAt(short row, short col)
 
 DGopher* DGolistView::SelectedGopher()
 {
-	if (GetSelectedRow() != kNoSelection) 
+	if (GetSelectedRow() != DTabSelection::kNoSelection)
 		return fItems->GopherAt( GetSelectedRow());
 	else 
 		return NULL;
@@ -2060,7 +2063,7 @@ DGopher* DGolistView::SelectedGopher()
 
 #define USE_MULTI_LINES 1
 
-void DGolistView::SetLineHeight( short item, DGopher* theGo)
+void DGolistView::SetLineHeight( long item, DGopher* theGo)
 {
 #if NOTNOW_USE_MULTI_LINES
   short icowidth;
@@ -2128,7 +2131,7 @@ void DGolistView::SetColWidths()
 }
 
 
-void DGolistView::DrawCell(Nlm_RecT r, short row, short col)
+void DGolistView::DrawCell(Nlm_RecT r, long row, long col)
 {
 #define gShowPlus  1
 	// need a DTableView field to handle cell rect insets !
@@ -2249,7 +2252,7 @@ void DGolistView::SetColWidths()
 }
 
 
-void DGolistView::DrawCell(Nlm_RecT r, short row, short col)
+void DGolistView::DrawCell(Nlm_RecT r, long row, long col)
 {
 	// need a DTableView field to handle cell rect insets !
 			

@@ -431,6 +431,8 @@ word DDrawPict::getWord()
 #ifdef PLIST
 	if (gDoPlist) fprintf( gPlist, " %4X", b); 
 #endif
+	if (b == 65521)
+		return 0;
 	return b;
 }
 
@@ -1007,7 +1009,8 @@ void DDrawPict::read_pattern(void)
 		Nlm_MemFree(ct.ctTable);
 		break;
 	default:
-		Nlm_Message(MSG_FATAL,"drawpict: unknown pattern type in read_pattern");
+		//Nlm_Message(MSG_ERROR,"drawpict: unknown pattern type in read_pattern");
+		break;
 	}
 }
 
@@ -1243,6 +1246,10 @@ void DDrawPict::drawPixmap( short version, word rowBytes, short isregion )
 
 #if 1
 			hMemoryDC = CreateCompatibleDC (hDC);
+			if (!hMemoryDC)
+			{
+				return;
+			}
 #if 0
 			// ?? is the 1st param == hDC or hMemoryDC
 			hBitmap= CreateDIBitmap( hDC, &(dbi->bmiHeader), 0, NULL, NULL, 0);
@@ -1252,18 +1259,21 @@ void DDrawPict::drawPixmap( short version, word rowBytes, short isregion )
 #else
 			hBitmap= CreateDIBitmap( hDC, &(dbi->bmiHeader), CBM_INIT, bits, dbi, DIB_RGB_COLORS);
 #endif
-
-			hOldBitmap = (HBITMAP) SelectObject (hMemoryDC, hBitmap);
-			if (hOldBitmap != NULL) {
-				/*SetViewportOrg( hDC, 0, destrec.bottom);*/
-				BitBlt ( hDC, destrec.left, destrec.top, swidth, sheight,
-								hMemoryDC, 0, 0, wmode);
-			  /*SetViewportOrg( hDC, 0, 0); */ 
-				SelectObject (hMemoryDC, hOldBitmap);
+			if (hBitmap)
+			{
+				hOldBitmap = (HBITMAP)SelectObject(hMemoryDC, hBitmap);
+				if (hOldBitmap != NULL) {
+					/*SetViewportOrg( hDC, 0, destrec.bottom);*/
+					BitBlt(hDC, destrec.left, destrec.top, swidth, sheight,
+						hMemoryDC, 0, 0, wmode);
+					/*SetViewportOrg( hDC, 0, 0); */
+					SelectObject(hMemoryDC, hOldBitmap);
 				}
-			DeleteDC (hMemoryDC);
-			DeleteObject (hBitmap);
-			/* ReleaseDC( Nlm_currentHWnd, hDC); */
+				DeleteObject(hBitmap);
+			}
+			
+			//ReleaseDC( Nlm_currentHWnd, hDC); 
+			DeleteDC(hMemoryDC);
 #else
 			/* hDC= CreateCompatibleDC(Nlm_currentHDC);*/ /*?? or BeginPaint()... */
 
@@ -1282,7 +1292,7 @@ void DDrawPict::drawPixmap( short version, word rowBytes, short isregion )
 #else
 			hBitmap = CreateBitmap ( swidth, sheight, 1, depth, (LPSTR) bits);
 			hMemoryDC = CreateCompatibleDC (Nlm_currentHDC);
-      hOldBitmap = SelectObject (hMemoryDC, hBitmap);
+      hOldBitmap = (HBITMAP)SelectObject (hMemoryDC, hBitmap);
       if (hOldBitmap != NULL) {
 				BitBlt (Nlm_currentHDC, destrec.left, destrec.top, swidth, sheight,
 								hMemoryDC, 0, 0, wmode);
@@ -1293,7 +1303,7 @@ void DDrawPict::drawPixmap( short version, word rowBytes, short isregion )
 #endif
 			}
 	}
-	Nlm_MemFree( bits);
+	//Nlm_MemFree( bits);
 #endif
 
 

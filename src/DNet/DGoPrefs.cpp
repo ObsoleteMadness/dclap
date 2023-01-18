@@ -41,7 +41,7 @@ Global Nlm_FonT gGoviewFont = NULL; //Nlm_programFont;
 Global short  gGoviewFontSize = 12;
 Global char	*gGoviewFontName = NULL;
 Global Nlm_Boolean gDoubleClicker = true;
-Global Nlm_Boolean gSingleClicker = false;
+Global Nlm_Boolean gSingleClicker = true;
 
 
 #if 0

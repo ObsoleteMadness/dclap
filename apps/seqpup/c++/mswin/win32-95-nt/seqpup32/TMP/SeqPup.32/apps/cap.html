@@ -1,0 +1,30 @@
+<HTML>
+<!dclap [cap]>
+<!;child app calls using dialog forms>
+
+<title>CAP Contig Assembly</title>
+<b>CAP</b> - A gel contig assembly program
+by Xiaoqiu Huang.
+<HR>
+
+<FORM 
+	METHOD=localexec 
+	ACTION="$apps:cap
+	$temp:ca$$.ins
+	$temp:ca$$.out 
+  $minoverlap $pctmatch
+">
+
+<i>Program options:</i> <p>
+Base overlap: <INPUT NAME="minoverlap" VALUE=20 SIZE=4> (minimum number bases)<p>
+Percent match: <INPUT NAME="pctmatch" VALUE=85 SIZE=4> <p>
+<!A HREF=file:///$apps:cap.help Help /A>
+<INPUT TYPE=submit VALUE="Launch app"> 
+
+<INPUT TYPE=hidden NAME=infile VALUE="$temp:ca$$.ins">
+<INPUT TYPE=hidden NAME=seqformat VALUE="fasta">
+<INPUT TYPE=hidden NAME=minseq VALUE="2">
+<INPUT TYPE=hidden NAME=outfile1 VALUE="$temp:ca$$.out	biosequence/fasta">
+
+</FORM>
+</HTML>

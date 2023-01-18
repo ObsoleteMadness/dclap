@@ -129,7 +129,7 @@ DRTFHandler::DRTFHandler(DRichView* itsDoc, DFile* savefile) :
   if (gRTFsetup==NULL) gRTFsetup= new DRTFsetup();
 }
 
-char* DRTFHandler::IsRich(char* buf, ulong buflen)
+inline char* DRTFHandler::IsRich(char* buf, ulong buflen)
 {
 	if (buflen==0) buflen= strlen(buf);
 	ulong len = buflen;
@@ -155,7 +155,7 @@ DRichprocess* DRTFHandler::NewProcessor( DFile* itsFile, Nlm_MonitorPtr progress
 		return fProcessor;
 }
 
-Boolean DRTFHandler::ProcessData( char* cbeg, char* cend, Boolean endOfData, 
+inline Boolean DRTFHandler::ProcessData( char* cbeg, char* cend, Boolean endOfData, 
 					ulong& dataRemaining) 
 {
  
@@ -269,7 +269,7 @@ extern "C" void rtfHandleGroupClass()
 
 extern "C" short rtfGetOneChar()
 {
-#if 0 //x
+#if 1 //x
 			// this is slower than we like -- this is called a lot
 	return gRTFprocess->GetOneChar();
 #else
@@ -340,6 +340,9 @@ DRTFprocess::DRTFprocess( DFile* itsFile, DRichView* itsDoc, Nlm_MonitorPtr prog
 DRTFprocess::~DRTFprocess()
 {
 	Nlm_MemFree(fPict);
+	Nlm_MemFree(fParaFmt.tabstops);
+	Nlm_MemFree(fParaFmt.tabkinds);
+	Nlm_MemFree(gMapfilePath);
 	gRTFprocess= NULL;
 }
 

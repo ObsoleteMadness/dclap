@@ -1,0 +1,55 @@
+<html>
+<!dclap [gcg_fasta]>
+<!;network child app calls using dialog forms>
+<header cols=60 rows=25>
+<title>GCG FastA</title>
+</header>
+<body>
+<b>GCG FastA</b> - 
+A Pearson and Lipman search for similarity between a query 
+sequence and any group of sequences,
+from Genetics Computer Group
+<HR>
+
+<FORM 
+	METHOD=bop 
+	ACTION="bop://$bophost:$bopport/fasta 
+  myseq -out=myseq.fasta 
+  $?dbank=Other:-IN2=$otherdata:$dbank
+  -WORD=$word -LIST=$list
+  $othercmd
+">
+
+<! problem with:  $?dbank=Other:-IN2=$otherdata:$dbank >
+
+<!A HREF=http://sunflower.bio.indiana.edu/gcg/manual/fasta.html} Help with fasta {/A>
+<INPUT TYPE=submit VALUE="Launch app"> 
+<p>
+Program options:<p>
+Databank to search:
+<select name=dbank>
+<option>GenEMBL
+<option>Other 
+</select>
+<p>
+Other databank to search: <INPUT NAME=otherdata SIZE=8>
+<p>
+
+Word size: <INPUT NAME=wordsize VALUE=6 SIZE=2>
+<p>
+Number of scores to show: <INPUT NAME=list VALUE=40 SIZE=3>
+<p>
+  
+Other options: <p>
+<TEXTAREA NAME="othercmd" COLS=40 ROWS=2></TEXTAREA>
+<p>  
+
+<INPUT TYPE=hidden NAME=infile VALUE="myseq">
+<INPUT TYPE=hidden NAME=seqformat VALUE="gcg">
+<INPUT TYPE=hidden NAME=minseq VALUE="1">
+<INPUT TYPE=hidden NAME=maxseq VALUE="1">
+<INPUT TYPE=hidden NAME=outfile1 VALUE="myseq.fasta  text/plain">
+
+</FORM>
+<HR>
+</body></html>

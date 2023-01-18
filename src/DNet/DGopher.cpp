@@ -128,7 +128,7 @@ DGopherTalk::DGopherTalk(): DTCP()
 void DGopherTalk::OpenQuery( char* host, short port, char* path, char* query, 
 														char* viewchoice, char* plus, DFile* plusFile)
 {
-	void *crlfdotcrlf = (void*) CRLF"."CRLF; //"\015\012";  
+	void *crlfdotcrlf = (void*) CRLF"." CRLF; //"\015\012";  
 	
 	ShowMessage("TCP opening connection to host");
 	Open((char*)host, port);
@@ -159,7 +159,7 @@ void DGopherTalk::OpenQuery( char* host, short port, char* path, char* query,
 	//    bad:  path|+view|+|1<cr>ask data
 	//	 good:  path|+view|1<cr>data or  path|$|1<cr>data  or  path|+|1<cr>data
 				char* selector= (viewchoice) ? "" : "\t$"; // or "+";
-				sprintf( header, "%s\t1"CRLF"+-1"CRLF, selector); // data until dot-cr-lf
+				sprintf( header, "%s\t1" CRLF "+-1" CRLF, selector); // data until dot-cr-lf
 #else
 				sprintf( header, "\t+\t1"CRLF"+-1"CRLF); // data until dot-cr-lf
 #endif
@@ -188,7 +188,7 @@ void DGopherTalk::OpenQuery( char* host, short port, char* path, char* query,
 			if (fileType == cTEXT)  {
 				/// ARrrrgggghhhh -- need to do newline translation here (at least if type==TEXT)
 				char	header[80];
-				sprintf( header, "\t+\t1"CRLF"+-1"CRLF); // data until dot-cr-lf
+				sprintf( header, "\t+\t1" CRLF "+-1" CRLF); // data until dot-cr-lf
 				Send( header, kDontSendNow);
 				Send( plus, kDontSendNow);
 				SendCRLF(false, kDontSendNow);		// ensure newline  
@@ -206,8 +206,8 @@ void DGopherTalk::OpenQuery( char* host, short port, char* path, char* query,
 							buffer[count++]= kLF; 
 							} 
 						}
-					if (count==3 && 0==memcmp(buffer, "."CRLF, 3))  
-						this->SendBytes(".."CRLF, 4, kDontSendNow); // make sure we don't send terminator by mistake
+					if (count==3 && 0==memcmp(buffer, "." CRLF, 3))  
+						this->SendBytes(".." CRLF, 4, kDontSendNow); // make sure we don't send terminator by mistake
 					else
 						this->SendBytes(buffer, count, kSendNow); //kDontSendNow
 					if (fullbuf) this->SendCRLF(kDontSendNow);
@@ -216,7 +216,7 @@ void DGopherTalk::OpenQuery( char* host, short port, char* path, char* query,
 					done|= fat >= lenFile;
 					}
 				SendCRLF(false, kDontSendNow);		// ensure newline  
-				SendBytes("."CRLF, 3, kSendNow);	// send dot-cr-lf 
+				SendBytes("." CRLF, 3, kSendNow);	// send dot-cr-lf 
 				}
 			
 			else {
@@ -224,7 +224,7 @@ void DGopherTalk::OpenQuery( char* host, short port, char* path, char* query,
 				long len = strlen(plus) + lenFile;
 				//sprintf( header, "\t+\t1"CRLF"+%d"CRLF, len);  // exactly <len> bytes of data
 						// ^^ this isn't understood by server ?!?
-				sprintf( header, "\t+\t1"CRLF"+-2"CRLF); // data until close
+				sprintf( header, "\t+\t1" CRLF "+-2" CRLF); // data until close
 				Send( header, kDontSendNow);
 				Send( plus, kDontSendNow);
 				//SendCRLF(false, kDontSendNow);		// ??! ensure newline  -- not w/ fixed bytecount...
@@ -2316,8 +2316,12 @@ void DGopher::ReadAChunk( long maxchunk)
 			fThreadState= kThreadDoneReading;
 		}
 	else if (fTalker) {
-		fInfo= fTalker->ReadWithChecks(fInfoSize, fBytesExpected, (fTransferType == kTransferText), 
-										maxchunk, fInfo);
+		//ulong bufsizew = (ulong)fInfoSize;
+		//ulong& bufsize = bufsizew;
+		//fInfo= fTalker->ReadWithChecks(bufsize, fBytesExpected, (fTransferType == kTransferText),
+        //								maxchunk, fInfo);
+		fInfo = fTalker->ReadWithChecks(fInfoSize, fBytesExpected, (fTransferType == kTransferText),
+			maxchunk, fInfo);
 		}
 	//fThreadState= kThreadDataOld;
 }

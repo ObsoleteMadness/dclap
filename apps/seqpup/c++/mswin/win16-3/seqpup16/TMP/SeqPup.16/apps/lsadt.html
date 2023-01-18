@@ -1,0 +1,23 @@
+<HTML>
+<!dclap [lsadt]>
+<!;child app calls using dialog forms>
+
+<title>DeSoete LSADT phylogeny analysis</title>
+<b>DeSoete LSADT</b> - Least Squares algorithm for fitting
+Additive Trees to proximity data.<p>
+by Geert De Soete, C conversion by Mike Maciukenas.
+<HR>
+
+<FORM  METHOD=localexec  ACTION="$apps:lsadt">
+
+<!A HREF=file:///$apps:cap2.help Help /A>
+<INPUT TYPE=submit VALUE="Launch app"> 
+
+<INPUT TYPE=hidden NAME=stdin VALUE="$apps:lsa$$.infile">
+<INPUT TYPE=hidden NAME=seqformat VALUE="distance">
+<INPUT TYPE=hidden NAME=minseq VALUE="3">
+<INPUT TYPE=hidden NAME=stdout VALUE="$apps:lsa$$.outfile">
+<!INPUT TYPE=hidden NAME=outfile1 VALUE="$apps:lsadt.report  text/plain">
+
+</FORM>
+</HTML>

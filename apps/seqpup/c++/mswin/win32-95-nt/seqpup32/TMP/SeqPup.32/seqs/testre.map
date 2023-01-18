@@ -1,0 +1,523 @@
+ (Linear) MAP of: testre.gcg  check: 2116  from: 1  to: 1501
+
+
+ With 209 enzymes: * 
+
+ MaxCuts: 4 
+                           July 1, 1995  12:42  ..
+ 
+                         S  E     B
+                         a  c H  Ep
+                    A    u Do i  cu                FH    M        N
+                    l    3 pR n  o1                oh    s        s
+                    w    A nI 4  N0                ka    e        p
+                    I    I II I  II                II    I        I
+                                                    /              
+         ATATAACATGAGAGTTTGATCCTGGCTCAGGATGAACGCTGCGCGTGCTTAACACATGCA
+       1 ---------+---------+---------+---------+---------+---------+ 60
+         TATATTGTACTCTCAAACTAGGACCGAGTCCTACTTGCGACGCGCACGAATTGTGTACGT
+ 
+a        I  *                                                         -
+b         Y  N  M  R  V  *              M  N  A  A  R  A  *     M  Q  -
+c          I  T  *                                                    -
+       1 ---------+---------+---------+---------+---------+---------+ 60
+d                                                                     -
+e                                                                     -
+f          Y  L  M                                         *  C  M  C -
+ 
+                               S
+                               a
+                          A    u D                                 E
+                          l    3 p                                 c
+                          w    A n                                 i
+                          I    I I                                 I
+         AGTCGAACGAAGCATTTACTTACGATCCCTTCGGGGTGACGAGTTTATGACTGAGTGGCG
+      61 ---------+---------+---------+---------+---------+---------+ 120
+         TCAGCTTGCTTCGTAAATGAATGCTAGGGAAGCCCCACTGCTCAAATACTGACTCACCGC
+ 
+a                                                                     -
+b         V  E  R  S  I  Y  L  R  S  L  R  G  D  E  F  M  T  E  W  R  -
+c                                                                     -
+      61 ---------+---------+---------+---------+---------+---------+ 120
+d                                                                     -
+e                                                                     -
+f          T  S  R  L  M                                              -
+ 
+                     A      B            B
+                     f      s            sE                   B
+                     lM     t         M  pc                   s     C
+                     Il     E         m  2o                   m     j
+                     Iu     I         e  4N                   F     e
+                     II     I         I  II                   I     I
+                      /                   /                          
+         GACGGGTGAGTAACGCGTGGGTAACCTACCTTATACAGGGGGACAACAGTTGGAAACGAC
+     121 ---------+---------+---------+---------+---------+---------+ 180
+         CTGCCCACTCATTGCGCACCCATTGGATGGAATATGTCCCCCTGTTGTCAACCTTTGCTG
+ 
+a                                                                     -
+b         T  G  E  *                                                  -
+c                                                                     -
+     121 ---------+---------+---------+---------+---------+---------+ 180
+d                                                                     -
+e                                                                     -
+f                                                                     -
+ 
+             B                               A
+         C   s                               f
+         j   p             H                 l
+         e   2             h                 I
+         P   4             a                 I
+         I   I             I                 I
+         /                                    
+         TGCTAATACCGCATAAGCGCACGATGTTGCATGACAACGTGTGAAAAGATTTATCGGTAT
+     181 ---------+---------+---------+---------+---------+---------+ 240
+         ACGATTATGGCGTATTCGCGTGCTACAACGTACTGTTGCACACTTTTCTAAATAGCCATA
+ 
+a                                      M  T  T  C  E  K  I  Y  R  Y   -
+b                                                                     -
+c                               M  L  H  D  N  V  *                   -
+     181 ---------+---------+---------+---------+---------+---------+ 240
+d                                                                     -
+e            *  Y  R  M  L  A  R  H  Q  M                             -
+f                                                                     -
+ 
+               S                                                S
+              Aa   P                                           Ba
+         H   Bvu   s     F                             S       cu D
+         g   ca9   h     a                             t       e3 p
+         a   cI6   A     u                             y       fA n
+         I   III   I     I                             I       II I
+               /                                                   
+         AAGATGGACCCGCGTCTGATTAGCTAGTTGGTGAGGTAACGGCTCACCAAGGCGACGATC
+     241 ---------+---------+---------+---------+---------+---------+ 300
+         TTCTACCTGGGCGCAGACTAATCGATCAACCACTCCATTGCCGAGTGGTTCCGCTGCTAG
+ 
+a        K  M  D  P  R  L  I  S  *                                    -
+b                                                                     -
+c                                                                     -
+     241 ---------+---------+---------+---------+---------+---------+ 300
+d                                                                     -
+e                                 *  N  T  L  Y  R  S  V  L  A  V  I  -
+f                                                                     -
+ 
+                      H   B       H                    S H
+                      g   s   B  Ga       B            aBa
+                      i   t   s Ede       s            use
+                      E   E   r aiI       m            9mI
+                      I   I   F eII       A            6FI
+                      I   I   I III       I            III
+                                 /                       /
+         AGTAGCCGACCTGAGAGGGTGACCGGCCACATTGGGACTGAGACACGGCCCAAACTCCTA
+     301 ---------+---------+---------+---------+---------+---------+ 360
+         TCATCGGCTGGACTCTCCCACTGGCCGGTGTAACCCTGACTCTGTGCCGGGTTTGAGGAT
+ 
+a                                                                     -
+b                                                                     -
+c                                                                     -
+     301 ---------+---------+---------+---------+---------+---------+ 360
+d                                                                     -
+e         L  L  R  G  S  L  T  V  P  W  M                             -
+f                                                                     -
+ 
+         BE              T                S                  B
+         cc              s   S            f H                s  T
+         eo              p   s            a h                a  a
+         fN              R   p            N a                H  u
+         II              I   I            I I                I  I
+          /                                                      
+         CGGGAGGCAGCAGTGGGGAATATTGCACAATGGGCGCAAGCCTGATGCAGCGACGCCGCG
+     361 ---------+---------+---------+---------+---------+---------+ 420
+         GCCCTCCGTCGTCACCCCTTATAACGTGTTACCCGCGTTCGGACTACGTCGCTGCGGCGC
+ 
+a                                                                     -
+b                                                                     -
+c                                     M  G  A  S  L  M  Q  R  R  R  V -
+     361 ---------+---------+---------+---------+---------+---------+ 420
+d                                                                     -
+e                                                                     -
+f                                                                     -
+ 
+                          M                                     M
+         H           X    b                                    BbR K
+         g           m    o                                    aos p
+         a           n    I                                    nIa n
+         I           I    I                                    III I
+                                                                /   
+         TGAGCGAAGAAGTATTTCGGTATGTAAAGCTCTATCAGCAGGGAAGATAATGACGGTACC
+     421 ---------+---------+---------+---------+---------+---------+ 480
+         ACTCGCTTCTTCATAAAGCCATACATTTCGAGATAGTCGTCCCTTCTATTACTGCCATGG
+ 
+a                             M  *                                    -
+b                                                         M  T  V  P  -
+c          S  E  E  V  F  R  Y  V  K  L  Y  Q  Q  G  R  *             -
+     421 ---------+---------+---------+---------+---------+---------+ 480
+d                                                                     -
+e                                                                     -
+f                                                                     -
+ 
+                                              M
+                     B           B            sS       BS
+                     s           s          DTpa       sn
+                     r           a          saAc       aa
+                     F           A          au1I       AB
+                     I           I          IIII       II
+                                             /          /
+         TGACTAAGAAGCACCGGCTAAATACGTGCCAGCAGCCGCGGTAATACGTATGGTGCAAGC
+     481 ---------+---------+---------+---------+---------+---------+ 540
+         ACTGATTCTTCGTGGCCGATTTATGCACGGTCGTCGGCGCCATTATGCATACCACGTTCG
+ 
+a                                                                     -
+b         D  *                                            M  V  Q  A  -
+c                                                                     -
+     481 ---------+---------+---------+---------+---------+---------+ 540
+d                                                                     -
+e                                                                     -
+f                                                                     -
+ 
+             BBT
+             ssa        B  B
+             apq        f  s
+             WEI        i  r
+             III        I  I
+              //            
+         GTTATCCGGATTTACTGGGTGTAAAGGGAGCGTAGGCGGTTTTACAAGTCTGATGTGAAA
+     541 ---------+---------+---------+---------+---------+---------+ 600
+         CAATAGGCCTAAATGACCCACATTTCCCTCGCATCCGCCAAAATGTTCAGACTACACTTT
+ 
+a                                                                     -
+b         L  S  G  F  T  G  C  K  G  S  V  G  G  F  T  S  L  M  *     -
+c                                                                     -
+     541 ---------+---------+---------+---------+---------+---------+ 600
+d                                                                     -
+e                                                                     -
+f                                                                     -
+ 
+                       C
+           D          Dj              M   S
+           s          se              m   f
+           a          aP              e   c
+           I          II              I   I
+         GCCCGTGGCTCAACCACGGTATTGCATTGGAAACTGTAGAACTAGAGTGTCGGAGGGGTA
+     601 ---------+---------+---------+---------+---------+---------+ 660
+         CGGGCACCGAGTTGGTGCCATAACGTAACCTTTGACATCTTGATCTCACAGCCTCCCCAT
+ 
+a                                                                     -
+b                                                                     -
+c                                                                     -
+     601 ---------+---------+---------+---------+---------+---------+ 660
+d                                                                     -
+e                                                                     -
+f                   *  G  R  Y  Q  M                                  -
+ 
+               T
+               s
+              Ep                                                 T
+             Ac5                                          B      s
+             po0                                          s      p
+             oR9                                          r      R
+             III                                          I      I
+              //                                                  
+         AGTGGAATTCCTAGTGTAGCGGTGAAATGCGTAGATATTAGGAGGAACACCAGTGGCGAA
+     661 ---------+---------+---------+---------+---------+---------+ 720
+         TCACCTTAAGGATCACATCGCCACTTTACGCATCTATAATCCTCCTTGTGGTCACCGCTT
+ 
+a                                                                     -
+b                                                                     -
+c                                  M  R  R  Y  *                      -
+     661 ---------+---------+---------+---------+---------+---------+ 720
+d                                                                     -
+e                                                                     -
+f                                                                     -
+ 
+                                   B
+           C        B              p
+           jT       s B            u    H
+           ea       p s            1    g
+           Pu       G r            0    a
+           II       I I            I    I
+            /                            
+         GGCGGCTTACTGGACGATTACTGACGCTGAGGCTCGAAAGCGTGGGGAGCAAACAGGATT
+     721 ---------+---------+---------+---------+---------+---------+ 780
+         CCGCCGAATGACCTGCTAATGACTGCGACTCCGAGCTTTCGCACCCCTCGTTTGTCCTAA
+ 
+a                                                                     -
+b                                                                     -
+c                                                                     -
+     721 ---------+---------+---------+---------+---------+---------+ 780
+d                                                                     -
+e                           *  Q  R  Q  P  E  F  A  H  P  A  F  L  I  -
+f                                                                     -
+ 
+                 T
+                 t
+                Eh                                  B
+              B c1                            C     s             H
+              cBo1                           Cj    Bp             i
+              eaR1                           je    s2             n
+              feII                           eP    b4             f
+              IIII                           II    II             I
+                //                            /     /              
+         AGATACCCTGGTAGTCCACGCCGTAAACGATGAATACTAGGTGTTGGCTTCCATAGGGAG
+     781 ---------+---------+---------+---------+---------+---------+ 840
+         TCTATGGGACCATCAGGTGCGGCATTTGCTACTTATGATCCACAACCGAAGGTATCCCTC
+ 
+a                                                                     -
+b                                                                     -
+c                                     M  N  T  R  C  W  L  P  *       -
+     781 ---------+---------+---------+---------+---------+---------+ 840
+d                                                                     -
+e         L  Y  G  P  L  G  R  R  L  R  H  I  S  P  T  P  K  W  L  S  -
+f                                              *  T  N  A  E  M       -
+ 
+                       B                E
+                       s                c
+           B  PT       p                o         R
+           a  la       2                R         s
+           n  eu       4                I         a
+           I  II       I                I         I
+         TCGGTGCCGCAGCTAACGCAATAAGTATTCCACCTGGGGAGTACGTTCGCAAGAATGAAA
+     841 ---------+---------+---------+---------+---------+---------+ 900
+         AGCCACGGCGTCGATTGCGTTATTCATAAGGTGGACCCCTCATGCAAGCGTTCTTACTTT
+ 
+a                                                              M  K   -
+b                                                                     -
+c                                                                     -
+     841 ---------+---------+---------+---------+---------+---------+ 900
+d                                                                     -
+e         D  T  G  C  S  V  C  Y  T  N  W  R  P  L  V  N  A  L  I  F  -
+f                      *  R  L  L  Y  E  V  Q  P  T  R  E  C  S  H  F -
+ 
+                           E
+                T          c                            T
+                s          oP S                         s
+                p         AOsSa        B                p
+                5         v1pau      F s          NC   M5   N
+                0         a05n9      a m          sj   s0   s
+                9         I9ID6      u F          pe   e9   p
+                I         IIIII      I I          II   II   V
+                           ////                              
+         CTCAAAGGAATTGACGGGGACCCGCACAAGCGGTGGAGCATGTGGTTTAATTCGAAGCAA
+     901 ---------+---------+---------+---------+---------+---------+ 960
+         GAGTTTCCTTAACTGCCCCTGGGCGTGTTCGCCACCTCGTACACCAAATTAAGCTTCGTT
+ 
+a        L  K  G  I  D  G  D  P  H  K  R  W  S  M  W  F  N  S  K  Q   -
+b                                                                     -
+c                                                                     -
+     901 ---------+---------+---------+---------+---------+---------+ 960
+d                                                        *  N  S  A   -
+e         S  L  P  I  S  P  S  G  C  L  R  H  L  M                    -
+f          E  F  S  N  V  P  V  R  V  L  P  P  A  H  P  K  I  R  L  L -
+ 
+                        M                                 M
+                    F   b                                 b
+                    o   o                                 o
+                    k   I                                 I
+                    I   I                                 I
+         CGCGAAGAACCTTACCAAATCTTGACATCCTCTTGACAAACTATGTAATGTAGTCTTTCT
+     961 ---------+---------+---------+---------+---------+---------+ 1020
+         GCGCTTCTTGGAATGGTTTAGAACTGTAGGAGAACTGTTTGATACATTACATCAGAAAGA
+ 
+a        R  E  E  P  Y  Q  I  L  T  S  S  *        M  *               -
+b                                                                     -
+c                                                       M  *          -
+     961 ---------+---------+---------+---------+---------+---------+ 1020
+d        V  R  L  V  K  G  F  R  S  M                                 -
+e                                                                     -
+f          A  F  F  R  V  L  D  Q  C  G  R  S  L  S  H  L  T  T  K  R -
+ 
+                                                         A
+                                                B        cB
+                     B                          s      B es
+                     c                          s      c Im
+                     g                          S      g IF
+                     I                          I      I II
+         TCGGAACAAGAGTGACAGGTGGTGCATGGTTGTCGTCAGCTCGTGTCGTGAGATGTTGGG
+    1021 ---------+---------+---------+---------+---------+---------+ 1080
+         AGCCTTGTTCTCACTGTCCACCACGTACCAACAGCAGTCGAGCACAGCACTCTACAACCC
+ 
+a                                                                     -
+b                                 M  V  V  V  S  S  C  R  E  M  L  G  -
+c                                                                     -
+    1021 ---------+---------+---------+---------+---------+---------+ 1080
+d                                                                     -
+e                                                                     -
+f          R  F  L  L  S  L  H  H  M                                  -
+ 
+                                                                 B
+                                                                 s
+                                                                 p
+                                                                 1 B
+         M             F   H                                   B 2 s
+         s             a   h                                   m 8 m
+         e             u   a                                   g 6 A
+         I             I   I                                   I I I
+         TTAAGTCCCGCAACGAGCGCAACCCTTGTCCTTAGTAGCCAGCATTTTAGGTGGGCACTC
+    1081 ---------+---------+---------+---------+---------+---------+ 1140
+         AATTCAGGGCGTTGCTCGCGTTGGGAACAGGAATCATCGGTCGTAAAATCCACCCGTGAG
+ 
+a                                                                     -
+b         *                                                           -
+c                                                                     -
+    1081 ---------+---------+---------+---------+---------+---------+ 1140
+d                                                                     -
+e                                                                     -
+f          *  T  G  C  R  A  C  G  K  D  K  T  A  L  M                -
+ 
+                             B                   B  AH
+                    ANNS     s                   s  ai   F
+                    vccm     a                   a  tn   o
+                    aiia     W                   H  I4   k
+                    IIII     I                   I  II   I
+                       /                             /    
+         TAGGGAGACTGCCCGGGTGAACCGGAGGAAGGTGGGGATGACGTCAAATCATCATGCCCC
+    1141 ---------+---------+---------+---------+---------+---------+ 1200
+         ATCCCTCTGACGGGCCCACTTGGCCTCCTTCCACCCCTACTGCAGTTTAGTAGTACGGGG
+ 
+a                                                                     -
+b                                             M  T  S  N  H  H  A  P  -
+c                                                             M  P  L -
+    1141 ---------+---------+---------+---------+---------+---------+ 1200
+d                                                     *  I  M  M      -
+e                                                                     -
+f                                                                     -
+ 
+                         A                                     B
+                         f  B                      T           s
+                         l  sP                     a           t
+                         I  am                     q           E
+                         I  Al                     I           I
+                         I  II                     I           I
+                             /                                  
+         TTATGATTTGGGCTACACACGTGCTACAATGGCGTAAACAAAGGGAAGCAAGTGGGTGAC
+    1201 ---------+---------+---------+---------+---------+---------+ 1260
+         AATACTAAACCCGATGTGTGCACGATGTTACCGCATTTGTTTCCCTTCGTTCACCCACTG
+ 
+a                                                                     -
+b         Y  D  L  G  Y  T  R  A  T  M  A  *                          -
+c          M  I  W  A  T  H  V  L  Q  W  R  K  Q  R  E  A  S  G  *    -
+    1201 ---------+---------+---------+---------+---------+---------+ 1260
+d                                                                     -
+e                                                                     -
+f                      *  V  R  A  V  I  A  Y  V  F  P  L  L  H  T  V -
+ 
+                 H                   BB
+                Bi                   ss
+                pn                   mm
+                l4                   AB
+                II                   II
+                 /                    /
+         CATGAGCAAATCTCAAAAATAACGTCTCAGTTCGGATTGTAGTCTGCAACTCGACTACAT
+    1261 ---------+---------+---------+---------+---------+---------+ 1320
+         GTACTCGTTTAGAGTTTTTATTGCAGAGTCAAGCCTAACATCAGACGTTGAGCTGATGTA
+ 
+a                                                                     -
+b         M  S  K  S  Q  K  *                                      M  -
+c                                                                     -
+    1261 ---------+---------+---------+---------+---------+---------+ 1320
+d                                                                     -
+e                                    *  N  P  N  Y  D  A  V  R  S  C  -
+f          M                                                     *  M -
+ 
+                H                H
+                iT             N iT                    X    ANNS
+                nf             r nf                    m    vccm
+                fi             u fi                    n    aiia
+                II             I II                    I    IIII
+                 /                /                            /
+         GAAGCTGGAATCGCTAGTAATCGCGAATCAGAATGTCGCGGTGAATACGTTCCCGGGTCT
+    1321 ---------+---------+---------+---------+---------+---------+ 1380
+         CTTCGACCTTAGCGATCATTAGCGCTTAGTCTTACAGCGCCACTTATGCAAGGGCCCAGA
+ 
+a                                                                     -
+b         K  L  E  S  L  V  I  A  N  Q  N  V  A  V  N  T  F  P  G  L  -
+c                                        M  S  R  *                   -
+    1321 ---------+---------+---------+---------+---------+---------+ 1380
+d                       *  Y  D  R  I  L  I  D  R  H  I  R  E  R  T   -
+e         S  A  P  I  A  L  L  R  S  D  S  H  R  P  S  Y  T  G  P  D  -
+f                                                                     -
+ 
+         B  U
+         s Rb                DNS                B
+         r sa                sct                s
+         G aC                aoy                m
+         I II                III                I
+            /                 //                 
+         TGTACACACCGCCCGTCACACCATGGGAGTTGGGAATGCCCGAAGTCTGTGACCCAACCG
+    1381 ---------+---------+---------+---------+---------+---------+ 1440
+         ACATGTGTGGCGGGCAGTGTGGTACCCTCAACCCTTACGGGCTTCAGACACTGGGTTGGC
+ 
+a                                                                     -
+b         V  H  T  A  R  H  T  M  G  V  G  N  A  R  S  L  *           -
+c                                           M  P  E  V  C  D  P  T  V -
+    1381 ---------+---------+---------+---------+---------+---------+ 1440
+d        K  Y  V  G  G  T  V  G  H  S  N  P  I  G  S  T  Q  S  G  V   -
+e         Q  V  C  R  G  D  C  W  P  L  Q  S  H  G  F  D  T  V  W  G  -
+f                         *  V  M  P  T  P  F  A  R  L  R  H  G  L  R -
+ 
+                                           B  B
+                                           f  s
+                                           i  r
+                                           I  I
+         TAAGGAGGGAGCAGCCGAAGG....CTCGATAACTGGGGTGAAGTCGTAACAAGGTATCC
+    1441 ---------+---------+---------+---------+---------+---------+ 1500
+         ATTCCTCCCTCGTCGGCTTCC....GAGCTATTGACCCCACTTCAGCATTGTTCCATAGG
+ 
+a                                                                     -
+b                                                                     -
+c          R  R  E  Q  P  K  ?  ?  S  I  T  G  V  K  S  *             -
+    1441 ---------+---------+---------+---------+---------+---------+ 1500
+d        T  L  L  S  C  G  F  ?  .  E  I  V  P  T  F  D  Y  C  P  I   -
+e         Y  P  P  L  L  R  L  ?  ?  R  Y  S  P  H  L  R  L  L  T  D  -
+f          L  S  P  A  A  S  P  .  ?  S  L  Q  P  S  T  T  V  L  Y  G -
+ 
+         T
+    1501 - 1501
+         A
+ 
+a          -
+b          -
+c          -
+    1501 - 1501
+d        R -
+e          -
+f          -
+
+ Enzymes that do cut:
+
+    AatII   AceIII     AciI   AflIII     AluI     AlwI     ApoI     AvaI
+    AvaII     BaeI     BanI     BbvI     BccI    BcefI     BcgI     BfaI
+     BfiI     BmgI     BplI   Bpu10I    BsaAI    BsaHI    BsaJI    BsaWI
+     BsbI    BscGI     BslI     BsmI    BsmAI    BsmBI    BsmFI    BsoFI
+   Bsp24I Bsp1286I    BspEI    BspGI     BsrI    BsrFI    BsrGI    BssSI
+   BstEII    Cac8I     CjeI     CjeI    CjePI    CjePI    CviJI    CviRI
+     DdeI     DpnI     DsaI     EaeI     EciI    EcoNI EcoO109I    EcoRI
+   EcoRII     FauI     FokI    GdiII   HaeIII     HgaI   HgiEII     HhaI
+    Hin4I    HinfI     HphI     KpnI    MaeII   MaeIII    MboII     MluI
+     MmeI     MnlI     MseI     MspI   MspA1I     MwoI     NciI     NcoI
+   NlaIII    NlaIV     NruI     NspI     NspV     PleI     PmlI    PshAI
+   Psp5II     RsaI    SacII    SanDI   Sau96I   Sau3AI    ScrFI    SfaNI
+     SfcI     SmaI    SnaBI     SspI     StyI     TaqI    TaqII     TauI
+     TfiI     ThaI     TseI   Tsp45I  Tsp509I    TspRI Tth111II    UbaCI
+     XmnI
+
+ Enzymes that do not cut: 
+
+     AccI    AflII     AhdI    AlwNI     ApaI    ApaBI    ApaLI     AscI
+    AvrII    BamHI    BanII     BbsI   Bce83I     BclI     BglI    BglII
+     BpmI Bpu1102I     BsaI    BsaBI    BsaXI    BseRI     BsgI    BsiEI
+  BsiHKAI BspLU11I    BspMI    BsrBI    BsrDI   BssHII Bst1107I    BstXI
+    BstYI   Bsu36I     ClaI     DraI   DraIII     DrdI    DrdII     EagI
+     EarI Eco47III   Eco57I    EcoRV     FseI     FspI     HaeI    HaeII
+   HincII  HindIII     HpaI     MscI     MslI     MunI     NarI     NdeI
+   NgoAIV     NheI     NotI     NsiI     PacI Pfl1108I    PflMI    PinAI
+     PmeI Psp1406I     PstI     PvuI    PvuII     RcaI    RleAI    RsrII
+     SacI     SalI     SapI     ScaI    SexAI     SfiI     SgfI    SgrAI
+     SpeI     SphI     SrfI Sse8387I Sse8647I     StuI     SunI     SwaI
+  Tth111I     VspI     XbaI     XcmI     XhoI
+
+ Enzymes excluded; MinCuts: 1  MaxCuts: 4
+
+    AciI     AluI     BbvI     BfaI    BsaJI    BscGI     BslI    BsoFI 
+   Cac8I     CjeI    CjePI    CviJI    CviRI     DdeI     HphI    MaeII 
+  MaeIII     MnlI     MspI     MwoI   NlaIII    NlaIV    ScrFI     TaqI 
+    ThaI     TseI   Tsp45I 

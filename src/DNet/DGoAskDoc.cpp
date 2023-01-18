@@ -485,7 +485,7 @@ char* DGopherAskDoc::Answers(DFile*& replyFile)
 								}
 							}
 						if (first==1) { 
-							sprintf(aline, "%d"CRLF, nlines);
+							sprintf(aline, "%d" CRLF, nlines);
 							StrExtendCat( &ans, aline);
 							}
 						}
@@ -719,7 +719,7 @@ public:
 	virtual void CharHandler(char c);
   virtual void ProcessKey(char c);
 	virtual void SetEditText(DDialogText* theText);
-	virtual void DrawRow(Nlm_RecT r, short row);
+	virtual void DrawRow(Nlm_RecT r, long row);
 	virtual void SetClusterPositions();
 	virtual void Scroll(Boolean vertical, DView* scrollee, short newval, short oldval);
 	
@@ -828,7 +828,7 @@ void DGopherAskView::ProcessKey(char c)
 
 void DGopherAskView::Click(Nlm_PoinT mouse)
 {
-	short row, col;
+	long row, col;
 	PointToCell( mouse, row, col);
 	DView* ac= (DView*) fControls->At(row); 
 	if (!ac) return;

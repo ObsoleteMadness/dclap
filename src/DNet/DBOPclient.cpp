@@ -203,7 +203,7 @@ Boolean DBOP::WaitHandshake( char OkayCode, Boolean showfail)
 
 short DBOP::Quit()
 {
- 	if (Status() == kTCPestablished) SendStr("QUIT"CRLF, kDontAddCRLF);
+ 	if (Status() == kTCPestablished) SendStr("QUIT" CRLF, kDontAddCRLF);
 	Close(); Release();
 	fState= kClosed;
 	return fState;
@@ -253,11 +253,11 @@ short DBOP::Connect()
 		if (!fHostname || !*fHostname || 
 			!fUsername || !*fUsername || !fPassword) GetLogon();
 logon:
-		sprintf( buf, "USER %s"CRLF,fUsername);
+		sprintf( buf, "USER %s" CRLF,fUsername);
 		SendStr( buf, kDontAddCRLF);
 		if (!WaitHandshake('+'))  return(Quit());
 	
-		sprintf( buf, "PASS %s"CRLF,fPassword);
+		sprintf( buf, "PASS %s" CRLF,fPassword);
 		SendStr( buf, kDontAddCRLF);
 		if (!WaitHandshake('+')) {
 			if (retry && GetLogon()) goto logon;
@@ -265,7 +265,7 @@ logon:
 			}
 	
 				// get list of existing processes
-		SendStr( "LIST"CRLF, kDontAddCRLF);
+		SendStr( "LIST" CRLF, kDontAddCRLF);
 		if (WaitHandshake('+',false)) {
 			long number, pid, state;
 			char name[256];
@@ -297,7 +297,7 @@ logon:
 short DBOP::CloseMsg()
 {
 	if (fState == kMsgOpen) {
-		SendStr("CLOS"CRLF, kDontAddCRLF);
+		SendStr("CLOS" CRLF, kDontAddCRLF);
 		if (!WaitHandshake('+')) return(Quit());	
 		fState= kTransaction;
 		}
@@ -319,7 +319,7 @@ short DBOP::CheckMsgStatus( short msgNum)
 	if (!msgNum) return 0;
 	for (short itest=0; itest<2; itest++) {
 		if (Connect() < kTransaction) return(fState);
-		sprintf( buf, "STAT %d"CRLF, msgNum);
+		sprintf( buf, "STAT %d" CRLF, msgNum);
 		SendStr( buf, kDontAddCRLF);
 		if (WaitHandshake('+')) 
 			break; // done with Connect test
@@ -353,7 +353,7 @@ short DBOP::OpenMsg( short msgNum)
 	if (fState == kMsgOpen) 
 		if (CloseMsg() != kTransaction) return(Quit());
 
-	sprintf( buf, "OPEN %d"CRLF, msgNum);
+	sprintf( buf, "OPEN %d" CRLF, msgNum);
 	SendStr( buf, kDontAddCRLF);
 	if (!WaitHandshake('+')) return(fState); // don't quit?
 	
@@ -421,7 +421,7 @@ short DBOP::DeleteMsg( short msgNum)
 	if (!msgNum) return 0;
 	if (Connect() < kTransaction) return(fState);
 	if (fState == kMsgOpen && msgNum == fCurrentMsg) CloseMsg();
-	sprintf( buf, "DELE %d"CRLF, msgNum);
+	sprintf( buf, "DELE %d" CRLF, msgNum);
 	SendStr( buf, kDontAddCRLF);
 	if (!WaitHandshake('+',false)) ;
 	
@@ -472,7 +472,7 @@ short DBOP::GetMsgOutput( short msgNum, DList* childFiles)
 					break;
 				}
 			
-			sprintf( buf, "GET %s"CRLF, name);
+			sprintf( buf, "GET %s" CRLF, name);
 			SendStr( buf, kDontAddCRLF);
 			if (dofreename) { MemFree(name); name=NULL; }
 			if (WaitHandshake('+',false)) {
@@ -488,7 +488,7 @@ short DBOP::GetMsgOutput( short msgNum, DList* childFiles)
 					data[datasize]= 0;
 					if (datasize==0) done= true;
 					else if (EndOfMessage()) done= true;
-			  	else if (StrStr( data, LINEEND"."LINEEND) != NULL) done= true;
+			  	else if (StrStr( data, LINEEND "." LINEEND) != NULL) done= true;
 			  	
 			  	cf->WriteData( data, datasize);
 			  	datatotal += datasize;
@@ -519,14 +519,14 @@ short DBOP::Execute( char * cmdline, DList* childFiles)
 		if (CloseMsg() != kTransaction) return(Quit());
 	
   		// new command
-	SendStr("NEW"CRLF, kDontAddCRLF);
+	SendStr("NEW" CRLF, kDontAddCRLF);
 	if (!WaitHandshake('+')) return(Quit());	
 	fState= kMsgOpen;
 	int msgnum = 0;
 	sscanf( fHandshake, "+OK Process %d ", &msgnum);
 	fCurrentMsg= msgnum;
 
-	sprintf( buf, "CMD %s"CRLF, cmdline);
+	sprintf( buf, "CMD %s" CRLF, cmdline);
 	SendStr( buf, kDontAddCRLF);
 	if (!WaitHandshake('+')) return(Quit());	
 
@@ -535,7 +535,7 @@ short DBOP::Execute( char * cmdline, DList* childFiles)
 		DChildFile * cf= (DChildFile*) childFiles->At(i);
 		if (cf && (cf->fKind == DChildFile::kInput || cf->fKind == DChildFile::kStdin)) {
 				// for each input file...
-			sprintf( buf, "PUT %s"CRLF, cf->GetShortname());
+			sprintf( buf, "PUT %s" CRLF, cf->GetShortname());
 			SendStr( buf, kDontAddCRLF);
 			if (!WaitHandshake('+')) return(Quit());	
 	
@@ -546,13 +546,13 @@ short DBOP::Execute( char * cmdline, DList* childFiles)
 				}
 			cf->Close();
 			SendCRLF(); 	// make sure of final newline ?
-			SendStr("."CRLF, kDontAddCRLF);
+			SendStr("." CRLF, kDontAddCRLF);
 			if (!WaitHandshake('+')) return(Quit());		
 			}
 		}
 		
 		// execute application
-	SendStr("EXEC"CRLF, kDontAddCRLF);
+	SendStr("EXEC" CRLF, kDontAddCRLF);
 	if (!WaitHandshake('+')) return(Quit());		
 
 	long pid = 0;
@@ -733,16 +733,16 @@ void DBopSetupDialog::Open()
 		) {
 			char* title= "Trial BOP services";
 			char* desc = 
-"For a limited time, you can try BOP services at "WRAP_LINE
-"weed.bio.indiana.edu, port 7110.  To log on, use "LINEEND
-"   Username: bop"LINEEND
-"   Password: seqpup"LINEEND
-"If you find this service useful, contact your local "WRAP_LINE
-"biocomputing service provider to install a BOP "WRAP_LINE
-"server (available from ftp:// iubio.bio.indiana.edu "WRAP_LINE
-"/util/dclap/source/.)  This trial service at Indiana "WRAP_LINE
-"will end in September 1996.  Access to GCG software "WRAP_LINE
-"there after this trial is limited to Indiana U."WRAP_LINE
+"For a limited time, you can try BOP services at " WRAP_LINE
+"weed.bio.indiana.edu, port 7110.  To log on, use " LINEEND
+"   Username: bop" LINEEND
+"   Password: seqpup" LINEEND
+"If you find this service useful, contact your local " WRAP_LINE
+"biocomputing service provider to install a BOP " WRAP_LINE
+"server (available from ftp:// iubio.bio.indiana.edu " WRAP_LINE
+"/util/dclap/source/.)  This trial service at Indiana " WRAP_LINE
+"will end in September 1996.  Access to GCG software " WRAP_LINE
+"there after this trial is limited to Indiana U." WRAP_LINE
 ;
 			DCluster* clu= new DCluster( 0, this, 0, 0, false, title); 
 			new DNotePanel(0, clu, desc, 290, 150);	

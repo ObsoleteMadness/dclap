@@ -282,7 +282,7 @@ public:
 			r.bottom = r.top + fItemHeight;
 		}
 			
-		virtual void ClickAt(short row, short col)
+		virtual void ClickAt(long row, long col)
 		{
 			if (Nlm_dblClick) {
 				DGopher* ag= fItems->GopherAt(row); 
@@ -428,7 +428,7 @@ public:
 	//virtual void Hold(Nlm_PoinT mouse);
 	//virtual void Release(Nlm_PoinT mouse);
 	
-	virtual void DoubleClickAt(short row, short col)
+	virtual void DoubleClickAt(long row, long col)
 	{
 		DCluster* ac= (DCluster*) fItems->At(row); 
 		Message(MSG_OK, "Click on '%s'", (char*)ac->GetTitle());
@@ -436,7 +436,7 @@ public:
 
 	virtual void Click(Nlm_PoinT mouse)
 	{
-		short row, col;
+		long row, col;
 		PointToCell( mouse, row, col);
 		DCluster* ac= (DCluster*) fItems->At(row); 
 #ifdef WIN_MAC

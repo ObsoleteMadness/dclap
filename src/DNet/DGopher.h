@@ -173,7 +173,7 @@ public:
 
 		// internal data
 	char*			fInfo;					// data read from service 
-	long			fInfoSize;			// can't use strlen for binary data @!
+	ulong			fInfoSize;			// can't use strlen for binary data @!
 	//InfoProc	fInfoHandler; 	// app proc that handles incoming data during reads
 	DTask*		fInfoHandler;
 	

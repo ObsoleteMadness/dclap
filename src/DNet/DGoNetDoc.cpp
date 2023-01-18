@@ -36,6 +36,7 @@
 
 // DAMN SUN CC/LD can't find DNetHTML objects !
 #include <DNetHTMLHandler.h>
+#include <DRichMoreStyle.h>
  
  
 enum ResizeWindSizes {
@@ -224,33 +225,38 @@ void DLinkedRichView::DoClickFetch(Nlm_PoinT mouse)
 
 	wordAt[0]= 0;
 	MapPoint( mouse, item, row, &rct, wordAt, 512, &styleAt);
-	if (styleAt.ispict && styleAt.fPict) {
-		Nlm_PoinT atp;
-		short	linkid, kind = 0;
-		atp= mouse;
-		MapView2Doc( atp);
-    	// if atp is inside a pict, adjust it by pict top,left
-		atp.x -= fDrawr.left;
-		atp.y	-= fDrawr.top;
 
-		linkid= styleAt.fPict->GetLink( atp, kind); 
-				
-		if (kind == DPictStyle::kPictNetPic)
-			fDoc->SetupInlinePart( fMapStyle); 
-		else if (linkid) {
-			// if styleAt.ismap, do things w/ gopher link
-			// need to stuff atp.x,y into gopher.fQuery....
-			if (styleAt.ismap) fDoc->OpenGopherLink(linkid-1, &atp);	
-			else fDoc->OpenGopherLink(linkid-1, NULL);	// send atp anyway ???
+	if (styleAt.ispict) {
+		DPictStyle* fPict = (DPictStyle*)styleAt.fObject;
+		if (fPict && fPict->HasNetPict())
+		{
+			Nlm_PoinT atp;
+			short	linkid, kind = 0;
+			atp = mouse;
+			MapView2Doc(atp);
+			// if atp is inside a pict, adjust it by pict top,left
+			atp.x -= fDrawr.left;
+			atp.y -= fDrawr.top;
+
+			linkid = fPict->GetLink(atp, kind);
+
+			if (kind == DPictStyle::kPictNetPic)
+				fDoc->SetupInlinePart(fMapStyle);
+			else if (linkid) {
+				// if styleAt.ismap, do things w/ gopher link
+				// need to stuff atp.x,y into gopher.fQuery....
+				if (styleAt.ismap) fDoc->OpenGopherLink(linkid - 1, &atp);
+				else fDoc->OpenGopherLink(linkid - 1, NULL);	// send atp anyway ???
 			}
-		else if (fDoc->fStore->fMapLink) {
-			fDoc->OpenGopherLink( fDoc->fStore->fMapLink-1, &atp);	
+			else if (fDoc->fStore->fMapLink) {
+				fDoc->OpenGopherLink(fDoc->fStore->fMapLink - 1, &atp);
 			}
-		else {
-			fDoc->SetupInlinePart( fMapStyle); // ?? check in case it needs pic fetched
+			else {
+				fDoc->SetupInlinePart(fMapStyle); // ?? check in case it needs pic fetched
 			}
 		}
-	else {
+	}
+	else  {
 		if (styleAt.linkid) fDoc->OpenGopherLink(styleAt.linkid-1);	
 		}
 	styleAt.ownpict= false; // !!!! not this copy, so we don't delete
@@ -1295,18 +1301,23 @@ void DGoLinkedTextDoc::SetupInlinePart( DRichStyle* st)
 {
 	Boolean added= false;
 	Boolean needtask= (!fInlineParts || fInlineParts->GetSize() == 0);
-	if (st->ispict && st->fPict && st->fPict->HasNetPict()) {
-		short linkid= st->fPict->fLinks[0].fLinkid;
-		if (linkid) {
-			DGopher* ag= fStore->fGolist->GopherAt(linkid-1);
-			if (ag) {
-				DGoStyle* gs= new DGoStyle( 0, st, ag);
-				if (!fInlineParts) fInlineParts= new DList();
-				fInlineParts->Queue( gs);
-				added= true;
+	if (st->ispict) { // && st->fPict && st->fPict->HasNetPict()) {
+		DPictStyle* fPict = (DPictStyle*)st->fObject;
+		if (fPict && fPict->HasNetPict())
+		{
+			short linkid = fPict->fLinks[0].fLinkid;
+			if (linkid) {
+				DGopher* ag = fStore->fGolist->GopherAt(linkid - 1);
+				if (ag) {
+					DGoStyle* gs = new DGoStyle(0, st, ag);
+					if (!fInlineParts) fInlineParts = new DList();
+					fInlineParts->Queue(gs);
+					added = true;
 				}
 			}
 		}
+	}
+	
 	if (needtask && added && fInlineParts->GetSize()) {
 		DTask* aStuffTask= newTask( cProcessInlines, kGoTextdoc);
 		aStuffTask->SetRepeat(true);
@@ -1320,21 +1331,27 @@ void DGoLinkedTextDoc::SetupInlineParts()
 	Boolean added= false;
 	Boolean needtask= (!fInlineParts || fInlineParts->GetSize() == 0);
 	short i, n= fRichView->fStyles->GetSize();
-	for (i= 0; i<n; i++) {
-		DRichStyle* st= (DRichStyle*) fRichView->fStyles->At(i);
-		if (st->ispict && st->fPict && st->fPict->HasNetPict()) {
-			short linkid= st->fPict->fLinks[0].fLinkid;
-			if (linkid) {
-				DGopher* ag= fStore->fGolist->GopherAt(linkid-1);
-				if (ag) {
-					DGoStyle* gs= new DGoStyle( i, st, ag);
-					if (!fInlineParts) fInlineParts= new DList();
-					fInlineParts->Queue( gs);
-					added= true;
+	for (i = 0; i < n; i++) {
+		DRichStyle* st = (DRichStyle*)fRichView->fStyles->At(i);
+		if (st->ispict) { // && st->fPict && st->fPict->HasNetPict()) {
+			DPictStyle* fPict = (DPictStyle*)st->fObject;
+			if (fPict && fPict->HasNetPict())
+			{
+				short linkid = fPict->fLinks[0].fLinkid;
+				if (linkid) {
+					DGopher* ag = fStore->fGolist->GopherAt(linkid - 1);
+					if (ag) {
+						DGoStyle* gs = new DGoStyle(i, st, ag);
+						if (!fInlineParts) fInlineParts = new DList();
+						fInlineParts->Queue(gs);
+						added = true;
 					}
 				}
 			}
+
 		}
+	}
+		
 	if (needtask && added && fInlineParts->GetSize()) {
 		DTask* aStuffTask= newTask( cProcessInlines, kGoTextdoc);
 		aStuffTask->SetRepeat(true);
@@ -1575,16 +1592,22 @@ void DGoLinkedTextDoc::InsertLink( short golistItem, DGopher* theGo,
 					Nlm_RecT arect, short atparag, short atchar)
 {	
 	DRichStyle* aStyle= fRichView->GetStyleAtChar( atparag, atchar);
-	if (aStyle && aStyle->ispict && aStyle->fPict) {
-			 //!! arect must be relative to pict top,left !!
-		if (theGo) {
-			if (theGo->fIsMap) {
-				aStyle->ismap= true;
-				// fStore->fMapLink= golistItem+1;
+	
+	if (aStyle && aStyle->ispict) {
+
+		DPictStyle* fPict = (DPictStyle*)aStyle->fObject;
+		if (fPict && fPict->HasNetPict()) {
+			//!! arect must be relative to pict top,left !!
+			if (theGo) {
+				if (theGo->fIsMap) {
+					aStyle->ismap = true;
+					// fStore->fMapLink= golistItem+1;
 				}
 			}
-		aStyle->fPict->AddLink( DPictStyle::kPictNetLink, golistItem+1, arect);
+			fPict->AddLink(DPictStyle::kPictNetLink, golistItem + 1, arect);
 		}
+	}
+	
 }
 
 void DGoLinkedTextDoc::InsertLink( DGopher* theGo, short atparag, short atchar, short atlen)

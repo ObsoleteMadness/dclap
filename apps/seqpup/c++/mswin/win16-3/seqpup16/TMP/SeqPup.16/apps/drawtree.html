@@ -1,0 +1,45 @@
+<HTML>
+<!dclap [drawtree]>
+<!;child app calls using dialog forms>
+
+<title>Phylip DrawTree</title>
+<b>DrawTree</b>
+ - draw phylogenetic tree (unrooted), from Phylip<p>
+Written by Joseph Felsenstein.
+<HR>
+
+<FORM  METHOD=localexec  ACTION="$apps:drawtree">
+
+Program options:<p>
+
+<INPUT TYPE="checkbox" NAME="branchlength" VALUE="1">Don't use branch lengths<p>
+<INPUT TYPE="checkbox" NAME="usetreeangle" VALUE="3">Change tree rotation to:
+<INPUT NAME="treeangle" VALUE="90" SIZE=5><p>
+<INPUT TYPE="checkbox" NAME="uselabangle" VALUE="2">Change label angle to:
+<INPUT NAME="labangle" VALUE="0" SIZE=5><p>
+<INPUT TYPE="checkbox" NAME="usetreearc" VALUE="3">Change tree arc angle to:
+<INPUT NAME="treearc" VALUE="90" SIZE=5><p>
+
+<!A HREF=file:///$apps:drawtree.doc  Help /A> 
+<INPUT TYPE=submit VALUE="Launch app"> 
+
+
+<INPUT TYPE=hidden NAME=infile VALUE="$apps:treefile">
+<INPUT TYPE=hidden NAME=seqformat VALUE="biotree">
+<INPUT TYPE=hidden NAME=minseq VALUE="0">
+<INPUT TYPE=hidden NAME=outfile1 VALUE="$apps:plotfile	image/pict">
+
+<INPUT TYPE=hidden NAME=stdcmdin VALUE="M
+N
+$branchlength
+$usetreeangle
+$?usetreeangle:$treeangle:
+$uselabangle
+$?uselabangle:$labangle:
+$usetreearc
+$?treearc:$treearc:
+Y
+">
+
+</FORM>
+</HTML>

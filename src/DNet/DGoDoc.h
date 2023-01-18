@@ -34,17 +34,17 @@ public:
 	virtual void Hold(Nlm_PoinT mouse);
 	virtual void Release(Nlm_PoinT mouse);
 	
-	virtual void SingleClickAt(short row, short col);
-	virtual void DoubleClickAt(short row, short col);
-	virtual void DrawCell(Nlm_RecT r, short row, short col);
+	virtual void SingleClickAt(long row, long col);
+	virtual void DoubleClickAt(long row, long col);
+	virtual void DrawCell(Nlm_RecT r, long row, long col);
 
 	virtual void SetColWidths();
 	virtual void SizeToSuperview( DView* super, Boolean horiz, Boolean vert); 
 	virtual void Resize(DView* superview, Nlm_PoinT sizechange);
-	virtual void SetLineHeight( short item, DGopher* theGo);
+	virtual void SetLineHeight( long item, DGopher* theGo);
 
 	virtual DGopher* SelectedGopher();
-	virtual void OpenGopherLink(short gopherItem);
+	virtual void OpenGopherLink(long gopherItem);
 };
 
 

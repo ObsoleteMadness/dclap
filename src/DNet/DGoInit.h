@@ -155,11 +155,11 @@ public:
 	virtual void Drag(Nlm_PoinT mouse);
 	virtual void Hold(Nlm_PoinT mouse);
 	virtual void Release(Nlm_PoinT mouse);
-	virtual void DoubleClickAt(short row, short col);
-	virtual void SingleClickAt(short row, short col);
+	virtual void DoubleClickAt(long row, long col);
+	virtual void SingleClickAt(long row, long col);
 	virtual DGopherMap* SelectedMapper();
 	virtual void GetReadyToShow();
-	virtual void DrawCell(Nlm_RecT r, short row, short col);
+	 void DrawCell(Nlm_RecT r, long row, long col);
 };
 
 

@@ -9,18 +9,18 @@
 
 
 Local char *dclapinfo =
-"using Don's C++ Class Application Library (DCLAP)"LINEEND
-"D.Gilbert, Indiana Univ. Biology Dept."LINEEND
+"using Don's C++ Class Application Library (DCLAP)" LINEEND
+"D.Gilbert, Indiana Univ. Biology Dept." LINEEND
 "software@bio.indiana.edu";
 
 Local char *ncbiinfo =
-"and the VIBRANT cross-platform toolkit from"LINEEND
-"National Center for Biotechnology Information"LINEEND
-"National Library of Medicine, N.I.H."LINEEND
+"and the VIBRANT cross-platform toolkit from" LINEEND
+"National Center for Biotechnology Information" LINEEND
+"National Library of Medicine, N.I.H." LINEEND
 "info@ncbi.nlm.nih.gov";
 
 Local char *shortinfo =
-"using Don's Class App Library (DCLAP), software@bio.indiana.edu"LINEEND
+"using Don's Class App Library (DCLAP), software@bio.indiana.edu" LINEEND
 "and VIBRANT cross-platform toolkit, info@ncbi.nlm.nih.gov";
 
 
